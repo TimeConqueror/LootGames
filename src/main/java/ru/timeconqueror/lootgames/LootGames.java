@@ -45,7 +45,7 @@ public class LootGames {
     public static LootGames INSTANCE;
 
     @Mod.EventHandler
-    public void PreLoad(FMLPreInitializationEvent event) {
+    public void preInit(FMLPreInitializationEvent event) {
         proxy.preInit(event);
 
 //        ModConfig = new LootGamesConfig(event.getModConfigurationDirectory(), MODNAME, MODID);

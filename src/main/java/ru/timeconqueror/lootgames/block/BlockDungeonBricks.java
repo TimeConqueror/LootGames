@@ -90,7 +90,6 @@ public class BlockDungeonBricks extends Block {
         for (EnumType value : EnumType.values()) {
             items.add(new ItemStack(this, 1, value.getMeta()));
         }
-//        super.getSubBlocks(itemIn, items);
     }
 
     public enum EnumType implements IStringSerializable {
@@ -112,7 +111,6 @@ public class BlockDungeonBricks extends Block {
 
         private int meta;
         private int crackedBlockMeta;
-        private String translationKey;
         private String name;
 
         EnumType(int meta, String name) {
@@ -120,14 +118,9 @@ public class BlockDungeonBricks extends Block {
         }
 
         EnumType(int meta, int crackedBlockMeta, String name) {
-            this(meta, crackedBlockMeta, name, name);
-        }
-
-        EnumType(int meta, int crackedBlockMeta, String name, String translationKey) {
             this.meta = meta;
             this.crackedBlockMeta = crackedBlockMeta;
             this.name = name;
-            this.translationKey = translationKey;
         }
 
         public static EnumType byMetadata(int meta) {
@@ -138,26 +131,12 @@ public class BlockDungeonBricks extends Block {
             return META_LOOKUP[meta];
         }
 
-        public static String[] getIndexesAsStringArr() {
-            String[] array = new String[values().length];
-            int i = 0;
-            for (int i1 = 0; i1 < array.length; i1++) {
-                array[i1] = Integer.toString(i++);
-            }
-
-            return array;
-        }
-
         public int getMeta() {
             return meta;
         }
 
         public int getCrackedBlockMeta() {
             return crackedBlockMeta;
-        }
-
-        public String getTranslationKey() {
-            return translationKey;
         }
 
         @Override
