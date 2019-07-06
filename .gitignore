@@ -2,6 +2,7 @@
 eclipse/
 bin/
 .gradle/
+gradle/
 .project
 .settings/
 textures/noupload/
