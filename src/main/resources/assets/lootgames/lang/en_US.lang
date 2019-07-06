@@ -1,0 +1,27 @@
+# Blocks
+tile.lootGamesMaster.name=Do you want to play a game?
+tile.chessGame.name=Chess
+tile.lightGame.name=Game of Light
+itemGroup.LootGames=LootGames
+tile.dungeonBrick_0.name=Dungeon Wall
+tile.dungeonBrick_1.name=Dungeon Ceiling
+tile.dungeonBrick_2.name=Dungeon Floor
+tile.dungeonBrick_3.name=Cracked Dungeon Wall
+tile.dungeonBrick_4.name=Cracked Dungeon Ceiling
+tile.dungeonBrick_5.name=Cracked Dungeon Floor
+tile.dungeonBrick_6.name=Shielded Dungeon Floor
+tile.dungeonLight_0.name=Dungeon Light
+tile.dungeonLight_1.name=Broken Dungeon Light
+
+
+lootgames.achievementPage.name=LootGames
+achievement.lootgames.find_dungeon=Burried secrets
+achievement.lootgames.find_dungeon.desc=Find a mysterious Minigame-Dungeon
+achievement.lootgames.win=My precious!
+achievement.lootgames.win.desc=Win a minigame and get tons of loot
+achievement.lootgames.fail=More luck next time
+achievement.lootgames.fail.desc=Failed (really?) a minigame (Like, you failed..?)
+achievement.lootgames.gol.level3=Almost got the Brains
+achievement.lootgames.gol.level3.desc=Beat a Game of Light at Level 3 (You still failed Level 4, soo.. try harder!)
+achievement.lootgames.gol.level4=Epic memory
+achievement.lootgames.gol.level4.desc=Beat a Game of Light at Level 4

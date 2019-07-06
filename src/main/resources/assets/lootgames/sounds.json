@@ -1,0 +1,90 @@
+{
+  "game_start": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "game_start",
+        "stream": false
+      }
+    ]
+  },
+  "gameover_loose": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "gameover_loose",
+        "stream": false
+      }
+    ]
+  },
+  "gameover_win": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "gameover_win",
+        "stream": false
+      }
+    ]
+  },
+  "block_ping": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "block_ping",
+        "stream": false
+      }
+    ]
+  },
+  "sequence_complete": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "sequence_complete",
+        "stream": false
+      }
+    ]
+  },
+  "sequence_wrong": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "sequence_wrong",
+        "stream": false
+      }
+    ]
+  },
+  "player_click": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "block_ping",
+        "stream": false
+      }
+    ]
+  },
+  "masterblock_strange": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "strange_001",
+        "stream": false
+      },
+      {
+        "name": "strange_002",
+        "stream": false
+      },
+      {
+        "name": "strange_003",
+        "stream": false
+      },
+      {
+        "name": "strange_004",
+        "stream": false
+      },
+      {
+        "name": "strange_005",
+        "stream": false
+      }
+    ]
+  }
+}
