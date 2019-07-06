@@ -1,0 +1,16 @@
+[
+{
+  "modid": "lootgames",
+  "name": "LootGames",
+  "description": "Play minigames to obtain loot",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Namikon", "Time_Conqueror"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

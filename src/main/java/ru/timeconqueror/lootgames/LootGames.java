@@ -1,18 +1,28 @@
 package ru.timeconqueror.lootgames;
 
+import com.timeconqueror.timecore.LogHelper;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import ru.timeconqueror.lootgames.proxy.CommonProxy;
+
+import java.util.Random;
 
 @Mod(modid = LootGames.MODID,
-        dependencies = "required-after:Forge@[14.23.5.2768,);",
+        dependencies = "required-after:forge@[14.23.5.2768,);",
         name = LootGames.MODNAME,
         version = LootGames.VERSION)
 public class LootGames {
     public static final String MODID = "lootgames";
     public static final String MODNAME = "LootGames";
     public static final String VERSION = "GRADLETOKEN_VERSION";
-//    public static Random Rnd = new Random();
-//    public static ModCreativeTab CreativeTab;
-//    public static LootGamesDungeonLogger DungeonLogger;
+
+    public static Random rand = new Random();
+    public static LogHelper logHelper = new LogHelper(MODID);
+
 //    public static CheaterHandler CheatHandler;
 //    public static ProfilingStorage Profiler;
 //    public static LootGamesMasterBlock MasterBlock;
@@ -24,17 +34,21 @@ public class LootGames {
 //
 //    public static GameManager GameMgr;
 //
-//    public static LogHelper mLog = new LogHelper("LootGames");
 //    public static NetDispatcher NW;
 //    public static LootGamesConfig ModConfig;
 //    public static LootGamesWorldGen WorldGen;
-//
-//    @Instance(LootGames.MODID)
-//    public static LootGames INSTANCE;
-//
-//    @EventHandler
-//    public void PreLoad(FMLPreInitializationEvent PreEvent) {
-//        ModConfig = new LootGamesConfig(PreEvent.getModConfigurationDirectory(), MODNAME, MODID);
+
+    @SidedProxy(clientSide = "ru.timeconqueror.lootgames.proxy.ClientProxy", serverSide = "ru.timeconqueror.lootgames.proxy.ServerProxy")
+    public static CommonProxy proxy;
+
+    @Mod.Instance(LootGames.MODID)
+    public static LootGames INSTANCE;
+
+    @Mod.EventHandler
+    public void PreLoad(FMLPreInitializationEvent event) {
+        proxy.preInit(event);
+
+//        ModConfig = new LootGamesConfig(event.getModConfigurationDirectory(), MODNAME, MODID);
 //        if (!ModConfig.LoadConfig())
 //            mLog.error(String.format("%s could not load its config file. Things are going to be weird!", MODID));
 //
@@ -56,14 +70,13 @@ public class LootGames {
 //            e.printStackTrace();
 //        }
 //
-//        CreativeTab = new ModCreativeTab(MODNAME, Items.book);
-//
 //        WorldGen = new LootGamesWorldGen();
 //        GameRegistry.registerWorldGenerator(WorldGen, Integer.MAX_VALUE);
-//    }
-//
-//    @EventHandler
-//    public void init(FMLInitializationEvent event) {
+    }
+
+    @Mod.EventHandler
+    public void init(FMLInitializationEvent event) {
+        proxy.init(event);
 //        initBaseBlocks();
 //
 //        GameMgr = new GameManager();
@@ -71,22 +84,23 @@ public class LootGames {
 //
 //        NW = new NetDispatcher();
 //        NW.registerPackets();
-//    }
-//
-//    @EventHandler
-//    public void postInit(FMLPostInitializationEvent event) {
+    }
+
+    @Mod.EventHandler
+    public void postInit(FMLPostInitializationEvent event) {
+        proxy.postInit(event);
 //        LootGameAchievement.registerAchievementPage();
-//    }
-//
-//    @EventHandler
-//    public void serverLoad(FMLServerStartingEvent pEvent) {
-//        pEvent.registerServerCommand(new LootGamesCommand());
-//        pEvent.registerServerCommand(new ProfilingCommand());
+    }
+
+    @Mod.EventHandler
+    public void serverLoad(FMLServerStartingEvent event) {
+//        event.registerServerCommand(new LootGamesCommand());
+//        event.registerServerCommand(new ProfilingCommand());
 //        if (YAMCore.isDebug())
-//            pEvent.registerServerCommand(new PeacefulEntityCommand());
-//    }
-//
-//    private void initBaseBlocks() {
+//            event.registerServerCommand(new PeacefulEntityCommand());
+    }
+
+    private void initBaseBlocks() {
 //        DungeonWallBlock = new DungeonBrick();
 //        DungeonLightBlock = new DungeonLightSource();
 //        MasterBlock = new LootGamesMasterBlock();
@@ -95,5 +109,5 @@ public class LootGames {
 //        GameRegistry.registerBlock(MasterBlock, "LootGamesMasterBlock");
 //        GameRegistry.registerBlock(DungeonWallBlock, ItemBlockMetaBlock.class, "LootGamesDungeonWall");
 //        GameRegistry.registerBlock(DungeonLightBlock, ItemBlockMetaBlock.class, "LootGamesDungeonLight");
-//    }
+    }
 }

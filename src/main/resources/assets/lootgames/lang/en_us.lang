@@ -1,0 +1,10 @@
+itemGroup.lootgames=Loot Games
+
+#Blocks
+tile.lootgames.dungeon_bricks.0.name=Dungeon Wall
+tile.lootgames.dungeon_bricks.1.name=Dungeon Ceiling
+tile.lootgames.dungeon_bricks.2.name=Dungeon Floor
+tile.lootgames.dungeon_bricks.3.name=Cracked Dungeon Wall
+tile.lootgames.dungeon_bricks.4.name=Cracked Dungeon Ceiling
+tile.lootgames.dungeon_bricks.5.name=Cracked Dungeon Floor
+tile.lootgames.dungeon_bricks.6.name=Shielded Dungeon Floor

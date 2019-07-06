@@ -3,6 +3,7 @@ eclipse/
 bin/
 .gradle/
 gradle/
+libs/
 .project
 .settings/
 textures/noupload/

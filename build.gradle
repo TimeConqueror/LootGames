@@ -17,7 +17,7 @@ file "build.properties" withReader {
 }
 
 version = "${config.minecraft.version}-${config.lootgames.version}"
-group = "eu.usrv" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = "ru.timeconqueror" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "LootGames"
 
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
@@ -29,7 +29,8 @@ minecraft {
     version = "${config.forge.version}"
     runDir = "run"
 
-    replaceIn "src/main/java/eu/usrv/lootgames/LootGames.java"
+    replaceIn "src/main/java/ru/timeconqueror/lootgames/LootGames.java"
+
     def versionArray = project.version.tokenize('-')
     replace "GRADLETOKEN_VERSION", versionArray[1]
     
@@ -43,6 +44,8 @@ minecraft {
 }
 
 dependencies {
+    compile fileTree("libs/")
+
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
     //compile "some.group:artifact:version:classifier"
