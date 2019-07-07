@@ -7,7 +7,6 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -20,14 +19,14 @@ import ru.timeconqueror.lootgames.auxiliary.RandHelper;
 
 import javax.annotation.Nullable;
 
-public class BlockDungeonBricks extends Block {
+public class BlockDungeonLamp extends Block {
     public static final PropertyEnum<EnumType> VARIANT = PropertyEnum.create("variant", EnumType.class);
 
-    public BlockDungeonBricks() {
-        super(Material.ROCK);
-        setHardness(10.0F);
+    public BlockDungeonLamp() {
+        super(Material.GLASS);
+        setHardness(2.0F);
         setResistance(6.0F);
-        setSoundType(SoundType.STONE);
+        setSoundType(SoundType.GLASS);
     }
 
     @Override
@@ -36,27 +35,13 @@ public class BlockDungeonBricks extends Block {
     }
 
     @Override
-    public boolean canSilkHarvest(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
-        return true;
+    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return this.getMetaFromState(state) == EnumType.DUNGEON_LAMP.getMeta() ? 15 : 0;
     }
 
     @Override
-    public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity) {
-        return state.getBlock().getMetaFromState(state) != EnumType.DUNGEON_FLOOR_SHIELDED.getMeta();
-    }
-
-    @Override
-    public float getBlockHardness(IBlockState blockState, World worldIn, BlockPos pos) {
-        int meta = blockState.getBlock().getMetaFromState(blockState);
-        float hardness = super.getBlockHardness(blockState, worldIn, pos);
-
-        if (meta == EnumType.DUNGEON_CEILING_CRACKED.getMeta() ||
-                meta == EnumType.DUNGEON_FLOOR_CRACKED.getMeta() ||
-                meta == EnumType.DUNGEON_WALL_CRACKED.getMeta()) {
-            hardness = 2.0F;
-        }
-
-        return hardness;
+    public int getHarvestLevel(IBlockState state) {
+        return this.getMetaFromState(state) == EnumType.DUNGEON_LAMP_BROKEN.getMeta() ? 1 : 4;
     }
 
     @Nullable
@@ -66,10 +51,15 @@ public class BlockDungeonBricks extends Block {
     }
 
     @Override
+    public boolean canSilkHarvest(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
+        return true;
+    }
+
+    @Override
     public int damageDropped(IBlockState state) {
         int meta = this.getMetaFromState(state);
 
-        if (meta == EnumType.DUNGEON_CEILING.ordinal() || meta == EnumType.DUNGEON_FLOOR.getMeta() || meta == EnumType.DUNGEON_WALL.getMeta()) {
+        if (meta == EnumType.DUNGEON_LAMP.ordinal()) {
             meta = RandHelper.flipCoin(meta, EnumType.byMetadata(meta).getCrackedBlockMeta());
         }
 
@@ -87,25 +77,21 @@ public class BlockDungeonBricks extends Block {
     }
 
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, VARIANT);
-    }
-
-    @Override
     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
         for (EnumType value : EnumType.values()) {
             items.add(new ItemStack(this, 1, value.getMeta()));
         }
     }
 
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, VARIANT);
+    }
+
+
     public enum EnumType implements IStringSerializable {
-        DUNGEON_WALL(0, 3, "dungeon_wall"),
-        DUNGEON_CEILING(1, 4, "dungeon_ceiling"),
-        DUNGEON_FLOOR(2, 5, "dungeon_floor"),
-        DUNGEON_WALL_CRACKED(3, "dungeon_wall_cracked"),
-        DUNGEON_CEILING_CRACKED(4, "dungeon_ceiling_cracked"),
-        DUNGEON_FLOOR_CRACKED(5, "dungeon_floor_cracked"),
-        DUNGEON_FLOOR_SHIELDED(6, "dungeon_floor_shielded");
+        DUNGEON_LAMP(0, 1, "dungeon_lamp"),
+        DUNGEON_LAMP_BROKEN(1, "dungeon_lamp_broken");
 
         private static final EnumType[] META_LOOKUP = new EnumType[values().length];
 

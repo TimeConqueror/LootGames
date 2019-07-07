@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "variant=dungeon_lamp": {
+      "model": "lootgames:dungeon_lamp"
+    },
+    "variant=dungeon_lamp_broken": {
+      "model": "lootgames:dungeon_lamp_broken"
+    }
+  }
+}
