@@ -1,13 +1,14 @@
 package ru.timeconqueror.lootgames;
 
-import com.timeconqueror.timecore.LogHelper;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import ru.timeconqueror.lootgames.command.CommandMain;
 import ru.timeconqueror.lootgames.proxy.CommonProxy;
+import ru.timeconqueror.timecore.LogHelper;
 
 import java.util.Random;
 
@@ -94,13 +95,14 @@ public class LootGames {
 
     @Mod.EventHandler
     public void serverLoad(FMLServerStartingEvent event) {
+        event.registerServerCommand(new CommandMain());
 //        event.registerServerCommand(new LootGamesCommand());
 //        event.registerServerCommand(new ProfilingCommand());
 //        if (YAMCore.isDebug())
 //            event.registerServerCommand(new PeacefulEntityCommand());
     }
 
-    private void initBaseBlocks() {
+//    private void initBaseBlocks() {
 //        DungeonWallBlock = new DungeonBrick();
 //        DungeonLightBlock = new DungeonLightSource();
 //        MasterBlock = new LootGamesMasterBlock();
@@ -109,5 +111,5 @@ public class LootGames {
 //        GameRegistry.registerBlock(MasterBlock, "LootGamesMasterBlock");
 //        GameRegistry.registerBlock(DungeonWallBlock, ItemBlockMetaBlock.class, "LootGamesDungeonWall");
 //        GameRegistry.registerBlock(DungeonLightBlock, ItemBlockMetaBlock.class, "LootGamesDungeonLight");
-    }
+//    }
 }

@@ -12,3 +12,21 @@ tile.lootgames.dungeon_bricks.6.name=Shielded Dungeon Floor
 tile.lootgames.dungeon_lamp.0.name=Dungeon Lamp
 tile.lootgames.dungeon_lamp.1.name=Broken Dungeon Lamp
 
+#Configs
+config.lootgames.minigamesenabled=Enable minigames
+config.lootgames.minigamesenabled.tooltip=If this is set to false, then master block won't start any game.
+config.lootgames.debugmode=Debug Mode
+config.lootgames.debugmode.tooltip=If this is equal true, then it will print additional info to log files.
+
+config.lootgames.category.worldgen=World Generation
+config.lootgames.category.worldgen.tooltip=Regulates dungeon appearing in world.
+config.lootgames.worldgenenabled=Enable Dungeon Generation
+config.lootgames.worldgenenabled.tooltip=If this is equal true, then dungeon generation will be enabled.
+config.lootgames.retrogenenabled=Enable Dungeon Retrogen
+config.lootgames.retrogenenabled.tooltip=If this is equal true, then minigames will appear in already generated chunks.
+
+#Commands
+command.lootgames.help.msg=Available commands:
+command.lootgames.reload.usage=/lootgames reload - Reloads LootGames configs.
+command.lootgames.help.usage=/lootgames help - Prints available commands with their usages
+command.lootgames.main.usage=Use "/lootgames help" to see available commands.
