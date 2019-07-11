@@ -6,6 +6,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.util.ConfigReloader;
@@ -32,7 +33,9 @@ public class CommandMain extends CommandBase {
             throw new WrongUsageException("command." + LootGames.MODID + ".main.usage");
         } else {
             if (args[0].equals(Commands.RELOAD.getName())) {
-                reloadConfigs(server, sender, args);
+                reloadConfigs();
+            } else if (args[0].equals(Commands.PROFILE.getName()) && LootGames.logHelper.isInDev()) {
+                printProfilingResults(sender);
             } else if (args[0].equals(Commands.HELP.getName())) {
                 sender.sendMessage(new TextComponentTranslation("command." + LootGames.MODID + ".help.msg"));
                 for (Commands value : Commands.values()) {
@@ -44,8 +47,18 @@ public class CommandMain extends CommandBase {
         }
     }
 
-    private void reloadConfigs(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+    private void reloadConfigs() {
         ConfigReloader.reloadConfigsFromFile(LootGames.MODID, LootGames.MODID);
+    }
+
+    private void printProfilingResults(ICommandSender sender) {
+        sender.sendMessage(new TextComponentTranslation("command." + LootGames.MODID + "." + Commands.PROFILE + ".msg"));
+
+        for (String identifier : LootGames.profiler.getIdentifiers()) {
+            long averageTime = LootGames.profiler.getAverageTime(identifier);
+            String result = averageTime == -1 ? "N/A" : String.format("%d ms", averageTime);
+            sender.sendMessage(new TextComponentString(String.format("%s : %s", identifier, result)));
+        }
     }
 
     @Override
@@ -59,6 +72,7 @@ public class CommandMain extends CommandBase {
 
     private enum Commands {
         RELOAD("reload"),
+        PROFILE("profile"),
         HELP("help");
 
         private String name;
@@ -72,6 +86,10 @@ public class CommandMain extends CommandBase {
         public static String[] getCommands() {
             String[] commands = new String[values().length];
             for (int i = 0; i < values().length; i++) {
+                if (values()[i] == PROFILE && !LootGames.logHelper.isInDev()) {
+                    continue;
+                }
+
                 commands[i] = values()[i].name;
             }
 

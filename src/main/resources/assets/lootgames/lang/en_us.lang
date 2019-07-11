@@ -15,8 +15,10 @@ tile.lootgames.dungeon_lamp.1.name=Broken Dungeon Lamp
 #Configs
 config.lootgames.minigamesenabled=Enable minigames
 config.lootgames.minigamesenabled.tooltip=If this is set to false, then master block won't start any game.
-config.lootgames.debugmode=Debug Mode
-config.lootgames.debugmode.tooltip=If this is equal true, then it will print additional info to log files.
+config.lootgames.enabledebug=Enable Debug
+config.lootgames.enabledebug.tooltip=If this is equal true, then it will print additional info to log files.
+config.lootgames.debuglevel=Debug Level
+config.lootgames.debuglevel.tooltip=Available variants: debug, trace.\nDebug: additionally prints debug messages.\nTrace: additionally prints debug and trace messages.
 
 config.lootgames.category.worldgen=World Generation
 config.lootgames.category.worldgen.tooltip=Regulates dungeon appearing in world.
@@ -24,9 +26,15 @@ config.lootgames.worldgenenabled=Enable Dungeon Generation
 config.lootgames.worldgenenabled.tooltip=If this is equal true, then dungeon generation will be enabled.
 config.lootgames.retrogenenabled=Enable Dungeon Retrogen
 config.lootgames.retrogenenabled.tooltip=If this is equal true, then minigames will appear in already generated chunks.
+config.lootgames.dimrhomblist=Dimension and Rhomb List
+config.lootgames.dimrhomblist.tooltip=Whitelisted dimensions' ids that were allowed for dungeon generation and rhomb size.\nThe second parameter is the size of rhombs, which will imaginary cover the world. Dungeon will be generated in each rhomb.\nSo the larger the size, the less chance of generation.\nExample of array element: 0; 20 - this means that rhombs with size equal to 20 will be generated in the overworld (ID = 0)
 
 #Commands
 command.lootgames.help.msg=Available commands:
-command.lootgames.reload.usage=/lootgames reload - Reloads LootGames configs.
 command.lootgames.help.usage=/lootgames help - Prints available commands with their usages
+
+command.lootgames.reload.usage=/lootgames reload - Reloads LootGames configs.
 command.lootgames.main.usage=Use "/lootgames help" to see available commands.
+
+command.lootgames.profile.msg=Profiling results:
+command.lootgames.profile.usage=Use "/lootgames profile" to see profiling results (only for dev use).
