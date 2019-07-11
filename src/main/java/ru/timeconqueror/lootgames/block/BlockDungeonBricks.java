@@ -54,6 +54,8 @@ public class BlockDungeonBricks extends Block {
                 meta == EnumType.DUNGEON_FLOOR_CRACKED.getMeta() ||
                 meta == EnumType.DUNGEON_WALL_CRACKED.getMeta()) {
             hardness = 2.0F;
+        } else if (meta == EnumType.DUNGEON_FLOOR_SHIELDED.getMeta()) {
+            hardness = -1F;
         }
 
         return hardness;
@@ -67,13 +69,18 @@ public class BlockDungeonBricks extends Block {
 
     @Override
     public int damageDropped(IBlockState state) {
+        return getMetaFromState(state);
+    }
+
+    @Override
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         int meta = this.getMetaFromState(state);
 
         if (meta == EnumType.DUNGEON_CEILING.ordinal() || meta == EnumType.DUNGEON_FLOOR.getMeta() || meta == EnumType.DUNGEON_WALL.getMeta()) {
             meta = RandHelper.flipCoin(meta, EnumType.byMetadata(meta).getCrackedBlockMeta());
         }
 
-        return meta;
+        drops.add(new ItemStack(this, 1, RandHelper.flipCoin(meta, EnumType.byMetadata(meta).getCrackedBlockMeta())));
     }
 
     @Override

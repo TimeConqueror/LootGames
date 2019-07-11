@@ -57,13 +57,18 @@ public class BlockDungeonLamp extends Block {
 
     @Override
     public int damageDropped(IBlockState state) {
+        return getMetaFromState(state);
+    }
+
+    @Override
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         int meta = this.getMetaFromState(state);
 
         if (meta == EnumType.DUNGEON_LAMP.ordinal()) {
             meta = RandHelper.flipCoin(meta, EnumType.byMetadata(meta).getCrackedBlockMeta());
         }
 
-        return meta;
+        drops.add(new ItemStack(this, 1, RandHelper.flipCoin(meta, EnumType.byMetadata(meta).getCrackedBlockMeta())));
     }
 
     @Override
