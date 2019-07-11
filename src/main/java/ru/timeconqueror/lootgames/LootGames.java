@@ -8,7 +8,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import ru.timeconqueror.lootgames.command.CommandMain;
 import ru.timeconqueror.lootgames.proxy.CommonProxy;
-import ru.timeconqueror.timecore.LogHelper;
+import ru.timeconqueror.timecore.util.debug.LogHelper;
+import ru.timeconqueror.timecore.util.debug.Profiler;
 
 import java.util.Random;
 
@@ -22,10 +23,12 @@ public class LootGames {
     public static final String VERSION = "GRADLETOKEN_VERSION";
 
     public static Random rand = new Random();
+
     public static LogHelper logHelper = new LogHelper(MODID);
+    public static Profiler profiler = new Profiler();
 
 //    public static CheaterHandler CheatHandler;
-//    public static ProfilingStorage Profiler;
+
 //    public static LootGamesMasterBlock MasterBlock;
 //
 //    public static DonorController Donors = null;
@@ -47,6 +50,10 @@ public class LootGames {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        if (logHelper.isInDev()) {
+            logHelper.setPrintDebugToConsole(true);
+        }
+
         proxy.preInit(event);
 
 //        ModConfig = new LootGamesConfig(event.getModConfigurationDirectory(), MODNAME, MODID);
