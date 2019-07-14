@@ -12,6 +12,13 @@ tile.lootgames.dungeon_bricks.6.name=Shielded Dungeon Floor
 tile.lootgames.dungeon_lamp.0.name=Dungeon Lamp
 tile.lootgames.dungeon_lamp.1.name=Broken Dungeon Lamp
 
+#Messages
+msg.lootgames.puzzle_master.broken=This block seems to be broken. Please send issue to mod author.
+msg.lootgames.puzzle_master.turned_off=This structure seems to be turned off by higher forces.
+
+#Tooltips
+item.lootgames.bricks.tooltip=Mobs can't spawn on this block.
+
 #Configs
 config.lootgames.minigamesenabled=Enable minigames
 config.lootgames.minigamesenabled.tooltip=If this is set to false, then master block won't start any game.

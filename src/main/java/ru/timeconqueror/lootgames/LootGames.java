@@ -7,6 +7,8 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import ru.timeconqueror.lootgames.command.CommandMain;
+import ru.timeconqueror.lootgames.minigame.GameManager;
+import ru.timeconqueror.lootgames.minigame.GameOfLight;
 import ru.timeconqueror.lootgames.proxy.CommonProxy;
 import ru.timeconqueror.timecore.util.debug.LogHelper;
 import ru.timeconqueror.timecore.util.debug.Profiler;
@@ -27,16 +29,11 @@ public class LootGames {
     public static LogHelper logHelper = new LogHelper(MODID);
     public static Profiler profiler = new Profiler();
 
-//    public static CheaterHandler CheatHandler;
+    public static GameManager gameManager;
 
-//    public static LootGamesMasterBlock MasterBlock;
+//    public static CheaterHandler CheatHandler;
 //
 //    public static DonorController Donors = null;
-//
-//    public static DungeonBrick DungeonWallBlock;
-//    public static DungeonLightSource DungeonLightBlock;
-//
-//    public static GameManager GameMgr;
 //
 //    public static NetDispatcher NW;
 //    public static LootGamesConfig ModConfig;
@@ -87,8 +84,8 @@ public class LootGames {
         proxy.init(event);
 //        initBaseBlocks();
 //
-//        GameMgr = new GameManager();
-//        GameMgr.initGames();
+        gameManager = new GameManager();
+        gameManager.registerGame(new GameOfLight());
 //
 //        NW = new NetDispatcher();
 //        NW.registerPackets();

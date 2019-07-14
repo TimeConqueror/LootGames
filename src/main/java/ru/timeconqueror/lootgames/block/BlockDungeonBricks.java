@@ -6,6 +6,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -16,9 +18,11 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.auxiliary.RandHelper;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class BlockDungeonBricks extends Block {
     public static final PropertyEnum<EnumType> VARIANT = PropertyEnum.create("variant", EnumType.class);
@@ -33,6 +37,13 @@ public class BlockDungeonBricks extends Block {
     @Override
     public boolean canCreatureSpawn(IBlockState state, IBlockAccess world, BlockPos pos, EntityLiving.SpawnPlacementType type) {
         return false;
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        //TODO 1.7.10 -> Add info
+        tooltip.add(I18n.format("item." + LootGames.MODID + ".bricks.tooltip"));
+        super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 
     @Override

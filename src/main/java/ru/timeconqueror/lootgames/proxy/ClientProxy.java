@@ -13,6 +13,7 @@ public class ClientProxy extends CommonProxy {
         super.preInit(event);
         ModItems.registerRenderers();
         ModBlocks.registerRenderers();
+        ModBlocks.registerTESRS();
     }
 
     @Override

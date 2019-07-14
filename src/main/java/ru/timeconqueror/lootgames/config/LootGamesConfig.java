@@ -55,7 +55,7 @@ public class LootGamesConfig {
     public static void initExtras() {
         parseDimAndRhombList();
         LootGames.logHelper.setDebugEnabled(enableDebug);
-        LootGames.logHelper.setDebugLevel(debugLevel.equals("debug") ? LogHelper.Level.DEBUG : LogHelper.Level.TRACE);
+        LootGames.logHelper.setDebugLevel(debugLevel.equalsIgnoreCase("trace") ? LogHelper.Level.TRACE : LogHelper.Level.DEBUG);
     }
 
     public static boolean isDimensionEnabledForWG(int worldID) {

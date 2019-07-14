@@ -13,11 +13,12 @@ import ru.timeconqueror.lootgames.world.gen.LootGamesWorldGen;
 import ru.timeconqueror.timecore.registry.EasyRegistry;
 
 public class CommonProxy {
-    public static EasyRegistry registry = new EasyRegistry(LootGames.MODID, ModCreativeTab.lootGames);
+    public static final EasyRegistry REGISTRY = new EasyRegistry(LootGames.MODID, ModCreativeTab.lootGames);
 
     public void preInit(FMLPreInitializationEvent event) {
         ModItems.register();
         ModBlocks.register();
+        ModBlocks.registerTileEntites();
     }
 
     public void init(FMLInitializationEvent event) {

@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "lootgames:blocks/dungeon_floor_shielded"
+  }
+}

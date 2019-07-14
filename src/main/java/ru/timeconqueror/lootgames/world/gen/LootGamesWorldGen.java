@@ -27,9 +27,6 @@ public class LootGamesWorldGen implements IWorldGenerator {
         }
 
         DungeonGenerator dungeonGenerator = new DungeonGenerator();
-//        // Locked to GOL for now. Will be changed to random later
-//        ILootGame tGOLgame = new GameOfLightGame();
-//
         dungeonGenerator.generateDungeon(world, (chunkX << 4) + 8, (chunkZ << 4) + 8);
 
 //        long timeStop = System.currentTimeMillis();
