@@ -7,11 +7,15 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import ru.timeconqueror.lootgames.tileentity.TileEntityGOLMaster;
 import ru.timeconqueror.lootgames.tileentity.TileEntityGOLSubordinate;
 
 import javax.annotation.Nullable;
@@ -62,6 +66,19 @@ public class BlockGOLSubordinate extends Block {
         return new TileEntityGOLSubordinate();
     }
 
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        BlockPos masterPos = state.getValue(OFFSET).getMasterBlockPos(pos);
+        TileEntity te = worldIn.getTileEntity(masterPos);
+        if (te instanceof TileEntityGOLMaster) {
+            TileEntityGOLMaster master = ((TileEntityGOLMaster) te);
+            master.onSubordinateClickedByPlayer(state.getValue(OFFSET), playerIn);
+            return true;
+        }
+
+        return false;
+    }
+
     public enum EnumPosOffset implements IStringSerializable {
         NORTH(0, "north", 0, -1),
         NORTH_EAST(1, "north_east", 1, -1),
@@ -107,6 +124,10 @@ public class BlockGOLSubordinate extends Block {
             return name;
         }
 
+        public BlockPos getMasterBlockPos(BlockPos subordinatePos) {
+            return subordinatePos.add(offsetX != 0 ? -offsetX : 0, 0, offsetZ != 0 ? -offsetZ : 0);
+        }
+
         public int getIndex() {
             return index;
         }
@@ -125,7 +146,7 @@ public class BlockGOLSubordinate extends Block {
         }
     }
 
-//    @Override
+    //    @Override
 //    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 //        if (worldIn.isRemote)
 //            return true;

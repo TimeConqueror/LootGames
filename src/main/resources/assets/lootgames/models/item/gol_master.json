@@ -1,6 +1,3 @@
 {
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "lootgames:blocks/gameoflight/inactive/center"
-  }
+  "parent": "lootgames:block/gol_master"
 }

@@ -29,27 +29,32 @@ public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster
         drawField(te, x, y, z, te.getTicks(), partialTicks);
 
         if (te.getGameStage() == SHOWING_SEQUENCE) {
-            if (!te.hasShowedAllSymbols()) {
-                drawSymbol(te, x, y, z, te.getTicks(), partialTicks);
-            } else if (!te.isFeedbackPacketReceived()) {
-                NetworkHandler.INSTANCE.sendToServer(new CMessageGOLFeedback(te.getPos()));
-                te.onClientThingsDone();
+            if (!te.isOnPause()) {
+                if (!te.hasShowedAllSymbols()) {
+                    drawSymbol(te, te.getCurrentSymbolPosOffset(), x, y, z, te.getTicks(), partialTicks);
+                } else if (!te.isFeedbackPacketReceived()) {
+                    NetworkHandler.INSTANCE.sendToServer(new CMessageGOLFeedback(te.getPos())); //done to be lag-resistant
+                    te.onClientThingsDone();
+                }
             }
+        }
+
+
+        if (te.getSymbolsEnteredByPlayer() != null) {
+            te.getSymbolsEnteredByPlayer().forEach((clickInfo -> drawSymbol(te, clickInfo.getOffset(), x, y, z, te.getTicks(), partialTicks)));
         }
     }
 
-    public void drawSymbol(TileEntityGOLMaster te, double x, double y, double z, int ticks, float partialTicks) {
+    public void drawSymbol(TileEntityGOLMaster te, BlockGOLSubordinate.EnumPosOffset offset, double masterX, double masterY, double masterZ, int ticks, float partialTicks) {
         if (te.getTicks() > TileEntityGOLMaster.TICKS_PER_SHOW_SYMBOLS) {
             return;
         }
 
         this.bindTexture(GAME_FIELD_ACTIVATED);
 
-        BlockGOLSubordinate.EnumPosOffset offset = te.getCurrentSymbolPosOffset();
-
         GlStateManager.pushMatrix();
 
-        GlStateManager.translate(x + offset.getOffsetX(), y + 1f, z + offset.getOffsetZ());
+        GlStateManager.translate(masterX + offset.getOffsetX(), masterY + 1f, masterZ + offset.getOffsetZ());
 
         GlStateManager.disableLighting();
 

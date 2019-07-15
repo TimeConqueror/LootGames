@@ -18,7 +18,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.auxiliary.RandHelper;
 
 import javax.annotation.Nullable;
@@ -42,7 +41,7 @@ public class BlockDungeonBricks extends Block {
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         //TODO 1.7.10 -> Add info
-        tooltip.add(I18n.format("item." + LootGames.MODID + ".bricks.tooltip"));
+        tooltip.add(I18n.format("item.lootgames.dungeon_bricks.tooltip"));
         super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 

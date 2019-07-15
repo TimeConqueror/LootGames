@@ -18,9 +18,11 @@ msg.lootgames.puzzle_master.turned_off=This structure seems to be turned off by 
 
 msg.lootgames.gol_master.start=Let's play the game!
 msg.lootgames.gol_master.rules=You just need to repeat the colors.
+msg.lootgames.gol_master.not_ready=You feel that the structure is not ready for reply now
+msg.lootgames.gol_master.wrong_block=You touched the wrong block!
 
 #Tooltips
-item.lootgames.bricks.tooltip=Mobs can't spawn on this block.
+item.lootgames.dungeon_bricks.tooltip=Mobs can't spawn on this block.
 
 #Configs
 config.lootgames.minigamesenabled=Enable minigames
