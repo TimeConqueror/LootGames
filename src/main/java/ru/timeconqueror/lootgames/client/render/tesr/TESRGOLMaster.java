@@ -1,6 +1,5 @@
 package ru.timeconqueror.lootgames.client.render.tesr;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -9,16 +8,68 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.block.BlockGOLSubordinate;
+import ru.timeconqueror.lootgames.packets.CMessageGOLFeedback;
+import ru.timeconqueror.lootgames.packets.NetworkHandler;
 import ru.timeconqueror.lootgames.tileentity.TileEntityGOLMaster;
 
-import static ru.timeconqueror.lootgames.tileentity.TileEntityGOLMaster.GameStage.NOT_CONSTRUCTED;
-import static ru.timeconqueror.lootgames.tileentity.TileEntityGOLMaster.GameStage.UNDER_EXPANDING;
+import static ru.timeconqueror.lootgames.tileentity.TileEntityGOLMaster.GameStage.*;
 import static ru.timeconqueror.lootgames.tileentity.TileEntityGOLMaster.MAX_TICKS_EXPANDING;
 
 public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster> {
     private static final ResourceLocation GAME_FIELD = new ResourceLocation(LootGames.MODID, "textures/blocks/gameoflight/game_field.png");
+    private static final ResourceLocation GAME_FIELD_ACTIVATED = new ResourceLocation(LootGames.MODID, "textures/blocks/gameoflight/game_field_active.png");
+
+    @Override
+    public void render(TileEntityGOLMaster te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+        if (te.getGameStage() == NOT_CONSTRUCTED) {
+            return;
+        }
+
+        drawField(te, x, y, z, te.getTicks(), partialTicks);
+
+        if (te.getGameStage() == SHOWING_SEQUENCE) {
+            if (!te.hasShowedAllSymbols()) {
+                drawSymbol(te, x, y, z, te.getTicks(), partialTicks);
+            } else if (!te.isFeedbackPacketReceived()) {
+                NetworkHandler.INSTANCE.sendToServer(new CMessageGOLFeedback(te.getPos()));
+                te.onClientThingsDone();
+            }
+        }
+    }
+
+    public void drawSymbol(TileEntityGOLMaster te, double x, double y, double z, int ticks, float partialTicks) {
+        if (te.getTicks() > TileEntityGOLMaster.TICKS_PER_SHOW_SYMBOLS) {
+            return;
+        }
+
+        this.bindTexture(GAME_FIELD_ACTIVATED);
+
+        BlockGOLSubordinate.EnumPosOffset offset = te.getCurrentSymbolPosOffset();
+
+        GlStateManager.pushMatrix();
+
+        GlStateManager.translate(x + offset.getOffsetX(), y + 1f, z + offset.getOffsetZ());
+
+        GlStateManager.disableLighting();
+
+        GlStateManager.rotate(90, 1, 0, 0);
+
+        float f = 0.020833334f; // 1/48
+        GlStateManager.scale(f, f, f);
+
+        float textureX = 16 + 16 * offset.getOffsetX();
+        float textureY = 16 + 16 * offset.getOffsetZ();
+
+        drawRect(0, 0, 48, 48, -0.02, textureX, textureY, 16, 16, f);
+
+        GlStateManager.color(1, 1, 1);
+        GlStateManager.popMatrix();
+    }
 
     public void drawField(TileEntityGOLMaster te, double x, double y, double z, int ticks, float partialTicks) {
+        this.bindTexture(GAME_FIELD);
+
         boolean isExpanding = false;
 
         if (te.getGameStage() == UNDER_EXPANDING) {
@@ -41,28 +92,22 @@ public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster
         GlStateManager.translate(-length / 2F, -length / 2F, 0);
 
         float textureStart = !isExpanding || ticks >= MAX_TICKS_EXPANDING ? 0F : 16F - 16F * (ticks + partialTicks) / MAX_TICKS_EXPANDING;
-        float textureWidth = !isExpanding || ticks >= MAX_TICKS_EXPANDING ? 48F : 32F + 16F * (ticks + partialTicks) / MAX_TICKS_EXPANDING - textureStart;
+        float textureLength = !isExpanding || ticks >= MAX_TICKS_EXPANDING ? 48F : 32F + 16F * (ticks + partialTicks) / MAX_TICKS_EXPANDING - textureStart;
 
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
-        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos(0, 0, -0.01).tex((textureStart) * f, (textureStart + 0) * f).endVertex();
-        bufferbuilder.pos(0, length, -0.01).tex((textureStart) * f, (textureStart + textureWidth) * f).endVertex();
-        bufferbuilder.pos(length, length, -0.01).tex((textureStart + textureWidth) * f, (textureStart + textureWidth) * f).endVertex();
-        bufferbuilder.pos(length, 0, -0.01).tex((textureStart + textureWidth) * f, (textureStart + 0) * f).endVertex();
-        tessellator.draw();
+        drawRect(0, 0, length, length, -0.01, textureStart, textureStart, textureLength, textureLength, f);
 
         GlStateManager.color(1, 1, 1);
         GlStateManager.popMatrix();
     }
 
-    @Override
-    public void render(TileEntityGOLMaster te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        if (te.getGameStage() == NOT_CONSTRUCTED) {
-            return;
-        }
-
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GAME_FIELD);
-        drawField(te, x, y, z, te.getTicks(), partialTicks);
+    private void drawRect(double x0, double y0, double width, double height, double zLevel, double textureX, double textureY, double textureWidth, double textureHeight, double portionFactor) {
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        bufferbuilder.pos(x0, y0, zLevel).tex(textureX * portionFactor, textureY * portionFactor).endVertex();
+        bufferbuilder.pos(x0, height, zLevel).tex(textureX * portionFactor, (textureY + textureHeight) * portionFactor).endVertex();
+        bufferbuilder.pos(width, height, zLevel).tex((textureX + textureWidth) * portionFactor, (textureY + textureHeight) * portionFactor).endVertex();
+        bufferbuilder.pos(width, y0, zLevel).tex((textureX + textureWidth) * portionFactor, textureY * portionFactor).endVertex();
+        tessellator.draw();
     }
 }

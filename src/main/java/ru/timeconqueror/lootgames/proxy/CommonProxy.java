@@ -7,6 +7,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.ModCreativeTab;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
+import ru.timeconqueror.lootgames.packets.NetworkHandler;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.registry.ModItems;
 import ru.timeconqueror.lootgames.world.gen.LootGamesWorldGen;
@@ -19,6 +20,8 @@ public class CommonProxy {
         ModItems.register();
         ModBlocks.register();
         ModBlocks.registerTileEntites();
+
+        NetworkHandler.registerPackets();
     }
 
     public void init(FMLInitializationEvent event) {
