@@ -29,10 +29,13 @@ public class DungeonGenerator {
     private Material[] invalidMaterials = {Material.WOOD, Material.WATER, Material.CACTUS,
             Material.SNOW, Material.GRASS, Material.LEAVES, Material.PLANTS, Material.AIR, Material.LAVA, Material.PORTAL};
 
-    public static void resetUnbreakablePlayfield(World world, int x, int y, int z) {
+    /**
+     * @param posIn - pos of center floor block.
+     */
+    public static void resetUnbreakablePlayfield(World world, BlockPos posIn) {
         for (int axisX = (PUZZLEROOM_CENTER_TO_BORDER * -1); axisX <= PUZZLEROOM_CENTER_TO_BORDER; axisX++) {
             for (int axisZ = (PUZZLEROOM_CENTER_TO_BORDER * -1); axisZ <= PUZZLEROOM_CENTER_TO_BORDER; axisZ++) {
-                BlockPos pos = new BlockPos(x + axisX, y, z + axisZ);
+                BlockPos pos = posIn.add(axisX, 0, axisZ);
                 IBlockState state = world.getBlockState(pos);
                 if (state.getBlock() == ModBlocks.DUNGEON_BRICKS) {
                     if (ModBlocks.DUNGEON_BRICKS.getMetaFromState(state) == BlockDungeonBricks.EnumType.DUNGEON_FLOOR_SHIELDED.getMeta()) {

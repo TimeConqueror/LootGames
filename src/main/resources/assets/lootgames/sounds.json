@@ -1,0 +1,20 @@
+{
+  "gol_construct_game": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "lootgames:gameoflight/construct_game",
+        "stream": false
+      }
+    ]
+  },
+  "gol_sequence_wrong": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "lootgames:gameoflight/sequence_wrong",
+        "stream": false
+      }
+    ]
+  }
+}

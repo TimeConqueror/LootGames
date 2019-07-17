@@ -46,7 +46,7 @@ public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster
     }
 
     public void drawSymbol(TileEntityGOLMaster te, BlockGOLSubordinate.EnumPosOffset offset, double masterX, double masterY, double masterZ, int ticks, float partialTicks) {
-        if (te.getTicks() > TileEntityGOLMaster.TICKS_PER_SHOW_SYMBOLS) {
+        if (te.getTicks() > TileEntityGOLMaster.ticksPerShowSymbols) {
             return;
         }
 

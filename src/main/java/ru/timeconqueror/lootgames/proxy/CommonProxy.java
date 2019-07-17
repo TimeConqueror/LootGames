@@ -9,7 +9,7 @@ import ru.timeconqueror.lootgames.ModCreativeTab;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
 import ru.timeconqueror.lootgames.packets.NetworkHandler;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
-import ru.timeconqueror.lootgames.registry.ModItems;
+import ru.timeconqueror.lootgames.registry.ModSounds;
 import ru.timeconqueror.lootgames.world.gen.LootGamesWorldGen;
 import ru.timeconqueror.timecore.registry.EasyRegistry;
 
@@ -17,7 +17,7 @@ public class CommonProxy {
     public static final EasyRegistry REGISTRY = new EasyRegistry(LootGames.MODID, ModCreativeTab.lootGames);
 
     public void preInit(FMLPreInitializationEvent event) {
-        ModItems.register();
+//        ModItems.register();
         ModBlocks.register();
         ModBlocks.registerTileEntites();
 
@@ -30,5 +30,6 @@ public class CommonProxy {
     }
 
     public void postInit(FMLPostInitializationEvent event) {
+        ModSounds.registerSounds();
     }
 }

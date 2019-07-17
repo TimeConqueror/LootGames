@@ -127,20 +127,20 @@ public class LootGamesConfig {
 
     public static class GOL {
         @Config.LangKey("config.lootgames.gol.stage.1")
-        @Config.Comment("Regulates characteristics of stage 1.")
-        public Stage stage1 = new Stage(5, false, 1200, "minecraft:chests/simple_dungeon", 2, 4);
+        @Config.Comment("Regulates characteristics of stage 1.")//TODO change min rounds, rework items
+        public Stage stage1 = new Stage(1, false, 24, "minecraft:chests/simple_dungeon", 2, 4);
 
         @Config.LangKey("config.lootgames.gol.stage.2")
         @Config.Comment("Regulates characteristics of stage 2.")
-        public Stage stage2 = new Stage(10, false, 800, "minecraft:chests/abandoned_mineshaft", 4, 6);
+        public Stage stage2 = new Stage(2, false, 16, "minecraft:chests/abandoned_mineshaft", 4, 6);
 
         @Config.LangKey("config.lootgames.gol.stage.3")
         @Config.Comment("Regulates characteristics of stage 3.")
-        public Stage stage3 = new Stage(15, false, 600, "minecraft:chests/jungle_temple", 6, 8);
+        public Stage stage3 = new Stage(3, false, 12, "minecraft:chests/jungle_temple", 6, 8);
 
         @Config.LangKey("config.lootgames.gol.stage.4")
         @Config.Comment("Regulates characteristics of stage 4.")
-        public Stage stage4 = new Stage(20, true, 500, "minecraft:chests/stronghold_corridor", 8, 10);
+        public Stage stage4 = new Stage(4, true, 10, "minecraft:chests/stronghold_corridor", 8, 10);
 
         @Config.LangKey("config.lootgames.gol.start_digits")
         @Config.Comment({"How many digits should be randomly chosen at game-start?",
@@ -155,32 +155,32 @@ public class LootGamesConfig {
         public int maxAttempts = 3;
 
         @Config.LangKey("config.lootgames.gol.expand_field_stage")//TODO
-        @Config.Comment({"At which stage should the playfield become a full 3x3 pattern? Set 0 to disable and keep the 4-block size; set 1 to always start with 3x3",
+        @Config.Comment({"At which stage should the playfield become a full 3x3 pattern? Set 0 to disable and keep the 4-block size; set 1 to always start with 3x3.",
                 "Default: 2."
         })
         @Config.RangeInt(min = 0, max = 4)
         public int expandFieldAtStage = 2;
 
         @Config.LangKey("config.lootgames.gol.on_fail_explode")
-        @Config.Comment({"Enable or disable struct exploding on max failed attempts",
+        @Config.Comment({"Enable or disable struct exploding on max failed attempts.",
                 "Default: true"
         })
         public boolean onFailExplode = true;
 
         @Config.LangKey("config.lootgames.gol.on_fail_spawn")
-        @Config.Comment({"Enable or disable struct filling with monsters on max failed attempts",
+        @Config.Comment({"Enable or disable struct filling with monsters on max failed attempts.",
                 "Default: true"
         })
         public boolean onFailMosters = true;
 
         @Config.LangKey("config.lootgames.gol.on_fail_lava")
-        @Config.Comment({"Enable or disable struct filling with lava on max failed attempts",
+        @Config.Comment({"Enable or disable struct filling with lava on max failed attempts.",
                 "Default: true"
         })
         public boolean onFailLava = true;
 
         @Config.LangKey("config.lootgames.gol.timeout")
-        @Config.Comment({"How long does it take to timeout a game? Value is in seconds. If no player input is done in that time, the game will go to sleep. The next player will start fresh",
+        @Config.Comment({"How long does it take to timeout a game? Value is in seconds. If no player input is done in that time, the game will go to sleep. The next player will start fresh.",
                 "Default: 60"
         })
         public int timeout = 60;
@@ -192,47 +192,60 @@ public class LootGamesConfig {
             stage4.parseLootTable();
         }
 
+        /**
+         * @param index - 1-4 (inclusive)
+         *              Can return true, if index will be out of bounds.
+         */
+        public Stage getStageByIndex(int index) {
+            return index == 1 ? stage1 : index == 2 ? stage2 : index == 3 ? stage3 : index == 4 ? stage4 : null;
+        }
+
         public static class Stage {
-            @Config.LangKey("config.lootgames.gol.stage.min_digits_required")//TODO Dimensional Config
-            @Config.Comment({"Minimum correct digits required to complete this stage and unlock the chest. This can be adjusted per-Dimension in S:DimensionalConfig.",
+            @Config.LangKey("config.lootgames.gol.stage.min_rounds_required_to_pass")//TODO Dimensional Config
+            @Config.Comment({"Minimum correct rounds required to complete this stage and unlock the chest. This can be adjusted per-Dimension in S:DimensionalConfig.",
                     "Default: Stage 1 -> {5}, Stage 2 -> {10}, Stage 3 -> {15}, Stage 4 -> {20}"
             })
-            @Config.RangeInt(min = 1, max = 256)
-            public int minDigitsRequired;
+            @Config.RangeInt(min = 2, max = 256)
+            public int minRoundsRequiredToPass;
+
             @Config.LangKey("config.lootgames.gol.stage.randomize")
             @Config.Comment({"If true, the pattern will randomize on each level in this stage.",
                     "Default: Stage 1 -> false, Stage 2 -> false, Stage 3 -> false, Stage 4 -> true"
             })
             public boolean randomizeSequence;
-            //TODO what is this?
+
             @Config.LangKey("config.lootgames.gol.stage.display_time")
-            @Config.Comment({"The amount of time (in milliseconds; 1000ms = 1s) to wait at playback before moving to the next color.",
-                    "Default: Stage 1 -> {1200}, Stage 2 -> {800}, Stage 3 -> {600}, Stage 4 -> {500}"
+            @Config.Comment({"The amount of time (in ticks; 20 ticks = 1s) to wait at playback before moving to the next color.",
+                    "Default: Stage 1 -> {24}, Stage 2 -> {16}, Stage 3 -> {12}, Stage 4 -> {10}"
             })
-            @Config.RangeInt(min = 100, max = 2000)
+            @Config.RangeInt(min = 2, max = 40)
             public int displayTime;
+
             @Config.LangKey("config.lootgames.gol.stage.loot_table")
             @Config.Comment({"The loottable resourcelocation for the chest in this stage.",
                     "Default: Stage 1 -> minecraft:chests/simple_dungeon, Stage 2 -> minecraft:chests/abandoned_mineshaft, Stage 3 -> minecraft:chests/jungle_temple, Stage 4 -> minecraft:chests/stronghold_corridor"
             })
             public String lootTable;
+
             @Config.Ignore
             public ResourceLocation lootTableRL;
+
             @Config.LangKey("config.lootgames.gol.stage.min_items")
-            @Config.Comment({"Minimum amount of items to be spawned.",
+            @Config.Comment({"Minimum amount of items to be spawned. Won't be applied, if count of items in bound loot table are less than it. If set to -1, then min limit will be disabled.",
                     "Default: Stage 1 -> {2}, Stage 2 -> {4}, Stage 3 -> {6}, Stage 4 -> {8}"
             })
-            @Config.RangeInt(min = 1, max = 256)
+            @Config.RangeInt(min = -1, max = 256)
             public int minItems;
+
             @Config.LangKey("config.lootgames.gol.stage.max_items")
-            @Config.Comment({"Maximum amount of items to be spawned.",
+            @Config.Comment({"Maximum amount of items to be spawned. If set to -1, then max limit will be disabled.",
                     "Default: Stage 1 -> {4}, Stage 2 -> {6}, Stage 3 -> {8}, Stage 4 -> {10}"
             })
-            @Config.RangeInt(min = 1, max = 256)
+            @Config.RangeInt(min = -1, max = 256)
             public int maxItems;
 
-            public Stage(int minDigitsRequired, boolean randomizeSequence, int displayTime, String lootTable, int minItems, int maxItems) {
-                this.minDigitsRequired = minDigitsRequired;
+            public Stage(int minRoundsRequiredToPass, boolean randomizeSequence, int displayTime, String lootTable, int minItems, int maxItems) {
+                this.minRoundsRequiredToPass = minRoundsRequiredToPass;
                 this.randomizeSequence = randomizeSequence;
                 this.displayTime = displayTime;
                 this.lootTable = lootTable;

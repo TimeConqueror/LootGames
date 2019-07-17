@@ -11,5 +11,6 @@ public class NetworkHandler {
     public static void registerPackets() {
         int idx = 0;
         INSTANCE.registerMessage(CMessageGOLFeedback.Handler.class, CMessageGOLFeedback.class, idx++, Side.SERVER);
+        INSTANCE.registerMessage(SMessageGOLParticle.Handler.class, SMessageGOLParticle.class, idx++, Side.CLIENT); //todo change to SacketParticles from Forge.
     }
 }

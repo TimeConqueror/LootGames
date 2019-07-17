@@ -16,10 +16,13 @@ tile.lootgames.dungeon_lamp.1.name=Broken Dungeon Lamp
 msg.lootgames.puzzle_master.broken=This block seems to be broken. Please send issue to mod author.
 msg.lootgames.puzzle_master.turned_off=This structure seems to be turned off by higher forces.
 
-msg.lootgames.gol_master.start=Let's play the game!
+msg.lootgames.gol_master.start=Let's play the game! Click on the center block!
 msg.lootgames.gol_master.rules=You just need to repeat the colors.
 msg.lootgames.gol_master.not_ready=You feel that the structure is not ready for reply now
-msg.lootgames.gol_master.wrong_block=You touched the wrong block!
+msg.lootgames.gol_master.wrong_block=It appears you touched the wrong color...
+msg.lootgames.gol_master.stage_complete=The structure seems to acknowledge your efforts...
+msg.lootgames.gol_master.win=The structure is pleased and rewards you!
+msg.lootgames.gol_master.reward_level_reached=Current reward level reached: %d (Best: %d)
 
 #Tooltips
 item.lootgames.dungeon_bricks.tooltip=Mobs can't spawn on this block.
@@ -58,26 +61,26 @@ config.lootgames.gol.max_attempts.tooltip=How many attempts does a player have? 
 config.lootgames.gol.expand_field_stage=Expand Field At
 config.lootgames.gol.expand_field_stage.tooltip=At which stage should the playfield become a full 3x3 pattern? Set 0 to disable and keep the 4-block size; set 1 to always start with 3x3.
 config.lootgames.gol.on_fail_explode=Explode On Fail
-config.lootgames.gol.on_fail_explode.tooltip=Enable or disable struct exploding on max failed attempts
+config.lootgames.gol.on_fail_explode.tooltip=Enable or disable struct exploding on max failed attempts.
 config.lootgames.gol.on_fail_spawn=Monsters On Fail
-config.lootgames.gol.on_fail_spawn.tooltip=Enable or disable struct filling with monsters on max failed attempts
+config.lootgames.gol.on_fail_spawn.tooltip=Enable or disable struct filling with monsters on max failed attempts.
 config.lootgames.gol.on_fail_lava=Lava On Fail
-config.lootgames.gol.on_fail_lava.tooltip=Enable or disable struct filling with lava on max failed attempts
+config.lootgames.gol.on_fail_lava.tooltip=Enable or disable struct filling with lava on max failed attempts.
 config.lootgames.gol.timeout=Timeout
 config.lootgames.gol.timeout.tooltip=How long does it take to timeout a game? Value is in seconds. If no player input is done in that time, the game will go to sleep. The next player will start fresh.
 
-config.lootgames.gol.stage.min_digits_required=Minimum Digits To Pass
-config.lootgames.gol.stage.min_digits_required.tooltip=Minimum correct digits required to complete this stage and unlock the chest. This can be adjusted per-Dimension in S:DimensionalConfig.
+config.lootgames.gol.stage.min_rounds_required_to_pass=Minimum Digits To Pass
+config.lootgames.gol.stage.min_rounds_required_to_pass.tooltip=Minimum correct digits required to complete this stage and unlock the chest. This can be adjusted per-Dimension in S:DimensionalConfig.
 config.lootgames.gol.stage.randomize=Randomize Sequence
 config.lootgames.gol.stage.randomize.tooltip=If true, the pattern will randomize on each level in this stage.
 config.lootgames.gol.stage.display_time=Display Time //TODO
-config.lootgames.gol.stage.display_time.tooltip=The amount of time (in milliseconds; 1000ms = 1s) to wait at playback before moving to the next color.//TODO
+config.lootgames.gol.stage.display_time.tooltip=The amount of time (in milliseconds; 20 ticks = 1s) to wait at playback before moving to the next color.//TODO
 config.lootgames.gol.stage.loot_table=Loot Table
 config.lootgames.gol.stage.loot_table.tooltip=The loottable resourcelocation for the chest in this stage.
 config.lootgames.gol.stage.min_items=Min Amount of Items
-config.lootgames.gol.stage.min_items.tooltip=Minimum amount of items to be spawned.
+config.lootgames.gol.stage.min_items.tooltip=Minimum amount of items to be spawned.Won't be applied, if count of items in bound loot table are less than it. If set to -1, then min limit will be disabled.
 config.lootgames.gol.stage.max_items=Max Amount of Items
-config.lootgames.gol.stage.max_items.tooltip=Maximum amount of items to be spawned.
+config.lootgames.gol.stage.max_items.tooltip=Maximum amount of items to be spawned. If set to -1, then max limit will be disabled.
 
 #Commands
 command.lootgames.help.msg=Available commands:
