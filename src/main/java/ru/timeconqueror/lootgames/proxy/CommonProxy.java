@@ -17,7 +17,6 @@ public class CommonProxy {
     public static final EasyRegistry REGISTRY = new EasyRegistry(LootGames.MODID, ModCreativeTab.lootGames);
 
     public void preInit(FMLPreInitializationEvent event) {
-//        ModItems.register();
         ModBlocks.register();
         ModBlocks.registerTileEntites();
 

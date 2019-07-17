@@ -45,6 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+//todo add timeout, colored question symbol
 public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable {
     public static final int MAX_TICKS_EXPANDING = 20;
     public static final int TICKS_PAUSE_BETWEEN_SYMBOLS = 15;
@@ -123,7 +124,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         }
     }
 
-    public void generateSubordinates(EntityPlayer player) {
+    private void generateSubordinates(EntityPlayer player) {
         world.playSound(null, getPos(), ModSounds.golStartGame, SoundCategory.MASTER, 0.75F, 1.0F);
 
         for (EnumPosOffset value : EnumPosOffset.values()) {
@@ -299,7 +300,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound) {//TODO check for adding all needed
+    public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         ticks = compound.getInteger("ticks");
         gameStage = GameStage.values()[compound.getInteger("game_stage")];
@@ -526,7 +527,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         }
     }
 
-    public void updateGameStage(GameStage gameStage) {
+    private void updateGameStage(GameStage gameStage) {
         this.gameStage = gameStage;
         onStageSetting(gameStage);
         setBlockToUpdate();
@@ -605,7 +606,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         if (stage == GameStage.WAITING_FOR_PLAYER_SEQUENCE) {
             symbolIndex = 0;
 
-            if (maxLevelBeatList == null && !world.isRemote) {
+            if (maxLevelBeatList == null) {
                 maxLevelBeatList = new ArrayList<>();
             }
 
@@ -627,7 +628,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         private long msClickedTime;
         private EnumPosOffset offset;
 
-        public ClickInfo(long msClickedTime, EnumPosOffset offset) {
+        private ClickInfo(long msClickedTime, EnumPosOffset offset) {
             this.msClickedTime = msClickedTime;
             this.offset = offset;
         }
