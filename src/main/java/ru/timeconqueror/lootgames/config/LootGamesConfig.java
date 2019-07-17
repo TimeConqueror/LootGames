@@ -205,7 +205,7 @@ public class LootGamesConfig {
             @Config.Comment({"Minimum correct rounds required to complete this stage and unlock the chest. This can be adjusted per-Dimension in S:DimensionalConfig.",
                     "Default: Stage 1 -> {5}, Stage 2 -> {10}, Stage 3 -> {15}, Stage 4 -> {20}"
             })
-            @Config.RangeInt(min = 2, max = 256)
+            @Config.RangeInt(min = 1, max = 256)
             public int minRoundsRequiredToPass;
 
             @Config.LangKey("config.lootgames.gol.stage.randomize")

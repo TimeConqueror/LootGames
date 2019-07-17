@@ -1,5 +1,6 @@
 package ru.timeconqueror.lootgames.tileentity;
 
+import net.minecraft.block.BlockChest;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -12,6 +13,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
@@ -27,6 +29,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.block.BlockGOLSubordinate;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
+import ru.timeconqueror.lootgames.minigame.gameoflight.EnumPosOffset;
 import ru.timeconqueror.lootgames.packets.NetworkHandler;
 import ru.timeconqueror.lootgames.packets.SMessageGOLParticle;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
@@ -118,12 +121,10 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
     }
 
     public void generateSubordinates(EntityPlayer player) {
-        world.playSound(null, getPos(), ModSounds.golConstructGame, SoundCategory.MASTER, 0.75F, 1.0F);
+        world.playSound(null, getPos(), ModSounds.golStartGame, SoundCategory.MASTER, 0.75F, 1.0F);
 
-        for (BlockGOLSubordinate.EnumPosOffset value : BlockGOLSubordinate.EnumPosOffset.values()) {
-            IBlockState state = ModBlocks.GOL_SUBORDINATE.getDefaultState()
-                    .withProperty(BlockGOLSubordinate.ACTIVATED, false)
-                    .withProperty(BlockGOLSubordinate.OFFSET, value);
+        for (EnumPosOffset value : EnumPosOffset.values()) {
+            IBlockState state = ModBlocks.GOL_SUBORDINATE.getDefaultState().withProperty(BlockGOLSubordinate.OFFSET, value);
             world.setBlockState(getPos().add(value.getOffsetX(), 0, value.getOffsetZ()), state);
         }
 
@@ -153,7 +154,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.not_ready").setStyle(new Style().setColor(TextFormatting.AQUA)));
     }
 
-    public void onSubordinateClickedByPlayer(BlockGOLSubordinate.EnumPosOffset subordinateOffset, EntityPlayer player) {
+    public void onSubordinateClickedByPlayer(EnumPosOffset subordinateOffset, EntityPlayer player) {
         if (gameStage == GameStage.WAITING_FOR_PLAYER_SEQUENCE) {
             if (world.isRemote) {
                 symbolsEnteredByPlayer.add(new ClickInfo(System.currentTimeMillis(), subordinateOffset));
@@ -170,8 +171,8 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         }
     }
 
-    private void checkPlayerReply(BlockGOLSubordinate.EnumPosOffset subordinateOffset, EntityPlayer player) {
-        if (BlockGOLSubordinate.EnumPosOffset.byIndex(symbolSequence.get(symbolIndex)) == subordinateOffset) {
+    private void checkPlayerReply(EnumPosOffset subordinateOffset, EntityPlayer player) {
+        if (EnumPosOffset.byIndex(symbolSequence.get(symbolIndex)) == subordinateOffset) {
 
             //If all sequence was replied
             if (symbolIndex == symbolSequence.size() - 1) {
@@ -184,17 +185,23 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
                 }
 
                 if (currentRound >= LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).minRoundsRequiredToPass) {
-                    System.out.println("MinR: " + LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).minRoundsRequiredToPass);
-                    System.out.println(currentRound);
                     NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 15);
                     NetworkHandler.INSTANCE.sendToAllAround(new SMessageGOLParticle(getPos(), EnumParticleTypes.VILLAGER_HAPPY.getParticleID()), point);
                     player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.stage_complete").setStyle(new Style().setColor(TextFormatting.GREEN)));
+                    world.playSound(null, getPos(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.75F, 1.0F);
 
                     gameLevel++;
                     onGameLevelChanged();
                 }
 
-                addRandSymbolToSequence();
+                world.playSound(null, getPos(), ModSounds.golSequenceComplete, SoundCategory.MASTER, 0.75F, 1.0F);
+
+                if (LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).randomizeSequence) {
+                    generateSequence(symbolSequence.size() + 1);
+                } else {
+                    addRandSymbolToSequence();
+                }
+
                 updateGameStage(GameStage.SHOWING_SEQUENCE);
             }
 
@@ -202,7 +209,6 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         } else {
             world.playSound(null, pos, ModSounds.golSequenceWrong, SoundCategory.MASTER, 0.75F, 1.0F);
             player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.wrong_block").setStyle(new Style().setColor(TextFormatting.DARK_PURPLE)));
-            //TODO
 
             maxLevelBeatList.add(gameLevel - 1);
             onGameEnded(player);
@@ -215,8 +221,8 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
 
     private void generateSequence(int size) {
         symbolSequence = new ArrayList<>();
-        for (int i = 0; i < size; i++) {//TODO add 2x2
-            symbolSequence.add(LootGames.rand.nextInt(8));
+        for (int i = 0; i < size; i++) {
+            addRandSymbolToSequence();
         }
     }
 
@@ -224,8 +230,12 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         if (symbolSequence == null) {
             symbolSequence = new ArrayList<>();
         }
-        //ToDO add2x2
-        symbolSequence.add(LootGames.rand.nextInt(8));
+
+        if (gameLevel >= LootGamesConfig.gameOfLight.expandFieldAtStage) {
+            symbolSequence.add(LootGames.rand.nextInt(8));
+        } else {
+            symbolSequence.add(LootGames.rand.nextInt(4) * 2);
+        }
     }
 
     private void startGame(EntityPlayer player) {
@@ -242,7 +252,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
     }
 
     @SideOnly(Side.CLIENT)
-    private void playFeedbackSound(BlockGOLSubordinate.EnumPosOffset offset) {
+    private void playFeedbackSound(EnumPosOffset offset) {
         NoteBlockEvent.Note note = NoteBlockEvent.Note.G_SHARP;
         NoteBlockEvent.Octave octave = NoteBlockEvent.Octave.LOW;
         switch (offset) {
@@ -286,7 +296,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
+    public void readFromNBT(NBTTagCompound compound) {//TODO check for adding all needed
         super.readFromNBT(compound);
         ticks = compound.getInteger("ticks");
         gameStage = GameStage.values()[compound.getInteger("game_stage")];
@@ -329,6 +339,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
             System.out.println("Current Round: " + currentRound);
             onGameWon(player);
         } else if (maxLevelBeatList.size() < LootGamesConfig.gameOfLight.maxAttempts + 1) {
+            world.playSound(null, getPos(), ModSounds.golStartGame, SoundCategory.MASTER, 0.75F, 1.0F);
             startGame(player);
         } else {
             System.out.println("You lost");
@@ -338,6 +349,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
 
     private void onGameWon(EntityPlayer player) {
         player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.win").setStyle(new Style().setColor(TextFormatting.GREEN)));
+        world.playSound(null, getPos(), ModSounds.golGameWin, SoundCategory.MASTER, 0.75F, 1.0F);
 
         int bestLevelReached = getBestLevelReached();
         if (bestLevelReached != -1) {
@@ -374,33 +386,33 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
 
         //todo add achievements
         if (bestLevelReached > 0) {
-            spawnLootChest(BlockGOLSubordinate.EnumPosOffset.NORTH, 1);
+            spawnLootChest(EnumPosOffset.NORTH, 1);
         }
 
         if (bestLevelReached > 1) {
-            spawnLootChest(BlockGOLSubordinate.EnumPosOffset.EAST, 2);
+            spawnLootChest(EnumPosOffset.EAST, 2);
         }
 
         if (bestLevelReached > 2) {
-            spawnLootChest(BlockGOLSubordinate.EnumPosOffset.SOUTH, 3);
+            spawnLootChest(EnumPosOffset.SOUTH, 3);
         }
 
         if (bestLevelReached > 3) {
-            spawnLootChest(BlockGOLSubordinate.EnumPosOffset.WEST, 4);
+            spawnLootChest(EnumPosOffset.WEST, 4);
         }
     }
 
     /**
      * @param gameLevel 1-4.
      */
-    private void spawnLootChest(BlockGOLSubordinate.EnumPosOffset pos, int gameLevel) {
+    private void spawnLootChest(EnumPosOffset pos, int gameLevel) {
         if (world.isRemote) {
             return;
         }
 
         LootGamesConfig.GOL.Stage stage = LootGamesConfig.gameOfLight.getStageByIndex(gameLevel);
 
-        IBlockState chest = Blocks.CHEST.getDefaultState();
+        IBlockState chest = Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING, pos == EnumPosOffset.NORTH ? EnumFacing.SOUTH : pos == EnumPosOffset.SOUTH ? EnumFacing.NORTH : pos == EnumPosOffset.EAST ? EnumFacing.WEST : pos == EnumPosOffset.WEST ? EnumFacing.EAST : EnumFacing.NORTH);
         world.setBlockState(getPos().add(pos.getOffsetX(), 0, pos.getOffsetZ()), chest);
 
         TileEntity te = world.getTileEntity(getPos().add(pos.getOffsetX(), 0, pos.getOffsetZ()));
@@ -506,8 +518,8 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         return symbolIndex >= symbolSequence.size();
     }
 
-    public BlockGOLSubordinate.EnumPosOffset getCurrentSymbolPosOffset() {
-        return BlockGOLSubordinate.EnumPosOffset.byIndex(symbolSequence.get(symbolIndex));
+    public EnumPosOffset getCurrentSymbolPosOffset() {
+        return EnumPosOffset.byIndex(symbolSequence.get(symbolIndex));
     }
 
     public int getTicks() {
@@ -559,14 +571,14 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
 
     public class ClickInfo {
         private long msClickedTime;
-        private BlockGOLSubordinate.EnumPosOffset offset;
+        private EnumPosOffset offset;
 
-        public ClickInfo(long msClickedTime, BlockGOLSubordinate.EnumPosOffset offset) {
+        public ClickInfo(long msClickedTime, EnumPosOffset offset) {
             this.msClickedTime = msClickedTime;
             this.offset = offset;
         }
 
-        public BlockGOLSubordinate.EnumPosOffset getOffset() {
+        public EnumPosOffset getOffset() {
             return offset;
         }
     }

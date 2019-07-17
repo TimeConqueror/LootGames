@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.block.BlockGOLSubordinate;
+import ru.timeconqueror.lootgames.minigame.gameoflight.EnumPosOffset;
 import ru.timeconqueror.lootgames.packets.CMessageGOLFeedback;
 import ru.timeconqueror.lootgames.packets.NetworkHandler;
 import ru.timeconqueror.lootgames.tileentity.TileEntityGOLMaster;
@@ -45,7 +45,7 @@ public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster
         }
     }
 
-    public void drawSymbol(TileEntityGOLMaster te, BlockGOLSubordinate.EnumPosOffset offset, double masterX, double masterY, double masterZ, int ticks, float partialTicks) {
+    public void drawSymbol(TileEntityGOLMaster te, EnumPosOffset offset, double masterX, double masterY, double masterZ, int ticks, float partialTicks) {
         if (te.getTicks() > TileEntityGOLMaster.ticksPerShowSymbols) {
             return;
         }

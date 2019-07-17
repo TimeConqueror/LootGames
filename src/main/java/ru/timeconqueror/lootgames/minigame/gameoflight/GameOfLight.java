@@ -1,8 +1,9 @@
-package ru.timeconqueror.lootgames.minigame;
+package ru.timeconqueror.lootgames.minigame.gameoflight;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.minigame.ILootGame;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 

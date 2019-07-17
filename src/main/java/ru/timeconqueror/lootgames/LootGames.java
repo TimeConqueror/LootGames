@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import ru.timeconqueror.lootgames.command.CommandMain;
 import ru.timeconqueror.lootgames.minigame.GameManager;
-import ru.timeconqueror.lootgames.minigame.GameOfLight;
+import ru.timeconqueror.lootgames.minigame.gameoflight.GameOfLight;
 import ru.timeconqueror.lootgames.proxy.CommonProxy;
 import ru.timeconqueror.timecore.util.debug.LogHelper;
 import ru.timeconqueror.timecore.util.debug.Profiler;

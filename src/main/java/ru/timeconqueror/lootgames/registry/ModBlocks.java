@@ -12,7 +12,6 @@ import ru.timeconqueror.lootgames.client.render.tesr.TESRGOLMaster;
 import ru.timeconqueror.lootgames.proxy.ClientProxy;
 import ru.timeconqueror.lootgames.proxy.CommonProxy;
 import ru.timeconqueror.lootgames.tileentity.TileEntityGOLMaster;
-import ru.timeconqueror.lootgames.tileentity.TileEntityGOLSubordinate;
 import ru.timeconqueror.lootgames.tileentity.TileEntityPuzzleMaster;
 
 public class ModBlocks {
@@ -45,14 +44,13 @@ public class ModBlocks {
         }
 
         ClientProxy.REGISTRY.registerBlockRender(PUZZLE_MASTER);
-        ModelLoader.setCustomStateMapper(GOL_SUBORDINATE, new StateMap.Builder().ignore(BlockGOLSubordinate.OFFSET, BlockGOLSubordinate.ACTIVATED).build());
+        ModelLoader.setCustomStateMapper(GOL_SUBORDINATE, new StateMap.Builder().ignore(BlockGOLSubordinate.OFFSET).build());
         ClientProxy.REGISTRY.registerBlockRender(GOL_MASTER);
     }
 
     public static void registerTileEntites() {
         CommonProxy.REGISTRY.registerTileEntity(TileEntityPuzzleMaster.class, "puzzle_master");
         CommonProxy.REGISTRY.registerTileEntity(TileEntityGOLMaster.class, "gol_master");
-        CommonProxy.REGISTRY.registerTileEntity(TileEntityGOLSubordinate.class, "gol_subordinate");
     }
 
     public static void registerTESRS() {
