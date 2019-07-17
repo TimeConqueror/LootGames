@@ -34,5 +34,14 @@
         "stream": false
       }
     ]
+  },
+  "gol_gameover_lose": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "lootgames:gameoflight/gameover_lose",
+        "stream": false
+      }
+    ]
   }
 }

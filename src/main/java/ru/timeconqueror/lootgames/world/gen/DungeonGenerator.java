@@ -146,7 +146,7 @@ public class DungeonGenerator {
                         else {
                             if (axisX == (PUZZLEROOM_CENTER_TO_BORDER * -1) || axisX == PUZZLEROOM_CENTER_TO_BORDER || axisZ == (PUZZLEROOM_CENTER_TO_BORDER * -1) || axisZ == PUZZLEROOM_CENTER_TO_BORDER) {
                                 if (axisY == (dungeonTop - (int) Math.floor((PUZZLEROOM_HEIGHT / 2F))))
-                                    this.world.setBlockState(pos, ModBlocks.DUNGEON_LAMP.getStateFromMeta(RandHelper.chance(10, BlockDungeonLamp.EnumType.DUNGEON_LAMP_BROKEN.getMeta(), BlockDungeonLamp.EnumType.DUNGEON_LAMP.getMeta())));
+                                    this.world.setBlockState(pos, ModBlocks.DUNGEON_LAMP.getDefaultState().withProperty(BlockDungeonLamp.BROKEN, RandHelper.chance(10, true, false)));
                                 else
                                     this.world.setBlockState(pos, ModBlocks.DUNGEON_BRICKS.getStateFromMeta(RandHelper.chance(10, BlockDungeonBricks.EnumType.DUNGEON_WALL_CRACKED.getMeta(), BlockDungeonBricks.EnumType.DUNGEON_WALL.getMeta())));
                             }

@@ -23,6 +23,7 @@ msg.lootgames.gol_master.wrong_block=It appears you touched the wrong color...
 msg.lootgames.gol_master.stage_complete=The structure seems to acknowledge your efforts...
 msg.lootgames.gol_master.win=The structure is pleased and rewards you!
 msg.lootgames.gol_master.reward_level_reached=Current reward level reached: %d (Best: %d)
+msg.lootgames.gol_master.lose=The structure seems to be offended by your failure
 
 #Tooltips
 item.lootgames.dungeon_bricks.tooltip=Mobs can't spawn on this block.
@@ -62,8 +63,8 @@ config.lootgames.gol.expand_field_stage=Expand Field At
 config.lootgames.gol.expand_field_stage.tooltip=At which stage should the playfield become a full 3x3 pattern? Set 0 to disable and keep the 4-block size; set 1 to always start with 3x3.
 config.lootgames.gol.on_fail_explode=Explode On Fail
 config.lootgames.gol.on_fail_explode.tooltip=Enable or disable struct exploding on max failed attempts.
-config.lootgames.gol.on_fail_spawn=Monsters On Fail
-config.lootgames.gol.on_fail_spawn.tooltip=Enable or disable struct filling with monsters on max failed attempts.
+config.lootgames.gol.on_fail_zombies=Zombies On Fail
+config.lootgames.gol.on_fail_zombies.tooltip=Enable or disable struct filling with zombies on max failed attempts.
 config.lootgames.gol.on_fail_lava=Lava On Fail
 config.lootgames.gol.on_fail_lava.tooltip=Enable or disable struct filling with lava on max failed attempts.
 config.lootgames.gol.timeout=Timeout

@@ -38,10 +38,9 @@ public class ModBlocks {
             ClientProxy.REGISTRY.registerItemRender(Item.getItemFromBlock(DUNGEON_BRICKS), i,
                     BlockDungeonBricks.EnumType.byMetadata(i).getName());
         }
-        for (int i = 0; i < BlockDungeonLamp.EnumType.values().length; i++) {
-            ClientProxy.REGISTRY.registerItemRender(Item.getItemFromBlock(DUNGEON_LAMP), i,
-                    BlockDungeonLamp.EnumType.byMetadata(i).getName());
-        }
+
+        ClientProxy.REGISTRY.registerItemRender(Item.getItemFromBlock(DUNGEON_LAMP), 0, "dungeon_lamp");
+        ClientProxy.REGISTRY.registerItemRender(Item.getItemFromBlock(DUNGEON_LAMP), 1, "dungeon_lamp_broken");
 
         ClientProxy.REGISTRY.registerBlockRender(PUZZLE_MASTER);
         ModelLoader.setCustomStateMapper(GOL_SUBORDINATE, new StateMap.Builder().ignore(BlockGOLSubordinate.OFFSET).build());

@@ -167,11 +167,11 @@ public class LootGamesConfig {
         })
         public boolean onFailExplode = true;
 
-        @Config.LangKey("config.lootgames.gol.on_fail_spawn")
-        @Config.Comment({"Enable or disable struct filling with monsters on max failed attempts.",
+        @Config.LangKey("config.lootgames.gol.on_fail_zombies")
+        @Config.Comment({"Enable or disable struct filling with zombies on max failed attempts.",
                 "Default: true"
         })
-        public boolean onFailMosters = true;
+        public boolean onFailZombies = true;
 
         @Config.LangKey("config.lootgames.gol.on_fail_lava")
         @Config.Comment({"Enable or disable struct filling with lava on max failed attempts.",

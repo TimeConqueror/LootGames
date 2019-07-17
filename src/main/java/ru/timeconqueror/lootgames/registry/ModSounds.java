@@ -10,11 +10,13 @@ public class ModSounds {
     public static SoundEvent golSequenceWrong;
     public static SoundEvent golSequenceComplete;
     public static SoundEvent golGameWin;
+    public static SoundEvent golGameLose;
 
     public static void registerSounds() {
         golStartGame = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MODID, "gol_start_game"));
         golSequenceWrong = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MODID, "gol_sequence_wrong"));
         golSequenceComplete = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MODID, "gol_sequence_complete"));
         golGameWin = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MODID, "gol_gameover_win"));
+        golGameLose = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MODID, "gol_gameover_lose"));
     }
 }

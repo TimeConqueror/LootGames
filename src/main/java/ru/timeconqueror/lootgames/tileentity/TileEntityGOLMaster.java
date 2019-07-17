@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.tileentity;
 
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
@@ -19,6 +20,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -27,6 +29,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
 import ru.timeconqueror.lootgames.block.BlockGOLSubordinate;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
 import ru.timeconqueror.lootgames.minigame.gameoflight.EnumPosOffset;
@@ -336,14 +339,12 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
     private void onGameEnded(EntityPlayer player) {
         if (isLastStagePassed() ||
                 (maxLevelBeatList.size() == LootGamesConfig.gameOfLight.maxAttempts + 1 && getBestLevelReached() > 0)) {
-            System.out.println("Current Round: " + currentRound);
             onGameWon(player);
         } else if (maxLevelBeatList.size() < LootGamesConfig.gameOfLight.maxAttempts + 1) {
             world.playSound(null, getPos(), ModSounds.golStartGame, SoundCategory.MASTER, 0.75F, 1.0F);
             startGame(player);
         } else {
-            System.out.println("You lost");
-            //todo total loss
+            onGameLost(player);
         }
     }
 
@@ -362,7 +363,60 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
             }
         }
 
+        destroyStructure();
         genLootChests();
+    }
+
+    private void onGameLost(EntityPlayer player) {
+        world.playSound(null, getPos(), ModSounds.golGameLose, SoundCategory.MASTER, 0.75F, 1.0F);
+        player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.lose").setStyle(new Style().setColor(TextFormatting.DARK_PURPLE)));
+
+        destroyStructure();
+
+        List<String> failEffects = new ArrayList<>();
+
+        if (LootGamesConfig.gameOfLight.onFailExplode)
+            failEffects.add("explode");
+        if (LootGamesConfig.gameOfLight.onFailLava)
+            failEffects.add("lava");
+        if (LootGamesConfig.gameOfLight.onFailZombies)
+            failEffects.add("zombies");
+
+        if (failEffects.size() != 0)
+            executeFailEvent(failEffects.get(LootGames.rand.nextInt(failEffects.size())));
+    }
+
+    private void executeFailEvent(String pEffect) {
+        if (pEffect.equalsIgnoreCase("explode")) {
+            world.createExplosion(null, pos.getX(), pos.getY(), pos.getZ(), 6, true);
+        } else if (pEffect.equalsIgnoreCase("lava")) {
+            for (int x = -5; x <= 5; x++)
+                for (int z = -5; z <= 5; z++)
+                    for (int y = 1; y < 3; y++)
+                        world.setBlockState(pos.add(x, y, z), Blocks.LAVA.getDefaultState());
+        } else if (pEffect.equalsIgnoreCase("zombies")) {
+            for (int i = 0; i < 10; i++) {
+                EntityZombie zombie = new EntityZombie(world);
+                zombie.setLocationAndAngles(pos.getX() + LootGames.rand.nextFloat() * 2, pos.getY() + 1, pos.getZ() + LootGames.rand.nextFloat() * 2, MathHelper.wrapDegrees(LootGames.rand.nextFloat() * 360.0F), 0.0F);
+                zombie.rotationYawHead = zombie.rotationYaw;
+                zombie.renderYawOffset = zombie.rotationYaw;
+                world.spawnEntity(zombie);
+                zombie.playLivingSound();
+            }
+        }
+    }
+
+    private void destroyStructure() {
+        for (int x = -1; x < 2; x++) {
+            for (int z = -1; z < 2; z++) {
+
+                if (x == 0 || z == 0) {
+                    world.setBlockToAir(pos.add(x, 0, z));
+                } else {
+                    world.setBlockState(pos.add(x, 0, z), ModBlocks.DUNGEON_LAMP.getDefaultState().withProperty(BlockDungeonLamp.BROKEN, false));
+                }
+            }
+        }
 
         DungeonGenerator.resetUnbreakablePlayfield(world, pos);
     }
