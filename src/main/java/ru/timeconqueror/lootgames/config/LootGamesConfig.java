@@ -24,7 +24,6 @@ public class LootGamesConfig {
     @Config.Comment("Regulates \"Game of Light\" minigame.")
     public static GOL gameOfLight = new GOL();
 
-    //TODO add minigame disabling
     @Config.LangKey("config.lootgames.minigamesenabled")
     @Config.Comment({"If this is set to false, then dungeon generation will be enabled.", "Default: true"})
     public static boolean areMinigamesEnabled = true;

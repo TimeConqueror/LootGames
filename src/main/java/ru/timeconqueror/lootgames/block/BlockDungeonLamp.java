@@ -29,6 +29,7 @@ public class BlockDungeonLamp extends Block {
         setHardness(2.0F);
         setResistance(6.0F);
         setSoundType(SoundType.GLASS);
+        setLightLevel(15);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class BlockDungeonLamp extends Block {
 
     @Override
     public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
-        return !state.getValue(BROKEN) ? 15 : 0;
+        return getMetaFromState(state) == 0 ? 15 : 0;
     }
 
     @Override

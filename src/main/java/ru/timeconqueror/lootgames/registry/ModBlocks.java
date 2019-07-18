@@ -8,10 +8,10 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import ru.timeconqueror.lootgames.block.*;
-import ru.timeconqueror.lootgames.client.render.tesr.TESRGOLMaster;
+import ru.timeconqueror.lootgames.minigame.gameoflight.TESRGOLMaster;
+import ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster;
 import ru.timeconqueror.lootgames.proxy.ClientProxy;
 import ru.timeconqueror.lootgames.proxy.CommonProxy;
-import ru.timeconqueror.lootgames.tileentity.TileEntityGOLMaster;
 import ru.timeconqueror.lootgames.tileentity.TileEntityPuzzleMaster;
 
 public class ModBlocks {

@@ -1,8 +1,8 @@
 package ru.timeconqueror.lootgames.packets;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IThreadListener;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -10,23 +10,23 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster;
 
-public class CMessageGOLFeedback implements IMessage {
-
+public class SMessageGOLDrawStuff implements IMessage {
     private int x;
     private int y;
     private int z;
+    private int stuffIndex;
 
-    public CMessageGOLFeedback() {
+    public SMessageGOLDrawStuff() {
     }
 
     @SideOnly(Side.CLIENT)
-    public CMessageGOLFeedback(BlockPos pos) {
+    public SMessageGOLDrawStuff(BlockPos pos, int stuffIndex) {
         x = pos.getX();
         y = pos.getY();
         z = pos.getZ();
+        this.stuffIndex = stuffIndex;
     }
 
     @Override
@@ -34,6 +34,8 @@ public class CMessageGOLFeedback implements IMessage {
         x = buf.readInt();
         y = buf.readInt();
         z = buf.readInt();
+
+        stuffIndex = buf.readInt();
     }
 
     @Override
@@ -41,27 +43,27 @@ public class CMessageGOLFeedback implements IMessage {
         buf.writeInt(x);
         buf.writeInt(y);
         buf.writeInt(z);
+
+        buf.writeInt(stuffIndex);
     }
 
-    public static class Handler implements IMessageHandler<CMessageGOLFeedback, IMessage> {
+    public static class Handler implements IMessageHandler<SMessageGOLDrawStuff, IMessage> {
 
         public Handler() {
         }
 
         @Override
-        public IMessage onMessage(CMessageGOLFeedback msg, MessageContext ctx) {
-            IThreadListener mainThread = ctx.getServerHandler().player.getServerWorld();
-            mainThread.addScheduledTask(() -> {
-                World world = ctx.getServerHandler().player.getServerWorld();
-                BlockPos pos = new BlockPos(msg.x, msg.y, msg.z);
-                TileEntity te = world.getTileEntity(pos);
-
+        public IMessage onMessage(SMessageGOLDrawStuff msg, MessageContext ctx) {
+            Minecraft.getMinecraft().addScheduledTask(() -> {
+                World world = Minecraft.getMinecraft().world;
+                TileEntity te = world.getTileEntity(new BlockPos(msg.x, msg.y, msg.z));
                 if (te instanceof TileEntityGOLMaster) {
-                    ((TileEntityGOLMaster) te).onClientThingsDone();
-                } else {
-                    LootGames.logHelper.error("Something sent packet to wrong tileentity {}!", pos);
+                    if (msg.stuffIndex < TileEntityGOLMaster.EnumDrawStuff.values().length) {
+                        ((TileEntityGOLMaster) te).addStuffToDraw(new TileEntityGOLMaster.DrawInfo(System.currentTimeMillis(), TileEntityGOLMaster.EnumDrawStuff.values()[msg.stuffIndex]));
+                    }
                 }
             });
+
             return null;
         }
     }

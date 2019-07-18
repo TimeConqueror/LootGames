@@ -1,4 +1,4 @@
-package ru.timeconqueror.lootgames.tileentity;
+package ru.timeconqueror.lootgames.minigame.gameoflight;
 
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.state.IBlockState;
@@ -32,11 +32,12 @@ import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
 import ru.timeconqueror.lootgames.block.BlockGOLSubordinate;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
-import ru.timeconqueror.lootgames.minigame.gameoflight.EnumPosOffset;
 import ru.timeconqueror.lootgames.packets.NetworkHandler;
+import ru.timeconqueror.lootgames.packets.SMessageGOLDrawStuff;
 import ru.timeconqueror.lootgames.packets.SMessageGOLParticle;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.registry.ModSounds;
+import ru.timeconqueror.lootgames.tileentity.TileEntityEnhanced;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 
 import java.util.ArrayList;
@@ -45,12 +46,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//todo add timeout, colored question symbol
 public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable {
-    public static final int MAX_TICKS_EXPANDING = 20;
-    public static final int TICKS_PAUSE_BETWEEN_SYMBOLS = 15;
-    public static final int TICKS_PAUSE_BETWEEN_STAGES = 20;
-    public static int ticksPerShowSymbols = 24;
+    static final int MAX_TICKS_EXPANDING = 20;
+    private static final int TICKS_PAUSE_BETWEEN_SYMBOLS = 15;
+    private static final int TICKS_PAUSE_BETWEEN_STAGES = 20;
+    static int ticksPerShowSymbols = 24;
     private int currentRound = -1;
     private int gameLevel = 1;
     private int ticks = 0;
@@ -58,10 +58,12 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
     private boolean particleSent = false;
     private boolean pauseBeforeShowing = true;
     private List<ClickInfo> symbolsEnteredByPlayer;
+    private int timeout = 0;
 
     private GameStage gameStage;
     private List<Integer> symbolSequence;
     private List<Integer> maxLevelBeatList;
+    private List<DrawInfo> stuffToDraw;
 
     private boolean feedbackPacketReceived;
 
@@ -119,17 +121,29 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
             }
         }
 
+        if (gameStage == GameStage.WAITING_FOR_PLAYER_SEQUENCE && !world.isRemote) {
+            if (timeout >= LootGamesConfig.gameOfLight.timeout * 20) {
+                updateGameStage(GameStage.WAITING_FOR_START);
+            }
+
+            timeout++;
+        }
+
         if (world.isRemote && symbolsEnteredByPlayer != null) {
             symbolsEnteredByPlayer.removeIf((clickInfo) -> System.currentTimeMillis() - clickInfo.msClickedTime > 800);
+        }
+
+        if (world.isRemote && stuffToDraw != null && !stuffToDraw.isEmpty()) {
+            stuffToDraw.removeIf((stuff) -> System.currentTimeMillis() - stuff.msClickedTime > 800);
         }
     }
 
     private void generateSubordinates(EntityPlayer player) {
-        world.playSound(null, getPos(), ModSounds.golStartGame, SoundCategory.MASTER, 0.75F, 1.0F);
+        world.playSound(null, pos, ModSounds.golStartGame, SoundCategory.MASTER, 0.75F, 1.0F);
 
         for (EnumPosOffset value : EnumPosOffset.values()) {
             IBlockState state = ModBlocks.GOL_SUBORDINATE.getDefaultState().withProperty(BlockGOLSubordinate.OFFSET, value);
-            world.setBlockState(getPos().add(value.getOffsetX(), 0, value.getOffsetZ()), state);
+            world.setBlockState(pos.add(value.getOffsetX(), 0, value.getOffsetZ()), state);
         }
 
         player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.start").setStyle(new Style().setColor(TextFormatting.AQUA)));
@@ -188,8 +202,8 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
                     return;
                 }
 
+                NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 15);
                 if (currentRound >= LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).minRoundsRequiredToPass) {
-                    NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 15);
                     NetworkHandler.INSTANCE.sendToAllAround(new SMessageGOLParticle(getPos(), EnumParticleTypes.VILLAGER_HAPPY.getParticleID()), point);
                     player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.stage_complete").setStyle(new Style().setColor(TextFormatting.GREEN)));
                     world.playSound(null, getPos(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.75F, 1.0F);
@@ -198,6 +212,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
                     onGameLevelChanged();
                 }
 
+                NetworkHandler.INSTANCE.sendToAllAround(new SMessageGOLDrawStuff(getPos(), EnumDrawStuff.SEQUENCE_ACCEPTED.ordinal()), point);
                 world.playSound(null, getPos(), ModSounds.golSequenceComplete, SoundCategory.MASTER, 0.75F, 1.0F);
 
                 if (LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).randomizeSequence) {
@@ -212,6 +227,8 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
             symbolIndex++;
         } else {
             world.playSound(null, pos, ModSounds.golSequenceWrong, SoundCategory.MASTER, 0.75F, 1.0F);
+            NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 15);
+            NetworkHandler.INSTANCE.sendToAllAround(new SMessageGOLDrawStuff(getPos(), EnumDrawStuff.SEQUENCE_DENIED.ordinal()), point);
             player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.wrong_block").setStyle(new Style().setColor(TextFormatting.DARK_PURPLE)));
 
             maxLevelBeatList.add(gameLevel - 1);
@@ -306,6 +323,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         gameStage = GameStage.values()[compound.getInteger("game_stage")];
         onStageSetting(gameStage);
 
+        timeout = compound.getInteger("timeout");
         currentRound = compound.getInteger("current_round");
         gameLevel = compound.getInteger("game_level");
 
@@ -320,6 +338,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         compound.setInteger("game_stage", gameStage.ordinal());
         compound.setInteger("game_level", gameLevel);
         compound.setInteger("current_round", currentRound);
+        compound.setInteger("timeout", timeout);
 
         if (symbolSequence != null) {
             compound.setIntArray("symbol_sequence", symbolSequence.stream().mapToInt(i -> i).toArray());
@@ -355,7 +374,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
 
         int bestLevelReached = getBestLevelReached();
         if (bestLevelReached != -1) {
-            player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.reward_level_reached", gameLevel, isLastStagePassed() ? 4 : bestLevelReached).setStyle(new Style().setColor(TextFormatting.GREEN)));
+            player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.reward_level_reached", gameLevel - 1, isLastStagePassed() ? 4 : bestLevelReached).setStyle(new Style().setColor(TextFormatting.GREEN)));
         }
 
         for (int x = -1; x < 2; x++) {
@@ -487,10 +506,12 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
             if (notEmptyIndexes.size() == 0) {
                 ItemStack stack = new ItemStack(Blocks.STONE);
                 try {
-                    stack.setTagCompound(JsonToNBT.getTagFromJson(String.format("{display:{Name:\"The Sorry-Stone\",Lore:[\"The Admin failed to configure the LootTables properly.\",\"Please report that LootList [%s] for GameStageID [%d] is broken, thank you!\"]}}", stage.lootTable, gameLevel)));
+                    stack.setTagCompound(JsonToNBT.getTagFromJson(String.format("{display:{Name:\"The Sorry Stone\",Lore:[\"Modpack creator failed to configure the LootTables properly.\",\"Please report that LootList [%s] for %d stage is broken, thank you!\"]}}", stage.lootTable, gameLevel)));
                 } catch (NBTException e) {
                     e.printStackTrace();
                 }
+
+                teChest.setInventorySlotContents(0, stack);
 
                 return;
             }
@@ -565,31 +586,44 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         return new AxisAlignedBB(getPos().add(-2, 0, -2), getPos().add(2, 1, 2));
     }
 
-    public GameStage getGameStage() {
+    GameStage getGameStage() {
         return gameStage;
     }
 
-    public boolean hasShowedAllSymbols() {
+    boolean hasShowedAllSymbols() {
         return symbolIndex >= symbolSequence.size();
     }
 
-    public EnumPosOffset getCurrentSymbolPosOffset() {
+    EnumPosOffset getCurrentSymbolPosOffset() {
         return EnumPosOffset.byIndex(symbolSequence.get(symbolIndex));
     }
 
-    public int getTicks() {
+    int getTicks() {
         return ticks;
     }
 
-    public List<ClickInfo> getSymbolsEnteredByPlayer() {
+    List<ClickInfo> getSymbolsEnteredByPlayer() {
         return symbolsEnteredByPlayer;
     }
 
-    public boolean isFeedbackPacketReceived() {
+    @SideOnly(Side.CLIENT)
+    List<DrawInfo> getStuffToDraw() {
+        return stuffToDraw;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void addStuffToDraw(DrawInfo stuff) {
+        if (stuffToDraw == null) {
+            stuffToDraw = new ArrayList<>();
+        }
+        stuffToDraw.add(stuff);
+    }
+
+    boolean isFeedbackPacketReceived() {
         return feedbackPacketReceived;
     }
 
-    public boolean isOnPause() {
+    boolean isOnPause() {
         return pauseBeforeShowing;
     }
 
@@ -604,6 +638,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         }
 
         if (stage == GameStage.WAITING_FOR_PLAYER_SEQUENCE) {
+            timeout = 0;
             symbolIndex = 0;
 
             if (maxLevelBeatList == null) {
@@ -624,6 +659,26 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         WAITING_FOR_PLAYER_SEQUENCE
     }
 
+    public enum EnumDrawStuff {
+        SEQUENCE_ACCEPTED,
+        SEQUENCE_DENIED,
+        SHOWING_SEQUENCE
+    }
+
+    public static class DrawInfo {
+        private long msClickedTime;
+        private EnumDrawStuff stuff;
+
+        public DrawInfo(long msClickedTime, EnumDrawStuff stuff) {
+            this.msClickedTime = msClickedTime;
+            this.stuff = stuff;
+        }
+
+        public EnumDrawStuff getStuff() {
+            return stuff;
+        }
+    }
+
     public class ClickInfo {
         private long msClickedTime;
         private EnumPosOffset offset;
@@ -633,7 +688,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
             this.offset = offset;
         }
 
-        public EnumPosOffset getOffset() {
+        EnumPosOffset getOffset() {
             return offset;
         }
     }

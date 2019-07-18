@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.minigame.gameoflight.EnumPosOffset;
-import ru.timeconqueror.lootgames.tileentity.TileEntityGOLMaster;
+import ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster;
 
 public class BlockGOLSubordinate extends Block {
     public static final PropertyEnum<EnumPosOffset> OFFSET = PropertyEnum.create("offset", EnumPosOffset.class);
