@@ -74,14 +74,16 @@ config.lootgames.gol.stage.min_rounds_required_to_pass=Minimum Digits To Pass
 config.lootgames.gol.stage.min_rounds_required_to_pass.tooltip=Minimum correct digits required to complete this stage and unlock the chest. This can be adjusted per-Dimension in S:DimensionalConfig.
 config.lootgames.gol.stage.randomize=Randomize Sequence
 config.lootgames.gol.stage.randomize.tooltip=If true, the pattern will randomize on each level in this stage.
-config.lootgames.gol.stage.display_time=Display Time //TODO
-config.lootgames.gol.stage.display_time.tooltip=The amount of time (in milliseconds; 20 ticks = 1s) to wait at playback before moving to the next color.//TODO
+config.lootgames.gol.stage.display_time=Display Time
+config.lootgames.gol.stage.display_time.tooltip=The amount of time (in milliseconds; 20 ticks = 1s) to wait at playback before moving to the next color.
 config.lootgames.gol.stage.loot_table=Loot Table
 config.lootgames.gol.stage.loot_table.tooltip=The loottable resourcelocation for the chest in this stage.
 config.lootgames.gol.stage.min_items=Min Amount of Items
 config.lootgames.gol.stage.min_items.tooltip=Minimum amount of items to be spawned.Won't be applied, if count of items in bound loot table are less than it. If set to -1, then min limit will be disabled.
 config.lootgames.gol.stage.max_items=Max Amount of Items
 config.lootgames.gol.stage.max_items.tooltip=Maximum amount of items to be spawned. If set to -1, then max limit will be disabled.
+config.lootgames.gol.stage.dimconfig=Per-Dimension Config
+config.lootgames.gol.stage.dimconfig.tooltip=Here you can add different loottables to each dimension. If dimension isn't in this list, then game will take default loottable for this stage.\nSyntax: <dimension_id>; <loottable_resourcelocation>; <min_rounds_required_to_pass>\n<loottable_resourcelocation> - The loottable resourcelocation for the chest in this stage. Can be skipped. In this case you just need to write semicolon, example: \"{0; ; 10}\" \n<min_rounds_required_to_pass> - Minimum correct rounds required to complete this stage and unlock the chest. Can be skipped. Example with skipping: \"{0; minecraft:chests/simple_dungeon; }\" \n"Example: { 0; minecraft:chests/simple_dungeon; 10 }
 
 #Commands
 command.lootgames.help.msg=Available commands:

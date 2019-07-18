@@ -48,8 +48,8 @@ import java.util.stream.Collectors;
 
 public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable {
     static final int MAX_TICKS_EXPANDING = 20;
-    private static final int TICKS_PAUSE_BETWEEN_SYMBOLS = 15;
-    private static final int TICKS_PAUSE_BETWEEN_STAGES = 20;
+    private static final int TICKS_PAUSE_BETWEEN_SYMBOLS = 12;
+    private static final int TICKS_PAUSE_BETWEEN_STAGES = 25;
     static int ticksPerShowSymbols = 24;
     private int currentRound = -1;
     private int gameLevel = 1;
@@ -196,14 +196,14 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
             if (symbolIndex == symbolSequence.size() - 1) {
                 currentRound++;
 
-                if (currentRound >= LootGamesConfig.gameOfLight.stage4.minRoundsRequiredToPass) {
+                if (currentRound >= LootGamesConfig.gameOfLight.stage4.getMinRoundsRequiredToPass(world.provider.getDimension())) {
                     gameLevel = 4;
                     onGameEnded(player);
                     return;
                 }
 
                 NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 15);
-                if (currentRound >= LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).minRoundsRequiredToPass) {
+                if (currentRound >= LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).getMinRoundsRequiredToPass(world.provider.getDimension())) {
                     NetworkHandler.INSTANCE.sendToAllAround(new SMessageGOLParticle(getPos(), EnumParticleTypes.VILLAGER_HAPPY.getParticleID()), point);
                     player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.stage_complete").setStyle(new Style().setColor(TextFormatting.GREEN)));
                     world.playSound(null, getPos(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.75F, 1.0F);
@@ -442,7 +442,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
     }
 
     private boolean isLastStagePassed() {
-        return gameLevel == 4 && currentRound >= LootGamesConfig.gameOfLight.stage4.minRoundsRequiredToPass;
+        return gameLevel == 4 && currentRound >= LootGamesConfig.gameOfLight.stage4.getMinRoundsRequiredToPass(world.provider.getDimension());
     }
 
     private void genLootChests() {
@@ -493,7 +493,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         if (te instanceof TileEntityChest) {
             TileEntityChest teChest = (TileEntityChest) te;
 
-            teChest.setLootTable(stage.lootTableRL, 0);
+            teChest.setLootTable(stage.getLootTableRL(world.provider.getDimension()), 0);
             teChest.fillWithLoot(null);
 
             List<Integer> notEmptyIndexes = new ArrayList<>();

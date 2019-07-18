@@ -41,7 +41,6 @@ public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster
             }
         }
 
-
         if (te.getSymbolsEnteredByPlayer() != null) {
             te.getSymbolsEnteredByPlayer().forEach((clickInfo -> drawSymbol(te, clickInfo.getOffset(), x, y, z, te.getTicks(), partialTicks)));
         }
@@ -70,10 +69,12 @@ public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster
         float textureY = 0;
 
         GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableAlpha();
-        drawRect(0, 0, 48, 48, -0.02, textureX, textureY, 16, 16, f);
-        GlStateManager.disableBlend();
+        GlStateManager.disableColorMaterial();
+        drawRect(0, 0, 48, 48, -0.07, textureX, textureY, 16, 16, f);
         GlStateManager.disableAlpha();
+        GlStateManager.disableBlend();
 
         GlStateManager.color(1, 1, 1);
         GlStateManager.popMatrix();
@@ -100,7 +101,7 @@ public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster
         float textureX = 16 + 16 * offset.getOffsetX();
         float textureY = 16 + 16 * offset.getOffsetZ();
 
-        drawRect(0, 0, 48, 48, -0.02, textureX, textureY, 16, 16, f);
+        drawRect(0, 0, 48, 48, -0.07, textureX, textureY, 16, 16, f);
 
         GlStateManager.color(1, 1, 1);
         GlStateManager.popMatrix();
@@ -133,7 +134,7 @@ public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster
         float textureStart = !isExpanding || ticks >= MAX_TICKS_EXPANDING ? 0F : 16F - 16F * (ticks + partialTicks) / MAX_TICKS_EXPANDING;
         float textureLength = !isExpanding || ticks >= MAX_TICKS_EXPANDING ? 48F : 32F + 16F * (ticks + partialTicks) / MAX_TICKS_EXPANDING - textureStart;
 
-        drawRect(0, 0, length, length, -0.01, textureStart, textureStart, textureLength, textureLength, f);
+        drawRect(0, 0, length, length, -0.05, textureStart, textureStart, textureLength, textureLength, f);
 
         GlStateManager.color(1, 1, 1);
         GlStateManager.popMatrix();

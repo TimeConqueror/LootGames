@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.event.OnConfigReloadedEvent;
+import ru.timeconqueror.timecore.util.IntHelper;
 import ru.timeconqueror.timecore.util.debug.LogHelper;
 
 import java.util.HashMap;
@@ -126,7 +127,7 @@ public class LootGamesConfig {
 
     public static class GOL {
         @Config.LangKey("config.lootgames.gol.stage.1")
-        @Config.Comment("Regulates characteristics of stage 1.")//TODO change min rounds, rework items
+        @Config.Comment("Regulates characteristics of stage 1.")//FIXME change min rounds, rework items
         public Stage stage1 = new Stage(1, false, 24, "minecraft:chests/simple_dungeon", 2, 4);
 
         @Config.LangKey("config.lootgames.gol.stage.2")
@@ -186,9 +187,13 @@ public class LootGamesConfig {
 
         private void initStages() {
             stage1.parseLootTable();
+            stage1.parseDimConfigs();
             stage2.parseLootTable();
+            stage2.parseDimConfigs();
             stage3.parseLootTable();
+            stage3.parseDimConfigs();
             stage4.parseLootTable();
+            stage4.parseDimConfigs();
         }
 
         /**
@@ -221,13 +226,18 @@ public class LootGamesConfig {
             public int displayTime;
 
             @Config.LangKey("config.lootgames.gol.stage.loot_table")
-            @Config.Comment({"The loottable resourcelocation for the chest in this stage.",
+            @Config.Comment({"The loottable resourcelocation for the chest in this stage. This can be adjusted per-Dimension in S:DimensionalConfig.",
                     "Default: Stage 1 -> minecraft:chests/simple_dungeon, Stage 2 -> minecraft:chests/abandoned_mineshaft, Stage 3 -> minecraft:chests/jungle_temple, Stage 4 -> minecraft:chests/stronghold_corridor"
             })
             public String lootTable;
-
-            @Config.Ignore
-            public ResourceLocation lootTableRL;
+            @Config.LangKey("config.lootgames.gol.stage.dimconfig")
+            @Config.Comment({"Here you can add different loottables to each dimension. If dimension isn't in this list, then game will take default loottable for this stage.",
+                    "Syntax: <dimension_id>; <loottable_resourcelocation>; <min_rounds_required_to_pass>",
+                    "<loottable_resourcelocation> - The loottable resourcelocation for the chest in this stage. Can be skipped. In this case you just need to write semicolon, example: \"{0; ; 10}\"",
+                    "<min_rounds_required_to_pass> - Minimum correct rounds required to complete this stage and unlock the chest. Can be skipped. Example with skipping: \"{0; minecraft:chests/simple_dungeon; }\"",
+                    "Example: { 0; minecraft:chests/simple_dungeon; 10 }",
+                    "Default: {}"})
+            public String[] perDimensionConfigs = new String[]{};
 
             @Config.LangKey("config.lootgames.gol.stage.min_items")
             @Config.Comment({"Minimum amount of items to be spawned. Won't be applied, if count of items in bound loot table are less than it. If set to -1, then min limit will be disabled.",
@@ -242,6 +252,8 @@ public class LootGamesConfig {
             })
             @Config.RangeInt(min = -1, max = 256)
             public int maxItems;
+            @Config.Ignore
+            private ResourceLocation lootTableRL;
 
             public Stage(int minRoundsRequiredToPass, boolean randomizeSequence, int displayTime, String lootTable, int minItems, int maxItems) {
                 this.minRoundsRequiredToPass = minRoundsRequiredToPass;
@@ -252,12 +264,85 @@ public class LootGamesConfig {
                 this.maxItems = maxItems;
             }
 
+            private HashMap<Integer, DimConfig> dimensionsConfigsMap;
+
             private void parseLootTable() {
                 lootTableRL = new ResourceLocation(lootTable);
             }
 
-            //TODO add
-//            public HashMap<Integer, DimensionalConfig> DimensionalLoots;
+            private void parseDimConfigs() {
+                dimensionsConfigsMap = new HashMap<>();
+
+                for (String entry : perDimensionConfigs) {
+                    String[] config = entry.split(";");
+                    for (int i = 0; i < config.length; i++) {
+                        config[i] = config[i].trim();
+                    }
+
+                    if (config.length == 3) {
+                        if (IntHelper.canBeParsed(config[0])) {
+                            int dim = Integer.parseInt(config[0]);
+
+                            if (dimensionsConfigsMap.containsKey(dim)) {
+                                LootGames.logHelper.error("Invalid dimension configs entry found: {}. Dimension ID is already defined.", entry);
+                                continue;
+                            }
+
+                            int minRounds;
+                            if (!config[2].isEmpty() && IntHelper.canBeParsed(config[2])) {
+                                minRounds = Integer.parseInt(config[2]);
+                                if (minRounds < 1 || minRounds > 256) {
+                                    LootGames.logHelper.error("Invalid dimension configs entry found: {}. Min Rounds Required To Pass must be an Integer from 1 to 256 or an empty string.", entry);
+                                    continue;
+                                }
+                            } else if (config[2].isEmpty()) {
+                                minRounds = this.minRoundsRequiredToPass;
+                            } else {
+                                LootGames.logHelper.error("Invalid dimension configs entry found: {}. Min Rounds Required To Pass must be an Integer or an empty string.", entry);
+                                continue;
+                            }
+
+                            String lootTableDim = lootTable;
+                            if (!config[1].isEmpty()) {
+                                lootTableDim = config[1];
+                            }
+
+                            dimensionsConfigsMap.put(dim, new DimConfig(lootTableDim, minRounds));
+                        } else {
+                            LootGames.logHelper.error("Invalid dimension configs entry found: {}. Dimension ID must be an Integer.", entry);
+                        }
+                    } else {
+                        LootGames.logHelper.error("Invalid dimension configs entry found: {}. Syntax is <dimension_id>; <loottable_resourcelocation>; <min_rounds_required_to_pass> ", entry);
+                    }
+
+                }
+            }
+
+            public DimConfig getDimConfig(int dimensionID) {
+                return dimensionsConfigsMap.get(dimensionID);
+            }
+
+            public int getMinRoundsRequiredToPass(int dimensionID) {
+                DimConfig cfg = getDimConfig(dimensionID);
+
+                return cfg == null ? minRoundsRequiredToPass : getDimConfig(dimensionID).minRoundRequiredToPass;
+            }
+
+            public ResourceLocation getLootTableRL(int dimensionID) {
+                DimConfig cfg = getDimConfig(dimensionID);
+
+                return cfg == null ? lootTableRL : getDimConfig(dimensionID).lootTableRL;
+            }
+
+            public static class DimConfig {
+                public ResourceLocation lootTableRL;
+                public int minRoundRequiredToPass;
+
+                DimConfig(String loottable, int minRoundRequiredToPass) {
+                    lootTableRL = new ResourceLocation(loottable);
+                    this.minRoundRequiredToPass = minRoundRequiredToPass;
+                }
+            }
         }
     }
 }

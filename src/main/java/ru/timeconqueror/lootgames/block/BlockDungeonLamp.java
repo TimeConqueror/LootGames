@@ -29,7 +29,6 @@ public class BlockDungeonLamp extends Block {
         setHardness(2.0F);
         setResistance(6.0F);
         setSoundType(SoundType.GLASS);
-        setLightLevel(15);
     }
 
     @Override
