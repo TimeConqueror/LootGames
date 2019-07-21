@@ -4,11 +4,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import ru.timeconqueror.lootgames.achievement.AdvancementManager;
 import ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster;
 
 import javax.annotation.Nullable;
@@ -29,6 +31,10 @@ public class BlockGOLMaster extends Block {
                 TileEntityGOLMaster te = (TileEntityGOLMaster) worldIn.getTileEntity(pos);
 
                 //TODO add specialties
+                if (playerIn instanceof EntityPlayerMP) {
+                    AdvancementManager.BLOCK_ACTIVATED.trigger(((EntityPlayerMP) playerIn), pos, playerIn.getHeldItem(hand));
+                }
+
                 te.onBlockClickedByPlayer(playerIn);
             }
         }

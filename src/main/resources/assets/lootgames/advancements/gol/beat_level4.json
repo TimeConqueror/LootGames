@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:emerald"
+    },
+    "title": {
+      "translate": "advancement.lootgames.gol.level4"
+    },
+    "frame": "challenge",
+    "description": {
+      "translate": "advancement.lootgames.gol.level4.desc"
+    }
+  },
+  "parent": "lootgames:gol/game_of_light",
+  "criteria": {
+    "beat_level": {
+      "trigger": "lootgames:win_minigame",
+      "conditions": {
+        "name": "gol_level4"
+      }
+    }
+  }
+}

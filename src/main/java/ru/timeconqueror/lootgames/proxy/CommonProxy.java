@@ -4,8 +4,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import ru.timeconqueror.lootgames.CreativeTabMod;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.achievement.AdvancementManager;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
 import ru.timeconqueror.lootgames.minigame.GameManager;
 import ru.timeconqueror.lootgames.minigame.gameoflight.GameOfLight;
@@ -16,13 +16,15 @@ import ru.timeconqueror.lootgames.world.gen.LootGamesWorldGen;
 import ru.timeconqueror.timecore.registry.EasyRegistry;
 
 public class CommonProxy {
-    public static final EasyRegistry REGISTRY = new EasyRegistry(LootGames.MODID, CreativeTabMod.TAB_LOOTGAMES);
+    public static final EasyRegistry REGISTRY = new EasyRegistry(LootGames.MODID, LootGames.TAB_LOOTGAMES);
 
     public void preInit(FMLPreInitializationEvent event) {
         ModBlocks.register();
         ModBlocks.registerTileEntites();
 
         NetworkHandler.registerPackets();
+
+        AdvancementManager.registerCriteria();
     }
 
     public void init(FMLInitializationEvent event) {

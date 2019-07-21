@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "lootgames:puzzle_master"
+    },
+    "title": {
+      "translate": "advancement.lootgames.root"
+    },
+    "description": {
+      "translate": "advancement.lootgames.root.desc"
+    },
+    "background": "lootgames:textures/blocks/dungeon_floor.png",
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "crafting_table": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:crafting_table"
+          }
+        ]
+      }
+    }
+  }
+}

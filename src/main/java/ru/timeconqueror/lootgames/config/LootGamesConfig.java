@@ -154,7 +154,7 @@ public class LootGamesConfig {
         })
         public int maxAttempts = 3;
 
-        @Config.LangKey("config.lootgames.gol.expand_field_stage")//TODO
+        @Config.LangKey("config.lootgames.gol.expand_field_stage")
         @Config.Comment({"At which stage should the playfield become a full 3x3 pattern? Set 0 to disable and keep the 4-block size; set 1 to always start with 3x3.",
                 "Default: 2."
         })
@@ -205,7 +205,7 @@ public class LootGamesConfig {
         }
 
         public static class Stage {
-            @Config.LangKey("config.lootgames.gol.stage.min_rounds_required_to_pass")//TODO Dimensional Config
+            @Config.LangKey("config.lootgames.gol.stage.min_rounds_required_to_pass")
             @Config.Comment({"Minimum correct rounds required to complete this stage and unlock the chest. This can be adjusted per-Dimension in S:DimensionalConfig.",
                     "Default: Stage 1 -> {5}, Stage 2 -> {10}, Stage 3 -> {15}, Stage 4 -> {20}"
             })

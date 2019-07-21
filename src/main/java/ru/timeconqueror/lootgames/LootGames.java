@@ -1,5 +1,6 @@
 package ru.timeconqueror.lootgames;
 
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -22,6 +23,8 @@ public class LootGames {
     public static final String MODID = "lootgames";
     public static final String MODNAME = "LootGames";
     public static final String VERSION = "GRADLETOKEN_VERSION";
+
+    public static final LGCreativeTabs TAB_LOOTGAMES = new LGCreativeTabs(CreativeTabs.getNextID(), LootGames.MODID);
 
     public static Random rand = new Random();
 
@@ -63,7 +66,6 @@ public class LootGames {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit(event);
-//        LootGameAchievement.registerAchievementPage();
     }
 
     @Mod.EventHandler

@@ -5,6 +5,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -14,6 +15,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.achievement.AdvancementManager;
 import ru.timeconqueror.lootgames.tileentity.TileEntityPuzzleMaster;
 
 import javax.annotation.Nullable;
@@ -51,11 +53,14 @@ public class BlockPuzzleMaster extends Block {
             return true;
         } else {
             //TODO add achievements
-//            LootGameAchievement.FIND_MINIDUNGEON.triggerAchievement(playerIn);
             if (worldIn.getTileEntity(pos) instanceof TileEntityPuzzleMaster) {
                 TileEntityPuzzleMaster te = (TileEntityPuzzleMaster) worldIn.getTileEntity(pos);
 
                 if (te != null) {
+                    if (playerIn instanceof EntityPlayerMP) {
+                        AdvancementManager.BLOCK_ACTIVATED.trigger(((EntityPlayerMP) playerIn), pos, playerIn.getHeldItem(hand));
+                    }
+
                     te.onBlockClickedByPlayer(playerIn);
                 } else {
                     playerIn.sendMessage(new TextComponentTranslation("msg.lootgames.puzzle_master.broken"));

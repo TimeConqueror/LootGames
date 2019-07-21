@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:skull"
+    },
+    "title": {
+      "translate": "advancement.lootgames.fail"
+    },
+    "frame": "task",
+    "description": {
+      "translate": "advancement.lootgames.fail.desc"
+    }
+  },
+  "parent": "lootgames:find_dungeon",
+  "criteria": {
+    "lose": {
+      "trigger": "lootgames:win_minigame",
+      "conditions": {
+        "name": "lose"
+      }
+    }
+  }
+}

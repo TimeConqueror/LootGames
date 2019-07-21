@@ -12,6 +12,10 @@ tile.lootgames.dungeon_bricks.6.name=Shielded Dungeon Floor
 tile.lootgames.dungeon_lamp.0.name=Dungeon Lamp
 tile.lootgames.dungeon_lamp.1.name=Broken Dungeon Lamp
 
+tile.lootgames.puzzle_master.name=Puzzle Master
+tile.lootgames.gol_master.name=Game of Light
+tile.lootgames.gol_subordinate.name=Subordinate Block
+
 #Messages
 msg.lootgames.puzzle_master.broken=This block seems to be broken. Please send issue to mod author.
 msg.lootgames.puzzle_master.turned_off=This structure seems to be turned off by higher forces.
@@ -27,6 +31,22 @@ msg.lootgames.gol_master.lose=The structure seems to be offended by your failure
 
 #Tooltips
 item.lootgames.dungeon_bricks.tooltip=Mobs can't spawn on this block.
+
+#Advancements
+advancement.lootgames.root=Loot Games
+advancement.lootgames.root.desc=Find 'em, play and obtain loot!
+advancement.lootgames.find_dungeon=Burried secrets
+advancement.lootgames.find_dungeon.desc=Find a mysterious Minigame Dungeon
+advancement.lootgames.game_of_light=Turn up the lights!
+advancement.lootgames.game_of_light.desc=Get the chance to play Game Of Light
+advancement.lootgames.win=My precious!
+advancement.lootgames.win.desc=Win a minigame and get tons of loot
+advancement.lootgames.fail=More luck next time
+advancement.lootgames.fail.desc=Failed (really?) a minigame (Like, you failed..?)
+advancement.lootgames.gol.level3=Almost got the Brains
+advancement.lootgames.gol.level3.desc=Beat a Game of Light at Level 3 (You still failed Level 4, soo.. try harder!)
+advancement.lootgames.gol.level4=Epic memory
+advancement.lootgames.gol.level4.desc=Beat a Game of Light at Level 4
 
 #Configs
 config.lootgames.minigamesenabled=Enable minigames

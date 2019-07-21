@@ -4,6 +4,7 @@ import net.minecraft.block.BlockChest;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
@@ -29,6 +30,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.achievement.AdvancementManager;
 import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
 import ru.timeconqueror.lootgames.block.BlockGOLSubordinate;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
@@ -73,7 +75,6 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
 
     @Override
     public void update() {
-
         if (gameStage == GameStage.NOT_CONSTRUCTED) {
             return;
         }
@@ -369,6 +370,10 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
     }
 
     private void onGameWon(EntityPlayer player) {
+        if (player instanceof EntityPlayerMP) {
+            AdvancementManager.WIN_GAME.trigger(((EntityPlayerMP) player), "win");
+        }
+
         player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.win").setStyle(new Style().setColor(TextFormatting.GREEN)));
         world.playSound(null, getPos(), ModSounds.golGameWin, SoundCategory.MASTER, 0.75F, 1.0F);
 
@@ -384,10 +389,14 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         }
 
         destroyStructure();
-        genLootChests();
+        genLootChests(player);
     }
 
     private void onGameLost(EntityPlayer player) {
+        if (player instanceof EntityPlayerMP) {
+            AdvancementManager.WIN_GAME.trigger(((EntityPlayerMP) player), "lose");
+        }
+
         world.playSound(null, getPos(), ModSounds.golGameLose, SoundCategory.MASTER, 0.75F, 1.0F);
         player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.lose").setStyle(new Style().setColor(TextFormatting.DARK_PURPLE)));
 
@@ -445,7 +454,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         return gameLevel == 4 && currentRound >= LootGamesConfig.gameOfLight.stage4.getMinRoundsRequiredToPass(world.provider.getDimension());
     }
 
-    private void genLootChests() {
+    private void genLootChests(EntityPlayer player) {
         int bestLevelReached = getBestLevelReached();
 
         if (bestLevelReached == -1 || isLastStagePassed()) {
@@ -457,21 +466,26 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
             return;
         }
 
-
-        //todo add achievements
         if (bestLevelReached > 0) {
             spawnLootChest(EnumPosOffset.NORTH, 1);
         }
 
         if (bestLevelReached > 1) {
+
             spawnLootChest(EnumPosOffset.EAST, 2);
         }
 
         if (bestLevelReached > 2) {
+            if (player instanceof EntityPlayerMP) {
+                AdvancementManager.WIN_GAME.trigger(((EntityPlayerMP) player), "gol_level3");
+            }
             spawnLootChest(EnumPosOffset.SOUTH, 3);
         }
 
         if (bestLevelReached > 3) {
+            if (player instanceof EntityPlayerMP) {
+                AdvancementManager.WIN_GAME.trigger(((EntityPlayerMP) player), "gol_level4");
+            }
             spawnLootChest(EnumPosOffset.WEST, 4);
         }
     }
