@@ -1,15 +1,20 @@
 package ru.timeconqueror.lootgames.tileentity;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
 import ru.timeconqueror.lootgames.minigame.ILootGame;
+import ru.timeconqueror.lootgames.registry.ModSounds;
 
 import static ru.timeconqueror.lootgames.world.gen.DungeonGenerator.*;
 
-public class TileEntityPuzzleMaster extends TileEntityEnhanced {
+public class TileEntityPuzzleMaster extends TileEntityEnhanced implements ITickable {
+    private long lastSoundTick = 0L;
+
     public void onBlockClickedByPlayer(EntityPlayer player) {
         try {//TODO 1.7.10 -> Change inactive msg
             if (!LootGamesConfig.areMinigamesEnabled) {
@@ -29,6 +34,19 @@ public class TileEntityPuzzleMaster extends TileEntityEnhanced {
 
         } catch (Throwable e) {
             LootGames.logHelper.error(e);
+        }
+    }
+
+    @Override
+    public void update() {
+        if (!world.isRemote) {
+            if (LootGames.rand.nextInt(100) <= 10) {
+                if (lastSoundTick < System.currentTimeMillis()) {
+                    System.out.println(3);
+                    lastSoundTick = System.currentTimeMillis() + (LootGames.rand.nextInt(90) + 30) * 1000;
+                    world.playSound(null, pos, ModSounds.puzzleMasterStrange, SoundCategory.MASTER, 0.5F, 1.0F);
+                }
+            }
         }
     }
 }

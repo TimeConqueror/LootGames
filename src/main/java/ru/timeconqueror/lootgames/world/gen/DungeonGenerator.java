@@ -59,7 +59,7 @@ public class DungeonGenerator {
             }
         }
 
-        LootGames.logHelper.trace("StructureGenerator => isValidSurfaceBlock() Result is: {}", result);
+        LootGames.logHelper.trace("DungeonGenerator => isValidSurfaceBlock() Result is: {}", result);
 
         return result;
     }
@@ -73,26 +73,24 @@ public class DungeonGenerator {
 
         for (int surfaceY = 128; surfaceY > 20; surfaceY--) {
             yLevelCheckPassed = true;
-            LootGames.logHelper.trace("StructureGenerator => setSurfaceLevel(): Scanning y={}", surfaceY);
+            LootGames.logHelper.trace("DungeonGenerator => setSurfaceLevel(): Scanning y={}", surfaceY);
 
             for (int axisX = (PUZZLEROOM_CENTER_TO_BORDER * -1); axisX <= PUZZLEROOM_CENTER_TO_BORDER; axisX++) {
                 for (int axisZ = (PUZZLEROOM_CENTER_TO_BORDER * -1); axisZ <= PUZZLEROOM_CENTER_TO_BORDER; axisZ++) {
                     IBlockState state = world.getBlockState(new BlockPos(axisX + x, surfaceY, axisZ + z));
 
                     if (!isValidSurfaceBlock(state)) {
-                        LootGames.logHelper.trace("StructureGenerator => setSurfaceLevel(): y={} has failed. Block is not valid: {} in {}", surfaceY, state.getBlock().toString(), new BlockPos(axisX + x, surfaceY, axisZ + z).toString());
+                        LootGames.logHelper.trace("DungeonGenerator => setSurfaceLevel(): y={} has failed. Block is not valid: {} in {}", surfaceY, state.getBlock().toString(), new BlockPos(axisX + x, surfaceY, axisZ + z).toString());
                         yLevelCheckPassed = false;
-                    }
-
-                    if (!yLevelCheckPassed)
                         break;
+                    }
                 }
                 if (!yLevelCheckPassed)
                     break;
             }
 
             if (yLevelCheckPassed) {
-                LootGames.logHelper.trace("StructureGenerator => setSurfaceLevel(): y={} has passed", surfaceY);
+                LootGames.logHelper.trace("DungeonGenerator => setSurfaceLevel(): y={} has passed", surfaceY);
                 surfaceLevel = surfaceY;
                 dungeonTop = surfaceLevel - PUZZLEROOM_SURFACE_DISTANCE;
                 dungeonBottom = surfaceLevel - (PUZZLEROOM_HEIGHT + PUZZLEROOM_SURFACE_DISTANCE);
@@ -113,7 +111,7 @@ public class DungeonGenerator {
     }
 
     public boolean doGenDungeon(World world, int x, int z) {
-        LootGames.logHelper.trace("StructureGenerator => generateDungeon()");
+        LootGames.logHelper.trace("DungeonGenerator => generateDungeon()");
 
         this.world = world;
         centerX = x;
@@ -123,7 +121,7 @@ public class DungeonGenerator {
             LootGames.logHelper.debug("Can't spawn PuzzleDungeon. Y level not found.");
             return false;
         }
-        LootGames.logHelper.trace("StructureGenerator => generateDungeon() : Surface level found. Dungeon bottom at: y= {}", dungeonBottom);
+        LootGames.logHelper.trace("DungeonGenerator => generateDungeon() : Surface level found. Dungeon bottom at: y= {}", dungeonBottom);
 
         if (checkForFreeSpace()) {
             for (int axisX = (PUZZLEROOM_CENTER_TO_BORDER * -1); axisX <= PUZZLEROOM_CENTER_TO_BORDER; axisX++) {
@@ -155,6 +153,7 @@ public class DungeonGenerator {
                 }
             }
             LootGames.logHelper.debug("PuzzleDungeon spawned at {} {} {} in Dimension {}", centerX, dungeonBottom, centerZ, world.provider.getDimension());
+            System.out.println(String.format("PuzzleDungeon spawned at %d %d %d in Dimension %d", centerX, dungeonBottom, centerZ, world.provider.getDimension()));
 
             // Generate entrance
             // Loop as long as the last "staircase" block is something different than air
@@ -198,7 +197,7 @@ public class DungeonGenerator {
      */
     private boolean checkForFreeSpace() {
         boolean result = true;
-        LootGames.logHelper.trace("StructureGenerator => checkForFreeSpace()");
+        LootGames.logHelper.trace("DungeonGenerator => checkForFreeSpace()");
         for (int axisX = (PUZZLEROOM_CENTER_TO_BORDER * -1); axisX <= PUZZLEROOM_CENTER_TO_BORDER; axisX++) {
             for (int axisZ = (PUZZLEROOM_CENTER_TO_BORDER * -1); axisZ <= PUZZLEROOM_CENTER_TO_BORDER; axisZ++) {
                 for (int axisY = dungeonBottom; axisY <= dungeonTop; axisY++) {
@@ -220,7 +219,7 @@ public class DungeonGenerator {
                 }
             }
         }
-        LootGames.logHelper.trace("StructureGenerator => checkForFreeSpace() : Result is {}.", result);
+        LootGames.logHelper.trace("DungeonGenerator => checkForFreeSpace() : Result is {}.", result);
         return result;
     }
 }

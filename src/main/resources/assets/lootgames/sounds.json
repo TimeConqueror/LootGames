@@ -43,5 +43,30 @@
         "stream": false
       }
     ]
+  },
+  "puzzle_master_strange": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "lootgames:strange_001",
+        "stream": false
+      },
+      {
+        "name": "lootgames:strange_002",
+        "stream": false
+      },
+      {
+        "name": "lootgames:strange_003",
+        "stream": false
+      },
+      {
+        "name": "lootgames:strange_004",
+        "stream": false
+      },
+      {
+        "name": "lootgames:strange_005",
+        "stream": false
+      }
+    ]
   }
 }

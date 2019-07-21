@@ -374,12 +374,16 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
             AdvancementManager.WIN_GAME.trigger(((EntityPlayerMP) player), "win");
         }
 
+        if (maxLevelBeatList.size() == LootGamesConfig.gameOfLight.maxAttempts + 1 && getBestLevelReached() > 0) {
+            gameLevel -= 1;
+        }
+
         player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.win").setStyle(new Style().setColor(TextFormatting.GREEN)));
         world.playSound(null, getPos(), ModSounds.golGameWin, SoundCategory.MASTER, 0.75F, 1.0F);
 
         int bestLevelReached = getBestLevelReached();
         if (bestLevelReached != -1) {
-            player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.reward_level_reached", gameLevel - 1, isLastStagePassed() ? 4 : bestLevelReached).setStyle(new Style().setColor(TextFormatting.GREEN)));
+            player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.reward_level_reached", gameLevel, isLastStagePassed() ? 4 : bestLevelReached).setStyle(new Style().setColor(TextFormatting.GREEN)));
         }
 
         for (int x = -1; x < 2; x++) {
@@ -532,7 +536,10 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
 
             //will shrink loot in chest if option is enabled
             if (stage.minItems != -1 || stage.maxItems != -1) {
-                int itemCount = (stage.maxItems == -1 ? notEmptyIndexes.size() : LootGames.rand.nextInt(stage.maxItems)) + (stage.minItems == -1 ? 0 : stage.minItems);
+                int min = stage.minItems == -1 ? 0 : stage.minItems;
+                int extra = stage.maxItems - stage.minItems;
+
+                int itemCount = (stage.maxItems == -1 ? notEmptyIndexes.size() : extra < 1 ? min : min + LootGames.rand.nextInt(extra));
                 if (itemCount < notEmptyIndexes.size()) {
                     int[] itemsRemain = new int[itemCount];
                     for (int i = 0; i < itemsRemain.length; i++) {

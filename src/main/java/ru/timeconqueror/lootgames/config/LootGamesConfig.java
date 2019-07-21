@@ -111,8 +111,9 @@ public class LootGamesConfig {
         public boolean isDungeonWorldGenEnabled = true;
 
         //TODO add retrogen
-        @Config.LangKey("config.lootgames.retrogenenabled")
-        @Config.Comment({"If this is equal true, then minigames will appear in already generated chunks.", "Default: false"})
+//        @Config.LangKey("config.lootgames.retrogenenabled")
+//        @Config.Comment({"If this is equal true, then minigames will appear in already generated chunks.", "Default: false"})
+        @Config.Ignore
         public boolean isDungeonRetroGenEnabled = false;
 
         @Config.LangKey("config.lootgames.dimrhomblist")
@@ -127,20 +128,20 @@ public class LootGamesConfig {
 
     public static class GOL {
         @Config.LangKey("config.lootgames.gol.stage.1")
-        @Config.Comment("Regulates characteristics of stage 1.")//FIXME change min rounds, rework items
-        public Stage stage1 = new Stage(1, false, 24, "minecraft:chests/simple_dungeon", 2, 4);
+        @Config.Comment("Regulates characteristics of stage 1.")
+        public Stage stage1 = new Stage(5, false, 24, "minecraft:chests/simple_dungeon", 10, 10);
 
         @Config.LangKey("config.lootgames.gol.stage.2")
         @Config.Comment("Regulates characteristics of stage 2.")
-        public Stage stage2 = new Stage(2, false, 16, "minecraft:chests/abandoned_mineshaft", 4, 6);
+        public Stage stage2 = new Stage(10, false, 16, "minecraft:chests/abandoned_mineshaft", -1, -1);
 
         @Config.LangKey("config.lootgames.gol.stage.3")
         @Config.Comment("Regulates characteristics of stage 3.")
-        public Stage stage3 = new Stage(3, false, 12, "minecraft:chests/jungle_temple", 6, 8);
+        public Stage stage3 = new Stage(15, false, 12, "minecraft:chests/jungle_temple", -1, -1);
 
         @Config.LangKey("config.lootgames.gol.stage.4")
         @Config.Comment("Regulates characteristics of stage 4.")
-        public Stage stage4 = new Stage(4, true, 10, "minecraft:chests/stronghold_corridor", 8, 10);
+        public Stage stage4 = new Stage(20, true, 10, "minecraft:chests/stronghold_corridor", -1, -1);
 
         @Config.LangKey("config.lootgames.gol.start_digits")
         @Config.Comment({"How many digits should be randomly chosen at game-start?",
@@ -186,14 +187,10 @@ public class LootGamesConfig {
         public int timeout = 60;
 
         private void initStages() {
-            stage1.parseLootTable();
-            stage1.parseDimConfigs();
-            stage2.parseLootTable();
-            stage2.parseDimConfigs();
-            stage3.parseLootTable();
-            stage3.parseDimConfigs();
-            stage4.parseLootTable();
-            stage4.parseDimConfigs();
+            for (int i = 1; i <= 4; i++) {
+                getStageByIndex(i).parseLootTable();
+                getStageByIndex(i).parseDimConfigs();
+            }
         }
 
         /**
