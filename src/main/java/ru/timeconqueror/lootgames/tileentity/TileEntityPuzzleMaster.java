@@ -42,7 +42,6 @@ public class TileEntityPuzzleMaster extends TileEntityEnhanced implements ITicka
         if (!world.isRemote) {
             if (LootGames.rand.nextInt(100) <= 10) {
                 if (lastSoundTick < System.currentTimeMillis()) {
-                    System.out.println(3);
                     lastSoundTick = System.currentTimeMillis() + (LootGames.rand.nextInt(90) + 30) * 1000;
                     world.playSound(null, pos, ModSounds.puzzleMasterStrange, SoundCategory.MASTER, 0.5F, 1.0F);
                 }

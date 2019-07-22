@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.timecore.util.ConfigReloader;
+import ru.timeconqueror.timecore.api.auxiliary.ConfigReloader;
 
 import javax.annotation.Nullable;
 import java.util.Collections;

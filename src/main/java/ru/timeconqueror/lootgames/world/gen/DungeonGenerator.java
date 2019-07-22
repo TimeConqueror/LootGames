@@ -7,11 +7,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.auxiliary.RandHelper;
 import ru.timeconqueror.lootgames.block.BlockDungeonBricks;
 import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
-
+import ru.timeconqueror.timecore.api.auxiliary.RandHelper;
 
 public class DungeonGenerator {
     public static final int PUZZLEROOM_CENTER_TO_BORDER = 10;
@@ -130,30 +129,29 @@ public class DungeonGenerator {
                         BlockPos pos = new BlockPos(axisX + centerX, axisY, axisZ + centerZ);
 
                         // Clear the space first before we continue
-                        this.world.setBlockToAir(pos);
+                        placeBlock(pos, Blocks.AIR.getDefaultState());
 
                         // Static center block with masterTE
                         if (axisX == 0 && axisZ == 0 && axisY == dungeonBottom + PUZZLEROOM_MASTER_TE_OFFSET)
-                            this.world.setBlockState(pos, ModBlocks.PUZZLE_MASTER.getDefaultState());
+                            placeBlock(pos, ModBlocks.PUZZLE_MASTER.getDefaultState());
                         else if (axisY == dungeonBottom) // bottom layer of the dungeon
-                            this.world.setBlockState(pos, ModBlocks.DUNGEON_BRICKS.getStateFromMeta(RandHelper.chance(10, BlockDungeonBricks.EnumType.DUNGEON_FLOOR_CRACKED.getMeta(), BlockDungeonBricks.EnumType.DUNGEON_FLOOR.getMeta())));
+                            placeBlock(pos, ModBlocks.DUNGEON_BRICKS.getStateFromMeta(RandHelper.chance(10, BlockDungeonBricks.EnumType.DUNGEON_FLOOR_CRACKED.getMeta(), BlockDungeonBricks.EnumType.DUNGEON_FLOOR.getMeta())));
                         else if (axisY == dungeonTop) // Top layer of the dungeon
-                            this.world.setBlockState(pos, ModBlocks.DUNGEON_BRICKS.getStateFromMeta(RandHelper.chance(10, BlockDungeonBricks.EnumType.DUNGEON_CEILING_CRACKED.getMeta(), BlockDungeonBricks.EnumType.DUNGEON_CEILING.getMeta())));
+                            placeBlock(pos, ModBlocks.DUNGEON_BRICKS.getStateFromMeta(RandHelper.chance(10, BlockDungeonBricks.EnumType.DUNGEON_CEILING_CRACKED.getMeta(), BlockDungeonBricks.EnumType.DUNGEON_CEILING.getMeta())));
                         else if (axisY == dungeonBottom + 1) // Playfield placeholder to the player doesn't stand within generated blocks
-                            this.world.setBlockState(pos, ModBlocks.DUNGEON_BRICKS.getStateFromMeta(BlockDungeonBricks.EnumType.DUNGEON_FLOOR_SHIELDED.getMeta()));
+                            placeBlock(pos, ModBlocks.DUNGEON_BRICKS.getStateFromMeta(BlockDungeonBricks.EnumType.DUNGEON_FLOOR_SHIELDED.getMeta()));
                         else {
                             if (axisX == (PUZZLEROOM_CENTER_TO_BORDER * -1) || axisX == PUZZLEROOM_CENTER_TO_BORDER || axisZ == (PUZZLEROOM_CENTER_TO_BORDER * -1) || axisZ == PUZZLEROOM_CENTER_TO_BORDER) {
                                 if (axisY == (dungeonTop - (int) Math.floor((PUZZLEROOM_HEIGHT / 2F))))
-                                    this.world.setBlockState(pos, ModBlocks.DUNGEON_LAMP.getDefaultState().withProperty(BlockDungeonLamp.BROKEN, RandHelper.chance(10, true, false)));
+                                    placeBlock(pos, ModBlocks.DUNGEON_LAMP.getDefaultState().withProperty(BlockDungeonLamp.BROKEN, RandHelper.chance(10, true, false)));
                                 else
-                                    this.world.setBlockState(pos, ModBlocks.DUNGEON_BRICKS.getStateFromMeta(RandHelper.chance(10, BlockDungeonBricks.EnumType.DUNGEON_WALL_CRACKED.getMeta(), BlockDungeonBricks.EnumType.DUNGEON_WALL.getMeta())));
+                                    placeBlock(pos, ModBlocks.DUNGEON_BRICKS.getStateFromMeta(RandHelper.chance(10, BlockDungeonBricks.EnumType.DUNGEON_WALL_CRACKED.getMeta(), BlockDungeonBricks.EnumType.DUNGEON_WALL.getMeta())));
                             }
                         }
                     }
                 }
             }
             LootGames.logHelper.debug("PuzzleDungeon spawned at {} {} {} in Dimension {}", centerX, dungeonBottom, centerZ, world.provider.getDimension());
-            System.out.println(String.format("PuzzleDungeon spawned at %d %d %d in Dimension %d", centerX, dungeonBottom, centerZ, world.provider.getDimension()));
 
             // Generate entrance
             // Loop as long as the last "staircase" block is something different than air
@@ -171,7 +169,7 @@ public class DungeonGenerator {
                         BlockPos pos = new BlockPos(axisX, axisY + (axisZ - PUZZLEROOM_CENTER_TO_BORDER), axisZ + centerZ);
                         IBlockState currentBlockState = this.world.getBlockState(pos);
                         if (currentBlockState.getMaterial().isSolid())
-                            this.world.setBlockToAir(pos);
+                            placeBlock(pos, Blocks.AIR.getDefaultState());
                         else
                             break;
                     }
@@ -221,5 +219,9 @@ public class DungeonGenerator {
         }
         LootGames.logHelper.trace("DungeonGenerator => checkForFreeSpace() : Result is {}.", result);
         return result;
+    }
+
+    public void placeBlock(BlockPos pos, IBlockState state) {
+        world.setBlockState(pos, state, 3);
     }
 }

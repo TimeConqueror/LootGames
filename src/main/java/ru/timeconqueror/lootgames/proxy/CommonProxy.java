@@ -13,7 +13,7 @@ import ru.timeconqueror.lootgames.packets.NetworkHandler;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.registry.ModSounds;
 import ru.timeconqueror.lootgames.world.gen.LootGamesWorldGen;
-import ru.timeconqueror.timecore.registry.EasyRegistry;
+import ru.timeconqueror.timecore.api.registry.EasyRegistry;
 
 public class CommonProxy {
     public static final EasyRegistry REGISTRY = new EasyRegistry(LootGames.MODID, LootGames.TAB_LOOTGAMES);

@@ -7,9 +7,9 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.timecore.event.OnConfigReloadedEvent;
-import ru.timeconqueror.timecore.util.IntHelper;
-import ru.timeconqueror.timecore.util.debug.LogHelper;
+import ru.timeconqueror.timecore.api.auxiliary.IntHelper;
+import ru.timeconqueror.timecore.api.auxiliary.debug.LogHelper;
+import ru.timeconqueror.timecore.api.event.OnConfigReloadedEvent;
 
 import java.util.HashMap;
 
@@ -277,7 +277,7 @@ public class LootGamesConfig {
                     }
 
                     if (config.length == 3) {
-                        if (IntHelper.canBeParsed(config[0])) {
+                        if (IntHelper.isInt(config[0])) {
                             int dim = Integer.parseInt(config[0]);
 
                             if (dimensionsConfigsMap.containsKey(dim)) {
@@ -286,7 +286,7 @@ public class LootGamesConfig {
                             }
 
                             int minRounds;
-                            if (!config[2].isEmpty() && IntHelper.canBeParsed(config[2])) {
+                            if (!config[2].isEmpty() && IntHelper.isInt(config[2])) {
                                 minRounds = Integer.parseInt(config[2]);
                                 if (minRounds < 1 || minRounds > 256) {
                                     LootGames.logHelper.error("Invalid dimension configs entry found: {}. Min Rounds Required To Pass must be an Integer from 1 to 256 or an empty string.", entry);
