@@ -237,14 +237,14 @@ public class LootGamesConfig {
             public String[] perDimensionConfigs = new String[]{};
 
             @Config.LangKey("config.lootgames.gol.stage.min_items")
-            @Config.Comment({"Minimum amount of items to be generated in chest. Won't be applied, if count of items in bound loot table are less than it. If set to -1, then reward count will not be governed by this parameter.",
+            @Config.Comment({"Minimum amount of items to be generated in chest. Won't be applied, if count of items in bound loot table are less than it. If min and max are set to -1, the limits will be disabled.",
                     "Default: Stage 1 -> {2}, Stage 2 -> {4}, Stage 3 -> {6}, Stage 4 -> {8}"
             })
             @Config.RangeInt(min = -1, max = 256)
             public int minItems;
 
             @Config.LangKey("config.lootgames.gol.stage.max_items")
-            @Config.Comment({"Maximum amount of items to be generated in chest. If set to -1, then reward count will not be governed by this parameter.",
+            @Config.Comment({"Maximum amount of items to be generated in chest. If this is set to -1, max limit will be disabled.",
                     "Default: Stage 1 -> {4}, Stage 2 -> {6}, Stage 3 -> {8}, Stage 4 -> {10}"
             })
             @Config.RangeInt(min = -1, max = 256)

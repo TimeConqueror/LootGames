@@ -122,7 +122,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
             }
         }
 
-        if (gameStage == GameStage.WAITING_FOR_PLAYER_SEQUENCE && !world.isRemote) {
+        if (!world.isRemote && gameStage == GameStage.WAITING_FOR_PLAYER_SEQUENCE) {
             if (timeout >= LootGamesConfig.gameOfLight.timeout * 20) {
                 updateGameStage(GameStage.WAITING_FOR_START);
             }
@@ -174,11 +174,12 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
     }
 
     public void onSubordinateClickedByPlayer(EnumPosOffset subordinateOffset, EntityPlayer player) {
-        if (gameStage == GameStage.WAITING_FOR_PLAYER_SEQUENCE) {//TODO add timeout here!
+        if (gameStage == GameStage.WAITING_FOR_PLAYER_SEQUENCE) {
             if (world.isRemote) {
                 symbolsEnteredByPlayer.add(new ClickInfo(System.currentTimeMillis(), subordinateOffset));
                 playFeedbackSound(subordinateOffset);
             } else {
+                timeout = 0;
                 checkPlayerReply(subordinateOffset, player);
             }
 
@@ -535,11 +536,11 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
             }
 
             //will shrink loot in chest if option is enabled
-            if (stage.minItems != -1 || stage.maxItems != -1) {//TODO redo minItems when max is not -1
+            if (stage.minItems != -1 || stage.maxItems != -1) {
                 int min = stage.minItems == -1 ? 0 : stage.minItems;
-                int extra = stage.maxItems - stage.minItems;
+                int extra = (stage.maxItems == -1 ? notEmptyIndexes.size() : stage.maxItems) - stage.minItems;
 
-                int itemCount = (stage.maxItems == -1 ? notEmptyIndexes.size() : extra < 1 ? min : min + LootGames.rand.nextInt(extra));
+                int itemCount = extra < 1 ? min : min + LootGames.rand.nextInt(extra);
                 if (itemCount < notEmptyIndexes.size()) {
                     int[] itemsRemain = new int[itemCount];
                     for (int i = 0; i < itemsRemain.length; i++) {
