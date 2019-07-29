@@ -6,5 +6,4 @@ gradle/
 libs/
 out/
 run/
-ztemp/
 *.iml

@@ -174,7 +174,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
     }
 
     public void onSubordinateClickedByPlayer(EnumPosOffset subordinateOffset, EntityPlayer player) {
-        if (gameStage == GameStage.WAITING_FOR_PLAYER_SEQUENCE) {
+        if (gameStage == GameStage.WAITING_FOR_PLAYER_SEQUENCE) {//TODO add timeout here!
             if (world.isRemote) {
                 symbolsEnteredByPlayer.add(new ClickInfo(System.currentTimeMillis(), subordinateOffset));
                 playFeedbackSound(subordinateOffset);
@@ -217,7 +217,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
                 world.playSound(null, getPos(), ModSounds.golSequenceComplete, SoundCategory.MASTER, 0.75F, 1.0F);
 
                 if (LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).randomizeSequence) {
-                    generateSequence(symbolSequence.size() + 1);
+                    generateSequence(symbolSequence.size() + 1);//TODO add config for randomizing only at beggining of stage, change then langs
                 } else {
                     addRandSymbolToSequence();
                 }
@@ -535,7 +535,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
             }
 
             //will shrink loot in chest if option is enabled
-            if (stage.minItems != -1 || stage.maxItems != -1) {
+            if (stage.minItems != -1 || stage.maxItems != -1) {//TODO redo minItems when max is not -1
                 int min = stage.minItems == -1 ? 0 : stage.minItems;
                 int extra = stage.maxItems - stage.minItems;
 
@@ -597,7 +597,7 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
     }
 
     private void spawnFeedbackParticles(EnumParticleTypes particle, BlockPos pos) {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 20; i++) {//TODO
             world.spawnParticle(particle, pos.getX() + LootGames.rand.nextFloat(), pos.getY() + 0.5F + LootGames.rand.nextFloat(), pos.getZ() + LootGames.rand.nextFloat(), LootGames.rand.nextGaussian() * 0.02D, (0.02D + LootGames.rand.nextGaussian()) * 0.02D, LootGames.rand.nextGaussian() * 0.02D);
         }
     }

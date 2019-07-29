@@ -26,7 +26,7 @@ public class LootGamesConfig {
     public static GOL gameOfLight = new GOL();
 
     @Config.LangKey("config.lootgames.minigamesenabled")
-    @Config.Comment({"If this is set to false, then dungeon generation will be enabled.", "Default: true"})
+    @Config.Comment({"If this is set to false, then puzzle master won't start any game.", "Default: true"})
     public static boolean areMinigamesEnabled = true;
 
     @Config.LangKey("config.lootgames.enabledebug")
@@ -112,7 +112,7 @@ public class LootGamesConfig {
 
         //TODO add retrogen
 //        @Config.LangKey("config.lootgames.retrogenenabled")
-//        @Config.Comment({"If this is equal true, then minigames will appear in already generated chunks.", "Default: false"})
+//        @Config.Comment({"If this is equal true, then minigame dungeons will appear in already generated chunks.", "Default: false"})
         @Config.Ignore
         public boolean isDungeonRetroGenEnabled = false;
 
@@ -121,7 +121,7 @@ public class LootGamesConfig {
                 "Rhomb size means the size of rhombs, which will imaginary cover the world. Dungeon will be generated in each rhomb.",
                 "So the larger the size, the less chance of generation.",
                 "Rhomb size must be between 5 and 100.",
-                "Example of array element: 0; 20 - this means that rhombs with size equal to 20 will be generated in the overworld (ID = 0).",
+                "Example of array element: 0; 20 - this means that dungeons will be generated in rhombs with size equal to 20 in the overworld (ID = 0).",
                 "Default: {0}"})
         private String[] dimAndRhombList = new String[]{"0; 20"};
     }
@@ -144,13 +144,13 @@ public class LootGamesConfig {
         public Stage stage4 = new Stage(20, true, 10, "minecraft:chests/stronghold_corridor", -1, -1);
 
         @Config.LangKey("config.lootgames.gol.start_digits")
-        @Config.Comment({"How many digits should be randomly chosen at game-start?",
+        @Config.Comment({"How many digits should be randomly chosen and shown at game-start?",
                 "Default: 2."
         })
         public int startDigitAmount = 2;
 
         @Config.LangKey("config.lootgames.gol.max_attempts")
-        @Config.Comment({"How many attempts does a player have? I means the struct will fail after the first misclicked block.",
+        @Config.Comment({"How many attempts does a player have? The structure will fail after max attempt count is passed, or the player will win if he beat at least 1 stage.",
                 "Default: 3."
         })
         public int maxAttempts = 3;
@@ -181,7 +181,7 @@ public class LootGamesConfig {
         public boolean onFailLava = true;
 
         @Config.LangKey("config.lootgames.gol.timeout")
-        @Config.Comment({"How long does it take to timeout a game? Value is in seconds. If no player input is done in that time, the game will go to sleep. The next player will start fresh.",
+        @Config.Comment({"How long does it take to timeout a game? Value is in seconds. How long does it take to timeout a game? Value is in seconds. If player has been inactive for given time, the game will go to sleep. The next player can start the game from the beginning.",
                 "Default: 60"
         })
         public int timeout = 60;
@@ -210,41 +210,41 @@ public class LootGamesConfig {
             public int minRoundsRequiredToPass;
 
             @Config.LangKey("config.lootgames.gol.stage.randomize")
-            @Config.Comment({"If true, the pattern will randomize on each level in this stage.",
+            @Config.Comment({"If true, the pattern will randomize on each round in this stage.",
                     "Default: Stage 1 -> false, Stage 2 -> false, Stage 3 -> false, Stage 4 -> true"
             })
             public boolean randomizeSequence;
 
             @Config.LangKey("config.lootgames.gol.stage.display_time")
-            @Config.Comment({"The amount of time (in ticks; 20 ticks = 1s) to wait at playback before moving to the next color.",
+            @Config.Comment({"The amount of time (in ticks; 20 ticks = 1s) the symbol will be displayed.",
                     "Default: Stage 1 -> {24}, Stage 2 -> {16}, Stage 3 -> {12}, Stage 4 -> {10}"
             })
             @Config.RangeInt(min = 2, max = 40)
             public int displayTime;
 
             @Config.LangKey("config.lootgames.gol.stage.loot_table")
-            @Config.Comment({"The loottable resourcelocation for the chest in this stage. This can be adjusted per-Dimension in S:DimensionalConfig.",
+            @Config.Comment({"Name of the loottable, items from which will be generated in the chest of this stage. This can be adjusted per-Dimension in S:DimensionalConfig.",
                     "Default: Stage 1 -> minecraft:chests/simple_dungeon, Stage 2 -> minecraft:chests/abandoned_mineshaft, Stage 3 -> minecraft:chests/jungle_temple, Stage 4 -> minecraft:chests/stronghold_corridor"
             })
             public String lootTable;
             @Config.LangKey("config.lootgames.gol.stage.dimconfig")
             @Config.Comment({"Here you can add different loottables to each dimension. If dimension isn't in this list, then game will take default loottable for this stage.",
-                    "Syntax: <dimension_id>; <loottable_resourcelocation>; <min_rounds_required_to_pass>",
-                    "<loottable_resourcelocation> - The loottable resourcelocation for the chest in this stage. Can be skipped. In this case you just need to write semicolon, example: \"{0; ; 10}\"",
+                    "Syntax: <dimension_id>; <loottable_name>; <min_rounds_required_to_pass>",
+                    "<loottable_name> - The loottable name for the chest in this stage. Can be skipped. In this case you just need to write semicolon, example: \"{0; ; 10}\"",
                     "<min_rounds_required_to_pass> - Minimum correct rounds required to complete this stage and unlock the chest. Can be skipped. Example with skipping: \"{0; minecraft:chests/simple_dungeon; }\"",
-                    "Example: { 0; minecraft:chests/simple_dungeon; 10 }",
+                    "General Example: { 0; minecraft:chests/simple_dungeon; 10 }",
                     "Default: {}"})
             public String[] perDimensionConfigs = new String[]{};
 
             @Config.LangKey("config.lootgames.gol.stage.min_items")
-            @Config.Comment({"Minimum amount of items to be spawned. Won't be applied, if count of items in bound loot table are less than it. If set to -1, then min limit will be disabled.",
+            @Config.Comment({"Minimum amount of items to be generated in chest. Won't be applied, if count of items in bound loot table are less than it. If set to -1, then reward count will not be governed by this parameter.",
                     "Default: Stage 1 -> {2}, Stage 2 -> {4}, Stage 3 -> {6}, Stage 4 -> {8}"
             })
             @Config.RangeInt(min = -1, max = 256)
             public int minItems;
 
             @Config.LangKey("config.lootgames.gol.stage.max_items")
-            @Config.Comment({"Maximum amount of items to be spawned. If set to -1, then max limit will be disabled.",
+            @Config.Comment({"Maximum amount of items to be generated in chest. If set to -1, then reward count will not be governed by this parameter.",
                     "Default: Stage 1 -> {4}, Stage 2 -> {6}, Stage 3 -> {8}, Stage 4 -> {10}"
             })
             @Config.RangeInt(min = -1, max = 256)

@@ -1,0 +1,116 @@
+itemGroup.lootgames=Loot Games
+
+#Blocks
+tile.lootgames.dungeon_bricks.0.name=Стена подземелья
+tile.lootgames.dungeon_bricks.1.name=Потолок подземелья
+tile.lootgames.dungeon_bricks.2.name=Пол подземелья
+tile.lootgames.dungeon_bricks.3.name=Потрескавшаяся стена подземелья
+tile.lootgames.dungeon_bricks.4.name=Потрескавшийся потолок подземелья
+tile.lootgames.dungeon_bricks.5.name=Потрескавшийся пол подземелья
+tile.lootgames.dungeon_bricks.6.name=Защищённый пол подземелья
+
+tile.lootgames.dungeon_lamp.0.name=Лампа подземелья
+tile.lootgames.dungeon_lamp.1.name=Сломанная лампа подземелья
+
+tile.lootgames.puzzle_master.name=Мастер головоломок
+tile.lootgames.gol_master.name=Игра света
+tile.lootgames.gol_subordinate.name=Блок-подчинённый
+
+#Messages
+msg.lootgames.puzzle_master.broken=Кажется, этот блок сломан. Пожалуйста, сообщите об этой проблеме автору мода.
+msg.lootgames.puzzle_master.turned_off=Кажется, эта структура отключена высшими силами.
+
+msg.lootgames.gol_master.start=Давайте сыграем в игру? Нажмите на центральный блок!
+msg.lootgames.gol_master.rules=Вам просто нужно повторить цвета.
+msg.lootgames.gol_master.not_ready=Вы чувствуете, что структура еще не готова принимать ваш ответ
+msg.lootgames.gol_master.wrong_block=Похоже, вы коснулись не того цвета...
+msg.lootgames.gol_master.stage_complete=Кажется, структура признаёт ваши старания...
+msg.lootgames.gol_master.win=Структура довольна, и поэтому она вознаграждает вас!
+msg.lootgames.gol_master.reward_level_reached=Текущий достигнутый уровень награды: %d (Лучший: %d)
+msg.lootgames.gol_master.lose=Кажется, структура оскорбилась вашим провалом.
+
+#Tooltips
+item.lootgames.dungeon_bricks.tooltip=Существа не могут спауниться на этом блоке.
+
+#Advancements
+advancement.lootgames.root=Loot Games
+advancement.lootgames.root.desc=Найди их, сыграй и получи награду!
+advancement.lootgames.find_dungeon=Зарытые секреты
+advancement.lootgames.find_dungeon.desc=Найдите загадочное подземелье с мини-игрой
+advancement.lootgames.game_of_light=Зажгите свет!
+advancement.lootgames.game_of_light.desc=Получите шанс сыграть в Игру света
+advancement.lootgames.win=Моя прелесть!
+advancement.lootgames.win.desc=Выиграйте в мини-игру и получите кучу награды
+advancement.lootgames.fail=Повезёт в следующий раз
+advancement.lootgames.fail.desc=Ты проиграл в мини-игру? (типа, серьёзно?)
+advancement.lootgames.gol.level3=Почти понял в чём суть
+advancement.lootgames.gol.level3.desc=Пройдите Игру света на 3-ем уровне (Вы всё ещё не прошли 4-ый уровень, так что... старайтесь усерднее!)
+advancement.lootgames.gol.level4=Бесподобная память
+advancement.lootgames.gol.level4.desc=Пройдите 4-ый уровень Игры света
+
+#Configs
+config.lootgames.minigamesenabled=Включить мини-игры
+config.lootgames.minigamesenabled.tooltip=Если это равно false, мастер головоломок не начнёт ни одной игры.
+config.lootgames.enabledebug=Включить режим отладки
+config.lootgames.enabledebug.tooltip=Если это равно true, то в лог-файлы будут записываться дополнительные сообщения.
+config.lootgames.debuglevel=Уровень отладки
+config.lootgames.debuglevel.tooltip=Доступные варианты: debug, trace.\nDebug: записывает сообщения уровня debug.\nTrace: записывает сообщения уровня debug и trace.
+
+config.lootgames.category.worldgen=Генерация мира
+config.lootgames.category.worldgen.tooltip=Регулирует появление подземелий в мире.
+config.lootgames.worldgenenabled=Включить генерацию подземелий
+config.lootgames.worldgenenabled.tooltip=Если это равно true, генерация подземелий будет включена.
+config.lootgames.retrogenenabled=Включить ретрогенерацию
+config.lootgames.retrogenenabled.tooltip=Если это равно true, то подземелья с мини-играми будут появляться в уже сгенерированных чанках.
+config.lootgames.dimrhomblist=Список измерений и ромбов
+config.lootgames.dimrhomblist.tooltip=Содержит ID разрешенных измерений, в которых разрешена генерация подземелий, а также размер ромба.\nВторой параметр означает размер ромба, которыми мнимо покрыт мир. Подземелье будет генерироваться в каждом из ромбов.\nТак что чем больше размер ромба, тем меньше шанс генерации.\nПример элемента списка: 0; 20 - это означает, что подземелья будут генерироваться в ромбах с размером 20 в Обычном мире (ID которого равно 0)
+
+config.lootgames.category.gol=Настройки Игры света
+config.lootgames.category.gol.tooltip=Регулирует мини-игру "Игра света".
+config.lootgames.gol.stage.1=Первый этап игры
+config.lootgames.gol.stage.1.tooltip=Регулирует особенности первого этапа.
+config.lootgames.gol.stage.2=Второй этап игры
+config.lootgames.gol.stage.2.tooltip=Регулирует особенности второго этапа.
+config.lootgames.gol.stage.3=Третий этап игры
+config.lootgames.gol.stage.3.tooltip=Регулирует особенности третьего этапа.
+config.lootgames.gol.stage.4=Четвертый этап игры
+config.lootgames.gol.stage.4.tooltip=Регулирует особенности четвертого этапа.
+config.lootgames.gol.start_digits=Стартовое кол-во символов
+config.lootgames.gol.start_digits.tooltip=Как много символов будут случайно выбраны и показаны при старте игры?
+config.lootgames.gol.max_attempts=Макс. попыток
+config.lootgames.gol.max_attempts.tooltip=Как много попыток имеет игрок? Структура разрушится после того, как все попытки иссякнут, но игрок также может и выграть, если он преодолел хотя бы 1 этап.
+config.lootgames.gol.expand_field_stage=Расширить поле на этапе
+config.lootgames.gol.expand_field_stage.tooltip=На каком этапе поле должно генерировать символы 3х3? Установите на 0, если хотите отключить этот параметр и заставить игру придерживаться символов на 4-х ближних блоках. При установке параметра на 1, игра будет всегда начинаться с символов 3х3.
+config.lootgames.gol.on_fail_explode=Взрыв при поражении
+config.lootgames.gol.on_fail_explode.tooltip=Включить или выключить взрыв структуры после исчерпания всех попыток.
+config.lootgames.gol.on_fail_zombies=Зомби при поражении
+config.lootgames.gol.on_fail_zombies.tooltip=Включить или выключить наполнение структуры группой зомби после исчерпания всех попыток
+config.lootgames.gol.on_fail_lava=Лава при поражении
+config.lootgames.gol.on_fail_lava.tooltip=Включить или выключить наполнение структуры лавой после исчерпания всех попыток
+config.lootgames.gol.timeout=Тайм-аут
+config.lootgames.gol.timeout.tooltip=Сколько времени занимает тайм-аут в игре? Значение принимается в секундах. Если игрок был неактивен такое количество времени, игра перейдёт в режим сна. Следующий игрок может начать вводить символы с начала.
+
+config.lootgames.gol.stage.min_rounds_required_to_pass=Мин. раундов для прохождения
+config.lootgames.gol.stage.min_rounds_required_to_pass.tooltip=Минимум пройденных раундов, необходимых для завершения этого этапа и разблокирования сундука. Можно регулировать для каждого измерения через конфигурацию "Настройки по измерениям".
+config.lootgames.gol.stage.randomize=Рандомизировать последовательность
+config.lootgames.gol.stage.randomize.tooltip=Если установлено на true, последовательность будет случайной на каждом раунде этапа.
+config.lootgames.gol.stage.display_time=Время показа
+config.lootgames.gol.stage.display_time.tooltip=Количество времени (в тиках, 20 тиков = 1 сек), которое будет показан символ.
+config.lootgames.gol.stage.loot_table=Список награды
+config.lootgames.gol.stage.loot_table.tooltip=Название данного списка наград (англ. loot table), предметы из которого будут генерироваться в сундуке на этом этапе. Можно регулировать для каждого измерения через конфигурацию "Настройки по измерениям".
+config.lootgames.gol.stage.min_items=Мин. кол-во предметов
+config.lootgames.gol.stage.min_items.tooltip=Минимальное количество предметов, которое будет генерироваться в сундуке. Не будет работать, если количество предметов в привязанном списке награды (англ. loot table) меньше этого числа. Если установить количество на -1, предметы в сундуках не будут регулироваться этим параметром.
+config.lootgames.gol.stage.max_items=Макс. кол-во предметов
+config.lootgames.gol.stage.max_items.tooltip=Максимальное количество предметов, которое будет генерироваться в сундуке. Если установить количество на -1, предметы в сундуках не будут регулироваться этим параметром.
+config.lootgames.gol.stage.dimconfig=Настройки по измерениям
+config.lootgames.gol.stage.dimconfig.tooltip=Здесь вы можете добавить разные списки наград (англ. loot table) для каждого измерения. Если измерения нет в этом списке, игра возьмёт стандартный список награды для этого этапа.\nСинтаксис: <id_измерения>; <название_списка_наград_aka_loot_table>; <мин_раундов_для_прохождения>\n<название_списка_наград_aka_loot_table> - Название списка наград (англ. loot table), прикрепленных к сундуку этого этапа. Можно пропустить. В этом случае вам нужно просто написать точку с запятой, например: \"{0; ; 10}\" \n<мин_раундов_для_прохождения> - Минимум пройденных раундов, необходимых для завершения этого этапа и разблокирования сундука. Можно пропустить. Пример: \"{0; minecraft:chests/simple_dungeon; }\" \n"Общий пример: { 0; minecraft:chests/simple_dungeon; 10 }
+
+#Commands
+command.lootgames.help.msg=Доступные команды:
+command.lootgames.help.usage=/lootgames help - Выводит доступные команды и их использование
+command.lootgames.reload.usage=/lootgames reload - Перезагружает конфигурационный файл LootGames.
+
+command.lootgames.main.usage=Используйте "/lootgames help" для просмотра достпуных команд.
+
+command.lootgames.profile.msg=Результаты профилирования:
+command.lootgames.profile.usage=Используйте "/lootgames profile" для того, чтобы увидеть результаты профилирования (только для использования в среде разработки).
