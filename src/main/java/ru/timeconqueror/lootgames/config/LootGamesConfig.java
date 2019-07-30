@@ -129,7 +129,7 @@ public class LootGamesConfig {
     public static class GOL {
         @Config.LangKey("config.lootgames.gol.stage.1")
         @Config.Comment("Regulates characteristics of stage 1.")
-        public Stage stage1 = new Stage(5, false, 24, "minecraft:chests/simple_dungeon", 10, 10);
+        public Stage stage1 = new Stage(5, false, 24, "minecraft:chests/simple_dungeon", 15, 15);
 
         @Config.LangKey("config.lootgames.gol.stage.2")
         @Config.Comment("Regulates characteristics of stage 2.")
@@ -141,7 +141,7 @@ public class LootGamesConfig {
 
         @Config.LangKey("config.lootgames.gol.stage.4")
         @Config.Comment("Regulates characteristics of stage 4.")
-        public Stage stage4 = new Stage(20, true, 10, "minecraft:chests/stronghold_corridor", -1, -1);
+        public Stage stage4 = new Stage(16, true, 10, "minecraft:chests/stronghold_corridor", -1, -1);
 
         @Config.LangKey("config.lootgames.gol.start_digits")
         @Config.Comment({"How many digits should be randomly chosen and shown at game-start?",
