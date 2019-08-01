@@ -1,7 +1,5 @@
 package ru.timeconqueror.lootgames.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -13,17 +11,12 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import ru.timeconqueror.lootgames.api.block.BlockGame;
 import ru.timeconqueror.lootgames.minigame.gameoflight.EnumPosOffset;
 import ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster;
 
-public class BlockGOLSubordinate extends Block {
+public class BlockGOLSubordinate extends BlockGame {
     public static final PropertyEnum<EnumPosOffset> OFFSET = PropertyEnum.create("offset", EnumPosOffset.class);
-
-    public BlockGOLSubordinate() {
-        super(Material.BARRIER);
-        setBlockUnbreakable();
-        setLightLevel(1.0F);
-    }
 
     @Override
     public IBlockState getStateFromMeta(int meta) {

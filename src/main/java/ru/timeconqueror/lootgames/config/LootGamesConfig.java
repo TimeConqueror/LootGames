@@ -152,7 +152,7 @@ public class LootGamesConfig {
         @Config.LangKey("config.lootgames.gol.max_attempts")
         @Config.Comment({"How many attempts does a player have? The structure will fail after max attempt count is passed, or the player will win if he beat at least 1 stage.",
                 "Default: 3."
-        })
+        })//TODO why attempt count is 4???
         public int maxAttempts = 3;
 
         @Config.LangKey("config.lootgames.gol.expand_field_stage")

@@ -1,7 +1,5 @@
 package ru.timeconqueror.lootgames.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,18 +14,14 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.achievement.AdvancementManager;
+import ru.timeconqueror.lootgames.api.block.BlockGame;
 import ru.timeconqueror.lootgames.tileentity.TileEntityPuzzleMaster;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
 //TODO 1.7.10 -> change animation relative to 1.12.2
-public class BlockPuzzleMaster extends Block {
-    public BlockPuzzleMaster() {
-        super(Material.IRON);
-        setBlockUnbreakable();
-        setLightLevel(1.0F);
-    }
+public class BlockPuzzleMaster extends BlockGame {
 
     @Override
     public boolean hasTileEntity(IBlockState state) {

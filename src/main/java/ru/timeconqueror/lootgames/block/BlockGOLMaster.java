@@ -1,7 +1,5 @@
 package ru.timeconqueror.lootgames.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -11,16 +9,12 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.achievement.AdvancementManager;
+import ru.timeconqueror.lootgames.api.block.BlockGame;
 import ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster;
 
 import javax.annotation.Nullable;
 
-public class BlockGOLMaster extends Block {
-    public BlockGOLMaster() {
-        super(Material.BARRIER);
-        setBlockUnbreakable();
-        setLightLevel(1.0F);
-    }
+public class BlockGOLMaster extends BlockGame {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {

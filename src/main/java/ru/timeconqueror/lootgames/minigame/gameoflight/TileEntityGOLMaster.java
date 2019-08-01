@@ -11,8 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
@@ -31,6 +29,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.achievement.AdvancementManager;
+import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameBlock;
 import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
 import ru.timeconqueror.lootgames.block.BlockGOLSubordinate;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
@@ -39,7 +38,6 @@ import ru.timeconqueror.lootgames.packets.SMessageGOLDrawStuff;
 import ru.timeconqueror.lootgames.packets.SMessageGOLParticle;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.registry.ModSounds;
-import ru.timeconqueror.lootgames.tileentity.TileEntityEnhanced;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 
 import java.util.ArrayList;
@@ -48,7 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable {
+public class TileEntityGOLMaster extends TileEntityGameBlock implements ITickable {
     static final int MAX_TICKS_EXPANDING = 20;
     private static final int TICKS_PAUSE_BETWEEN_SYMBOLS = 12;
     private static final int TICKS_PAUSE_BETWEEN_STAGES = 25;
@@ -319,6 +317,11 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
     }
 
     @Override
+    protected boolean sendOnlyPermittedDataToClient() {
+        return false;
+    }
+
+    @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         ticks = compound.getInteger("ticks");
@@ -351,11 +354,6 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         }
 
         return compound;
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager connection, SPacketUpdateTileEntity packet) {
-        super.onDataPacket(connection, packet);
     }
 
     private void onGameEnded(EntityPlayer player) {
@@ -586,13 +584,6 @@ public class TileEntityGOLMaster extends TileEntityEnhanced implements ITickable
         }
 
         return i;
-    }
-
-    private void setBlockToUpdate() {
-        world.markBlockRangeForRenderUpdate(pos, pos);
-        world.notifyBlockUpdate(pos, getState(), getState(), 3);
-        world.scheduleBlockUpdate(pos, this.getBlockType(), 0, 0);
-        markDirty();
     }
 
     private void spawnFeedbackParticles(EnumParticleTypes particle, BlockPos pos) {

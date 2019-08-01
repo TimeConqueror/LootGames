@@ -1,6 +1,7 @@
 package ru.timeconqueror.lootgames.tileentity;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -12,7 +13,7 @@ import ru.timeconqueror.lootgames.registry.ModSounds;
 
 import static ru.timeconqueror.lootgames.world.gen.DungeonGenerator.*;
 
-public class TileEntityPuzzleMaster extends TileEntityEnhanced implements ITickable {
+public class TileEntityPuzzleMaster extends TileEntity implements ITickable {
     private long lastSoundTick = 0L;
 
     public void onBlockClickedByPlayer(EntityPlayer player) {
