@@ -6,8 +6,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.achievement.AdvancementManager;
+import ru.timeconqueror.lootgames.api.minigame.GameManager;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
-import ru.timeconqueror.lootgames.minigame.GameManager;
 import ru.timeconqueror.lootgames.minigame.gameoflight.GameOfLight;
 import ru.timeconqueror.lootgames.packets.NetworkHandler;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
@@ -32,7 +32,9 @@ public class CommonProxy {
         GameRegistry.registerWorldGenerator(new LootGamesWorldGen(), Integer.MAX_VALUE);
 
         LootGames.gameManager = new GameManager();
-        LootGames.gameManager.registerGame(new GameOfLight());
+
+        LootGames.gameManager.registerGame(GameOfLight.class, new GameOfLight.Factory());
+        //LootGames.gameManager.registerGame(MineSweeper.class, new GameOfLight.Factory());
     }
 
     public void postInit(FMLPostInitializationEvent event) {

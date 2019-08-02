@@ -1,9 +1,10 @@
-package ru.timeconqueror.lootgames.minigame;
+package ru.timeconqueror.lootgames.api.minigame;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public interface ILootGame {
+public interface ILootGameFactory {
+
     /**
      * Executed upon structure-generation.
      *
@@ -11,7 +12,6 @@ public interface ILootGame {
      * @param puzzleMasterPos The position of Puzzle Master Block
      * @param bottomPos       The position with the lowest coordinates of the structure
      * @param topPos          The position with the highest coordinates of the structure
-     * @return TRUE, if you have set any block, FALSE, if you have not.
      */
-    boolean generate(World world, BlockPos puzzleMasterPos, BlockPos bottomPos, BlockPos topPos);
+    void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos, BlockPos bottomPos, BlockPos topPos);
 }
