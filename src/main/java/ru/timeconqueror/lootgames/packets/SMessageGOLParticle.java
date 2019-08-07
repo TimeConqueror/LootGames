@@ -52,6 +52,7 @@ public class SMessageGOLParticle implements IMessage {
         public Handler() {
         }
 
+        @SideOnly(Side.CLIENT)
         @Override
         public IMessage onMessage(SMessageGOLParticle msg, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {

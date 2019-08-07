@@ -52,6 +52,7 @@ public class SMessageGOLDrawStuff implements IMessage {
         public Handler() {
         }
 
+        @SideOnly(Side.CLIENT)
         @Override
         public IMessage onMessage(SMessageGOLDrawStuff msg, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {

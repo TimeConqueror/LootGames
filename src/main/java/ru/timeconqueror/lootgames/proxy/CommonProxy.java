@@ -20,7 +20,7 @@ public class CommonProxy {
 
     public void preInit(FMLPreInitializationEvent event) {
         ModBlocks.register();
-        ModBlocks.registerTileEntites();
+        ModBlocks.registerTileEntities();
 
         NetworkHandler.registerPackets();
 

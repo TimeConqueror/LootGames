@@ -47,11 +47,12 @@ public class ModBlocks {
         ClientProxy.REGISTRY.registerBlockRender(GOL_MASTER);
     }
 
-    public static void registerTileEntites() {
+    public static void registerTileEntities() {
         CommonProxy.REGISTRY.registerTileEntity(TileEntityPuzzleMaster.class, "puzzle_master");
         CommonProxy.REGISTRY.registerTileEntity(TileEntityGOLMaster.class, "gol_master");
     }
 
+    @SideOnly(Side.CLIENT)
     public static void registerTESRS() {
         ClientProxy.REGISTRY.registerTESR(TileEntityGOLMaster.class, new TESRGOLMaster());
     }
