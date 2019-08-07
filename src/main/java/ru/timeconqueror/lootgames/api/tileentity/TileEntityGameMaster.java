@@ -41,4 +41,8 @@ public abstract class TileEntityGameMaster<T extends AbstractLootGame> extends T
     protected boolean sendOnlyPermittedDataToClient() {
         return true;
     }
+
+    public T getGame() {
+        return game;
+    }
 }

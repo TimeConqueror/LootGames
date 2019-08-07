@@ -14,6 +14,7 @@ import ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster;
 
 import javax.annotation.Nullable;
 
+//TODO fix breaking with explosions
 public class BlockGOLMaster extends BlockGame {
 
     @Override

@@ -9,6 +9,7 @@ import ru.timeconqueror.lootgames.achievement.AdvancementManager;
 import ru.timeconqueror.lootgames.api.minigame.GameManager;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
 import ru.timeconqueror.lootgames.minigame.gameoflight.GameOfLight;
+import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.packets.NetworkHandler;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.registry.ModSounds;
@@ -34,7 +35,7 @@ public class CommonProxy {
         LootGames.gameManager = new GameManager();
 
         LootGames.gameManager.registerGame(GameOfLight.class, new GameOfLight.Factory());
-        //LootGames.gameManager.registerGame(MineSweeper.class, new GameOfLight.Factory());
+        LootGames.gameManager.registerGame(GameMineSweeper.class, new GameMineSweeper.Factory());
     }
 
     public void postInit(FMLPostInitializationEvent event) {

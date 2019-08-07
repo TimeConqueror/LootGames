@@ -15,6 +15,7 @@ import ru.timeconqueror.lootgames.api.block.BlockGame;
 import ru.timeconqueror.lootgames.minigame.gameoflight.EnumPosOffset;
 import ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster;
 
+//TODO fix breaking with explosions
 public class BlockGOLSubordinate extends BlockGame {
     public static final PropertyEnum<EnumPosOffset> OFFSET = PropertyEnum.create("offset", EnumPosOffset.class);
 

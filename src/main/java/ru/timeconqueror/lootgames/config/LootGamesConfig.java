@@ -25,6 +25,10 @@ public class LootGamesConfig {
     @Config.Comment("Regulates \"Game of Light\" minigame.")
     public static GOL gameOfLight = new GOL();
 
+    @Config.LangKey("config.lootgames.category.ms")
+    @Config.Comment("Regulates \"Minesweeper\" minigame.")
+    public static Minesweeper minesweeper = new Minesweeper();
+
     @Config.LangKey("config.lootgames.minigamesenabled")
     @Config.Comment({"If this is set to false, then puzzle master won't start any game.", "Default: true"})
     public static boolean areMinigamesEnabled = true;
@@ -315,7 +319,7 @@ public class LootGamesConfig {
                 }
             }
 
-            public DimConfig getDimConfig(int dimensionID) {
+            private DimConfig getDimConfig(int dimensionID) {
                 return dimensionsConfigsMap.get(dimensionID);
             }
 
@@ -331,9 +335,9 @@ public class LootGamesConfig {
                 return cfg == null ? lootTableRL : getDimConfig(dimensionID).lootTableRL;
             }
 
-            public static class DimConfig {
-                public ResourceLocation lootTableRL;
-                public int minRoundRequiredToPass;
+            private static class DimConfig {
+                private ResourceLocation lootTableRL;
+                private int minRoundRequiredToPass;
 
                 DimConfig(String loottable, int minRoundRequiredToPass) {
                     lootTableRL = new ResourceLocation(loottable);
@@ -341,5 +345,12 @@ public class LootGamesConfig {
                 }
             }
         }
+    }
+
+    public static class Minesweeper {
+        @Config.LangKey("config.lootgames.ms.board_size")
+        @Config.Comment({"The size of minesweeper board.", "Default: true"})
+        @Config.RangeInt(min = 5, max = 4)
+        public boolean boardSize = true;
     }
 }
