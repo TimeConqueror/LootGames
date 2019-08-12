@@ -12,7 +12,7 @@ import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 public class GameOfLight extends AbstractLootGame {
     @Override
     public NBTTagCompound serializeNBT() {
-        return null;
+        return new NBTTagCompound();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package ru.timeconqueror.lootgames.util;
+package ru.timeconqueror.lootgames.api.util;
 
 public class Pos2i {
     private int x;

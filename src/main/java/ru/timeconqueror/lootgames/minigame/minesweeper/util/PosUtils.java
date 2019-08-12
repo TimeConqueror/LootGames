@@ -1,6 +1,6 @@
 package ru.timeconqueror.lootgames.minigame.minesweeper.util;
 
-import ru.timeconqueror.lootgames.util.Pos2i;
+import ru.timeconqueror.lootgames.api.util.Pos2i;
 
 public class PosUtils {
     /**

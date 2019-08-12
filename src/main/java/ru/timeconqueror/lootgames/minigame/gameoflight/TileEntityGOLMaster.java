@@ -29,7 +29,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.achievement.AdvancementManager;
-import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameBlock;
+import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
 import ru.timeconqueror.lootgames.block.BlockGOLSubordinate;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
@@ -46,7 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TileEntityGOLMaster extends TileEntityGameBlock implements ITickable {
+public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> implements ITickable {
     static final int MAX_TICKS_EXPANDING = 20;
     private static final int TICKS_PAUSE_BETWEEN_SYMBOLS = 12;
     private static final int TICKS_PAUSE_BETWEEN_STAGES = 25;
@@ -68,6 +68,7 @@ public class TileEntityGOLMaster extends TileEntityGameBlock implements ITickabl
     private boolean feedbackPacketReceived;
 
     public TileEntityGOLMaster() {
+        super(new GameOfLight());//TODO here is changed!
         gameStage = GameStage.NOT_CONSTRUCTED;
     }
 

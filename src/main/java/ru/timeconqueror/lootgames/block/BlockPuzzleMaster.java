@@ -46,7 +46,6 @@ public class BlockPuzzleMaster extends BlockGame {
         if (worldIn.isRemote) {
             return true;
         } else {
-            //TODO add achievements
             if (worldIn.getTileEntity(pos) instanceof TileEntityPuzzleMaster) {
                 TileEntityPuzzleMaster te = (TileEntityPuzzleMaster) worldIn.getTileEntity(pos);
 

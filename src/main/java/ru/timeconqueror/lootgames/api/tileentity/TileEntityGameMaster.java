@@ -1,9 +1,15 @@
 package ru.timeconqueror.lootgames.api.tileentity;
 
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import ru.timeconqueror.lootgames.api.minigame.AbstractLootGame;
 
-public abstract class TileEntityGameMaster<T extends AbstractLootGame> extends TileEntityGameBlock {
+/**
+ * Base minigame master block. It will automatically save game object it stores.
+ */
+public abstract class TileEntityGameMaster<T extends AbstractLootGame> extends TileEntityWithSecretData {
     private T game;
 
     public TileEntityGameMaster(T game) {
@@ -22,7 +28,7 @@ public abstract class TileEntityGameMaster<T extends AbstractLootGame> extends T
     }
 
     /**
-     * Overriding it, obligatorily call {@link TileEntityGameMaster#readFromNBT(NBTTagCompound)} <b>FIRSTLY</b>!
+     * Overriding it, <b>FIRSTLY</b> obligatorily call {@link TileEntityGameMaster#readFromNBT(NBTTagCompound)}!
      */
     @Override
     public void readFromNBT(NBTTagCompound compound) {
@@ -42,7 +48,35 @@ public abstract class TileEntityGameMaster<T extends AbstractLootGame> extends T
         return true;
     }
 
+    /**
+     * Called when player clicked on subordinate block.
+     */
+    public void onSubordinateBlockClicked(BlockPos subordinatePos, EntityPlayer player) {
+
+    }
+
     public T getGame() {
         return game;
+    }
+
+    /**
+     * Saves the block to disk, sends packet to update it on client.
+     */
+    protected void setBlockToUpdate() {
+//        world.markBlockRangeForRenderUpdate(pos, pos);
+        world.notifyBlockUpdate(pos, getState(), getState(), 3);
+//        world.scheduleBlockUpdate(pos, this.getBlockType(), 0, 0);
+        markDirty();
+    }
+
+    /**
+     * Returns the blockstate on tileentity pos.
+     */
+    public IBlockState getState() {
+        return world.getBlockState(pos);
+    }
+
+    public void onBlockClickedByPlayer(EntityPlayer player) {
+
     }
 }
