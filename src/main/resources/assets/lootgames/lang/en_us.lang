@@ -108,7 +108,9 @@ config.lootgames.gol.stage.dimconfig.tooltip=Here you can add different loottabl
 config.lootgames.category.ms=Minesweeper Settings
 config.lootgames.category.ms.tooltip=Regulates "Minesweeper" minigame.
 config.lootgames.ms.board_size=Board Size
-config.lootgames.ms.board_size.tooltip=Board Size
+config.lootgames.ms.board_size.tooltip=The size of Minesweeper board. Accepts only odd numbers. If you set this to even number, then it will be increased by one.
+config.lootgames.ms.bomb_amount=Bomb amount
+config.lootgames.ms.bomb_amount.tooltip=The amount of bombs on the board.
 
 #Commands
 command.lootgames.help.msg=Available commands:

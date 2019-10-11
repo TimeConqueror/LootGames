@@ -12,7 +12,7 @@ import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameMaster;
 
 /**
  * Subordinate block for minigames. Will find master block and notify it. The master block must be at the north-west corner of the game
- * and its tileentity must extend {@link TileEntityGameMaster<>} or override onBlockActivated!
+ * and its tileentity must extend {@link TileEntityGameMaster<>}!
  */
 public class BlockSmartSubordinate extends BlockGame {
 
@@ -43,6 +43,11 @@ public class BlockSmartSubordinate extends BlockGame {
             foundPos = foundPos.add(-1, 0, 0);
 
             state = world.getBlockState(foundPos);
+
+            if (world.getTileEntity(foundPos) instanceof TileEntityGameMaster<?>) {
+                break;
+            }
+
             if (!(state.getBlock() instanceof BlockSmartSubordinate)) {
                 foundPos = foundPos.add(1, 0, 0);
                 break;
@@ -53,6 +58,11 @@ public class BlockSmartSubordinate extends BlockGame {
             foundPos = foundPos.add(0, 0, -1);
 
             state = world.getBlockState(foundPos);
+
+            if (world.getTileEntity(foundPos) instanceof TileEntityGameMaster<?>) {
+                break;
+            }
+
             if (!(state.getBlock() instanceof BlockSmartSubordinate)) {
                 foundPos = foundPos.add(0, 0, 1);
                 break;

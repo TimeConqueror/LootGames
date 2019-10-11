@@ -3,70 +3,146 @@ package ru.timeconqueror.lootgames.api.tileentity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import ru.timeconqueror.lootgames.api.minigame.AbstractLootGame;
 
-/**
- * Base minigame master block. It will automatically save game object it stores.
- */
-public abstract class TileEntityGameMaster<T extends AbstractLootGame> extends TileEntityWithSecretData {
-    private T game;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public abstract class TileEntityGameMaster<T extends AbstractLootGame> extends TileEntity {
+    protected T game;
 
     public TileEntityGameMaster(T game) {
         this.game = game;
+        game.setMasterTileEntity(this);
     }
 
     /**
-     * Overriding it, obligatorily call {@link TileEntityGameMaster#writeToNBT(NBTTagCompound)}!
+     * For saving/sending data use {@link #writeTEDataToNBT(NBTTagCompound)}
      */
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        NBTTagCompound gameData = game.serializeNBT();
-        compound.setTag("game_data", gameData);
+    public final NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        writeTEDataToNBT(compound);
+        compound.setTag("game", game.writeToNBT(false));
+        return compound;
+    }
 
+    /**
+     * For saving/sending data use {@link #readTEDataFromNBT(NBTTagCompound)}
+     */
+    @Override
+    public final void readFromNBT(NBTTagCompound compound) {
+        this.readTEDataFromNBT(compound);
+
+        //If read from client side
+        if (compound.hasKey("client_flag")) {
+            if (game.isDataSyncsEntirely()) {
+                game.readFromNBT(compound.getCompoundTag("game"), true, true);
+            } else {
+                game.readClientSyncedNBT(compound.getCompoundTag("game_synced"), true);
+            }
+        } else {
+            game.readFromNBT(compound.getCompoundTag("game"), true, false);//First true? //FIXME?
+        }
+    }
+
+    /**
+     * Improved analog of {@link #writeToNBT(NBTTagCompound)}. Overriding is fine.
+     */
+    protected NBTTagCompound writeTEDataToNBT(NBTTagCompound compound) {
+        return writeClientSyncedNBT(compound);
+    }
+
+    /**
+     * Improved analog of {@link #readFromNBT(NBTTagCompound)}. Overriding is fine.
+     */
+    protected void readTEDataFromNBT(NBTTagCompound compound) {
+        readClientSyncedNBT(compound);
+    }
+
+    /**
+     * Reads the part of data permitted for sending to client. Overriding is fine.
+     */
+    protected void readClientSyncedNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+    }
+
+    /**
+     * Writes the part of data permitted for sending to client. Overriding is fine.
+     */
+    protected NBTTagCompound writeClientSyncedNBT(NBTTagCompound compound) {
         return super.writeToNBT(compound);
     }
 
-    /**
-     * Overriding it, <b>FIRSTLY</b> obligatorily call {@link TileEntityGameMaster#readFromNBT(NBTTagCompound)}!
-     */
+    @Nonnull
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
+    public NBTTagCompound getUpdateTag() {
+        NBTTagCompound compound = new NBTTagCompound();
 
-        NBTTagCompound gameData = compound.getCompoundTag("game_data");
-        game.deserializeNBT(gameData);
+        if (isDataSyncsEntirely()) {
+            writeTEDataToNBT(compound);
+        } else {
+            writeClientSyncedNBT(compound);
+        }
+
+        if (game.isDataSyncsEntirely()) {
+            compound.setTag("game", game.writeToNBT(true));
+        } else {
+            compound.setTag("game_synced", game.writeClientSyncedNBT(true));
+        }
+
+        compound.setByte("client_flag", (byte) 0);
+        return compound;
     }
 
-    /**
-     * If true, sending to client will call only {@link #writeClientPermittedDataToNBT(NBTTagCompound)}
-     * and {@link #readClientPermittedDataFromNBT(NBTTagCompound)} to prevent client from seeing server-only secret data.
-     * <p>If false, packets will use standard writeTo/readFrom NBT methods.
-     */
     @Override
-    protected boolean sendOnlyPermittedDataToClient() {
-        return true;
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        NBTTagCompound compound = pkt.getNbtCompound();
+        if (isDataSyncsEntirely()) {
+            readTEDataFromNBT(compound);
+        } else {
+            readClientSyncedNBT(compound);
+        }
+
+        if (game.isDataSyncsEntirely()) {
+            game.readFromNBT(compound.getCompoundTag("game"), true, true);
+        } else {
+            game.readClientSyncedNBT(compound.getCompoundTag("game_synced"), true);
+        }
+    }
+
+    @Nullable
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
     }
 
     /**
-     * Called when player clicked on subordinate block.
+     * If set to false, then data that will be sent to client is regulated by {@link #writeClientSyncedNBT(NBTTagCompound)} and {@link #readClientSyncedNBT(NBTTagCompound)}
+     * So it won't send some confidential data, unless you set this to true.
      */
-    public void onSubordinateBlockClicked(BlockPos subordinatePos, EntityPlayer player) {
-
-    }
-
-    public T getGame() {
-        return game;
-    }
+    protected abstract boolean isDataSyncsEntirely();
 
     /**
      * Saves the block to disk, sends packet to update it on client.
      */
-    protected void setBlockToUpdate() {
+    protected void setBlockToUpdateAndSave() {
 //        world.markBlockRangeForRenderUpdate(pos, pos);
         world.notifyBlockUpdate(pos, getState(), getState(), 3);
 //        world.scheduleBlockUpdate(pos, this.getBlockType(), 0, 0);
         markDirty();
+    }
+
+    /**
+     * Will be called when subordinate block is clicked by player.
+     *
+     * @param subordinatePos pos of subordinate block.
+     * @param player         player, who clicked the subordinate block.
+     */
+    public void onSubordinateBlockClicked(BlockPos subordinatePos, EntityPlayer player) {
     }
 
     /**
@@ -76,7 +152,7 @@ public abstract class TileEntityGameMaster<T extends AbstractLootGame> extends T
         return world.getBlockState(pos);
     }
 
-    public void onBlockClickedByPlayer(EntityPlayer player) {
-
+    public T getGame() {
+        return game;
     }
 }

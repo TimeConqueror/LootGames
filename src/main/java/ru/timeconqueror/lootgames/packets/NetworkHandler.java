@@ -13,5 +13,6 @@ public class NetworkHandler {
         INSTANCE.registerMessage(CMessageGOLFeedback.Handler.class, CMessageGOLFeedback.class, idx++, Side.SERVER);
         INSTANCE.registerMessage(SMessageGOLParticle.Handler.class, SMessageGOLParticle.class, idx++, Side.CLIENT);
         INSTANCE.registerMessage(SMessageGOLDrawStuff.Handler.class, SMessageGOLDrawStuff.class, idx++, Side.CLIENT);
+        INSTANCE.registerMessage(SMessageMSUpdateBoard.Handler.class, SMessageMSUpdateBoard.class, idx++, Side.CLIENT);
     }
 }

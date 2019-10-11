@@ -67,6 +67,7 @@ public class LootGamesConfig {
         LootGames.logHelper.setDebugLevel(debugLevel.equalsIgnoreCase("trace") ? LogHelper.Level.TRACE : LogHelper.Level.DEBUG);
 
         gameOfLight.initStages();
+        minesweeper.init();
     }
 
     public static boolean isDimensionEnabledForWG(int worldID) {
@@ -348,9 +349,26 @@ public class LootGamesConfig {
     }
 
     public static class Minesweeper {
+        private static final int DEF_BOARD_SIZE = 15;
+        private static final int DEF_BOMB_AMOUNT = 35;
         @Config.LangKey("config.lootgames.ms.board_size")
-        @Config.Comment({"The size of minesweeper board.", "Default: true"})
-        @Config.RangeInt(min = 5, max = 4)
-        public boolean boardSize = true;
+        @Config.Comment({"The size of Minesweeper board. Accepts only odd numbers. If you set this to even number, then it will be increased by one.", "Default: 16"})
+        @Config.RangeInt(min = 5, max = 19)
+        public int boardSize = DEF_BOARD_SIZE;
+        @Config.LangKey("config.lootgames.ms.bomb_amount")
+        @Config.Comment({"The amount of bombs on the board.", "Default: 35"})
+        public int bombAmount = DEF_BOMB_AMOUNT;
+
+        public void init() {
+            if (boardSize % 2 == 0) {
+                boardSize += 1;
+            }
+//TODO chek
+            if (bombAmount > boardSize * boardSize - 1) {
+                LootGames.logHelper.error("Bomb count must be strictly less than amount of game fields. Current values: bomb count = {}, field count: {} (boardSize = {})\n Bomb amount and Board size values will be switched to default.", bombAmount, boardSize * boardSize, boardSize);
+                boardSize = DEF_BOARD_SIZE;
+                bombAmount = DEF_BOMB_AMOUNT;
+            }
+        }
     }
 }

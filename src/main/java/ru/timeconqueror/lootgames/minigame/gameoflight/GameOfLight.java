@@ -11,13 +11,18 @@ import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 //TODO Move content here from TE
 public class GameOfLight extends AbstractLootGame {
     @Override
-    public NBTTagCompound serializeNBT() {
-        return new NBTTagCompound();
+    public NBTTagCompound writeToNBT(boolean isForSendingToClient) {
+        return super.writeToNBT(isForSendingToClient);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void readFromNBT(NBTTagCompound compound, boolean callClientSyncedPart, boolean isReadFromClient) {
+        super.readFromNBT(compound, callClientSyncedPart, isReadFromClient);
+    }
 
+    @Override
+    public boolean isDataSyncsEntirely() {
+        return true;
     }
 
     public static class Factory implements ILootGameFactory {

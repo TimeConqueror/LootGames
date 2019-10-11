@@ -18,10 +18,10 @@ public class SMessageGOLParticle implements IMessage {
     private int z;
     private int particleID;
 
+    @SideOnly(Side.CLIENT)
     public SMessageGOLParticle() {
     }
 
-    @SideOnly(Side.CLIENT)
     public SMessageGOLParticle(BlockPos pos, int particleID) {
         x = pos.getX();
         y = pos.getY();

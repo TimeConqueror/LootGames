@@ -18,10 +18,10 @@ public class SMessageGOLDrawStuff implements IMessage {
     private int z;
     private int stuffIndex;
 
+    @SideOnly(Side.CLIENT)
     public SMessageGOLDrawStuff() {
     }
 
-    @SideOnly(Side.CLIENT)
     public SMessageGOLDrawStuff(BlockPos pos, int stuffIndex) {
         x = pos.getX();
         y = pos.getY();

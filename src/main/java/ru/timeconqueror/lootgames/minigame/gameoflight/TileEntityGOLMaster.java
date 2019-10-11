@@ -68,7 +68,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     private boolean feedbackPacketReceived;
 
     public TileEntityGOLMaster() {
-        super(new GameOfLight());//TODO here is changed!
+        super(new GameOfLight());//TODO move game data there
         gameStage = GameStage.NOT_CONSTRUCTED;
     }
 
@@ -318,13 +318,8 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     }
 
     @Override
-    protected boolean sendOnlyPermittedDataToClient() {
-        return false;
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
+    protected void readTEDataFromNBT(NBTTagCompound compound) {
+        super.readTEDataFromNBT(compound);
         ticks = compound.getInteger("ticks");
         gameStage = GameStage.values()[compound.getInteger("game_stage")];
         onStageSetting(gameStage);
@@ -338,8 +333,8 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        compound = super.writeToNBT(compound);
+    protected NBTTagCompound writeTEDataToNBT(NBTTagCompound compound) {
+        compound = super.writeTEDataToNBT(compound);
         compound.setInteger("ticks", ticks);
         compound.setInteger("game_stage", gameStage.ordinal());
         compound.setInteger("game_level", gameLevel);
@@ -355,6 +350,11 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         }
 
         return compound;
+    }
+
+    @Override
+    protected boolean isDataSyncsEntirely() {
+        return true;
     }
 
     private void onGameEnded(EntityPlayer player) {
@@ -570,7 +570,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     private void updateGameStage(GameStage gameStage) {
         this.gameStage = gameStage;
         onStageSetting(gameStage);
-        setBlockToUpdate();
+        setBlockToUpdateAndSave();
     }
 
     /**

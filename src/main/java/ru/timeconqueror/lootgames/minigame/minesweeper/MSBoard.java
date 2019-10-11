@@ -1,24 +1,43 @@
 package ru.timeconqueror.lootgames.minigame.minesweeper;
 
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.minigame.minesweeper.util.PosUtils;
-import ru.timeconqueror.lootgames.util.Pos2i;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class MSBoard {
-    private int[][] board;
+    private MSField[][] board;
+    private int size;
+    private int bombCount;
+
+    public MSBoard(int size, int bombCount) {
+        this.size = size;
+        this.bombCount = bombCount;
+    }
+
+    public boolean isGenerated() {
+        return board != null;
+    }
 
     public boolean isBomb(Pos2i pos) {
         return isBomb(pos.getX(), pos.getY());
     }
 
     public boolean isBomb(int x, int y) {
-        return getCellTypeByPos(x, y) == GameMineSweeper.BOMB;
+        return getFieldTypeByPos(x, y) == MSField.BOMB;
     }
 
     public boolean isEmpty(Pos2i pos) {
-        return getCellTypeByPos(pos) == 0;
+        return getFieldTypeByPos(pos) == 0;
+    }
+
+    public boolean hasFieldOn(Pos2i pos) {
+        return pos.getX() >= 0 && pos.getY() >= 0 && pos.getX() < size && pos.getY() < size;
     }
 
     /**
@@ -28,8 +47,12 @@ public class MSBoard {
      * <p>   0       - Empty cell.
      * <p>   1 - 9   - Cell with number.
      */
-    public int getCellTypeByPos(Pos2i pos) {
-        return getCellTypeByPos(pos.getX(), pos.getY());
+    public int getFieldTypeByPos(Pos2i pos) {
+        return getFieldTypeByPos(pos.getX(), pos.getY());
+    }
+
+    MSField getFieldByPos(Pos2i pos) {
+        return board[pos.getX()][pos.getY()];
     }
 
     /**
@@ -39,24 +62,26 @@ public class MSBoard {
      * <p>   0       - Empty cell.
      * <p>   1 - 9   - Cell with number.
      */
-    public int getCellTypeByPos(int x, int y) {
-        return board[x][y];
+    public int getFieldTypeByPos(int x, int y) {
+        return board[x][y].type;
     }
 
-    public void generate(int boardSize, int bombCount, Pos2i startFieldPos) {
-        if (bombCount > boardSize - 1) {
-            throw new IllegalArgumentException(String.format("Bomb count must be strictly less than Board size. Current values: bomb count = %1$d, boardSize = %2$d", bombCount, boardSize));
-        } else if (PosUtils.convertToFieldIndex(startFieldPos, boardSize) > boardSize - 1) {
-            throw new IllegalArgumentException(String.format("Start Pos must be strictly less than Board size. Current values: start pos = %1$s, boardSize = %2$d", startFieldPos, boardSize));
+    public int getFieldMarkByPos(int x, int y) {
+        return board[x][y].mark;
+    }
+
+    public void generate(Pos2i startFieldPos) {
+        if (PosUtils.convertToFieldIndex(startFieldPos, size) > (size * size) - 1) {
+            throw new IllegalArgumentException(String.format("Start Pos must be strictly less than Board size. Current values: start pos = %1$s, boardSize = %2$d", startFieldPos, size));
         }
 
-        board = new int[boardSize][boardSize];
-        int square = boardSize * boardSize;
+        board = new MSField[size][size];
+        int square = size * size;
 
         //adding bombs
         ArrayList<Integer> fields = new ArrayList<>(square);
         for (int i = 0; i < square; i++) {
-            if (i == PosUtils.convertToFieldIndex(startFieldPos, boardSize)) {
+            if (i == PosUtils.convertToFieldIndex(startFieldPos, size)) {
                 continue;
             }
 
@@ -65,18 +90,26 @@ public class MSBoard {
 
         Collections.shuffle(fields);
 
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                board[i][j] = new MSField(-2, true, -1);
+            }
+        }
+
         for (Integer integer : fields.subList(0, bombCount)) {
-            board[integer % boardSize][integer / boardSize] = GameMineSweeper.BOMB;
+            board[integer % size][integer / size].type = MSField.BOMB;
         }
 
         //adding numbers and spaces
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 if (!isBomb(i, j)) {
-                    board[i][j] = getConnectedBombCount(i, j);
+                    board[i][j].type = getConnectedBombCount(i, j);
                 }
             }
         }
+
+        getFieldByPos(startFieldPos).reveal();
     }
 
     /**
@@ -112,15 +145,119 @@ public class MSBoard {
         return bombCount;
     }
 
-    int[][] getAsArray() {
+    public MSField[][] asArray() {
         return board;
     }
 
-    void setBoard(int[][] board) {
+    @SideOnly(Side.CLIENT)
+    void setField(Pos2i pos, int type, boolean hidden, int mark) {
+        board[pos.getX()][pos.getY()] = new MSField(type, hidden, mark);
+    }
+
+    void setBoard(MSField[][] board) {
         this.board = board;
     }
 
     public int size() {
-        return board.length;
+        return size;
+    }
+
+    public int getBombCount() {
+        return bombCount;
+    }
+
+    void setBombCount(int bombCount) {
+        this.bombCount = bombCount;
+    }
+
+    void setSize(int size) {
+        this.size = size;
+    }
+
+    static class MSField implements INBTSerializable<NBTTagCompound> {
+        /**
+         * Bomb index
+         */
+        public static final int BOMB = -1;
+
+        private int type;
+        private int mark;
+        private boolean isHidden;
+        /**
+         * -1 - not marked.
+         * 0 - marked by flag.
+         * 1 - marked by question mark.
+         */
+        private int markType;
+
+        public MSField(int type, boolean isHidden, int mark) {
+            this.type = type;
+            this.isHidden = isHidden;
+            this.mark = mark;
+        }
+
+        void reveal() {
+            isHidden = false;
+        }
+
+        void swapMark() {
+            if (mark == 1) {
+                mark = -1;
+            } else {
+                mark += 1;
+            }
+        }
+
+        void resetMark() {
+            mark = -1;
+        }
+
+        /**
+         * Returns the type of cell.
+         *
+         * <p>   -1      - Bomb.
+         * <p>   0       - Empty cell.
+         * <p>   1 - 9   - Cell with number.
+         */
+        public int getType() {
+            return type;
+        }
+
+        public boolean isHidden() {
+            return isHidden;
+        }
+
+        /**
+         * Returns the mark of cell.
+         *
+         * <p>  -1 - not marked.
+         * <p>  0 - marked by flag.
+         * <p>  1 - marked by question mark.
+         */
+        public int getMark() {
+            return mark;
+        }
+
+        @Override
+        public NBTTagCompound serializeNBT() {
+            NBTTagCompound field = new NBTTagCompound();
+            field.setBoolean("hidden", isHidden);
+            field.setInteger("mark", mark);
+            field.setInteger("type", type);
+
+            return field;
+        }
+
+        @Override
+        public void deserializeNBT(NBTTagCompound nbt) {
+            isHidden = nbt.getBoolean("hidden");
+            mark = nbt.getInteger("mark");
+            type = nbt.getInteger("type");
+        }
+
+        @Override
+        public String toString() {
+            return "Field{type: " + type + ", hidden:" + isHidden + ", mark:" + mark + "}";
+        }
     }
 }

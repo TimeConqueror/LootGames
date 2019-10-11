@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "normal": {
+      "model": "lootgames:standard_gameblock_model"
+    }
+  }
+}

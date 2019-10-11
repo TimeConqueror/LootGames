@@ -9,9 +9,12 @@ public class Pos2i {
         this.y = y;
     }
 
-    public void add(Pos2i pos) {
-        this.x += pos.x;
-        this.y += pos.y;
+    public Pos2i add(Pos2i pos) {
+        return add(pos.x, pos.y);
+    }
+
+    public Pos2i add(int x, int y) {
+        return new Pos2i(this.x + x, this.y + y);
     }
 
     public int getX() {

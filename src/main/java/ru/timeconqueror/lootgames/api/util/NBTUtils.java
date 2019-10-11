@@ -5,20 +5,22 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.lang.reflect.Array;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class NBTUtils {
+
     /***
      * Reads two-dimensional array of any object from NBT.
      *
      * @param tableTag                  tag that is created via {@link #writeTwoDimArrToNBT(INBTSerializable[][])}
-     * @param clazz                     array objects' class.
+     * @param elementClass              array objects' class.
      * @param defaultElementCreator     here you must create element with default fields.
      *                                      The fields of this object will be re-written via {@link INBTSerializable#deserializeNBT(NBTBase)} and then added to array.
      * @param <T>                       the type of objects in array to return.
      */
     @SuppressWarnings("unchecked")
-    public static <NBT extends NBTBase, T extends INBTSerializable<NBT>> T[][] readTwoDimArrFromNBT(NBTTagCompound tableTag, Class<T> clazz, Supplier<T> defaultElementCreator) {
+    public static <NBT extends NBTBase, T extends INBTSerializable<NBT>> T[][] readTwoDimArrFromNBT(NBTTagCompound tableTag, Class<T> elementClass, Supplier<T> defaultElementCreator) {
         int size = tableTag.getInteger("size");
 
         T[][] table = null;
@@ -27,14 +29,16 @@ public class NBTUtils {
             NBTTagCompound columnTag = tableTag.getCompoundTag(Integer.toString(i));
             int columnSize = columnTag.getInteger("size");
 
-            T[] column = (T[]) Array.newInstance(clazz, columnSize);
+            T[] column = (T[]) Array.newInstance(elementClass, columnSize);
 
             for (int j = 0; j < columnSize; j++) {
-                NBT elementTag = (NBT) columnTag.getTag(Integer.toString(j));
+                if (columnTag.hasKey(Integer.toString(j))) {
+                    NBT elementTag = (NBT) columnTag.getTag(Integer.toString(j));
 
-                T element = defaultElementCreator.get();
-                element.deserializeNBT(elementTag);
-                column[j] = element;
+                    T element = defaultElementCreator.get();
+                    element.deserializeNBT(elementTag);
+                    column[j] = element;
+                }
             }
 
             if (i == 0) {
@@ -51,18 +55,34 @@ public class NBTUtils {
     /**
      * Writes two-dimensional array of any object to NBT.
      *
-     * @param objArr - two-dimensional array of data to save.
+     * @param objArr two-dimensional array of data to save.
+     * @param <T>    must implement {@link INBTSerializable}!
      * @return {@link NBTTagCompound} tag that contains this two-dimensional array.
      */
     public static <NBT extends NBTBase, T extends INBTSerializable<NBT>> NBTTagCompound writeTwoDimArrToNBT(T[][] objArr) {
+        return writeTwoDimArrToNBT(objArr, e -> true);
+    }
+
+    /**
+     * Writes two-dimensional array of any object to NBT.
+     *
+     * @param objArr         two-dimensional array of data to save.
+     * @param <T>            must implement {@link INBTSerializable}!
+     * @param writeElementIf controls whether element will be written or not. If element will be rejected by your {@link Predicate}, then
+     *                       the element of massive will be null after reading this NBT Compound.
+     * @return {@link NBTTagCompound} tag that contains this two-dimensional array.
+     */
+    public static <NBT extends NBTBase, T extends INBTSerializable<NBT>> NBTTagCompound writeTwoDimArrToNBT(T[][] objArr, Predicate<T> writeElementIf) {
         NBTTagCompound tableTag = new NBTTagCompound();
 
         for (int i = 0; i < objArr.length; i++) {
             NBTTagCompound column = new NBTTagCompound();
 
             for (int j = 0; j < objArr[i].length; j++) {
-                NBT elementTag = objArr[i][j].serializeNBT();
-                column.setTag(Integer.toString(j), elementTag);
+                if (writeElementIf.test(objArr[i][j])) {
+                    NBT elementTag = objArr[i][j].serializeNBT();
+                    column.setTag(Integer.toString(j), elementTag);
+                }
             }
 
             column.setInteger("size", objArr[i].length);
