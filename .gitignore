@@ -2,8 +2,6 @@
 .gradle/
 .idea/
 build/
-gradle/
-libs/
 out/
 run/
 *.iml
