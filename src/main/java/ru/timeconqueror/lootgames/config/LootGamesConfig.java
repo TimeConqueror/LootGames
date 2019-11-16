@@ -128,7 +128,7 @@ public class LootGamesConfig {
                 "Rhomb size must be between 5 and 100.",
                 "Example of array element: 0; 20 - this means that dungeons will be generated in rhombs with size equal to 20 in the overworld (ID = 0).",
                 "Default: {0}"})
-        private String[] dimAndRhombList = new String[]{"0; 20"};
+        public String[] dimAndRhombList = new String[]{"0; 20"};
     }
 
     public static class GOL {
@@ -352,7 +352,7 @@ public class LootGamesConfig {
         private static final int DEF_BOARD_SIZE = 15;
         private static final int DEF_BOMB_AMOUNT = 35;
         @Config.LangKey("config.lootgames.ms.board_size")
-        @Config.Comment({"The size of Minesweeper board. Accepts only odd numbers. If you set this to even number, then it will be increased by one.", "Default: 16"})
+        @Config.Comment({"The size of Minesweeper board. Accepts only odd numbers. If you set this to even number, then it will be increased by one.", "Default: 15"})
         @Config.RangeInt(min = 5, max = 19)
         public int boardSize = DEF_BOARD_SIZE;
         @Config.LangKey("config.lootgames.ms.bomb_amount")
