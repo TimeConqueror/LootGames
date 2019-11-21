@@ -138,15 +138,15 @@ public class LootGamesConfig {
 
         @Config.LangKey("config.lootgames.gol.stage.2")
         @Config.Comment("Regulates characteristics of stage 2.")
-        public Stage stage2 = new Stage(10, false, 16, "minecraft:chests/abandoned_mineshaft", -1, -1);
+        public Stage stage2 = new Stage(10, false, 16, "minecraft:chests/jungle_temple", -1, -1);
 
         @Config.LangKey("config.lootgames.gol.stage.3")
         @Config.Comment("Regulates characteristics of stage 3.")
-        public Stage stage3 = new Stage(15, false, 12, "minecraft:chests/jungle_temple", -1, -1);
+        public Stage stage3 = new Stage(15, false, 12, "minecraft:chests/desert_pyramid", -1, -1);
 
         @Config.LangKey("config.lootgames.gol.stage.4")
         @Config.Comment("Regulates characteristics of stage 4.")
-        public Stage stage4 = new Stage(16, true, 10, "minecraft:chests/stronghold_corridor", -1, -1);
+        public Stage stage4 = new Stage(16, true, 10, "minecraft:chests/end_city_treasure", -1, -1);
 
         @Config.LangKey("config.lootgames.gol.start_digits")
         @Config.Comment({"How many digits should be randomly chosen and shown at game-start?",
