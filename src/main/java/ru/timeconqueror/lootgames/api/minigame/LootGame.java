@@ -11,7 +11,8 @@ public abstract class LootGame {
     }
 
     /**
-     * Here you can create an {@link NBTTagCompound}, and then save game data to this {@link NBTTagCompound}, which will be subsequently used for world saving.
+     * Writes data used only to save on server.
+     * Overriding is fine.
      */
     public NBTTagCompound writeNBTForSaving() {
         NBTTagCompound nbt = new NBTTagCompound();
@@ -20,14 +21,16 @@ public abstract class LootGame {
     }
 
     /**
-     * Here you can read game data from compound, which will be received during world loading.
+     * Reads data from server-saved NBT.
+     * Overriding is fine.
      */
     public void readNBTFromSave(NBTTagCompound compound) {
         readCommonNBT(compound);
     }
 
     /**
-     * Writes data that will sync across network.
+     * Writes the data used only for sending to client, not to save it.
+     * Overriding is fine.
      */
     public NBTTagCompound writeNBTForClient() {
         NBTTagCompound nbt = new NBTTagCompound();
@@ -36,16 +39,23 @@ public abstract class LootGame {
     }
 
     /**
-     * Reads data that will sync across network.
+     * Reads the data that comes to client side.
+     * Overriding is fine.
      */
     public void readNBTFromClient(NBTTagCompound compound) {
         readCommonNBT(compound);
     }
 
+    /**
+     * Writes data to be used both server->client syncing and world saving
+     */
     public void writeCommonNBT(NBTTagCompound compound) {
 
     }
 
+    /**
+     * Reads data that comes from both server->client syncing and world restoring from save
+     */
     public void readCommonNBT(NBTTagCompound compound) {
     }
 }

@@ -46,28 +46,32 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
     }
 
     /**
-     * Improved analog of {@link #writeToNBT(NBTTagCompound)}. Overriding is fine.
+     * Writes data used only to save on server.
+     * Overriding is fine.
      */
     protected NBTTagCompound writeNBTForSaving(NBTTagCompound compound) {
         return super.writeToNBT(compound);
     }
 
     /**
-     * Improved analog of {@link #readFromNBT(NBTTagCompound)}. Overriding is fine.
+     * Reads data from server-saved NBT.
+     * Overriding is fine.
      */
     protected void readNBTFromSave(NBTTagCompound compound) {
         super.readFromNBT(compound);
     }
 
     /**
-     * Reads the part of data permitted for sending to client. Overriding is fine.
+     * Reads the data that comes to client side.
+     * Overriding is fine.
      */
     protected void readNBTFromClient(NBTTagCompound compound) {
         super.readFromNBT(compound);
     }
 
     /**
-     * Writes the part of data permitted for sending to client. Overriding is fine.
+     * Writes the data used only for sending to client, not to save it.
+     * Overriding is fine.
      */
     protected NBTTagCompound writeNBTForClient(NBTTagCompound compound) {
         return super.writeToNBT(compound);
