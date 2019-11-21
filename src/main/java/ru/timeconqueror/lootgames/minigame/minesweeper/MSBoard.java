@@ -4,6 +4,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.intellij.lang.annotations.MagicConstant;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.minigame.minesweeper.util.PosUtils;
 
@@ -33,7 +34,7 @@ public class MSBoard {
     }
 
     public boolean isEmpty(Pos2i pos) {
-        return getFieldTypeByPos(pos) == 0;
+        return getFieldTypeByPos(pos) == MSField.EMPTY;
     }
 
     public boolean hasFieldOn(Pos2i pos) {
@@ -47,7 +48,8 @@ public class MSBoard {
      * <p>   0       - Empty cell.
      * <p>   1 - 9   - Cell with number.
      */
-    public int getFieldTypeByPos(Pos2i pos) {
+    public @MSField.Type
+    int getFieldTypeByPos(Pos2i pos) {
         return getFieldTypeByPos(pos.getX(), pos.getY());
     }
 
@@ -62,11 +64,13 @@ public class MSBoard {
      * <p>   0       - Empty cell.
      * <p>   1 - 9   - Cell with number.
      */
-    public int getFieldTypeByPos(int x, int y) {
+    public @MSField.Type
+    int getFieldTypeByPos(int x, int y) {
         return board[x][y].type;
     }
 
-    public int getFieldMarkByPos(int x, int y) {
+    public @MSField.Mark
+    int getFieldMarkByPos(int x, int y) {
         return board[x][y].mark;
     }
 
@@ -92,7 +96,7 @@ public class MSBoard {
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                board[i][j] = new MSField(-2, true, -1);
+                board[i][j] = new MSField(-2, true, MSField.NO_MARK);
             }
         }
 
@@ -150,7 +154,7 @@ public class MSBoard {
     }
 
     @SideOnly(Side.CLIENT)
-    void setField(Pos2i pos, int type, boolean hidden, int mark) {
+    void setField(Pos2i pos, @MSField.Type int type, boolean hidden, @MSField.Mark int mark) {
         board[pos.getX()][pos.getY()] = new MSField(type, hidden, mark);
     }
 
@@ -174,42 +178,48 @@ public class MSBoard {
         this.size = size;
     }
 
-    static class MSField implements INBTSerializable<NBTTagCompound> {
-        /**
-         * Bomb index
-         */
+    public static class MSField implements INBTSerializable<NBTTagCompound> {
         public static final int BOMB = -1;
-
+        public static final int EMPTY = 0;
+        public static final int NO_MARK = 0;
+        public static final int FLAG = 1;
+        public static final int QUESTION_MARK = 2;
+        /**
+         * Type of cell.
+         *
+         * <p>   -1      - Bomb.
+         * <p>   0       - Empty cell.
+         * <p>   1 - 8   - Cell with number.
+         */
         private int type;
+        /**
+         * 0 - not marked.
+         * 1 - marked by flag.
+         * 2 - marked by question mark.
+         */
         private int mark;
         private boolean isHidden;
-        /**
-         * -1 - not marked.
-         * 0 - marked by flag.
-         * 1 - marked by question mark.
-         */
-        private int markType;
 
-        public MSField(int type, boolean isHidden, int mark) {
+        MSField(int type, boolean isHidden, int mark) {
             this.type = type;
             this.isHidden = isHidden;
             this.mark = mark;
         }
 
-        void reveal() {
-            isHidden = false;
-        }
-
         void swapMark() {
-            if (mark == 1) {
-                mark = -1;
+            if (mark == 2) {
+                mark = 0;
             } else {
                 mark += 1;
             }
         }
 
         void resetMark() {
-            mark = -1;
+            mark = 0;
+        }
+
+        void reveal() {
+            isHidden = false;
         }
 
         /**
@@ -219,12 +229,9 @@ public class MSBoard {
          * <p>   0       - Empty cell.
          * <p>   1 - 9   - Cell with number.
          */
+        @Type
         public int getType() {
             return type;
-        }
-
-        public boolean isHidden() {
-            return isHidden;
         }
 
         /**
@@ -234,6 +241,7 @@ public class MSBoard {
          * <p>  0 - marked by flag.
          * <p>  1 - marked by question mark.
          */
+        @Mark
         public int getMark() {
             return mark;
         }
@@ -241,11 +249,23 @@ public class MSBoard {
         @Override
         public NBTTagCompound serializeNBT() {
             NBTTagCompound field = new NBTTagCompound();
-            field.setBoolean("hidden", isHidden);
             field.setInteger("mark", mark);
+            field.setBoolean("hidden", isHidden);
             field.setInteger("type", type);
 
             return field;
+        }
+
+        public boolean isHidden() {
+            return isHidden;
+        }
+
+        @MagicConstant(intValues = {BOMB, EMPTY, 1, 2, 3, 4, 5, 6, 7, 8})
+        public @interface Type {
+        }
+
+        @MagicConstant(intValues = {NO_MARK, FLAG, QUESTION_MARK})
+        public @interface Mark {
         }
 
         @Override

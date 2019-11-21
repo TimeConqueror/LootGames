@@ -12,23 +12,26 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
+import ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard;
 import ru.timeconqueror.lootgames.minigame.minesweeper.tileentity.TileEntityMSMaster;
 
 public class SMessageMSUpdateBoard implements IMessage {
     private BlockPos pos;
     private int type;
     private int mark;
+    private boolean hidden;
     private Pos2i relatedSubPos;
 
-    @SideOnly(Side.CLIENT)//TODO check at starting Minecraft Server
+    @SideOnly(Side.CLIENT)
     public SMessageMSUpdateBoard() {
     }
 
-    public SMessageMSUpdateBoard(BlockPos pos, Pos2i relatedSubPos, int type, int mark) {
+    public SMessageMSUpdateBoard(BlockPos pos, Pos2i relatedSubPos, @MSBoard.MSField.Type int type, boolean hidden, @MSBoard.MSField.Mark int mark) {
         this.pos = pos;
         this.type = type;
         this.mark = mark;
         this.relatedSubPos = relatedSubPos;
+        this.hidden = hidden;
     }
 
 
@@ -38,6 +41,7 @@ public class SMessageMSUpdateBoard implements IMessage {
         pos = buff.readBlockPos();
         type = buff.readInt();
         mark = buff.readInt();
+        hidden = buff.readBoolean();
 
         int subX = buff.readInt();
         int subY = buff.readInt();
@@ -50,6 +54,8 @@ public class SMessageMSUpdateBoard implements IMessage {
         buff.writeBlockPos(pos);
         buff.writeInt(type);
         buff.writeInt(mark);
+        buff.writeBoolean(hidden);
+
         buff.writeInt(relatedSubPos.getX());
         buff.writeInt(relatedSubPos.getY());
     }
@@ -58,12 +64,18 @@ public class SMessageMSUpdateBoard implements IMessage {
         return relatedSubPos;
     }
 
-    public int getType() {
+    public @MSBoard.MSField.Type
+    int getType() {
         return type;
     }
 
-    public int getMark() {
+    public @MSBoard.MSField.Mark
+    int getMark() {
         return mark;
+    }
+
+    public boolean isHidden() {
+        return hidden;
     }
 
     public static class Handler implements IMessageHandler<SMessageMSUpdateBoard, IMessage> {

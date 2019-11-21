@@ -6,7 +6,10 @@ import net.minecraft.util.ResourceLocation;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.util.client.RenderUtils;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
+import ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 import ru.timeconqueror.lootgames.minigame.minesweeper.tileentity.TileEntityMSMaster;
+
+import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField.*;
 
 public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> {
     private static final ResourceLocation MS_BOARD = new ResourceLocation(LootGames.MODID, "textures/blocks/minesweeper/ms_board.png");
@@ -31,34 +34,42 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
         } else {
             for (int xL = 0; xL < boardSize; xL++) {
                 for (int zL = 0; zL < boardSize; zL++) {
-                    if (game.getBoard().asArray()[xL][zL] == null) {
+                    MSField f = game.getBoard().asArray()[xL][zL];
+
+                    if (f.isHidden() && f.getMark() == NO_MARK) {
                         RenderUtils.drawRect(xL, zL, xL + 1, zL + 1, -0.005F, 0, 0, 1, 1, 0.25F);
                         continue;
                     }
 
-                    int type = game.getBoard().getFieldTypeByPos(xL, zL);
-                    int mark = game.getBoard().getFieldMarkByPos(xL, zL);
-                    if (type > 8 || type < -1 || mark < -1 || mark > 1) {
-                        LootGames.logHelper.error("Something went wrong. Got type {} in MS TESR.", type);
-                        continue;
-                    }
+                    @Type
+                    int type = f.getType();
+                    @Mark
+                    int mark = f.getMark();
 
                     int textureX;
-                    int textureY = 0;
-                    if (type > 0) {
-                        textureX = type % 4 == 0 ? 3 : (type % 4 - 1);
-                        textureY = type <= 4 ? 1 : 2;
-                    } else {
-                        if (mark != -1) {
-                            if (mark == 0) {
-                                textureX = 3;
-                                textureY = 0;
-                            } else {
-                                textureX = 0;
-                                textureY = 3;
-                            }
+                    int textureY;
+
+                    if (f.isHidden()) {
+                        if (mark == NO_MARK) {
+                            textureX = 0;
+                            textureY = 0;
+                        } else if (mark == FLAG) {
+                            textureX = 3;
+                            textureY = 0;
                         } else {
-                            textureX = type == -1 ? 1 : 2;
+                            textureX = 0;
+                            textureY = 3;
+                        }
+                    } else {
+                        if (type > 0) {
+                            textureX = type % 4 == 0 ? 3 : (type % 4 - 1);
+                            textureY = type <= 4 ? 1 : 2;
+                        } else if (type == EMPTY) {
+                            textureX = 2;
+                            textureY = 0;
+                        } else {
+                            textureX = 1;
+                            textureY = 0;
                         }
                     }
 

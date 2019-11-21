@@ -74,6 +74,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
     compile 'time-core:TimeCore-1.12.2:1.0.0:deobf'
+    compileOnly 'org.jetbrains:annotations:18.0.0'
 }
 
 processResources {

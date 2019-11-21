@@ -15,6 +15,8 @@ import ru.timeconqueror.lootgames.packets.SMessageMSUpdateBoard;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 
+import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
+
 public class GameMineSweeper extends LootGame {
     private MSBoard board;
 
@@ -41,21 +43,21 @@ public class GameMineSweeper extends LootGame {
     public void generateBoard(Pos2i clickedPos) {
         board.generate(clickedPos);
 
-        if (board.getFieldTypeByPos(clickedPos) == 0) {
+        if (board.getFieldTypeByPos(clickedPos) == MSField.EMPTY) {
             revealAllNeighbours(clickedPos);
         }
     }
 
     public void revealField(Pos2i pos) {
-        MSBoard.MSField field = board.getFieldByPos(pos);
+        MSField field = board.getFieldByPos(pos);
         if (field.isHidden()) {
             field.resetMark();
             field.reveal();
 
             NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(masterTileEntity.getWorld().provider.getDimension(), masterTileEntity.getPos().getX(), masterTileEntity.getPos().getY(), masterTileEntity.getPos().getZ(), -1);
-            NetworkHandler.INSTANCE.sendToAllTracking(new SMessageMSUpdateBoard(masterTileEntity.getPos(), pos, field.getType(), -1), point);
+            NetworkHandler.INSTANCE.sendToAllTracking(new SMessageMSUpdateBoard(masterTileEntity.getPos(), pos, field.getType(), false, MSField.NO_MARK), point);
 
-            if (field.getType() == 0) {
+            if (field.getType() == MSField.EMPTY) {
                 revealAllNeighbours(pos);
             }
         }
@@ -64,12 +66,12 @@ public class GameMineSweeper extends LootGame {
     }
 
     public void swapFieldMark(Pos2i pos) {
-        MSBoard.MSField field = board.getFieldByPos(pos);
+        MSField field = board.getFieldByPos(pos);
         if (field.isHidden()) {
             field.swapMark();
 
             NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(masterTileEntity.getWorld().provider.getDimension(), masterTileEntity.getPos().getX(), masterTileEntity.getPos().getY(), masterTileEntity.getPos().getZ(), -1);
-            NetworkHandler.INSTANCE.sendToAllTracking(new SMessageMSUpdateBoard(masterTileEntity.getPos(), pos, 0, field.getMark()), point);
+            NetworkHandler.INSTANCE.sendToAllTracking(new SMessageMSUpdateBoard(masterTileEntity.getPos(), pos, MSField.EMPTY, true, field.getMark()), point);
 
             masterTileEntity.markDirty();
         }
@@ -84,7 +86,7 @@ public class GameMineSweeper extends LootGame {
 
                 Pos2i pos = mainPos.add(x, y);
                 if (board.hasFieldOn(pos)) {
-                    MSBoard.MSField field = board.getFieldByPos(pos);
+                    MSField field = board.getFieldByPos(pos);
                     if (field.isHidden()) {
                         revealField(pos);
                     }
@@ -96,7 +98,7 @@ public class GameMineSweeper extends LootGame {
     @SideOnly(Side.CLIENT)
     public void onUpdateMessageReceived(SMessageMSUpdateBoard msg) {
         Pos2i pos = msg.getRelatedSubPos();
-        board.setField(pos, msg.getType(), false, msg.getMark());
+        board.setField(pos, msg.getType(), msg.isHidden(), msg.getMark());
     }
 
     public MSBoard getBoard() {
@@ -121,7 +123,7 @@ public class GameMineSweeper extends LootGame {
 
         if (compound.hasKey("board")) {
             NBTTagCompound boardTag = compound.getCompoundTag("board");
-            MSBoard.MSField[][] boardArr = NBTUtils.readTwoDimArrFromNBT(boardTag, MSBoard.MSField.class, () -> new MSBoard.MSField(0, true, -1));
+            MSField[][] boardArr = NBTUtils.readTwoDimArrFromNBT(boardTag, MSField.class, () -> new MSField(MSField.EMPTY, true, MSField.NO_MARK));
             board.setBoard(boardArr);
         }
     }
@@ -132,7 +134,18 @@ public class GameMineSweeper extends LootGame {
 
         compound.setBoolean("c_is_generated", isBoardGenerated());
         if (isBoardGenerated()) {
-            NBTTagCompound boardTag = NBTUtils.writeTwoDimArrToNBT(board.asArray(), msField -> !msField.isHidden());
+            NBTTagCompound boardTag = NBTUtils.<MSField>writeTwoDimArrToNBT(board.asArray(), field -> {
+                NBTTagCompound c = new NBTTagCompound();
+
+                c.setBoolean("hidden", field.isHidden());
+                c.setInteger("mark", field.getMark());
+
+                if (!field.isHidden()) {
+                    c.setInteger("type", field.getType());
+                }
+
+                return c;
+            });
             compound.setTag("c_board", boardTag);
         }
         return compound;
@@ -145,7 +158,8 @@ public class GameMineSweeper extends LootGame {
         cIsGenerated = compound.getBoolean("c_is_generated");
         if (compound.hasKey("c_board")) {
             NBTTagCompound boardTag = compound.getCompoundTag("c_board");
-            MSBoard.MSField[][] boardArr = NBTUtils.readTwoDimArrFromNBT(boardTag, MSBoard.MSField.class, () -> new MSBoard.MSField(0, true, -1));
+            MSField[][] boardArr = NBTUtils.readTwoDimArrFromNBT(boardTag, MSField.class, compoundIn ->
+                    new MSField(compoundIn.hasKey("type") ? compoundIn.getInteger("type") : MSField.EMPTY, compoundIn.getBoolean("hidden"), compoundIn.getInteger("mark")));
             board.setBoard(boardArr);
         }
     }
