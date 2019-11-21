@@ -8,5 +8,6 @@ public abstract class BlockGame extends Block {
         super(Material.BARRIER);
         setBlockUnbreakable();
         setLightLevel(1.0F);
+        setResistance(6000000.0F);
     }
 }

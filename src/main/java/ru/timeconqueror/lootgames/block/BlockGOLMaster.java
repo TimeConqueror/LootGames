@@ -14,7 +14,6 @@ import ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster;
 
 import javax.annotation.Nullable;
 
-//TODO fix breaking with explosions
 public class BlockGOLMaster extends BlockGame {
 
     @Override
@@ -25,7 +24,6 @@ public class BlockGOLMaster extends BlockGame {
             if (worldIn.getTileEntity(pos) instanceof TileEntityGOLMaster) {
                 TileEntityGOLMaster te = (TileEntityGOLMaster) worldIn.getTileEntity(pos);
 
-                //TODO add specialties
                 if (playerIn instanceof EntityPlayerMP) {
                     AdvancementManager.BLOCK_ACTIVATED.trigger(((EntityPlayerMP) playerIn), pos, playerIn.getHeldItem(hand));
                 }
