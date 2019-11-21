@@ -13,13 +13,13 @@ import java.util.Map;
  * Can be accessed via LootGames.gameManager.
  */
 public class GameManager {
-    private static final Map<Class<? extends AbstractLootGame>, ILootGameFactory> GAME_MAP = new HashMap<>();
+    private static final Map<Class<? extends LootGame>, ILootGameFactory> GAME_MAP = new HashMap<>();
     private static final List<ILootGameFactory> GAME_GEN_LIST = new ArrayList<>();
 
     /**
      * Register game and its factory.
      */
-    public <T extends AbstractLootGame> void registerGame(Class<T> clazz, ILootGameFactory generator) {
+    public <T extends LootGame> void registerGame(Class<T> clazz, ILootGameFactory generator) {
         GAME_MAP.put(clazz, generator);
         GAME_GEN_LIST.add(generator);
     }

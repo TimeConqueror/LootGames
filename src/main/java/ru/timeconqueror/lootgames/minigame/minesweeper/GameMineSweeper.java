@@ -6,8 +6,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import ru.timeconqueror.lootgames.api.minigame.AbstractLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
+import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.util.NBTUtils;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.packets.NetworkHandler;
@@ -15,7 +15,7 @@ import ru.timeconqueror.lootgames.packets.SMessageMSUpdateBoard;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 
-public class GameMineSweeper extends AbstractLootGame {
+public class GameMineSweeper extends LootGame {
     private MSBoard board;
 
     @SideOnly(Side.CLIENT)
@@ -104,13 +104,8 @@ public class GameMineSweeper extends AbstractLootGame {
     }
 
     @Override
-    public boolean isDataSyncsEntirely() {
-        return false;
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT(boolean isForSendingToClient) {
-        NBTTagCompound gameCompound = super.writeToNBT(isForSendingToClient);
+    public NBTTagCompound writeNBTForSaving() {
+        NBTTagCompound gameCompound = super.writeNBTForSaving();
 
         if (isBoardGenerated()) {
             NBTTagCompound boardTag = NBTUtils.writeTwoDimArrToNBT(board.asArray());
@@ -121,55 +116,50 @@ public class GameMineSweeper extends AbstractLootGame {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound, boolean callClientSyncedPart, boolean isReadFromClient) {
-//        System.out.println("readFromNBTStart:" + callClientSyncedPart + " " + isReadFromClient);
-//        System.out.println(compound);
-        super.readFromNBT(compound, callClientSyncedPart, isReadFromClient);
+    public void readNBTFromSave(NBTTagCompound compound) {
+        super.readNBTFromSave(compound);
 
         if (compound.hasKey("board")) {
             NBTTagCompound boardTag = compound.getCompoundTag("board");
             MSBoard.MSField[][] boardArr = NBTUtils.readTwoDimArrFromNBT(boardTag, MSBoard.MSField.class, () -> new MSBoard.MSField(0, true, -1));
             board.setBoard(boardArr);
         }
-//        System.out.println("readFromNBTEnd");
     }
 
     @Override
-    public NBTTagCompound writeClientSyncedNBT(boolean isForSendingToClient) {
-        NBTTagCompound compound = super.writeClientSyncedNBT(isForSendingToClient);
+    public NBTTagCompound writeNBTForClient() {
+        NBTTagCompound compound = super.writeNBTForClient();
 
-        compound.setInteger("bomb_count", board.getBombCount());
-        compound.setInteger("board_size", board.size());
-
-        if (isForSendingToClient) {
-            compound.setBoolean("c_is_generated", isBoardGenerated());
-            if (isBoardGenerated()) {
-                NBTTagCompound boardTag = NBTUtils.writeTwoDimArrToNBT(board.asArray(), msField -> !msField.isHidden());
-                compound.setTag("c_board", boardTag);
-            }
+        compound.setBoolean("c_is_generated", isBoardGenerated());
+        if (isBoardGenerated()) {
+            NBTTagCompound boardTag = NBTUtils.writeTwoDimArrToNBT(board.asArray(), msField -> !msField.isHidden());
+            compound.setTag("c_board", boardTag);
         }
         return compound;
     }
 
     @Override
-    public void readClientSyncedNBT(NBTTagCompound compound, boolean isReadFromClient) {
-        super.readClientSyncedNBT(compound, isReadFromClient);
+    public void readNBTFromClient(NBTTagCompound compound) {
+        super.readNBTFromClient(compound);
 
-//        System.out.println("readClientSyncedNBT");
-//        System.out.println(compound);
+        cIsGenerated = compound.getBoolean("c_is_generated");
+        if (compound.hasKey("c_board")) {
+            NBTTagCompound boardTag = compound.getCompoundTag("c_board");
+            MSBoard.MSField[][] boardArr = NBTUtils.readTwoDimArrFromNBT(boardTag, MSBoard.MSField.class, () -> new MSBoard.MSField(0, true, -1));
+            board.setBoard(boardArr);
+        }
+    }
+
+    @Override
+    public void writeCommonNBT(NBTTagCompound compound) {
+        compound.setInteger("bomb_count", board.getBombCount());
+        compound.setInteger("board_size", board.size());
+    }
+
+    @Override
+    public void readCommonNBT(NBTTagCompound compound) {
         board.setBombCount(compound.getInteger("bomb_count"));
         board.setSize(compound.getInteger("board_size"));
-
-        if (isReadFromClient) {
-            cIsGenerated = compound.getBoolean("c_is_generated");
-            if (compound.hasKey("c_board")) {
-                NBTTagCompound boardTag = compound.getCompoundTag("c_board");
-                MSBoard.MSField[][] boardArr = NBTUtils.readTwoDimArrFromNBT(boardTag, MSBoard.MSField.class, () -> new MSBoard.MSField(0, true, -1));
-                board.setBoard(boardArr);
-            }
-        }
-
-//        System.out.println(Arrays.deepToString(board.asArray()));
     }
 
     public static class Factory implements ILootGameFactory {

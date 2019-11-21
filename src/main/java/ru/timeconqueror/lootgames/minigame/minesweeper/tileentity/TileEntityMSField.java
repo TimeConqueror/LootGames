@@ -40,7 +40,7 @@
 //    }
 //
 //    @Override
-//    public void readFromNBT(NBTTagCompound compound) {
+//    public void readNBTFromSave(NBTTagCompound compound) {
 //        type = compound.getInteger("type");
 //        isMaster = compound.getBoolean("is_master");
 //
@@ -49,7 +49,7 @@
 //    }
 //
 //    @Override
-//    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+//    public NBTTagCompound writeNBTForSaving(NBTTagCompound compound) {
 //        compound.setBoolean("is_master", isMaster);
 //        compound.setInteger("type", type);
 //
@@ -63,7 +63,7 @@
 //     */
 //    public void readFromNBTNonSecretData(NBTTagCompound compound) {
 //        hidden = compound.getBoolean("hidden");
-//        super.readFromNBT(compound);
+//        super.readNBTFromSave(compound);
 //    }
 //
 //    /**
@@ -71,7 +71,7 @@
 //     */
 //    public NBTTagCompound writeToNBTNonSecretData(NBTTagCompound compound) {
 //        compound.setBoolean("hidden", hidden);
-//        return super.writeToNBT(compound);
+//        return super.writeNBTForSaving(compound);
 //    }
 //
 //    @Override

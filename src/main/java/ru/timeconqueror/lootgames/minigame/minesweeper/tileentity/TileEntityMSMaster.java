@@ -32,13 +32,13 @@ public class TileEntityMSMaster extends TileEntityGameMaster<GameMineSweeper> {
     }
 
     @Override
-    protected NBTTagCompound writeTEDataToNBT(NBTTagCompound compound) {
-        return super.writeTEDataToNBT(compound);
+    protected NBTTagCompound writeNBTForSaving(NBTTagCompound compound) {
+        return super.writeNBTForSaving(compound);
     }
 
     @Override
-    protected void readTEDataFromNBT(NBTTagCompound compound) {
-        super.readTEDataFromNBT(compound);
+    protected void readNBTFromSave(NBTTagCompound compound) {
+        super.readNBTFromSave(compound);
     }
 
     public boolean isBoardGenerated() {
@@ -46,18 +46,13 @@ public class TileEntityMSMaster extends TileEntityGameMaster<GameMineSweeper> {
     }
 
     @Override
-    protected boolean isDataSyncsEntirely() {
-        return false;
+    public NBTTagCompound writeNBTForClient(NBTTagCompound compound) {
+        return super.writeNBTForClient(compound);
     }
 
     @Override
-    public NBTTagCompound writeClientSyncedNBT(NBTTagCompound compound) {
-        return super.writeClientSyncedNBT(compound);
-    }
-
-    @Override
-    public void readClientSyncedNBT(NBTTagCompound compound) {
-        super.readClientSyncedNBT(compound);
+    public void readNBTFromClient(NBTTagCompound compound) {
+        super.readNBTFromClient(compound);
     }
 
     @Override

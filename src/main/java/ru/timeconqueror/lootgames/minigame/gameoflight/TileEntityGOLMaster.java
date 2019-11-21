@@ -318,8 +318,8 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     }
 
     @Override
-    protected void readTEDataFromNBT(NBTTagCompound compound) {
-        super.readTEDataFromNBT(compound);
+    protected void readNBTFromSave(NBTTagCompound compound) {
+        super.readNBTFromSave(compound);
         ticks = compound.getInteger("ticks");
         gameStage = GameStage.values()[compound.getInteger("game_stage")];
         onStageSetting(gameStage);
@@ -333,8 +333,8 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     }
 
     @Override
-    protected NBTTagCompound writeTEDataToNBT(NBTTagCompound compound) {
-        compound = super.writeTEDataToNBT(compound);
+    protected NBTTagCompound writeNBTForSaving(NBTTagCompound compound) {
+        compound = super.writeNBTForSaving(compound);
         compound.setInteger("ticks", ticks);
         compound.setInteger("game_stage", gameStage.ordinal());
         compound.setInteger("game_level", gameLevel);
@@ -350,11 +350,6 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         }
 
         return compound;
-    }
-
-    @Override
-    protected boolean isDataSyncsEntirely() {
-        return true;
     }
 
     private void onGameEnded(EntityPlayer player) {
