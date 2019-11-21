@@ -12,6 +12,7 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+//TODO add common write/read?
 public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntity {
     protected T game;
 
@@ -35,12 +36,12 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
      */
     @Override
     public final void readFromNBT(NBTTagCompound compound) {
-        this.readNBTFromSave(compound);
-
         //If read from client side
         if (compound.hasKey("client_flag")) {
+            readNBTFromClient(compound);
             game.readNBTFromClient(compound.getCompoundTag("game_synced"));
         } else {
+            readNBTFromSave(compound);
             game.readNBTFromSave(compound.getCompoundTag("game"));
         }
     }
