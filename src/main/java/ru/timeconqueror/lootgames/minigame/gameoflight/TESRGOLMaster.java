@@ -13,9 +13,9 @@ import static ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaste
 import static ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster.MAX_TICKS_EXPANDING;
 
 public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster> {
-    private static final ResourceLocation GAME_FIELD = new ResourceLocation(LootGames.MODID, "textures/blocks/gameoflight/game_field.png");
-    private static final ResourceLocation GAME_FIELD_ACTIVATED = new ResourceLocation(LootGames.MODID, "textures/blocks/gameoflight/game_field_active.png");
-    private static final ResourceLocation SPECIAL_STUFF = new ResourceLocation(LootGames.MODID, "textures/blocks/gameoflight/special_stuff.png");
+    private static final ResourceLocation GAME_FIELD = new ResourceLocation(LootGames.MOD_ID, "textures/blocks/gameoflight/game_field.png");
+    private static final ResourceLocation GAME_FIELD_ACTIVATED = new ResourceLocation(LootGames.MOD_ID, "textures/blocks/gameoflight/game_field_active.png");
+    private static final ResourceLocation SPECIAL_STUFF = new ResourceLocation(LootGames.MOD_ID, "textures/blocks/gameoflight/special_stuff.png");
 
     @Override
     public void render(TileEntityGOLMaster te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {

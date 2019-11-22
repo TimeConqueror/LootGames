@@ -15,30 +15,28 @@ import ru.timeconqueror.timecore.api.auxiliary.debug.Profiler;
 
 import java.util.Random;
 
-@Mod(modid = LootGames.MODID,
+@Mod(modid = LootGames.MOD_ID,
         dependencies = "required-after:forge@[14.23.5.2768,);" + "required-after:timecore@[1.0.0,);",
-        name = LootGames.MODNAME,
+        name = LootGames.MOD_NAME,
         version = LootGames.VERSION)
 public class LootGames {
-    public static final String MODID = "lootgames";
-    public static final String MODNAME = "LootGames";
+    public static final String MOD_ID = "lootgames";
+    public static final String MOD_NAME = "LootGames";
     public static final String VERSION = "GRADLETOKEN_VERSION";
 
-    public static final LGCreativeTabs TAB_LOOTGAMES = new LGCreativeTabs(CreativeTabs.getNextID(), LootGames.MODID);
+    public static final Random RAND = new Random();
+    public static final LGCreativeTabs TAB_LOOTGAMES = new LGCreativeTabs(CreativeTabs.getNextID(), LootGames.MOD_ID);
 
-    public static Random rand = new Random();
 
-    public static LogHelper logHelper = new LogHelper(MODID);
+    public static LogHelper logHelper = new LogHelper(MOD_ID);
     public static Profiler profiler = new Profiler();
 
     public static GameManager gameManager;
 
-//    public static DonorController Donors = null;
-
     @SidedProxy(clientSide = "ru.timeconqueror.lootgames.proxy.ClientProxy", serverSide = "ru.timeconqueror.lootgames.proxy.ServerProxy")
     public static CommonProxy proxy;
 
-    @Mod.Instance(LootGames.MODID)
+    @Mod.Instance(LootGames.MOD_ID)
     public static LootGames instance;
 
     @Mod.EventHandler
@@ -48,14 +46,6 @@ public class LootGames {
         }
 
         proxy.preInit(event);
-
-//        URL donorListSource = null;
-//        try {
-//            donorListSource = new URL("https://pastebin.com/raw/x1K80mwb");
-//            Donors = new DonorController(donorListSource);
-//        } catch (MalformedURLException e) {
-//            mLog.error("Unable to access the DonorList. No special features will be available");
-//        }
     }
 
     @Mod.EventHandler

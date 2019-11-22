@@ -17,7 +17,7 @@ import ru.timeconqueror.lootgames.world.gen.LootGamesWorldGen;
 import ru.timeconqueror.timecore.api.registry.EasyRegistry;
 
 public class CommonProxy {
-    public static final EasyRegistry REGISTRY = new EasyRegistry(LootGames.MODID, LootGames.TAB_LOOTGAMES);
+    public static final EasyRegistry REGISTRY = new EasyRegistry(LootGames.MOD_ID, LootGames.TAB_LOOTGAMES);
 
     public void preInit(FMLPreInitializationEvent event) {
         ModBlocks.register();

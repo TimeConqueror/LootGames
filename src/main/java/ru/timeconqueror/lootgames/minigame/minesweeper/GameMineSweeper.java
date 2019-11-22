@@ -6,6 +6,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.util.NBTUtils;
@@ -18,18 +19,43 @@ import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 
 public class GameMineSweeper extends LootGame {
-    private MSBoard board;
+    public static final int TICKS_DETONATION_TIME = 3 * 20;
+    private static final int ATTEMPTS_ALLOWED = 3;
 
     @SideOnly(Side.CLIENT)
     public boolean cIsGenerated;
 
+    private MSBoard board;
+
+    private Stage stage;
+    private int ticks;
+    private int attemptCount = 0;
+
     public GameMineSweeper(int boardSize, int bombCount) {
         board = new MSBoard(boardSize, bombCount);
+        updateStage(Stage.WAITING);
     }
 
     public static Pos2i convertToGamePos(BlockPos masterPos, BlockPos subordinatePos) {
         BlockPos tpos = subordinatePos.subtract(masterPos);
         return new Pos2i(tpos.getX(), tpos.getZ());
+    }
+
+    @Override
+    public void onTick() {
+        if (isServerSide()) {
+            if (stage == Stage.DETONATING) {
+                if (ticks >= TICKS_DETONATION_TIME) {
+                    onDetonateTimePassed();
+                }
+
+                ticks++;
+            }
+        } else {
+            if (stage == Stage.DETONATING) {
+                ticks++;
+            }
+        }
     }
 
     public boolean isBoardGenerated() {
@@ -49,6 +75,7 @@ public class GameMineSweeper extends LootGame {
     }
 
     public void revealField(Pos2i pos) {
+
         MSField field = board.getFieldByPos(pos);
         if (field.isHidden()) {
             field.resetMark();
@@ -59,6 +86,8 @@ public class GameMineSweeper extends LootGame {
 
             if (field.getType() == MSField.EMPTY) {
                 revealAllNeighbours(pos);
+            } else if (field.getType() == MSField.BOMB) {
+                onBombTriggered(pos);
             }
         }
 
@@ -95,14 +124,71 @@ public class GameMineSweeper extends LootGame {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    private void onBombTriggered(Pos2i pos) {
+        updateStage(Stage.DETONATING);
+        attemptCount++;
+    }
+
+    private void onDetonateTimePassed() {
+        if (attemptCount < ATTEMPTS_ALLOWED) {
+            detonateBoard();
+        } else {
+
+        }
+    }
+
+    private void detonateBoard() {
+        MSField[][] asArray = board.asArray();
+        for (int x = 0; x < asArray.length; x++) {
+            MSField[] msFields = asArray[x];
+            for (int y = 0; y < msFields.length; y++) {
+                MSField msField = msFields[y];
+                if (msField.getType() == MSField.BOMB) {
+
+                    BlockPos pos = convertToBlockPos(x, y);
+                    serverTaskPostponer.addTask(() -> getWorld().createExplosion(null, pos.getX(), pos.getY(), pos.getZ(), 4, false),
+                            LootGames.RAND.nextInt(3 * 20));
+                }
+            }
+        }
+    }
+
+    private void updateStage(Stage stageTo) {
+        stage = stageTo;
+        ticks = 0;
+
+        NBTTagCompound c = new NBTTagCompound();
+        c.setInteger("stage", stage.ordinal());
+        sendUpdatePacket("stageUpdate", c);
+    }
+
+    @Override
+    public void onUpdatePacket(String key, NBTTagCompound compoundIn) {
+        if (key.equals("stageUpdate")) {
+            updateStage(Stage.values()[compoundIn.getInteger("stage")]);
+        }
+    }
+
+    @SideOnly(Side.CLIENT)//TODO change to UpdatePacket
     public void onUpdateMessageReceived(SMessageMSUpdateBoard msg) {
         Pos2i pos = msg.getRelatedSubPos();
         board.setField(pos, msg.getType(), msg.isHidden(), msg.getMark());
     }
 
+    private BlockPos convertToBlockPos(int x, int y) {
+        return masterTileEntity.getPos().add(x, 0, y);
+    }
+
     public MSBoard getBoard() {
         return board;
+    }
+
+    public int getTicks() {
+        return ticks;
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 
     @Override
@@ -113,6 +199,10 @@ public class GameMineSweeper extends LootGame {
             NBTTagCompound boardTag = NBTUtils.writeTwoDimArrToNBT(board.asArray());
             gameCompound.setTag("board", boardTag);
         }
+
+        gameCompound.setInteger("stage", stage.ordinal());
+        gameCompound.setInteger("ticks", ticks);
+        gameCompound.setInteger("attempt_count", attemptCount);
 
         return gameCompound;
     }
@@ -126,13 +216,15 @@ public class GameMineSweeper extends LootGame {
             MSField[][] boardArr = NBTUtils.readTwoDimArrFromNBT(boardTag, MSField.class, () -> new MSField(MSField.EMPTY, true, MSField.NO_MARK));
             board.setBoard(boardArr);
         }
+
+        attemptCount = compound.getInteger("attempt_count");
     }
 
     @Override
     public NBTTagCompound writeNBTForClient() {
         NBTTagCompound compound = super.writeNBTForClient();
 
-        compound.setBoolean("c_is_generated", isBoardGenerated());
+        compound.setBoolean("is_generated", isBoardGenerated());
         if (isBoardGenerated()) {
             NBTTagCompound boardTag = NBTUtils.<MSField>writeTwoDimArrToNBT(board.asArray(), field -> {
                 NBTTagCompound c = new NBTTagCompound();
@@ -146,7 +238,7 @@ public class GameMineSweeper extends LootGame {
 
                 return c;
             });
-            compound.setTag("c_board", boardTag);
+            compound.setTag("board", boardTag);
         }
         return compound;
     }
@@ -155,9 +247,9 @@ public class GameMineSweeper extends LootGame {
     public void readNBTFromClient(NBTTagCompound compound) {
         super.readNBTFromClient(compound);
 
-        cIsGenerated = compound.getBoolean("c_is_generated");
-        if (compound.hasKey("c_board")) {
-            NBTTagCompound boardTag = compound.getCompoundTag("c_board");
+        cIsGenerated = compound.getBoolean("is_generated");
+        if (compound.hasKey("board")) {
+            NBTTagCompound boardTag = compound.getCompoundTag("board");
             MSField[][] boardArr = NBTUtils.readTwoDimArrFromNBT(boardTag, MSField.class, compoundIn ->
                     new MSField(compoundIn.hasKey("type") ? compoundIn.getInteger("type") : MSField.EMPTY, compoundIn.getBoolean("hidden"), compoundIn.getInteger("mark")));
             board.setBoard(boardArr);
@@ -174,6 +266,13 @@ public class GameMineSweeper extends LootGame {
     public void readCommonNBT(NBTTagCompound compound) {
         board.setBombCount(compound.getInteger("bomb_count"));
         board.setSize(compound.getInteger("board_size"));
+        stage = Stage.values()[compound.getInteger("stage")];
+        ticks = compound.getInteger("ticks");
+    }
+
+    public enum Stage {
+        WAITING,
+        DETONATING
     }
 
     public static class Factory implements ILootGameFactory {

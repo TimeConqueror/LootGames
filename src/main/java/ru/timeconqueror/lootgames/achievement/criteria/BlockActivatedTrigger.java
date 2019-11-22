@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class BlockActivatedTrigger implements ICriterionTrigger<BlockActivatedTrigger.Instance> {
-    private static final ResourceLocation ID = new ResourceLocation(LootGames.MODID, "activate_block");
+    private static final ResourceLocation ID = new ResourceLocation(LootGames.MOD_ID, "activate_block");
     private final Map<PlayerAdvancements, BlockActivatedTrigger.Listeners> listeners = new HashMap<>();
 
     @Override

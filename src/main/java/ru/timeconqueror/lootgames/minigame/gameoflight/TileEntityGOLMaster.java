@@ -254,9 +254,9 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         }
 
         if (gameLevel >= LootGamesConfig.gameOfLight.expandFieldAtStage) {
-            symbolSequence.add(LootGames.rand.nextInt(8));
+            symbolSequence.add(LootGames.RAND.nextInt(8));
         } else {
-            symbolSequence.add(LootGames.rand.nextInt(4) * 2);
+            symbolSequence.add(LootGames.RAND.nextInt(4) * 2);
         }
     }
 
@@ -411,7 +411,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
             failEffects.add("zombies");
 
         if (failEffects.size() != 0)
-            executeFailEvent(failEffects.get(LootGames.rand.nextInt(failEffects.size())));
+            executeFailEvent(failEffects.get(LootGames.RAND.nextInt(failEffects.size())));
     }
 
     private void executeFailEvent(String pEffect) {
@@ -425,7 +425,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         } else if (pEffect.equalsIgnoreCase("zombies")) {
             for (int i = 0; i < 10; i++) {
                 EntityZombie zombie = new EntityZombie(world);
-                zombie.setLocationAndAngles(pos.getX() + LootGames.rand.nextFloat() * 2, pos.getY() + 1, pos.getZ() + LootGames.rand.nextFloat() * 2, MathHelper.wrapDegrees(LootGames.rand.nextFloat() * 360.0F), 0.0F);
+                zombie.setLocationAndAngles(pos.getX() + LootGames.RAND.nextFloat() * 2, pos.getY() + 1, pos.getZ() + LootGames.RAND.nextFloat() * 2, MathHelper.wrapDegrees(LootGames.RAND.nextFloat() * 360.0F), 0.0F);
                 zombie.rotationYawHead = zombie.rotationYaw;
                 zombie.renderYawOffset = zombie.rotationYaw;
                 world.spawnEntity(zombie);
@@ -532,11 +532,11 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
                 int min = stage.minItems == -1 ? 0 : stage.minItems;
                 int extra = (stage.maxItems == -1 ? notEmptyIndexes.size() : stage.maxItems) - stage.minItems;
 
-                int itemCount = extra < 1 ? min : min + LootGames.rand.nextInt(extra);
+                int itemCount = extra < 1 ? min : min + LootGames.RAND.nextInt(extra);
                 if (itemCount < notEmptyIndexes.size()) {
                     int[] itemsRemain = new int[itemCount];
                     for (int i = 0; i < itemsRemain.length; i++) {
-                        int itemRemainArrIndex = LootGames.rand.nextInt(notEmptyIndexes.size());
+                        int itemRemainArrIndex = LootGames.RAND.nextInt(notEmptyIndexes.size());
                         int itemRemainChestIndex = notEmptyIndexes.get(itemRemainArrIndex);
                         notEmptyIndexes.remove(itemRemainArrIndex);
 
@@ -584,7 +584,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
 
     private void spawnFeedbackParticles(EnumParticleTypes particle, BlockPos pos) {
         for (int i = 0; i < 20; i++) {
-            world.spawnParticle(particle, pos.getX() + LootGames.rand.nextFloat(), pos.getY() + 0.5F + LootGames.rand.nextFloat(), pos.getZ() + LootGames.rand.nextFloat(), LootGames.rand.nextGaussian() * 0.02D, (0.02D + LootGames.rand.nextGaussian()) * 0.02D, LootGames.rand.nextGaussian() * 0.02D);
+            world.spawnParticle(particle, pos.getX() + LootGames.RAND.nextFloat(), pos.getY() + 0.5F + LootGames.RAND.nextFloat(), pos.getZ() + LootGames.RAND.nextFloat(), LootGames.RAND.nextGaussian() * 0.02D, (0.02D + LootGames.RAND.nextGaussian()) * 0.02D, LootGames.RAND.nextGaussian() * 0.02D);
         }
     }
 

@@ -12,7 +12,7 @@ import ru.timeconqueror.lootgames.minigame.minesweeper.tileentity.TileEntityMSMa
 import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField.*;
 
 public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> {
-    private static final ResourceLocation MS_BOARD = new ResourceLocation(LootGames.MODID, "textures/blocks/minesweeper/ms_board.png");
+    private static final ResourceLocation MS_BOARD = new ResourceLocation(LootGames.MOD_ID, "textures/blocks/minesweeper/ms_board.png");
 
     @Override
     public void render(TileEntityMSMaster te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
@@ -35,11 +35,6 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
             for (int xL = 0; xL < boardSize; xL++) {
                 for (int zL = 0; zL < boardSize; zL++) {
                     MSField f = game.getBoard().asArray()[xL][zL];
-
-                    if (f.isHidden() && f.getMark() == NO_MARK) {
-                        RenderUtils.drawRect(xL, zL, xL + 1, zL + 1, -0.005F, 0, 0, 1, 1, 0.25F);
-                        continue;
-                    }
 
                     @Type
                     int type = f.getType();
@@ -67,19 +62,29 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
                         } else if (type == EMPTY) {
                             textureX = 2;
                             textureY = 0;
-                        } else {
+                        } else {//if its a bomb
                             textureX = 1;
                             textureY = 0;
                         }
                     }
 
                     RenderUtils.drawRect(xL, zL, xL + 1, zL + 1, -0.005F, textureX, textureY, 1, 1, 0.25F);
+                    if (!f.isHidden() && f.getType() == BOMB) {
+                        int max = GameMineSweeper.TICKS_DETONATION_TIME;
+                        int ticks = game.getTicks();
+
+//
+                    }
                 }
             }
         }
 
         GlStateManager.popMatrix();
     }
+
+//    private int f(){
+//
+//    }
 
     @Override
     public boolean isGlobalRenderer(TileEntityMSMaster te) {

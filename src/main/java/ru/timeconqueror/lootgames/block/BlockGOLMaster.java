@@ -14,6 +14,7 @@ import ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster;
 
 import javax.annotation.Nullable;
 
+//TODO move to minigame
 public class BlockGOLMaster extends BlockGame {
 
     @Override

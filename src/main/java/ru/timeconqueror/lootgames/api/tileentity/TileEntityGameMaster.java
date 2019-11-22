@@ -6,6 +6,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 
@@ -13,12 +14,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 //TODO add common write/read?
-public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntity {
+public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntity implements ITickable {
     protected T game;
 
     public TileEntityGameMaster(T game) {
         this.game = game;
         game.setMasterTileEntity(this);
+    }
+
+    @Override
+    public void update() {
+        game.onTick();
     }
 
     /**

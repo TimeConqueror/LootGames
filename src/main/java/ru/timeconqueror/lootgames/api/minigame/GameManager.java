@@ -33,6 +33,6 @@ public class GameManager {
      * @param topPos          The position with the highest coordinates of the structure
      */
     public void generateRandomGame(World world, BlockPos puzzleMasterPos, BlockPos bottomPos, BlockPos topPos) {
-        GAME_GEN_LIST.get(LootGames.rand.nextInt(GAME_GEN_LIST.size())).genOnPuzzleMasterClick(world, puzzleMasterPos, bottomPos, topPos);
+        GAME_GEN_LIST.get(LootGames.RAND.nextInt(GAME_GEN_LIST.size())).genOnPuzzleMasterClick(world, puzzleMasterPos, bottomPos, topPos);
     }
 }

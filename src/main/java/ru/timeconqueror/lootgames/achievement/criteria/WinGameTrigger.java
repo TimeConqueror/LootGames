@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class WinGameTrigger implements ICriterionTrigger<WinGameTrigger.Instance> {
-    private static final ResourceLocation ID = new ResourceLocation(LootGames.MODID, "win_minigame");
+    private static final ResourceLocation ID = new ResourceLocation(LootGames.MOD_ID, "win_minigame");
     private final Map<PlayerAdvancements, Listeners> listeners = new HashMap<>();
 
     @Override

@@ -67,7 +67,7 @@ public class SMessageGOLParticle implements IMessage {
 
         private void spawnFeedbackParticles(World world, EnumParticleTypes particle, BlockPos pos) {
             for (int i = 0; i < 20; i++) {
-                world.spawnParticle(particle, pos.getX() + LootGames.rand.nextFloat(), pos.getY() + 0.5F + LootGames.rand.nextFloat(), pos.getZ() + LootGames.rand.nextFloat(), LootGames.rand.nextGaussian() * 0.02D, (0.02D + LootGames.rand.nextGaussian()) * 0.02D, LootGames.rand.nextGaussian() * 0.02D);
+                world.spawnParticle(particle, pos.getX() + LootGames.RAND.nextFloat(), pos.getY() + 0.5F + LootGames.RAND.nextFloat(), pos.getZ() + LootGames.RAND.nextFloat(), LootGames.RAND.nextGaussian() * 0.02D, (0.02D + LootGames.RAND.nextGaussian()) * 0.02D, LootGames.RAND.nextGaussian() * 0.02D);
             }
         }
     }

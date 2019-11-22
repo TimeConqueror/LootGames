@@ -24,35 +24,35 @@ public class CommandMain extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "command." + LootGames.MODID + ".main.usage";
+        return "command." + LootGames.MOD_ID + ".main.usage";
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length == 0) {
-            throw new WrongUsageException("command." + LootGames.MODID + ".main.usage");
+            throw new WrongUsageException("command." + LootGames.MOD_ID + ".main.usage");
         } else {
             if (args[0].equals(Commands.RELOAD.getName())) {
                 reloadConfigs();
             } else if (args[0].equals(Commands.PROFILE.getName()) && LootGames.logHelper.isInDev()) {
                 printProfilingResults(sender);
             } else if (args[0].equals(Commands.HELP.getName())) {
-                sender.sendMessage(new TextComponentTranslation("command." + LootGames.MODID + ".help.msg"));
+                sender.sendMessage(new TextComponentTranslation("command." + LootGames.MOD_ID + ".help.msg"));
                 for (Commands value : Commands.values()) {
                     sender.sendMessage(new TextComponentTranslation(value.getUsage()));
                 }
             } else {
-                throw new WrongUsageException("command." + LootGames.MODID + ".main.usage");
+                throw new WrongUsageException("command." + LootGames.MOD_ID + ".main.usage");
             }
         }
     }
 
     private void reloadConfigs() {
-        ConfigReloader.reloadConfigsFromFile(LootGames.MODID, LootGames.MODID);
+        ConfigReloader.reloadConfigsFromFile(LootGames.MOD_ID, LootGames.MOD_ID);
     }
 
     private void printProfilingResults(ICommandSender sender) {
-        sender.sendMessage(new TextComponentTranslation("command." + LootGames.MODID + "." + Commands.PROFILE + ".msg"));
+        sender.sendMessage(new TextComponentTranslation("command." + LootGames.MOD_ID + "." + Commands.PROFILE + ".msg"));
 
         for (String identifier : LootGames.profiler.getIdentifiers()) {
             long averageTime = LootGames.profiler.getAverageTime(identifier);
@@ -80,7 +80,7 @@ public class CommandMain extends CommandBase {
 
         Commands(String name) {
             this.name = name;
-            this.usage = "command." + LootGames.MODID + "." + name + ".usage";
+            this.usage = "command." + LootGames.MOD_ID + "." + name + ".usage";
         }
 
         public static String[] getCommands() {

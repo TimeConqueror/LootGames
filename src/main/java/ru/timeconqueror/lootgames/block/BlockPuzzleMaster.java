@@ -35,9 +35,9 @@ public class BlockPuzzleMaster extends BlockGame {
 
     @Override
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
-        int tRnd = LootGames.rand.nextInt(30);
+        int tRnd = LootGames.RAND.nextInt(30);
         for (int i = 0; i <= tRnd; i++) {//TODO 1.7.10 -> change pos of animation, translate by 0.5F, as here
-            worldIn.spawnParticle(EnumParticleTypes.ENCHANTMENT_TABLE, pos.getX() + 0.5F + LootGames.rand.nextGaussian() * 0.8, pos.getY() + LootGames.rand.nextFloat(), pos.getZ() + 0.5F + LootGames.rand.nextGaussian() * 0.8, LootGames.rand.nextGaussian() * 0.02D, 0.5D + LootGames.rand.nextGaussian() * 0.02D, LootGames.rand.nextGaussian() * 0.02D);
+            worldIn.spawnParticle(EnumParticleTypes.ENCHANTMENT_TABLE, pos.getX() + 0.5F + LootGames.RAND.nextGaussian() * 0.8, pos.getY() + LootGames.RAND.nextFloat(), pos.getZ() + 0.5F + LootGames.RAND.nextGaussian() * 0.8, LootGames.RAND.nextGaussian() * 0.02D, 0.5D + LootGames.RAND.nextGaussian() * 0.02D, LootGames.RAND.nextGaussian() * 0.02D);
         }
     }
 

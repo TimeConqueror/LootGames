@@ -14,7 +14,7 @@ import ru.timeconqueror.timecore.api.event.OnConfigReloadedEvent;
 import java.util.HashMap;
 
 @Mod.EventBusSubscriber
-@Config(modid = LootGames.MODID, type = Config.Type.INSTANCE)
+@Config(modid = LootGames.MOD_ID, type = Config.Type.INSTANCE)
 public class LootGamesConfig {
 
     @Config.LangKey("config.lootgames.category.worldgen")
@@ -48,15 +48,15 @@ public class LootGamesConfig {
 
     @SubscribeEvent
     public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-        if (event.getModID().equals(LootGames.MODID)) {
-            ConfigManager.sync(LootGames.MODID, Config.Type.INSTANCE);
+        if (event.getModID().equals(LootGames.MOD_ID)) {
+            ConfigManager.sync(LootGames.MOD_ID, Config.Type.INSTANCE);
             initExtras();
         }
     }
 
     @SubscribeEvent
     public static void onConfigReloaded(OnConfigReloadedEvent event) {
-        if (event.getModID().equals(LootGames.MODID)) {
+        if (event.getModID().equals(LootGames.MOD_ID)) {
             initExtras();
         }
     }

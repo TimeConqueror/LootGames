@@ -39,9 +39,9 @@ public class TileEntityPuzzleMaster extends TileEntity implements ITickable {
     @Override
     public void update() {
         if (!world.isRemote) {
-            if (LootGames.rand.nextInt(100) <= 10) {
+            if (LootGames.RAND.nextInt(100) <= 10) {
                 if (lastSoundTick < System.currentTimeMillis()) {
-                    lastSoundTick = System.currentTimeMillis() + (LootGames.rand.nextInt(90) + 30) * 1000;
+                    lastSoundTick = System.currentTimeMillis() + (LootGames.RAND.nextInt(90) + 30) * 1000;
                     world.playSound(null, pos, ModSounds.puzzleMasterStrange, SoundCategory.MASTER, 0.5F, 1.0F);
                 }
             }

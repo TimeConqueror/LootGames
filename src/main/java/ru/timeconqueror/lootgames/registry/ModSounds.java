@@ -15,12 +15,12 @@ public class ModSounds {
     public static SoundEvent puzzleMasterStrange;
 
     public static void registerSounds() {
-        golStartGame = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MODID, "gol_start_game"));
-        golSequenceWrong = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MODID, "gol_sequence_wrong"));
-        golSequenceComplete = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MODID, "gol_sequence_complete"));
-        golGameWin = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MODID, "gol_gameover_win"));
-        golGameLose = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MODID, "gol_gameover_lose"));
+        golStartGame = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MOD_ID, "gol_start_game"));
+        golSequenceWrong = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MOD_ID, "gol_sequence_wrong"));
+        golSequenceComplete = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MOD_ID, "gol_sequence_complete"));
+        golGameWin = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MOD_ID, "gol_gameover_win"));
+        golGameLose = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MOD_ID, "gol_gameover_lose"));
 
-        puzzleMasterStrange = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MODID, "puzzle_master_strange"));
+        puzzleMasterStrange = CommonProxy.REGISTRY.registerSound(new ResourceLocation(LootGames.MOD_ID, "puzzle_master_strange"));
     }
 }
