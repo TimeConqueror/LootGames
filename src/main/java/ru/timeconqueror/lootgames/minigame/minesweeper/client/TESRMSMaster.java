@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.minigame.minesweeper.client;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.util.client.RenderUtils;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
@@ -36,44 +37,54 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
                 for (int zL = 0; zL < boardSize; zL++) {
                     MSField f = game.getBoard().asArray()[xL][zL];
 
-                    @Type
-                    int type = f.getType();
-                    @Mark
-                    int mark = f.getMark();
-
-                    int textureX;
-                    int textureY;
-
-                    if (f.isHidden()) {
-                        if (mark == NO_MARK) {
-                            textureX = 0;
-                            textureY = 0;
-                        } else if (mark == FLAG) {
-                            textureX = 3;
-                            textureY = 0;
-                        } else {
-                            textureX = 0;
-                            textureY = 3;
-                        }
-                    } else {
-                        if (type > 0) {
-                            textureX = type % 4 == 0 ? 3 : (type % 4 - 1);
-                            textureY = type <= 4 ? 1 : 2;
-                        } else if (type == EMPTY) {
-                            textureX = 2;
-                            textureY = 0;
-                        } else {//if its a bomb
-                            textureX = 1;
-                            textureY = 0;
-                        }
-                    }
-
-                    RenderUtils.drawRect(xL, zL, xL + 1, zL + 1, -0.005F, textureX, textureY, 1, 1, 0.25F);
                     if (!f.isHidden() && f.getType() == BOMB) {
                         int max = GameMineSweeper.TICKS_DETONATION_TIME;
                         int ticks = game.getTicks();
 
-//
+                        int times = 3;
+                        float period = (float) max / times;
+
+                        float extendedPeriod = period * (times + 1) / times; // is needed because we want that it will explode at red state that comes on half period.
+                        double alphaFactor = Math.abs(Math.sin(Math.toRadians(ticks / extendedPeriod * 180F)));
+
+                        RenderUtils.drawRect(xL, zL, xL + 1, zL + 1, -0.005F, 1, 0, 1, 1, 0.25F);
+                        GlStateManager.enableBlend();
+                        GlStateManager.enableAlpha();
+                        GL11.glColor4d(1, 1, 1, alphaFactor);
+                        RenderUtils.drawRect(xL, zL, xL + 1, zL + 1, -0.005F, 1, 3, 1, 1, 0.25F);
+                        GlStateManager.disableAlpha();
+                        GlStateManager.disableBlend();
+                    } else {
+                        @Type
+                        int type = f.getType();
+                        @Mark
+                        int mark = f.getMark();
+
+                        int textureX;
+                        int textureY;
+
+                        if (f.isHidden()) {
+                            if (mark == NO_MARK) {
+                                textureX = 0;
+                                textureY = 0;
+                            } else if (mark == FLAG) {
+                                textureX = 3;
+                                textureY = 0;
+                            } else {
+                                textureX = 0;
+                                textureY = 3;
+                            }
+                        } else {
+                            if (type > 0) {
+                                textureX = type % 4 == 0 ? 3 : (type % 4 - 1);
+                                textureY = type <= 4 ? 1 : 2;
+                            } else /*if type == empty*/ {
+                                textureX = 2;
+                                textureY = 0;
+                            }
+                        }
+
+                        RenderUtils.drawRect(xL, zL, xL + 1, zL + 1, -0.005F, textureX, textureY, 1, 1, 0.25F);
                     }
                 }
             }
@@ -81,10 +92,6 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
 
         GlStateManager.popMatrix();
     }
-
-//    private int f(){
-//
-//    }
 
     @Override
     public boolean isGlobalRenderer(TileEntityMSMaster te) {

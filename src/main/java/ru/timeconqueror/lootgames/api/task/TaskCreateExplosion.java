@@ -31,7 +31,6 @@ public class TaskCreateExplosion implements ITask {
 
     @Override
     public void run(World world) {
-        System.out.println("creates explosion on " + x + " " + y + " " + z);
         world.createExplosion(null, x, y, z, strength, damagesTerrain);
     }
 
