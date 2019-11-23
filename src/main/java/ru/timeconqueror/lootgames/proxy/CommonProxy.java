@@ -7,6 +7,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.achievement.AdvancementManager;
 import ru.timeconqueror.lootgames.api.minigame.GameManager;
+import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
+import ru.timeconqueror.lootgames.api.task.TaskRegistry;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
 import ru.timeconqueror.lootgames.minigame.gameoflight.GameOfLight;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
@@ -36,6 +38,8 @@ public class CommonProxy {
 
         LootGames.gameManager.registerGame(GameOfLight.class, new GameOfLight.Factory());
         LootGames.gameManager.registerGame(GameMineSweeper.class, new GameMineSweeper.Factory());
+
+        TaskRegistry.registerTask(TaskCreateExplosion.class);
     }
 
     public void postInit(FMLPostInitializationEvent event) {

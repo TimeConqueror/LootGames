@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameMaster;
@@ -25,7 +26,7 @@ public class SMessageGameUpdate implements IMessage {
     private NBTTagCompound compound;
     private String key;
 
-    @SideOnly(Side.CLIENT)
+    @ApiStatus.Internal
     public SMessageGameUpdate() {
     }
 

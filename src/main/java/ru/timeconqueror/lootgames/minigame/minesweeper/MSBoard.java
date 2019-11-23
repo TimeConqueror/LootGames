@@ -154,7 +154,7 @@ public class MSBoard {
     }
 
     @SideOnly(Side.CLIENT)
-    void setField(Pos2i pos, @MSField.Type int type, boolean hidden, @MSField.Mark int mark) {
+    void setField(Pos2i pos, int type, boolean hidden, int mark) {
         board[pos.getX()][pos.getY()] = new MSField(type, hidden, mark);
     }
 

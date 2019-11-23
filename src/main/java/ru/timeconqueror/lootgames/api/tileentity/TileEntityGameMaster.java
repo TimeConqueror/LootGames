@@ -20,6 +20,7 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
     public TileEntityGameMaster(T game) {
         this.game = game;
         game.setMasterTileEntity(this);
+        game.init();
     }
 
     @Override
@@ -115,7 +116,7 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
     /**
      * Saves the block to disk, sends packet to update it on client.
      */
-    protected void setBlockToUpdateAndSave() {
+    public void setBlockToUpdateAndSave() {
 //        world.markBlockRangeForRenderUpdate(pos, pos);
         world.notifyBlockUpdate(pos, getState(), getState(), 3);
 //        world.scheduleBlockUpdate(pos, this.getBlockType(), 0, 0);

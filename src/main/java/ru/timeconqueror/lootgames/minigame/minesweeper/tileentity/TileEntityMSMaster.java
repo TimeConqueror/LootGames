@@ -21,7 +21,6 @@ public class TileEntityMSMaster extends TileEntityGameMaster<GameMineSweeper> {
 
         if (!isBoardGenerated()) {
             game.generateBoard(pos);
-            setBlockToUpdateAndSave();
         } else {
             if (player.isSneaking()) {
                 game.swapFieldMark(pos);
