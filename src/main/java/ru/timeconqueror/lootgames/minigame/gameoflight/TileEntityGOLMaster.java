@@ -20,7 +20,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.event.world.NoteBlockEvent;
@@ -30,6 +29,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.achievement.AdvancementManager;
 import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameMaster;
+import ru.timeconqueror.lootgames.api.util.NetworkUtils;
 import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
 import ru.timeconqueror.lootgames.block.BlockGOLSubordinate;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
@@ -146,8 +146,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
             world.setBlockState(pos.add(value.getOffsetX(), 0, value.getOffsetZ()), state);
         }
 
-        player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.start").setStyle(new Style().setColor(TextFormatting.AQUA)));
-
+        NetworkUtils.sendColoredMessage(player, new TextComponentTranslation("msg.lootgames.gol_master.start"), TextFormatting.AQUA);
 
         updateGameStage(GameStage.UNDER_EXPANDING);
     }
@@ -165,11 +164,11 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
 
         if (gameStage == GameStage.WAITING_FOR_PLAYER_SEQUENCE) {
 
-            player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.rules").setStyle(new Style().setColor(TextFormatting.GOLD)));
+            NetworkUtils.sendColoredMessage(player, new TextComponentTranslation("msg.lootgames.gol_master.rules"), TextFormatting.GOLD);
             return;
         }
 
-        player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.not_ready").setStyle(new Style().setColor(TextFormatting.AQUA)));
+        NetworkUtils.sendColoredMessage(player, new TextComponentTranslation("msg.lootgames.gol_master.not_ready"), TextFormatting.AQUA);
     }
 
     public void onSubordinateClickedByPlayer(EnumPosOffset subordinateOffset, EntityPlayer player) {
@@ -186,7 +185,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         }
 
         if (!world.isRemote) {
-            player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.not_ready").setStyle(new Style().setColor(TextFormatting.AQUA)));
+            NetworkUtils.sendColoredMessage(player, new TextComponentTranslation("msg.lootgames.gol_master.not_ready"), TextFormatting.AQUA);
         }
     }
 
@@ -206,7 +205,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
                 NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 15);
                 if (currentRound >= LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).getMinRoundsRequiredToPass(world.provider.getDimension())) {
                     NetworkHandler.INSTANCE.sendToAllAround(new SMessageGOLParticle(getPos(), EnumParticleTypes.VILLAGER_HAPPY.getParticleID()), point);
-                    player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.stage_complete").setStyle(new Style().setColor(TextFormatting.GREEN)));
+                    NetworkUtils.sendColoredMessage(player, new TextComponentTranslation("msg.lootgames.gol_master.stage_complete"), TextFormatting.GREEN);
                     world.playSound(null, getPos(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.75F, 1.0F);
 
                     gameLevel++;
@@ -230,7 +229,8 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
             world.playSound(null, pos, ModSounds.golSequenceWrong, SoundCategory.MASTER, 0.75F, 1.0F);
             NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 15);
             NetworkHandler.INSTANCE.sendToAllAround(new SMessageGOLDrawStuff(getPos(), EnumDrawStuff.SEQUENCE_DENIED.ordinal()), point);
-            player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.wrong_block").setStyle(new Style().setColor(TextFormatting.DARK_PURPLE)));
+
+            NetworkUtils.sendColoredMessage(player, new TextComponentTranslation("msg.lootgames.gol_master.wrong_block"), TextFormatting.DARK_PURPLE);
 
             maxLevelBeatList.add(gameLevel - 1);
             onGameEnded(player);
@@ -261,7 +261,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     }
 
     private void startGame(EntityPlayer player) {
-        player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.rules").setStyle(new Style().setColor(TextFormatting.GOLD)));
+        NetworkUtils.sendColoredMessage(player, new TextComponentTranslation("msg.lootgames.gol_master.rules"), TextFormatting.GOLD);
 
         currentRound = 0;
         gameLevel = 1;
@@ -373,12 +373,13 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
             gameLevel -= 1;
         }
 
-        player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.win").setStyle(new Style().setColor(TextFormatting.GREEN)));
+        NetworkUtils.sendColoredMessage(player, new TextComponentTranslation("msg.lootgames.gol_master.win"), TextFormatting.GREEN);
+
         world.playSound(null, getPos(), ModSounds.golGameWin, SoundCategory.MASTER, 0.75F, 1.0F);
 
         int bestLevelReached = getBestLevelReached();
         if (bestLevelReached != -1) {
-            player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.reward_level_reached", gameLevel, isLastStagePassed() ? 4 : bestLevelReached).setStyle(new Style().setColor(TextFormatting.GREEN)));
+            NetworkUtils.sendColoredMessage(player, new TextComponentTranslation("msg.lootgames.gol_master.reward_level_reached", gameLevel, isLastStagePassed() ? 4 : bestLevelReached), TextFormatting.GREEN);
         }
 
         for (int x = -1; x < 2; x++) {
@@ -397,7 +398,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         }
 
         world.playSound(null, getPos(), ModSounds.golGameLose, SoundCategory.MASTER, 0.75F, 1.0F);
-        player.sendMessage(new TextComponentTranslation("msg.lootgames.gol_master.lose").setStyle(new Style().setColor(TextFormatting.DARK_PURPLE)));
+        NetworkUtils.sendColoredMessage(player, new TextComponentTranslation("msg.lootgames.gol_master.lose"), TextFormatting.DARK_PURPLE);
 
         destroyStructure();
 
