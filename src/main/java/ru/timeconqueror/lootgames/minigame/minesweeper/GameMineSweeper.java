@@ -2,6 +2,8 @@ package ru.timeconqueror.lootgames.minigame.minesweeper;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -10,6 +12,7 @@ import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.util.NBTUtils;
+import ru.timeconqueror.lootgames.api.util.NetworkUtils;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
@@ -17,8 +20,8 @@ import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 
 public class GameMineSweeper extends LootGame {
-    public static final int TICKS_DETONATION_TIME = 3 * 20;
-    private static final int ATTEMPTS_ALLOWED = 3;
+    public static final int TICKS_DETONATION_TIME = 3 * 20;//TODO config
+    private static final int ATTEMPTS_ALLOWED = 3;//TODO config
 
     @SideOnly(Side.CLIENT)
     public boolean cIsGenerated;
@@ -77,44 +80,47 @@ public class GameMineSweeper extends LootGame {
     }
 
     public void revealField(Pos2i pos) {
+        if (stage == Stage.WAITING) {
+            MSField field = board.getFieldByPos(pos);
+            if (field.isHidden()) {
+                field.resetMark();
+                field.reveal();
 
-        MSField field = board.getFieldByPos(pos);
-        if (field.isHidden()) {
-            field.resetMark();
-            field.reveal();
+                NBTTagCompound c = new NBTTagCompound();
+                c.setInteger("x", pos.getX());
+                c.setInteger("y", pos.getY());
+                c.setInteger("type", field.getType());
+                c.setBoolean("hidden", false);
+                c.setInteger("mark", MSField.NO_MARK);
+                sendUpdatePacket("field_changed", c);
 
-            NBTTagCompound c = new NBTTagCompound();
-            c.setInteger("x", pos.getX());
-            c.setInteger("y", pos.getY());
-            c.setInteger("type", field.getType());
-            c.setBoolean("hidden", false);
-            c.setInteger("mark", MSField.NO_MARK);
-            sendUpdatePacket("field_changed", c);
+                if (field.getType() == MSField.EMPTY) {
+                    revealAllNeighbours(pos);
+                } else if (field.getType() == MSField.BOMB) {
+                    onBombTriggered(pos);
+                }
 
-            if (field.getType() == MSField.EMPTY) {
-                revealAllNeighbours(pos);
-            } else if (field.getType() == MSField.BOMB) {
-                onBombTriggered(pos);
+                saveData();
             }
-
-            saveData();
         }
     }
 
     public void swapFieldMark(Pos2i pos) {
-        MSField field = board.getFieldByPos(pos);
-        if (field.isHidden()) {
-            field.swapMark();
+        if (stage == Stage.WAITING) {
+            MSField field = board.getFieldByPos(pos);
+            if (field.isHidden()) {
+                field.swapMark();
 
-            NBTTagCompound c = new NBTTagCompound();
-            c.setInteger("x", pos.getX());
-            c.setInteger("y", pos.getY());
-            c.setInteger("type", MSField.EMPTY);
-            c.setBoolean("hidden", true);
-            c.setInteger("mark", field.getMark());
-            sendUpdatePacket("field_changed", c);
+                NBTTagCompound c = new NBTTagCompound();
+                c.setInteger("x", pos.getX());
+                c.setInteger("y", pos.getY());
+                c.setInteger("type", MSField.EMPTY);
+                c.setBoolean("hidden", true);
+                c.setInteger("mark", field.getMark());
+                sendUpdatePacket("field_changed", c);
 
-            saveData();
+                saveData();
+            }
         }
     }
 
@@ -138,6 +144,21 @@ public class GameMineSweeper extends LootGame {
 
     private void onBombTriggered(Pos2i pos) {
         updateStage(Stage.DETONATING);
+
+        for (MSField[] msFields : board.asArray()) {
+            for (MSField msField : msFields) {
+                if (msField.getType() == MSField.BOMB) {
+                    msField.reveal();
+                }
+            }
+        }
+
+        NetworkUtils.sendColoredMessageToAllNearby(getCentralGamePos(),
+                new TextComponentTranslation("msg.lootgames.ms.bomb_touched"),
+                TextFormatting.DARK_PURPLE, getBoardSize() / 2 + 7);
+
+        saveDataAndSendToClient();
+
         attemptCount++;
     }
 
@@ -158,9 +179,8 @@ public class GameMineSweeper extends LootGame {
                 MSField msField = msFields[y];
                 if (msField.getType() == MSField.BOMB) {
                     BlockPos pos = convertToBlockPos(x, y);
-                    for (int i = 0; i < 10; i++) {
-                        serverTaskPostponer.addTask(new TaskCreateExplosion(pos, 4, false), LootGames.RAND.nextInt(10 * 20));
-                    }
+
+                    serverTaskPostponer.addTask(new TaskCreateExplosion(pos, 4, false), LootGames.RAND.nextInt(10 * 20));//FIXME change strength
                 }
             }
         }
@@ -197,6 +217,13 @@ public class GameMineSweeper extends LootGame {
 
     private BlockPos convertToBlockPos(int x, int y) {
         return masterTileEntity.getPos().add(x, 0, y);
+    }
+
+    /**
+     * Returns the blockpos in the center of the board.
+     */
+    public BlockPos getCentralGamePos() {
+        return masterTileEntity.getPos().add(getBoardSize() / 2 + 1, 0, getBoardSize() / 2 + 1);
     }
 
     public MSBoard getBoard() {
