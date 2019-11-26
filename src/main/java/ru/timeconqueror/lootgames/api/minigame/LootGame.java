@@ -7,20 +7,20 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import ru.timeconqueror.lootgames.api.packet.SMessageGameUpdate;
-import ru.timeconqueror.lootgames.api.task.TEPostponeTaskSheduler;
+import ru.timeconqueror.lootgames.api.task.TEPostponeTaskScheduler;
 import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.packets.NetworkHandler;
 
 public abstract class LootGame {
-    protected TileEntityGameMaster masterTileEntity;
-    protected TEPostponeTaskSheduler serverTaskPostponer;
+    protected TileEntityGameMaster<?> masterTileEntity;
+    protected TEPostponeTaskScheduler serverTaskPostponer;
 
-    public void setMasterTileEntity(TileEntityGameMaster masterTileEntity) {
+    public void setMasterTileEntity(TileEntityGameMaster<?> masterTileEntity) {
         this.masterTileEntity = masterTileEntity;
     }
 
     public void init() {
-        this.serverTaskPostponer = new TEPostponeTaskSheduler(masterTileEntity);
+        this.serverTaskPostponer = new TEPostponeTaskScheduler(masterTileEntity);
     }
 
     public void onTick() {
@@ -58,7 +58,7 @@ public abstract class LootGame {
     public NBTTagCompound writeNBTForSaving() {
         NBTTagCompound nbt = new NBTTagCompound();
         writeCommonNBT(nbt);
-        nbt.setTag("task_sheduler", serverTaskPostponer.serializeNBT());
+        nbt.setTag("task_scheduler", serverTaskPostponer.serializeNBT());
         return nbt;
     }
 
@@ -68,7 +68,7 @@ public abstract class LootGame {
      */
     public void readNBTFromSave(NBTTagCompound compound) {
         readCommonNBT(compound);
-        serverTaskPostponer.deserializeNBT((NBTTagList) compound.getTag("task_sheduler"));
+        serverTaskPostponer.deserializeNBT((NBTTagList) compound.getTag("task_scheduler"));
     }
 
     /**

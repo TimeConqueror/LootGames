@@ -11,17 +11,17 @@ import ru.timeconqueror.lootgames.LootGames;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class TEPostponeTaskSheduler implements INBTSerializable<NBTTagList> {
+public class TEPostponeTaskScheduler implements INBTSerializable<NBTTagList> {
     private final ArrayList<TaskWrapper> tasks = new ArrayList<>();
 
     private final TileEntity tileEntity;
 
-    public TEPostponeTaskSheduler(TileEntity tileEntity) {
+    public TEPostponeTaskScheduler(TileEntity tileEntity) {
         this.tileEntity = tileEntity;
     }
 
     /**
-     * Thread-safely adds task to sheduler.
+     * Thread-safely adds task to scheduler.
      */
     public void addTask(ITask task, int timeBeforeStart) {
         synchronized (tasks) {
@@ -30,7 +30,7 @@ public class TEPostponeTaskSheduler implements INBTSerializable<NBTTagList> {
     }
 
     /**
-     * Must be called to update sheduler.
+     * Must be called to update scheduler.
      */
     public void onUpdate() {
         synchronized (tasks) {

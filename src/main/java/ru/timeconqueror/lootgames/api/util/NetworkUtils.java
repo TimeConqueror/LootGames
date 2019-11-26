@@ -22,7 +22,7 @@ public class NetworkUtils {
     /**
      * Sends message to all players in given distance.
      *
-     * @param distanceIn - distance from {@code fromPos}, in which players will be get a message.
+     * @param distanceIn distance from {@code fromPos}, in which players will be get a message.
      */
     public static void sendMessageToAllNearby(BlockPos fromPos, ITextComponent msg, int distanceIn) {
         for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
@@ -36,7 +36,7 @@ public class NetworkUtils {
     /**
      * Sends colored message to all players in given distance.
      *
-     * @param distanceIn - distance from {@code fromPos}, in which players will be get a message.
+     * @param distanceIn distance from {@code fromPos}, in which players will be get a message.
      */
     public static void sendColoredMessageToAllNearby(BlockPos fromPos, ITextComponent msg, TextFormatting color, int distanceIn) {
         msg.getStyle().setColor(color);

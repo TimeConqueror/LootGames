@@ -43,7 +43,7 @@ public class NBTUtils {
             }
 
             if (i == 0) {
-                Class columnClass = column.getClass();
+                Class<?> columnClass = column.getClass();
                 table = (T[][]) Array.newInstance(columnClass, size);
             }
 
@@ -117,7 +117,7 @@ public class NBTUtils {
             }
 
             if (i == 0) {
-                Class columnClass = column.getClass();
+                Class<?> columnClass = column.getClass();
                 table = (T[][]) Array.newInstance(columnClass, size);
             }
 

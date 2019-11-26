@@ -6,7 +6,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 /**
  * @apiNote You must create a <font color="red">public empty constructor</font>
- * that will be used by shedulers to create an instance after restoring world.
+ * that will be used by schedulers to create an instance after restoring world.
  */
 public interface ITask extends INBTSerializable<NBTTagCompound> {
     void run(World world);

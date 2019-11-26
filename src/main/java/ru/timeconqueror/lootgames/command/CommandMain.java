@@ -32,7 +32,7 @@ public class CommandMain extends CommandBase {
         if (args.length == 0) {
             throw new WrongUsageException("command." + LootGames.MOD_ID + ".main.usage");
         } else {
-            if (args[0].equals(Commands.RELOAD.getName())) {
+            if (args[0].equals(Commands.RELOAD.getName())) {//FIXME
                 reloadConfigs();
             } else if (args[0].equals(Commands.PROFILE.getName()) && LootGames.logHelper.isInDev()) {
                 printProfilingResults(sender);

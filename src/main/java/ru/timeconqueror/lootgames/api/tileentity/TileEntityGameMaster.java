@@ -11,7 +11,6 @@ import net.minecraft.util.math.BlockPos;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 //TODO add common write/read?
 public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntity implements ITickable {
@@ -107,7 +106,6 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
         game.readNBTFromClient(compound.getCompoundTag("game_synced"));
     }
 
-    @Nullable
     @Override
     public final SPacketUpdateTileEntity getUpdatePacket() {
         return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
