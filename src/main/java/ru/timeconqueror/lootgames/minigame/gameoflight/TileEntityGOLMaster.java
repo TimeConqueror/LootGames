@@ -318,8 +318,8 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     }
 
     @Override
-    protected void readNBTFromSave(NBTTagCompound compound) {
-        super.readNBTFromSave(compound);
+    protected void readCommonNBT(NBTTagCompound compound) {
+        super.readCommonNBT(compound);
         ticks = compound.getInteger("ticks");
         gameStage = GameStage.values()[compound.getInteger("game_stage")];
         onStageSetting(gameStage);
@@ -333,8 +333,8 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     }
 
     @Override
-    protected NBTTagCompound writeNBTForSaving(NBTTagCompound compound) {
-        compound = super.writeNBTForSaving(compound);
+    protected NBTTagCompound writeCommonNBT(NBTTagCompound compound) {
+        compound = super.writeCommonNBT(compound);
         compound.setInteger("ticks", ticks);
         compound.setInteger("game_stage", gameStage.ordinal());
         compound.setInteger("game_level", gameLevel);

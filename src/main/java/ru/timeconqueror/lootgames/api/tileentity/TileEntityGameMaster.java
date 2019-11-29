@@ -12,7 +12,6 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 
 import javax.annotation.Nonnull;
 
-//TODO add common write/read?
 public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntity implements ITickable {
     protected T game;
 
@@ -34,6 +33,9 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
     public final NBTTagCompound writeToNBT(NBTTagCompound compound) {
         writeNBTForSaving(compound);
         compound.setTag("game", game.writeNBTForSaving());
+
+        writeCommonNBT(compound);
+
         return compound;
     }
 
@@ -50,6 +52,24 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
             readNBTFromSave(compound);
             game.readNBTFromSave(compound.getCompoundTag("game"));
         }
+
+        readCommonNBT(compound);
+    }
+
+    /**
+     * Writes data to be used both server->client syncing and world saving.
+     * Overriding is fine.
+     */
+    protected NBTTagCompound writeCommonNBT(NBTTagCompound compound) {
+        return compound;
+    }
+
+    /**
+     * Reads data that comes from both server->client syncing and world restoring from save.
+     * Overriding is fine.
+     */
+    protected void readCommonNBT(NBTTagCompound compound) {
+
     }
 
     /**
@@ -57,6 +77,7 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
      * Overriding is fine.
      */
     protected NBTTagCompound writeNBTForSaving(NBTTagCompound compound) {
+        writeCommonNBT(compound);
         return super.writeToNBT(compound);
     }
 
@@ -91,6 +112,8 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
 
         writeNBTForClient(compound);
 
+        writeCommonNBT(compound);
+
         compound.setTag("game_synced", game.writeNBTForClient());
 
         compound.setByte("client_flag", (byte) 0);
@@ -102,6 +125,7 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
         NBTTagCompound compound = pkt.getNbtCompound();
 
         readNBTFromClient(compound);
+        readCommonNBT(compound);
 
         game.readNBTFromClient(compound.getCompoundTag("game_synced"));
     }
