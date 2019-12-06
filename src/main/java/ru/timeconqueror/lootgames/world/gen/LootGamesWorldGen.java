@@ -56,7 +56,7 @@ public class LootGamesWorldGen implements IWorldGenerator {
 
     private boolean canSpawnInChunk(int chunkX, int chunkZ, World world) {
         boolean canSpawn = false;
-        int rhombSize = LootGamesConfig.getRhombSizeForDim(world.provider.getDimension());
+        int rhombSize = LootGamesConfig.worldGen.getRhombSizeForDim(world.provider.getDimension());
 
         int xc = (chunkX * 2) + chunkZ, zc = (chunkZ * 2) + chunkX;
         rand.setSeed(world.getSeed() + (xc / (rhombSize * 2)) + ((zc / (rhombSize * 2)) << 14));

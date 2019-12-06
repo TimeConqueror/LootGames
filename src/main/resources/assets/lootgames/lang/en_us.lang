@@ -117,7 +117,6 @@ config.lootgames.ms.bomb_amount.tooltip=The amount of bombs on the board.
 #Commands
 command.lootgames.help.msg=Available commands:
 command.lootgames.help.usage=/lootgames help - Prints available commands with their usage
-command.lootgames.reload.usage=/lootgames reload - Reloads LootGames configs.
 
 command.lootgames.main.usage=Use "/lootgames help" to see available commands.
 

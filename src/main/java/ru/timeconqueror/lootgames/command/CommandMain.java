@@ -12,6 +12,7 @@ import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.api.auxiliary.ConfigReloader;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,9 +33,7 @@ public class CommandMain extends CommandBase {
         if (args.length == 0) {
             throw new WrongUsageException("command." + LootGames.MOD_ID + ".main.usage");
         } else {
-            if (args[0].equals(Commands.RELOAD.getName())) {//FIXME
-                reloadConfigs();
-            } else if (args[0].equals(Commands.PROFILE.getName()) && LootGames.logHelper.isInDev()) {
+            if (args[0].equals(Commands.PROFILE.getName()) && LootGames.logHelper.isInDev()) {
                 printProfilingResults(sender);
             } else if (args[0].equals(Commands.HELP.getName())) {
                 sender.sendMessage(new TextComponentTranslation("command." + LootGames.MOD_ID + ".help.msg"));
@@ -71,7 +70,6 @@ public class CommandMain extends CommandBase {
     }
 
     private enum Commands {
-        RELOAD("reload"),
         PROFILE("profile"),
         HELP("help");
 
@@ -83,14 +81,14 @@ public class CommandMain extends CommandBase {
             this.usage = "command." + LootGames.MOD_ID + "." + name + ".usage";
         }
 
-        public static String[] getCommands() {
-            String[] commands = new String[values().length];
+        public static ArrayList<String> getCommands() {
+            ArrayList<String> commands = new ArrayList<>();
             for (int i = 0; i < values().length; i++) {
                 if (values()[i] == PROFILE && !LootGames.logHelper.isInDev()) {
                     continue;
                 }
 
-                commands[i] = values()[i].name;
+                commands.add(values()[i].name);
             }
 
             return commands;
