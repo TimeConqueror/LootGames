@@ -159,6 +159,7 @@ public class DungeonGenerator {
             // So we limit the distance from the border to max 15 blocks
             // If room needs to be even, make the entrance 2 blocks wide
             IBlockState entrance;
+            BlockPos pos;
             int axisZ = PUZZLEROOM_CENTER_TO_BORDER;
             int axisY = dungeonBottom + 2;
             do {
@@ -166,15 +167,16 @@ public class DungeonGenerator {
 
                 for (int axisX = centerX; axisX <= centerX; axisX++)
                     for (axisY = (dungeonBottom + 2); axisY <= (dungeonBottom + 4); axisY++) {
-                        BlockPos pos = new BlockPos(axisX, axisY + (axisZ - PUZZLEROOM_CENTER_TO_BORDER), axisZ + centerZ);
-                        IBlockState currentBlockState = this.world.getBlockState(pos);
+                        BlockPos blockPos = new BlockPos(axisX, axisY + (axisZ - PUZZLEROOM_CENTER_TO_BORDER), axisZ + centerZ);
+                        IBlockState currentBlockState = this.world.getBlockState(blockPos);
                         if (currentBlockState.getMaterial().isSolid())
-                            placeBlock(pos, Blocks.AIR.getDefaultState());
+                            placeBlock(blockPos, Blocks.AIR.getDefaultState());
                         else
                             break;
                     }
 
-                entrance = this.world.getBlockState(new BlockPos(centerX, axisY + (axisZ - PUZZLEROOM_CENTER_TO_BORDER), axisZ + centerZ));
+                pos = new BlockPos(centerX, axisY + (axisZ - PUZZLEROOM_CENTER_TO_BORDER), axisZ + centerZ);
+                entrance = this.world.getBlockState(pos);
 
                 if ((axisZ - PUZZLEROOM_CENTER_TO_BORDER) >= 15)
                     break;

@@ -40,7 +40,7 @@ public class LootGamesWorldGen implements IWorldGenerator {
 
         if (!LootGamesConfig.worldGen.isDungeonWorldGenEnabled) {
             LootGames.logHelper.trace("WorldGen => Generate() => checkSpawnConditions() => WorldGen is DISABLED");
-        } else if (!LootGamesConfig.isDimensionEnabledForWG(world.provider.getDimension())) {
+        } else if (!LootGamesConfig.worldGen.isDimensionEnabledForWG(world.provider.getDimension())) {
             LootGames.logHelper.trace("WorldGen => Generate() => checkSpawnConditions() => Dim %d is not whitelisted", world.provider.getDimension());
         } else if (!canSpawnInChunk(chunkX, chunkZ, world)) {
             LootGames.logHelper.trace("WorldGen => Generate() => checkSpawnConditions() => Location not suitable");

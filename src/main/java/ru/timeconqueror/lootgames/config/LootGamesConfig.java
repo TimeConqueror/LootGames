@@ -44,7 +44,6 @@ public class LootGamesConfig {
             "Trace: additionally prints debug and trace messages.",
             "Default: debug"})
     public static String debugLevel = "debug";
-    private static HashMap<Integer, Integer> dimRhombs;
 
     @SubscribeEvent
     public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
@@ -62,52 +61,12 @@ public class LootGamesConfig {
     }
 
     public static void initExtras() {
-        parseDimAndRhombList();
         LootGames.logHelper.setDebugEnabled(enableDebug);
         LootGames.logHelper.setDebugLevel(debugLevel.equalsIgnoreCase("trace") ? LogHelper.Level.TRACE : LogHelper.Level.DEBUG);
 
+        worldGen.init();
         gameOfLight.initStages();
-        minesweeper.init();
-    }
-
-    public static boolean isDimensionEnabledForWG(int worldID) {
-        return dimRhombs.get(worldID) != null;
-    }
-
-    public static int getRhombSizeForDim(int dimensionID) {
-        return dimRhombs.get(dimensionID);
-    }
-
-    private static void parseDimAndRhombList() {
-        dimRhombs = new HashMap<>();
-
-        for (String entry : worldGen.dimAndRhombList) {
-            if (entry.length() == 0)
-                return;
-
-            String[] arr = entry.split(";");
-            if (arr.length != 2) {
-                LootGames.logHelper.error("Invalid dimension rhomb entry found: {}. Syntax is <dimensionID>;<rhomb size>. This entry will be skipped.", entry);
-            }
-
-            try {
-                int dimID = Integer.parseInt(arr[0].trim());
-                int rhombSize = Integer.parseInt(arr[1].trim());
-
-                if (rhombSize < 5 || rhombSize > 100) {
-                    LootGames.logHelper.error("Invalid dimension rhomb entry found: {}. Rhomb size must be between 5 and 100.", entry);
-                } else {
-                    if (!dimRhombs.containsKey(dimID)) {
-                        dimRhombs.put(dimID, rhombSize);
-                        LootGames.logHelper.info("Worldgen enabled in dimension {} with rhomb size {}.", dimID, rhombSize);
-                    } else
-                        LootGames.logHelper.error("Invalid dimension rhomb entry found: {}. DimensionID is already defined.", entry);
-                }
-
-            } catch (NumberFormatException e) {
-                LootGames.logHelper.error("Invalid dimension rhomb entry found: {}. DimensionID or Rhomb size is not an Integer. This entry will be skipped.", entry);
-            }
-        }
+//        minesweeper.init();//fixme undo
     }
 
     public static class WorldGen {
@@ -127,8 +86,54 @@ public class LootGamesConfig {
                 "So the larger the size, the less chance of generation.",
                 "Rhomb size must be between 5 and 100.",
                 "Example of array element: 0; 20 - this means that dungeons will be generated in rhombs with size equal to 20 in the overworld (ID = 0).",
-                "Default: {0}"})
+                "Default: {0; 20}"})
         public String[] dimAndRhombList = new String[]{"0; 20"};
+
+        private HashMap<Integer, Integer> dimRhombs;
+
+        public void init() {
+            parseDimAndRhombList();
+        }
+
+        public boolean isDimensionEnabledForWG(int worldID) {
+            return dimRhombs.get(worldID) != null;
+        }
+
+        public int getRhombSizeForDim(int dimensionID) {
+            return dimRhombs.get(dimensionID);
+        }
+
+        private void parseDimAndRhombList() {
+            dimRhombs = new HashMap<>();
+
+            for (String entry : dimAndRhombList) {
+                if (entry.length() == 0)
+                    return;
+
+                String[] arr = entry.split(";");
+                if (arr.length != 2) {
+                    LootGames.logHelper.error("Invalid dimension rhomb entry found: {}. Syntax is <dimensionID>;<rhomb size>. This entry will be skipped.", entry);
+                }
+
+                try {
+                    int dimID = Integer.parseInt(arr[0].trim());
+                    int rhombSize = Integer.parseInt(arr[1].trim());
+
+                    if (rhombSize < 5 || rhombSize > 100) {
+                        LootGames.logHelper.error("Invalid dimension rhomb entry found: {}. Rhomb size must be between 5 and 100.", entry);
+                    } else {
+                        if (!dimRhombs.containsKey(dimID)) {
+                            dimRhombs.put(dimID, rhombSize);
+                            LootGames.logHelper.info("Worldgen enabled in dimension {} with rhomb size {}.", dimID, rhombSize);
+                        } else
+                            LootGames.logHelper.error("Invalid dimension rhomb entry found: {}. DimensionID is already defined.", entry);
+                    }
+
+                } catch (NumberFormatException e) {
+                    LootGames.logHelper.error("Invalid dimension rhomb entry found: {}. DimensionID or Rhomb size is not an Integer. This entry will be skipped.", entry);
+                }
+            }
+        }
     }
 
     public static class GOL {
