@@ -14,6 +14,7 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.util.NBTUtils;
 import ru.timeconqueror.lootgames.api.util.NetworkUtils;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
+import ru.timeconqueror.lootgames.api.util.Wrapper;
 import ru.timeconqueror.lootgames.block.BlockDungeonBricks;
 import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
 import ru.timeconqueror.lootgames.minigame.minesweeper.task.TaskMSCreateExplosion;
@@ -32,7 +33,7 @@ public class GameMineSweeper extends LootGame {
     @SideOnly(Side.CLIENT)
     public boolean cIsGenerated;
 
-    private MSBoard board;//FIXME check working after changed  board size config
+    private MSBoard board;//FIXME check working after changed board size config
 
     private Stage stage;
     private int ticks;
@@ -115,7 +116,7 @@ public class GameMineSweeper extends LootGame {
                 if (type == MSField.EMPTY) {
                     revealAllNeighbours(pos);
                 } else if (type == MSField.BOMB) {
-                    onBombTriggered(pos);
+                    onBombTriggered();
                 }
 
                 saveData();
@@ -167,16 +168,14 @@ public class GameMineSweeper extends LootGame {
         }
     }
 
-    private void onBombTriggered(Pos2i pos) {
+    private void onBombTriggered() {
         updateStage(Stage.DETONATING);
 
-        for (MSField[] msFields : board.asArray()) {
-            for (MSField msField : msFields) {
-                if (msField.getType() == MSField.BOMB) {
-                    msField.reveal();
-                }
+        board.forEach((x, y) -> {
+            if (board.isBomb(x, y)) {
+                board.reveal(x, y);
             }
-        }
+        });
 
         NetworkUtils.sendMessageToAllNearby(getCentralGamePos(),
                 NetworkUtils.color(new TextComponentTranslation("msg.lootgames.ms.bomb_touched"), TextFormatting.DARK_PURPLE),
@@ -229,28 +228,22 @@ public class GameMineSweeper extends LootGame {
      * Returns the longest detonating time, after which all bombs will explode
      */
     private int detonateBoard(int strength, boolean damageTerrain) {
-        MSField[][] asArray = board.asArray();
+        Wrapper<Integer> longestDetTime = new Wrapper<>(0);
 
-        int longestDetTime = 0;
-        for (int x = 0; x < asArray.length; x++) {
-            MSField[] msFields = asArray[x];
-            for (int y = 0; y < msFields.length; y++) {
-                MSField msField = msFields[y];
-                if (msField.getType() == MSField.BOMB) {
+        board.forEach(pos2i -> {
+            if (board.getType(pos2i) == MSField.BOMB) {
 
-                    int detTime = LootGames.RAND.nextInt(5 * 20);
+                int detTime = LootGames.RAND.nextInt(5 * 20);
 
-                    if (longestDetTime < detTime) {
-                        longestDetTime = detTime;
-                    }
-
-                    Pos2i relPos = new Pos2i(x, y);
-                    serverTaskPostponer.addTask(new TaskMSCreateExplosion(getMasterPos(), relPos, strength, damageTerrain), detTime);
+                if (longestDetTime.get() < detTime) {
+                    longestDetTime.set(detTime);
                 }
-            }
-        }
 
-        return longestDetTime;
+                serverTaskPostponer.addTask(new TaskMSCreateExplosion(getMasterPos(), pos2i, strength, damageTerrain), detTime);
+            }
+        });
+
+        return longestDetTime.get();
     }
 
     private void updateStage(Stage stageTo) {
@@ -314,7 +307,7 @@ public class GameMineSweeper extends LootGame {
         NBTTagCompound gameCompound = super.writeNBTForSaving();
 
         if (isBoardGenerated()) {
-            NBTTagCompound boardTag = NBTUtils.writeTwoDimArrToNBT(board.asArray());
+            NBTTagCompound boardTag = board.writeNBTForSaving();
             gameCompound.setTag("board", boardTag);
         }
 
@@ -342,18 +335,7 @@ public class GameMineSweeper extends LootGame {
 
         compound.setBoolean("is_generated", isBoardGenerated());
         if (isBoardGenerated()) {
-            NBTTagCompound boardTag = NBTUtils.<MSField>writeTwoDimArrToNBT(board.asArray(), field -> {
-                NBTTagCompound c = new NBTTagCompound();
-
-                c.setBoolean("hidden", field.isHidden());
-                c.setInteger("mark", field.getMark());
-
-                if (!field.isHidden()) {
-                    c.setInteger("type", field.getType());
-                }
-
-                return c;
-            });
+            NBTTagCompound boardTag = board.writeNBTForClient();
             compound.setTag("board", boardTag);
         }
         return compound;

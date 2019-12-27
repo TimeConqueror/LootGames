@@ -7,7 +7,6 @@ import org.lwjgl.opengl.GL11;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.util.client.RenderUtils;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
-import ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 import ru.timeconqueror.lootgames.minigame.minesweeper.tileentity.TileEntityMSMaster;
 
 import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField.*;
@@ -35,9 +34,12 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
         } else {
             for (int xL = 0; xL < boardSize; xL++) {
                 for (int zL = 0; zL < boardSize; zL++) {
-                    MSField f = game.getBoard().asArray()[xL][zL];
+                    boolean isHidden = game.getBoard().isHidden(xL, zL);
 
-                    if (!f.isHidden() && f.getType() == BOMB) {
+                    @Type
+                    int type = game.getBoard().getType(xL, zL);
+
+                    if (!isHidden && type == BOMB) {
                         int max = GameMineSweeper.TICKS_DETONATION_TIME;
                         int ticks = game.getTicks();
 
@@ -56,15 +58,13 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
                         GlStateManager.disableAlpha();
                         GlStateManager.disableBlend();
                     } else {
-                        @Type
-                        int type = f.getType();
                         @Mark
-                        int mark = f.getMark();
+                        int mark = game.getBoard().getMark(xL, zL);
 
                         int textureX;
                         int textureY;
 
-                        if (f.isHidden()) {
+                        if (isHidden) {
                             if (mark == NO_MARK) {
                                 textureX = 0;
                                 textureY = 0;

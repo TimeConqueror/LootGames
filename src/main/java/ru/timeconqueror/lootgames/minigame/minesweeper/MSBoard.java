@@ -5,35 +5,22 @@ import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.intellij.lang.annotations.MagicConstant;
+import ru.timeconqueror.lootgames.api.util.NBTUtils;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class MSBoard {
-    private MSField[][] board;//TODO incapsulate
+    private MSField[][] board;
     private int size;
     private int bombCount;
 
     public MSBoard(int size, int bombCount) {
         this.size = size;
         this.bombCount = bombCount;
-    }
-
-    /**
-     * Converts field index to pos.
-     */
-    public Pos2i convertToPos(int fieldIndex) {
-        return new Pos2i(fieldIndex % size, fieldIndex / size);
-    }
-
-    /**
-     * Converts pos to field index.
-     * <p>Example:
-     * <p>Pos {x = 2; y = 4}, gridSize = 5 -> index 22 out of (gridSize * gridSize)
-     */
-    public int convertToFieldIndex(Pos2i pos) {
-        return pos.getY() * size + pos.getX();
     }
 
     public boolean isGenerated() {
@@ -44,17 +31,25 @@ public class MSBoard {
         getField(pos).reveal();
     }
 
-    boolean isHidden(Pos2i pos) {
+    void reveal(int x, int y) {
+        getField(x, y).reveal();
+    }
+
+    public boolean isHidden(Pos2i pos) {
         return getField(pos).isHidden();
     }
 
+    public boolean isHidden(int x, int y) {
+        return getField(x, y).isHidden();
+    }
+
     @MSField.Type
-    int getType(Pos2i pos) {
+    public int getType(Pos2i pos) {
         return getField(pos).getType();
     }
 
     @MSField.Type
-    int getType(int x, int y) {
+    public int getType(int x, int y) {
         return getField(x, y).getType();
     }
 
@@ -63,8 +58,13 @@ public class MSBoard {
     }
 
     @MSField.Mark
-    int getMark(Pos2i pos) {
+    public int getMark(Pos2i pos) {
         return getField(pos).getMark();
+    }
+
+    @MSField.Mark
+    public int getMark(int x, int y) {
+        return getField(x, y).getMark();
     }
 
     void resetBoard() {
@@ -73,6 +73,10 @@ public class MSBoard {
 
     boolean isBomb(int x, int y) {
         return getType(x, y) == MSField.BOMB;
+    }
+
+    boolean isBomb(Pos2i pos) {
+        return getType(pos) == MSField.BOMB;
     }
 
     public boolean hasFieldOn(Pos2i pos) {
@@ -153,10 +157,19 @@ public class MSBoard {
     }
 
     /**
-     * Returns count of bombs that were stood right next to given field.
+     * Converts field index to pos.
      */
-    private int getConnectedBombCount(Pos2i pos) {
-        return getConnectedBombCount(pos.getX(), pos.getY());
+    private Pos2i convertToPos(int fieldIndex) {
+        return new Pos2i(fieldIndex % size, fieldIndex / size);
+    }
+
+    /**
+     * Converts pos to field index.
+     * <p>Example:
+     * <p>Pos {x = 2; y = 4}, gridSize = 5 -> index 22 out of (gridSize * gridSize)
+     */
+    private int convertToFieldIndex(Pos2i pos) {
+        return pos.getY() * size + pos.getX();
     }
 
     /**
@@ -184,8 +197,20 @@ public class MSBoard {
         return bombCount;
     }
 
-    public MSField[][] asArray() {
-        return board;
+    public void forEach(Consumer<Pos2i> func) {
+        for (int x = 0; x < board.length; x++) {
+            for (int y = 0; y < board[x].length; y++) {
+                func.accept(new Pos2i(x, y));
+            }
+        }
+    }
+
+    public void forEach(BiConsumer<Integer, Integer> func) {
+        for (int x = 0; x < board.length; x++) {
+            for (int y = 0; y < board[x].length; y++) {
+                func.accept(x, y);
+            }
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -211,6 +236,25 @@ public class MSBoard {
 
     void setSize(int size) {
         this.size = size;
+    }
+
+    NBTTagCompound writeNBTForSaving() {
+        return NBTUtils.writeTwoDimArrToNBT(board);
+    }
+
+    NBTTagCompound writeNBTForClient() {
+        return NBTUtils.<MSField>writeTwoDimArrToNBT(board, field -> {
+            NBTTagCompound c = new NBTTagCompound();
+
+            c.setBoolean("hidden", field.isHidden());
+            c.setInteger("mark", field.getMark());
+
+            if (!field.isHidden()) {
+                c.setInteger("type", field.getType());
+            }
+
+            return c;
+        });
     }
 
     public static class MSField implements INBTSerializable<NBTTagCompound> {
