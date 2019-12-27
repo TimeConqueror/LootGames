@@ -397,7 +397,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         }
 
         world.playSound(null, getPos(), ModSounds.golGameLose, SoundCategory.MASTER, 0.75F, 1.0F);
-        player.sendMessage(NetworkUtils.color(new TextComponentTranslation("msg.lootgames.gol_master.lose"), TextFormatting.DARK_PURPLE));
+        player.sendMessage(NetworkUtils.color(new TextComponentTranslation("msg.lootgames.lose"), TextFormatting.DARK_PURPLE));
 
         destroyStructure();
 

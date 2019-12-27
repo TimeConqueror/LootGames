@@ -20,6 +20,8 @@ tile.lootgames.gol_subordinate.name=Subordinate Block
 msg.lootgames.puzzle_master.broken=This block seems to be broken. Please send issue to mod author.
 msg.lootgames.puzzle_master.turned_off=This structure seems to be turned off by higher forces.
 
+msg.lootgames.lose=The structure seems to be offended by your failure.
+
 msg.lootgames.gol_master.start=Let's play the game! Click on the center block!
 msg.lootgames.gol_master.rules=You just need to repeat the colors.
 msg.lootgames.gol_master.not_ready=You feel that the structure is not ready for reply now.
@@ -27,7 +29,6 @@ msg.lootgames.gol_master.wrong_block=It appears you touched the wrong color...
 msg.lootgames.gol_master.stage_complete=The structure seems to acknowledge your efforts...
 msg.lootgames.gol_master.win=The structure is pleased and rewards you!
 msg.lootgames.gol_master.reward_level_reached=Current reward level reached: %d (Best: %d)
-msg.lootgames.gol_master.lose=The structure seems to be offended by your failure.
 
 msg.lootgames.ms.bomb_touched=Oops... It seems to be a BOOM. Run!
 msg.lootgames.ms.new_attempt=It seems the structure calmed down and decided to give you one more chance.

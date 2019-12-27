@@ -21,80 +21,97 @@ public class MSBoard {
     }
 
     /**
+     * Converts field index to pos.
+     */
+    public Pos2i convertToPos(int fieldIndex) {
+        return new Pos2i(fieldIndex % size, fieldIndex / size);
+    }
+
+    /**
      * Converts pos to field index.
      * <p>Example:
      * <p>Pos {x = 2; y = 4}, gridSize = 5 -> index 22 out of (gridSize * gridSize)
      */
-    public static int convertToFieldIndex(Pos2i pos, int gridSize) {
-        return pos.getY() * gridSize + pos.getX();
-    }
-
-    /**
-     * Converts field index to pos.
-     */
-    public static Pos2i convertToPos(int fieldIndex, int gridSize) {
-        return new Pos2i(fieldIndex % gridSize, fieldIndex / gridSize);
+    public int convertToFieldIndex(Pos2i pos) {
+        return pos.getY() * size + pos.getX();
     }
 
     public boolean isGenerated() {
         return board != null;
     }
 
+    void reveal(Pos2i pos) {
+        getField(pos).reveal();
+    }
+
+    boolean isHidden(Pos2i pos) {
+        return getField(pos).isHidden();
+    }
+
+    @MSField.Type
+    int getType(Pos2i pos) {
+        return getField(pos).getType();
+    }
+
+    @MSField.Type
+    int getType(int x, int y) {
+        return getField(x, y).getType();
+    }
+
+    void swapMark(Pos2i pos) {
+        getField(pos).swapMark();
+    }
+
+    @MSField.Mark
+    int getMark(Pos2i pos) {
+        return getField(pos).getMark();
+    }
+
     void resetBoard() {
         board = null;
     }
 
-    public boolean isBomb(Pos2i pos) {
-        return isBomb(pos.getX(), pos.getY());
-    }
-
-    public boolean isBomb(int x, int y) {
-        return getFieldTypeByPos(x, y) == MSField.BOMB;
-    }
-
-    public boolean isEmpty(Pos2i pos) {
-        return getFieldTypeByPos(pos) == MSField.EMPTY;
+    boolean isBomb(int x, int y) {
+        return getType(x, y) == MSField.BOMB;
     }
 
     public boolean hasFieldOn(Pos2i pos) {
         return pos.getX() >= 0 && pos.getY() >= 0 && pos.getX() < size && pos.getY() < size;
     }
 
-    /**
-     * Returns the type of cell that was got from the board by pos.
-     *
-     * <p>   -1      - Bomb.
-     * <p>   0       - Empty cell.
-     * <p>   1 - 9   - Cell with number.
-     */
-    public @MSField.Type
-    int getFieldTypeByPos(Pos2i pos) {
-        return getFieldTypeByPos(pos.getX(), pos.getY());
+    boolean checkWin() {
+        boolean winState = true;
+
+        loop:
+        for (MSField[] msFields : board) {
+            for (MSField msField : msFields) {
+                if (msField.type == MSField.BOMB) {
+                    if (!msField.isHidden || msField.mark != MSField.FLAG) {
+                        winState = false;
+                        break loop;
+                    }
+                } else {
+                    if (msField.isHidden) {
+                        winState = false;
+                        break loop;
+                    }
+                }
+            }
+        }
+
+        return winState;
     }
 
-    MSField getFieldByPos(Pos2i pos) {
+    private MSField getField(Pos2i pos) {
         return board[pos.getX()][pos.getY()];
     }
 
-    /**
-     * Returns the type of cell that was got from the board by pos.
-     *
-     * <p>   -1      - Bomb.
-     * <p>   0       - Empty cell.
-     * <p>   1 - 9   - Cell with number.
-     */
-    public @MSField.Type
-    int getFieldTypeByPos(int x, int y) {
-        return board[x][y].type;
-    }
-
-    public @MSField.Mark
-    int getFieldMarkByPos(int x, int y) {
-        return board[x][y].mark;
+    private MSField getField(int x, int y) {
+        return board[x][y];
     }
 
     public void generate(Pos2i startFieldPos) {
-        if (convertToFieldIndex(startFieldPos, size) > (size * size) - 1) {
+        if (convertToFieldIndex(startFieldPos) > (size * size) - 1) {
             throw new IllegalArgumentException(String.format("Start Pos must be strictly less than Board size. Current values: start pos = %1$s, boardSize = %2$d", startFieldPos, size));
         }
 
@@ -104,7 +121,7 @@ public class MSBoard {
         //adding bombs
         ArrayList<Integer> fields = new ArrayList<>(square);
         for (int i = 0; i < square; i++) {
-            if (i == convertToFieldIndex(startFieldPos, size)) {
+            if (i == convertToFieldIndex(startFieldPos)) {
                 continue;
             }
 
@@ -132,7 +149,7 @@ public class MSBoard {
             }
         }
 
-        getFieldByPos(startFieldPos).reveal();
+        getField(startFieldPos).reveal();
     }
 
     /**
@@ -162,7 +179,6 @@ public class MSBoard {
 
                 }
             }
-
         }
 
         return bombCount;
@@ -239,6 +255,7 @@ public class MSBoard {
 
         void reveal() {
             isHidden = false;
+            resetMark();
         }
 
         /**

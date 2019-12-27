@@ -14,7 +14,7 @@ public class NetworkUtils {
      * Sends message to all players in given distance.
      *
      * @param distanceIn distance from {@code fromPos}, in which players will be get a message.
-     */
+     *///TODO check it
     public static void sendMessageToAllNearby(BlockPos fromPos, ITextComponent msg, int distanceIn) {
         for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
             double distance = player.getDistance(fromPos.getX(), fromPos.getY(), fromPos.getZ());

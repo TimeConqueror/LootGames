@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.minigame.minesweeper;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -13,6 +14,8 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.util.NBTUtils;
 import ru.timeconqueror.lootgames.api.util.NetworkUtils;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
+import ru.timeconqueror.lootgames.block.BlockDungeonBricks;
+import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
 import ru.timeconqueror.lootgames.minigame.minesweeper.task.TaskMSCreateExplosion;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
@@ -21,6 +24,7 @@ import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 
 //TODO Every fail bomb strength increases
 //TODO add custom Stage Class to improve readability of code (name, ticks before skipping, actions)
+//FIXME add bomb counter
 public class GameMineSweeper extends LootGame {
     public static final int TICKS_DETONATION_TIME = 3 * 20;//TODO config
     private static final int ATTEMPTS_ALLOWED = 3;//TODO config
@@ -28,7 +32,7 @@ public class GameMineSweeper extends LootGame {
     @SideOnly(Side.CLIENT)
     public boolean cIsGenerated;
 
-    private MSBoard board;
+    private MSBoard board;//FIXME check working after changed  board size config
 
     private Stage stage;
     private int ticks;
@@ -86,7 +90,7 @@ public class GameMineSweeper extends LootGame {
         board.generate(clickedPos);
         sendUpdatePacket("gen_board", writeNBTForClient());
 
-        if (board.getFieldTypeByPos(clickedPos) == MSField.EMPTY) {
+        if (board.getType(clickedPos) == MSField.EMPTY) {
             revealAllNeighbours(clickedPos);
         }
 
@@ -95,45 +99,53 @@ public class GameMineSweeper extends LootGame {
 
     public void revealField(Pos2i pos) {
         if (stage == Stage.WAITING) {
-            MSField field = board.getFieldByPos(pos);
-            if (field.isHidden()) {
-                field.resetMark();
-                field.reveal();
+            if (board.isHidden(pos)) {
+                board.reveal(pos);
+
+                int type = board.getType(pos);
 
                 NBTTagCompound c = new NBTTagCompound();
                 c.setInteger("x", pos.getX());
                 c.setInteger("y", pos.getY());
-                c.setInteger("type", field.getType());
+                c.setInteger("type", type);
                 c.setBoolean("hidden", false);
                 c.setInteger("mark", MSField.NO_MARK);
                 sendUpdatePacket("field_changed", c);
 
-                if (field.getType() == MSField.EMPTY) {
+                if (type == MSField.EMPTY) {
                     revealAllNeighbours(pos);
-                } else if (field.getType() == MSField.BOMB) {
+                } else if (type == MSField.BOMB) {
                     onBombTriggered(pos);
                 }
 
                 saveData();
+
+                if (board.checkWin()) {
+                    onGameWon();
+                }
             }
+
         }
     }
 
     public void swapFieldMark(Pos2i pos) {
         if (stage == Stage.WAITING) {
-            MSField field = board.getFieldByPos(pos);
-            if (field.isHidden()) {
-                field.swapMark();
+            if (board.isHidden(pos)) {
+                board.swapMark(pos);
 
                 NBTTagCompound c = new NBTTagCompound();
                 c.setInteger("x", pos.getX());
                 c.setInteger("y", pos.getY());
                 c.setInteger("type", MSField.EMPTY);
                 c.setBoolean("hidden", true);
-                c.setInteger("mark", field.getMark());
+                c.setInteger("mark", board.getMark(pos));
                 sendUpdatePacket("field_changed", c);
 
                 saveData();
+            }
+
+            if (board.checkWin()) {
+                onGameWon();
             }
         }
     }
@@ -147,8 +159,7 @@ public class GameMineSweeper extends LootGame {
 
                 Pos2i pos = mainPos.add(x, y);
                 if (board.hasFieldOn(pos)) {
-                    MSField field = board.getFieldByPos(pos);
-                    if (field.isHidden()) {
+                    if (board.isHidden(pos)) {
                         revealField(pos);
                     }
                 }
@@ -180,11 +191,37 @@ public class GameMineSweeper extends LootGame {
         if (attemptCount < ATTEMPTS_ALLOWED) {
             int longestDetTime = detonateBoard(4, false);//fixme balance strength
             updateStage(Stage.EXPLODING);
-            ticks = longestDetTime + 4 * 20;//4 * 20 - some pause after detonating
+            ticks = longestDetTime + 4 * 20;//number - some pause after detonating
         } else {
-
-            detonateBoard(10, true);//fixme balance strength
+            onGameLost();
         }
+    }
+
+    private void onGameWon() {
+        NetworkUtils.sendMessageToAllNearby(getCentralGamePos(), new TextComponentString("You won"), getBoardSize() / 2 + 7);
+        destroyStructure();
+    }
+
+    private void onGameLost() {
+        destroyStructure();
+        detonateBoard(10, true);//fixme balance strength
+        NetworkUtils.sendMessageToAllNearby(getCentralGamePos(),
+                NetworkUtils.color(new TextComponentTranslation("msg.lootgames.lose"), TextFormatting.DARK_PURPLE),
+                getBoardSize() / 2 + 7);
+    }
+
+    private void destroyStructure() {
+        for (int x = 0; x < getBoardSize(); x++) {
+            for (int z = 0; z < getBoardSize(); z++) {
+                if (x == 0 || z == 0 || x == getBoardSize() - 1 || z == getBoardSize() - 1) {
+                    getWorld().setBlockState(getMasterPos().add(x, 0, z), ModBlocks.DUNGEON_LAMP.getDefaultState().withProperty(BlockDungeonLamp.BROKEN, false));
+                } else {
+                    getWorld().setBlockState(getMasterPos().add(x, 0, z), ModBlocks.DUNGEON_BRICKS.getDefaultState().withProperty(BlockDungeonBricks.VARIANT, BlockDungeonBricks.EnumType.DUNGEON_FLOOR));
+                }
+            }
+        }
+
+        DungeonGenerator.resetUnbreakablePlayfield(getWorld(), getCentralGamePos());//TODO duplicate from GameOfLight, do sth with it
     }
 
     /**
