@@ -14,12 +14,13 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.util.NBTUtils;
 import ru.timeconqueror.lootgames.api.util.NetworkUtils;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
-import ru.timeconqueror.lootgames.api.util.Wrapper;
 import ru.timeconqueror.lootgames.block.BlockDungeonBricks;
 import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
 import ru.timeconqueror.lootgames.minigame.minesweeper.task.TaskMSCreateExplosion;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 
@@ -190,7 +191,7 @@ public class GameMineSweeper extends LootGame {
         if (attemptCount < ATTEMPTS_ALLOWED) {
             int longestDetTime = detonateBoard(4, false);//fixme balance strength
             updateStage(Stage.EXPLODING);
-            ticks = longestDetTime + 4 * 20;//number - some pause after detonating
+            ticks = longestDetTime + 2 * 20;//number - some pause after detonating
         } else {
             onGameLost();
         }
@@ -203,7 +204,10 @@ public class GameMineSweeper extends LootGame {
 
     private void onGameLost() {
         destroyStructure();
-        detonateBoard(10, true);//fixme balance strength
+
+        BlockPos expPos = getCentralGamePos();
+        getWorld().createExplosion(null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 10, true);//fixme balance strength
+
         NetworkUtils.sendMessageToAllNearby(getCentralGamePos(),
                 NetworkUtils.color(new TextComponentTranslation("msg.lootgames.lose"), TextFormatting.DARK_PURPLE),
                 getBoardSize() / 2 + 7);
@@ -228,12 +232,13 @@ public class GameMineSweeper extends LootGame {
      * Returns the longest detonating time, after which all bombs will explode
      */
     private int detonateBoard(int strength, boolean damageTerrain) {
-        Wrapper<Integer> longestDetTime = new Wrapper<>(0);
+        AtomicInteger longestDetTime = new AtomicInteger();
 
         board.forEach(pos2i -> {
             if (board.getType(pos2i) == MSField.BOMB) {
+                System.out.println("BoMb: " + pos2i.getX() + " " + pos2i.getY());
 
-                int detTime = LootGames.RAND.nextInt(5 * 20);
+                int detTime = LootGames.RAND.nextInt(3 * 20);
 
                 if (longestDetTime.get() < detTime) {
                     longestDetTime.set(detTime);

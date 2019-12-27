@@ -47,7 +47,7 @@ public class TaskMSCreateExplosion implements ITask {
             ms.sendUpdatePacket("field_changed", c);//for bomb vanishing on client
         } else {
             LootGames.logHelper.error("Can't find MineSweeper Master at %s while running TaskMSCreateExplosion...", masterPos);
-            world.createExplosion(null, masterPos.getX() + relativePos.getX(), masterPos.getY(), masterPos.getZ() + relativePos.getY(), strength, damagesTerrain);
+            world.createExplosion(null, masterPos.getX() + relativePos.getX(), masterPos.getY() + 1.5, masterPos.getZ() + relativePos.getY(), strength, damagesTerrain);
         }
     }
 

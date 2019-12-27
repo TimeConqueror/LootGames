@@ -10,7 +10,7 @@ import ru.timeconqueror.lootgames.LootGames;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
+//TODO DO ON GLOBAL IN THE WORLD
 public class TEPostponeTaskScheduler implements INBTSerializable<NBTTagList> {
     private final ArrayList<TaskWrapper> tasks = new ArrayList<>();
 
