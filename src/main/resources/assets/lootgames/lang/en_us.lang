@@ -30,6 +30,7 @@ msg.lootgames.gol_master.reward_level_reached=Current reward level reached: %d (
 msg.lootgames.gol_master.lose=The structure seems to be offended by your failure.
 
 msg.lootgames.ms.bomb_touched=Oops... It seems to be a BOOM. Run!
+msg.lootgames.ms.new_attempt=It seems the structure calmed down and decided to give you one more chance.
 
 #Tooltips
 item.lootgames.dungeon_bricks.tooltip=Mobs can't spawn on this block.

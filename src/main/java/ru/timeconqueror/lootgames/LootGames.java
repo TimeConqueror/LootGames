@@ -14,7 +14,7 @@ import ru.timeconqueror.timecore.api.auxiliary.debug.LogHelper;
 import ru.timeconqueror.timecore.api.auxiliary.debug.Profiler;
 
 import java.util.Random;
-
+//TODO add hashsum check to deny access on servers for hacked mod
 @Mod(modid = LootGames.MOD_ID,
         dependencies = "required-after:forge@[14.23.5.2768,);" + "required-after:timecore@[1.0.0,);",
         name = LootGames.MOD_NAME,

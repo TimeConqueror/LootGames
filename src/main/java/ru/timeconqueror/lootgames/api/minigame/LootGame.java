@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.api.minigame;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -35,6 +36,10 @@ public abstract class LootGame {
 
     public World getWorld() {
         return masterTileEntity.getWorld();
+    }
+
+    public BlockPos getMasterPos() {
+        return masterTileEntity.getPos();
     }
 
     /**

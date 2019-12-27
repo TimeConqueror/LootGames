@@ -10,15 +10,17 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
-import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.util.NBTUtils;
 import ru.timeconqueror.lootgames.api.util.NetworkUtils;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
+import ru.timeconqueror.lootgames.minigame.minesweeper.task.TaskMSCreateExplosion;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 
 import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 
+//TODO Every fail bomb strength increases
+//TODO add custom Stage Class to improve readability of code (name, ticks before skipping, actions)
 public class GameMineSweeper extends LootGame {
     public static final int TICKS_DETONATION_TIME = 3 * 20;//TODO config
     private static final int ATTEMPTS_ALLOWED = 3;//TODO config
@@ -52,6 +54,18 @@ public class GameMineSweeper extends LootGame {
                 }
 
                 ticks++;
+            } else if (stage == Stage.EXPLODING) {
+                ticks--;
+
+                if (ticks <= 0) {
+                    NetworkUtils.sendMessageToAllNearby(getCentralGamePos(),
+                            NetworkUtils.color(new TextComponentTranslation("msg.lootgames.ms.new_attempt"), TextFormatting.AQUA),
+                            getBoardSize() / 2 + 7);
+                    updateStage(Stage.WAITING);
+
+                    board.resetBoard();
+                    saveDataAndSendToClient();
+                }
             }
         } else {
             if (stage == Stage.DETONATING) {
@@ -153,9 +167,9 @@ public class GameMineSweeper extends LootGame {
             }
         }
 
-        NetworkUtils.sendColoredMessageToAllNearby(getCentralGamePos(),
-                new TextComponentTranslation("msg.lootgames.ms.bomb_touched"),
-                TextFormatting.DARK_PURPLE, getBoardSize() / 2 + 7);
+        NetworkUtils.sendMessageToAllNearby(getCentralGamePos(),
+                NetworkUtils.color(new TextComponentTranslation("msg.lootgames.ms.bomb_touched"), TextFormatting.DARK_PURPLE),
+                getBoardSize() / 2 + 7);
 
         saveDataAndSendToClient();
 
@@ -164,26 +178,42 @@ public class GameMineSweeper extends LootGame {
 
     private void onDetonateTimePassed() {
         if (attemptCount < ATTEMPTS_ALLOWED) {
-            detonateBoard();
-            updateStage(Stage.DEBUG);
+            int longestDetTime = detonateBoard(4, false);//fixme balance strength
+            updateStage(Stage.EXPLODING);
+            ticks = longestDetTime + 4 * 20;//4 * 20 - some pause after detonating
         } else {
 
+            detonateBoard(10, true);//fixme balance strength
         }
     }
 
-    private void detonateBoard() {
+    /**
+     * Adds detonating tasks to scheduler.
+     * Returns the longest detonating time, after which all bombs will explode
+     */
+    private int detonateBoard(int strength, boolean damageTerrain) {
         MSField[][] asArray = board.asArray();
+
+        int longestDetTime = 0;
         for (int x = 0; x < asArray.length; x++) {
             MSField[] msFields = asArray[x];
             for (int y = 0; y < msFields.length; y++) {
                 MSField msField = msFields[y];
                 if (msField.getType() == MSField.BOMB) {
-                    BlockPos pos = convertToBlockPos(x, y);
 
-                    serverTaskPostponer.addTask(new TaskCreateExplosion(pos, 4, false), LootGames.RAND.nextInt(10 * 20));//FIXME change strength
+                    int detTime = LootGames.RAND.nextInt(5 * 20);
+
+                    if (longestDetTime < detTime) {
+                        longestDetTime = detTime;
+                    }
+
+                    Pos2i relPos = new Pos2i(x, y);
+                    serverTaskPostponer.addTask(new TaskMSCreateExplosion(getMasterPos(), relPos, strength, damageTerrain), detTime);
                 }
             }
         }
+
+        return longestDetTime;
     }
 
     private void updateStage(Stage stageTo) {
@@ -215,8 +245,12 @@ public class GameMineSweeper extends LootGame {
         }
     }
 
-    private BlockPos convertToBlockPos(int x, int y) {
+    public BlockPos convertToBlockPos(int x, int y) {
         return masterTileEntity.getPos().add(x, 0, y);
+    }
+
+    public BlockPos convertToBlockPos(Pos2i pos) {
+        return convertToBlockPos(pos.getX(), pos.getY());
     }
 
     /**
@@ -322,7 +356,8 @@ public class GameMineSweeper extends LootGame {
 
     public enum Stage {
         WAITING,
-        DETONATING, DEBUG
+        DETONATING,
+        EXPLODING
     }
 
     public static class Factory implements ILootGameFactory {

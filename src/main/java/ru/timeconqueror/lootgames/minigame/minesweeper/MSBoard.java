@@ -6,13 +6,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.intellij.lang.annotations.MagicConstant;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
-import ru.timeconqueror.lootgames.minigame.minesweeper.util.PosUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class MSBoard {
-    private MSField[][] board;
+    private MSField[][] board;//TODO incapsulate
     private int size;
     private int bombCount;
 
@@ -21,8 +20,28 @@ public class MSBoard {
         this.bombCount = bombCount;
     }
 
+    /**
+     * Converts pos to field index.
+     * <p>Example:
+     * <p>Pos {x = 2; y = 4}, gridSize = 5 -> index 22 out of (gridSize * gridSize)
+     */
+    public static int convertToFieldIndex(Pos2i pos, int gridSize) {
+        return pos.getY() * gridSize + pos.getX();
+    }
+
+    /**
+     * Converts field index to pos.
+     */
+    public static Pos2i convertToPos(int fieldIndex, int gridSize) {
+        return new Pos2i(fieldIndex % gridSize, fieldIndex / gridSize);
+    }
+
     public boolean isGenerated() {
         return board != null;
+    }
+
+    void resetBoard() {
+        board = null;
     }
 
     public boolean isBomb(Pos2i pos) {
@@ -75,7 +94,7 @@ public class MSBoard {
     }
 
     public void generate(Pos2i startFieldPos) {
-        if (PosUtils.convertToFieldIndex(startFieldPos, size) > (size * size) - 1) {
+        if (convertToFieldIndex(startFieldPos, size) > (size * size) - 1) {
             throw new IllegalArgumentException(String.format("Start Pos must be strictly less than Board size. Current values: start pos = %1$s, boardSize = %2$d", startFieldPos, size));
         }
 
@@ -85,7 +104,7 @@ public class MSBoard {
         //adding bombs
         ArrayList<Integer> fields = new ArrayList<>(square);
         for (int i = 0; i < square; i++) {
-            if (i == PosUtils.convertToFieldIndex(startFieldPos, size)) {
+            if (i == convertToFieldIndex(startFieldPos, size)) {
                 continue;
             }
 
@@ -260,14 +279,6 @@ public class MSBoard {
             return isHidden;
         }
 
-        @MagicConstant(intValues = {BOMB, EMPTY, 1, 2, 3, 4, 5, 6, 7, 8})
-        public @interface Type {
-        }
-
-        @MagicConstant(intValues = {NO_MARK, FLAG, QUESTION_MARK})
-        public @interface Mark {
-        }
-
         @Override
         public void deserializeNBT(NBTTagCompound nbt) {
             isHidden = nbt.getBoolean("hidden");
@@ -278,6 +289,14 @@ public class MSBoard {
         @Override
         public String toString() {
             return "Field{type: " + type + ", hidden:" + isHidden + ", mark:" + mark + "}";
+        }
+
+        @MagicConstant(intValues = {BOMB, EMPTY, 1, 2, 3, 4, 5, 6, 7, 8})
+        public @interface Type {
+        }
+
+        @MagicConstant(intValues = {NO_MARK, FLAG, QUESTION_MARK})
+        public @interface Mark {
         }
     }
 }

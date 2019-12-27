@@ -6,7 +6,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.ApiStatus;
 
 public class TaskCreateExplosion implements ITask {
-    private double x;
+    protected double x;
     private double y;
     private double z;
     private float strength;
@@ -14,7 +14,6 @@ public class TaskCreateExplosion implements ITask {
 
     @ApiStatus.Internal
     public TaskCreateExplosion() {
-
     }
 
     public TaskCreateExplosion(BlockPos pos, float strength, boolean damagesTerrain) {

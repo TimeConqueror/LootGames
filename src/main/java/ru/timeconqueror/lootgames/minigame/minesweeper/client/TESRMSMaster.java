@@ -49,6 +49,7 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
 
                         RenderUtils.drawRect(xL, zL, xL + 1, zL + 1, -0.005F, 1, 0, 1, 1, 0.25F);
                         GlStateManager.enableBlend();
+                        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
                         GlStateManager.enableAlpha();
                         GL11.glColor4d(1, 1, 1, alphaFactor);
                         RenderUtils.drawRect(xL, zL, xL + 1, zL + 1, -0.005F, 1, 3, 1, 1, 0.25F);
@@ -89,7 +90,7 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
                 }
             }
         }
-
+        GlStateManager.enableLighting();
         GlStateManager.popMatrix();
     }
 

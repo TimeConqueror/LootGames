@@ -46,6 +46,8 @@ public class TEPostponeTaskScheduler implements INBTSerializable<NBTTagList> {
                     task.decreaseTimer();
                 }
             }
+
+            System.out.println(tasks.size());
         }
     }
 
