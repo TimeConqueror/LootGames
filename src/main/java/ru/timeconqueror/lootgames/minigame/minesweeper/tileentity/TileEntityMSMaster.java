@@ -31,6 +31,15 @@ public class TileEntityMSMaster extends TileEntityGameMaster<GameMineSweeper> {
     }
 
     @Override
+    public void destroyGameBlocks() {
+        for (int x = 0; x < game.getBoardSize(); x++) {
+            for (int z = 0; z < game.getBoardSize(); z++) {
+                getWorld().setBlockToAir(getPos().add(x, 0, z));
+            }
+        }
+    }
+
+    @Override
     protected NBTTagCompound writeNBTForSaving(NBTTagCompound compound) {
         return super.writeNBTForSaving(compound);
     }

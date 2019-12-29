@@ -26,6 +26,13 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
         game.onTick();
     }
 
+
+    /**
+     * Called when TileEntityGameMaster or BlockSubordinate is broke.
+     * This method implies destroying of all game blocks.
+     */
+    public abstract void destroyGameBlocks();
+
     /**
      * For saving/sending data use {@link #writeNBTForSaving(NBTTagCompound)}
      */

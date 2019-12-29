@@ -449,6 +449,11 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         DungeonGenerator.resetUnbreakablePlayfield(world, pos);
     }
 
+    @Override
+    public void destroyGameBlocks() {
+        //TODO do while refactoring
+    }
+
     private boolean isLastStagePassed() {
         return gameLevel == 4 && currentRound >= LootGamesConfig.gameOfLight.stage4.getMinRoundsRequiredToPass(world.provider.getDimension());
     }
