@@ -13,12 +13,10 @@ import ru.timeconqueror.lootgames.registry.ModBlocks;
 public class BlockMSActivator extends BlockGame {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (worldIn.isRemote) {
-            return true;
-        } else {//todo add advancement
+        if (!worldIn.isRemote) {//todo add advancement
             genBoard(worldIn, pos);
         }
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        return true;
     }
 
     private void genBoard(World world, BlockPos centerPos) {

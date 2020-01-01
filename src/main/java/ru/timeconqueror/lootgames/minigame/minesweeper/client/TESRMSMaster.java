@@ -13,7 +13,7 @@ import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField.*;
 
 public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> {
     private static final ResourceLocation MS_BOARD = new ResourceLocation(LootGames.MOD_ID, "textures/blocks/minesweeper/ms_board.png");
-
+    //TODO optimize drawRect
     @Override
     public void render(TileEntityMSMaster te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         bindTexture(MS_BOARD);

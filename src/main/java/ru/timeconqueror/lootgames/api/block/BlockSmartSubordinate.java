@@ -7,7 +7,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameMaster;
@@ -17,35 +16,29 @@ import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameMaster;
  * and its tileentity must extend {@link TileEntityGameMaster<>}!
  */
 public class BlockSmartSubordinate extends BlockGame {
-    @Override
-    public void onPlayerDestroy(World worldIn, BlockPos pos, IBlockState state) {
-        if (!destroyStructure(worldIn, pos)) {
-            super.onPlayerDestroy(worldIn, pos, state);
-        }
-    }
+    private static boolean underBreaking = false;
 
     @Override
-    public void onBlockExploded(World world, @NotNull BlockPos pos, @NotNull Explosion explosion) {
-        if (!destroyStructure(world, pos)) {
-            super.onBlockExploded(world, pos, explosion);
+    public void breakBlock(World worldIn, @NotNull BlockPos pos, @NotNull IBlockState state) {
+        if (!worldIn.isRemote && !underBreaking) {
+            underBreaking = true;
+            destroyStructure(worldIn, pos);
+            underBreaking = false;
         }
+
+        super.breakBlock(worldIn, pos, state);
     }
 
     /**
      * Destroys the full structure, which this block belongs to.
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean destroyStructure(World worldIn, BlockPos pos) {
-        if (!worldIn.isRemote) {
-            BlockPos masterPos = getMasterPos(worldIn, pos);
-            TileEntity te = worldIn.getTileEntity(masterPos);
-            if (te instanceof TileEntityGameMaster<?>) {
-                ((TileEntityGameMaster<?>) te).destroyGameBlocks();
-                return true;
-            }
-        }
+    private void destroyStructure(World worldIn, BlockPos pos) {
+        BlockPos masterPos = getMasterPos(worldIn, pos);
+        TileEntity te = worldIn.getTileEntity(masterPos);
 
-        return false;
+        if (te instanceof TileEntityGameMaster<?>) {
+            ((TileEntityGameMaster<?>) te).destroyGameBlocks();
+        }
     }
 
     @Override

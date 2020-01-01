@@ -27,6 +27,7 @@ import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 //TODO Every fail bomb strength increases
 //TODO add custom Stage Class to improve readability of code (name, ticks before skipping, actions)
 //FIXME add bomb counter
+//TODO remove right-clicking on field while it is marked
 public class GameMineSweeper extends LootGame {
     public static final int TICKS_DETONATION_TIME = 3 * 20;//TODO config
     private static final int ATTEMPTS_ALLOWED = 3;//TODO config
