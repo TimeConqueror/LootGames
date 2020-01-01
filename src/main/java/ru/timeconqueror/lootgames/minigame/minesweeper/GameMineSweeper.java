@@ -27,7 +27,6 @@ import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 //TODO Every fail bomb strength increases
 //TODO add custom Stage Class to improve readability of code (name, ticks before skipping, actions)
 //FIXME add bomb counter
-//TODO remove right-clicking on field while it is marked
 public class GameMineSweeper extends LootGame {
     public static final int TICKS_DETONATION_TIME = 3 * 20;//TODO config
     private static final int ATTEMPTS_ALLOWED = 3;//TODO config
@@ -35,7 +34,7 @@ public class GameMineSweeper extends LootGame {
     @SideOnly(Side.CLIENT)
     public boolean cIsGenerated;
 
-    private MSBoard board;//FIXME check working after changed board size config
+    private MSBoard board;
 
     private Stage stage;
     private int ticks;
@@ -47,8 +46,8 @@ public class GameMineSweeper extends LootGame {
     }
 
     public static Pos2i convertToGamePos(BlockPos masterPos, BlockPos subordinatePos) {
-        BlockPos tpos = subordinatePos.subtract(masterPos);
-        return new Pos2i(tpos.getX(), tpos.getZ());
+        BlockPos temp = subordinatePos.subtract(masterPos);
+        return new Pos2i(temp.getX(), temp.getZ());
     }
 
     @Override
@@ -77,6 +76,20 @@ public class GameMineSweeper extends LootGame {
         } else {
             if (stage == Stage.DETONATING) {
                 ticks++;
+            }
+        }
+    }
+
+    public void onFieldClicked(Pos2i clickedPos, boolean sneaking) {
+        if (!board.isGenerated()) {
+            generateBoard(clickedPos);
+        } else {
+            if (sneaking) {
+                swapFieldMark(clickedPos);
+            } else {
+                if (board.getMark(clickedPos) == MSField.NO_MARK) {
+                    revealField(clickedPos);
+                }
             }
         }
     }

@@ -21,15 +21,7 @@ public class TileEntityMSMaster extends TileEntityGameMaster<GameMineSweeper> {
     public void onSubordinateBlockClicked(BlockPos subordinatePos, EntityPlayer player) {
         Pos2i pos = GameMineSweeper.convertToGamePos(getPos(), subordinatePos);
 
-        if (!isBoardGenerated()) {
-            game.generateBoard(pos);
-        } else {
-            if (player.isSneaking()) {
-                game.swapFieldMark(pos);
-            } else {
-                game.revealField(pos);
-            }
-        }
+        game.onFieldClicked(pos, player.isSneaking());
     }
 
     @Override
