@@ -12,10 +12,15 @@ import ru.timeconqueror.lootgames.api.packet.SMessageGameUpdate;
 import ru.timeconqueror.lootgames.api.task.TEPostponeTaskScheduler;
 import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.packets.NetworkHandler;
+import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 
 public abstract class LootGame {
     protected TileEntityGameMaster<?> masterTileEntity;
     protected TEPostponeTaskScheduler serverTaskPostponer;
+
+    private Runnable winCallback;
+    private Runnable loseCallback;
+    private Runnable endGameCallback;
 
     public void setMasterTileEntity(TileEntityGameMaster<?> masterTileEntity) {
         this.masterTileEntity = masterTileEntity;
@@ -41,6 +46,56 @@ public abstract class LootGame {
 
     public BlockPos getMasterPos() {
         return masterTileEntity.getPos();
+    }
+
+    /**
+     * You should call this, when the game is won. If you want to run something while it is called, use
+     * {@link #setOnWin(Runnable)}.
+     */
+    protected final void winGame() {
+        onGameEnded();
+        if (winCallback != null) winCallback.run();
+    }
+
+    /**
+     * You should call it, when the game is lost. If you want to run something while it is called, use
+     * {@link #setOnLose(Runnable)}.
+     */
+    protected final void loseGame() {
+        onGameEnded();
+        if (loseCallback != null) loseCallback.run();
+    }
+
+    private void onGameEnded() {
+        if (endGameCallback != null) endGameCallback.run();
+        DungeonGenerator.resetUnbreakablePlayfield(getWorld(), getRoomFloorPos());
+    }
+
+    /**
+     * Should return the position of block, that is a part of shielded dungeon floor or has a neighbor, that is a shielded floor block.
+     * Used, for example, to recursively reset shield of unbreakability on dungeon floor.
+     */
+    protected abstract BlockPos getRoomFloorPos();
+
+    /**
+     * Used to set the code block to be called when the game is won.
+     */
+    public void setOnWin(Runnable onWin) {
+        this.winCallback = onWin;
+    }
+
+    /**
+     * Used to set the code block to be called when the game is lost.
+     */
+    public void setOnLose(Runnable onLose) {
+        this.loseCallback = onLose;
+    }
+
+    /**
+     * Used to set the code block to be called when the game is ended (won or lost).
+     */
+    public void setOnGameEnded(Runnable onEnd) {
+        this.endGameCallback = onEnd;
     }
 
     /**

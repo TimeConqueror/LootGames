@@ -28,21 +28,29 @@ public class DungeonGenerator {
     private Material[] invalidMaterials = {Material.WOOD, Material.WATER, Material.CACTUS,
             Material.SNOW, Material.GRASS, Material.LEAVES, Material.PLANTS, Material.AIR, Material.LAVA, Material.PORTAL};
 
-    /**
-     * @param centerPos - pos of center floor block.
-     */
-    public static void resetUnbreakablePlayfield(World world, BlockPos centerPos) {
-        for (int axisX = (PUZZLEROOM_CENTER_TO_BORDER * -1); axisX <= PUZZLEROOM_CENTER_TO_BORDER; axisX++) {
-            for (int axisZ = (PUZZLEROOM_CENTER_TO_BORDER * -1); axisZ <= PUZZLEROOM_CENTER_TO_BORDER; axisZ++) {
-                BlockPos pos = centerPos.add(axisX, 0, axisZ);
-                IBlockState state = world.getBlockState(pos);
-                if (state.getBlock() == ModBlocks.DUNGEON_BRICKS) {
-                    if (ModBlocks.DUNGEON_BRICKS.getMetaFromState(state) == BlockDungeonBricks.EnumType.DUNGEON_FLOOR_SHIELDED.getMeta()) {
-                        world.setBlockState(pos, state.withProperty(BlockDungeonBricks.VARIANT, BlockDungeonBricks.EnumType.DUNGEON_FLOOR));
-                    }
-                }
-            }
+    public static void resetUnbreakablePlayfield(World world, BlockPos floorPos) {
+        if (!resetUnbreakableFieldsStartingFrom(world, floorPos)) {
+            resetUnbreakableFieldsStartingFrom(world, floorPos.add(1, 0, 0));
+            resetUnbreakableFieldsStartingFrom(world, floorPos.add(-1, 0, 0));
+            resetUnbreakableFieldsStartingFrom(world, floorPos.add(0, 0, 1));
+            resetUnbreakableFieldsStartingFrom(world, floorPos.add(0, 0, -1));
         }
+    }
+
+    private static boolean resetUnbreakableFieldsStartingFrom(World world, BlockPos blockPos) {
+        IBlockState state = world.getBlockState(blockPos);
+        if (state.getBlock() == ModBlocks.DUNGEON_BRICKS && state.getValue(BlockDungeonBricks.VARIANT) == BlockDungeonBricks.EnumType.DUNGEON_FLOOR_SHIELDED) {
+            world.setBlockState(blockPos, state.withProperty(BlockDungeonBricks.VARIANT, BlockDungeonBricks.EnumType.DUNGEON_FLOOR));
+
+            resetUnbreakableFieldsStartingFrom(world, blockPos.add(1, 0, 0));
+            resetUnbreakableFieldsStartingFrom(world, blockPos.add(-1, 0, 0));
+            resetUnbreakableFieldsStartingFrom(world, blockPos.add(0, 0, 1));
+            resetUnbreakableFieldsStartingFrom(world, blockPos.add(0, 0, -1));
+
+            return true;
+        }
+
+        return false;
     }
 
     /**

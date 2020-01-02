@@ -2,13 +2,19 @@ buildscript {
     repositories {
         jcenter()
         maven { url = "http://files.minecraftforge.net/maven" }
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+apply plugin: 'org.spongepowered.mixin'
 
 file "build.properties" withReader {
     def prop = new Properties()
@@ -32,7 +38,7 @@ minecraft {
     replaceIn "src/main/java/ru/timeconqueror/lootgames/LootGames.java"
 
     def versionArray = project.version.tokenize('-')
-    replace "GRADLETOKEN_VERSION", versionArray[1]
+    replace "GRADLETOKEN_VERSION", versionArray.get(1)
 
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
@@ -73,7 +79,12 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    compile 'time-core:TimeCore-1.12.2:1.0.0:deobf'
+    //compile 'time-core:TimeCore-1.12.2:1.0.0:deobf'
+    def coreDir = config.timecore.dir
+    def coreFile = "TimeCore-${config.timecore.version}"
+    compile fileTree(dir: coreDir, includes: ["${coreFile}-deobf.jar"])
+    implementation fileTree(dir: coreDir, includes: ["${coreFile}-sources.jar"])
+
     compileOnly 'org.jetbrains:annotations:18.0.0'
 }
 
@@ -94,4 +105,16 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+
+    rename("lootgames_at.cfg", "META-INF/lootgames_at.cfg")
+}
+
+jar {
+    manifest.attributes(
+//            "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+//            "MixinConfigs": "mixins.lootgames.json",
+            "ForceLoadAsMod": true,
+            "FMLCorePluginContainsFMLMod": "true",
+            "FMLAT": "lootgames_at.cfg"//TODO check
+    )
 }

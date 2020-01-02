@@ -13,6 +13,7 @@ import ru.timeconqueror.timecore.api.auxiliary.debug.LogHelper;
 import ru.timeconqueror.timecore.api.event.OnConfigReloadedEvent;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 @Mod.EventBusSubscriber
 @Config(modid = LootGames.MOD_ID, type = Config.Type.INSTANCE)
@@ -377,10 +378,9 @@ public class LootGamesConfig {
 
 
         public void init() {
-            stage1.init();
-            stage2.init();
-            stage3.init();
-            stage4.init();
+            for (int i = 1; i <= 4; i++) {
+                Objects.requireNonNull(getStage(i)).init();
+            }
         }
 
         @Nullable

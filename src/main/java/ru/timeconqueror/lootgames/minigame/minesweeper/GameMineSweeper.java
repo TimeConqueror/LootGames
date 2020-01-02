@@ -17,8 +17,6 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.util.NBTUtils;
 import ru.timeconqueror.lootgames.api.util.NetworkUtils;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
-import ru.timeconqueror.lootgames.block.BlockDungeonBricks;
-import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
 import ru.timeconqueror.lootgames.minigame.minesweeper.block.BlockMSActivator;
 import ru.timeconqueror.lootgames.minigame.minesweeper.task.TaskMSCreateExplosion;
@@ -52,6 +50,9 @@ public class GameMineSweeper extends LootGame {
     public GameMineSweeper(int boardSize, int bombCount) {
         board = new MSBoard(boardSize, bombCount);
         stage = Stage.WAITING;
+
+        setOnWin(this::onGameWon);
+        setOnLose(this::onGameLost);
     }
 
     public static Pos2i convertToGamePos(BlockPos masterPos, BlockPos subordinatePos) {
@@ -87,6 +88,11 @@ public class GameMineSweeper extends LootGame {
                 ticks++;
             }
         }
+    }
+
+    @Override
+    protected BlockPos getRoomFloorPos() {
+        return getMasterPos();
     }
 
     public void onFieldClicked(Pos2i clickedPos, boolean sneaking) {
@@ -146,7 +152,7 @@ public class GameMineSweeper extends LootGame {
                 saveData();
 
                 if (board.checkWin()) {
-                    onGameLevelFinished();
+                    onLevelSuccessfullyFinished();
                 }
             }
         }
@@ -169,7 +175,7 @@ public class GameMineSweeper extends LootGame {
             }
 
             if (board.checkWin()) {
-                onGameLevelFinished();
+                onLevelSuccessfullyFinished();
             }
         }
     }
@@ -215,11 +221,15 @@ public class GameMineSweeper extends LootGame {
             updateStage(Stage.EXPLODING);
             ticks = longestDetTime + 2 * 20;//number - some pause after detonating
         } else {
-            onGameLost();
+            if (currentLevel > 1) {
+                winGame();
+            } else {
+                loseGame();
+            }
         }
     }
 
-    private void onGameLevelFinished() {
+    private void onLevelSuccessfullyFinished() {
         if (currentLevel < 4) {
 
             sendUpdatePacket("spawn_particles_level_beat", null);
@@ -241,38 +251,21 @@ public class GameMineSweeper extends LootGame {
 
             saveDataAndSendToClient();
         } else {
-            onGameWon();
+            winGame();
         }
     }
 
     private void onGameWon() {
         NetworkUtils.sendMessageToAllNearby(getCentralGamePos(), new TextComponentString("You won"), getBoardSize() / 2 + 7);
-        destroyStructure();
     }
 
     private void onGameLost() {
-        destroyStructure();
-
         BlockPos expPos = getCentralGamePos();
         getWorld().createExplosion(null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 10, true);//fixme balance strength
 
         NetworkUtils.sendMessageToAllNearby(getCentralGamePos(),
                 NetworkUtils.color(new TextComponentTranslation("msg.lootgames.lose"), TextFormatting.DARK_PURPLE),
                 getBoardSize() / 2 + 7);
-    }
-
-    private void destroyStructure() {
-        for (int x = 0; x < getBoardSize(); x++) {
-            for (int z = 0; z < getBoardSize(); z++) {
-                if (x == 0 || z == 0 || x == getBoardSize() - 1 || z == getBoardSize() - 1) {
-                    getWorld().setBlockState(getMasterPos().add(x, 0, z), ModBlocks.DUNGEON_LAMP.getDefaultState().withProperty(BlockDungeonLamp.BROKEN, false));
-                } else {
-                    getWorld().setBlockState(getMasterPos().add(x, 0, z), ModBlocks.DUNGEON_BRICKS.getDefaultState().withProperty(BlockDungeonBricks.VARIANT, BlockDungeonBricks.EnumType.DUNGEON_FLOOR));
-                }
-            }
-        }
-
-        DungeonGenerator.resetUnbreakablePlayfield(getWorld(), getCentralGamePos());//TODO duplicate from GameOfLight, do sth with it
     }
 
     /**

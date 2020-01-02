@@ -9,6 +9,11 @@ import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 
 //TODO Move content here from TE
 public class GameOfLight extends LootGame {
+    @Override
+    protected BlockPos getRoomFloorPos() {
+        return getMasterPos();
+    }
+
     //FIXME check saving and sending/receiving
     public static class Factory implements ILootGameFactory {
         @Override
