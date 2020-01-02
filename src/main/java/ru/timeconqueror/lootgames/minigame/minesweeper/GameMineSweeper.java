@@ -1,6 +1,9 @@
 package ru.timeconqueror.lootgames.minigame.minesweeper;
 
+import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -16,10 +19,13 @@ import ru.timeconqueror.lootgames.api.util.NetworkUtils;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.block.BlockDungeonBricks;
 import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
+import ru.timeconqueror.lootgames.config.LootGamesConfig;
+import ru.timeconqueror.lootgames.minigame.minesweeper.block.BlockMSActivator;
 import ru.timeconqueror.lootgames.minigame.minesweeper.task.TaskMSCreateExplosion;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
@@ -27,12 +33,15 @@ import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 //TODO Every fail bomb strength increases
 //TODO add custom Stage Class to improve readability of code (name, ticks before skipping, actions)
 //FIXME add bomb counter
+//TODO add win/lost achievements
 public class GameMineSweeper extends LootGame {
-    public static final int TICKS_DETONATION_TIME = 3 * 20;//TODO config
-    private static final int ATTEMPTS_ALLOWED = 3;//TODO config
 
     @SideOnly(Side.CLIENT)
     public boolean cIsGenerated;
+    @SideOnly(Side.CLIENT)
+    public int detonationTimeInTicks;
+
+    private int currentLevel = 1;
 
     private MSBoard board;
 
@@ -55,7 +64,7 @@ public class GameMineSweeper extends LootGame {
         super.onTick();
         if (isServerSide()) {
             if (stage == Stage.DETONATING) {
-                if (ticks >= TICKS_DETONATION_TIME) {
+                if (ticks >= LootGamesConfig.minesweeper.detonationTimeInTicks) {
                     onDetonateTimePassed();
                 }
 
@@ -137,10 +146,9 @@ public class GameMineSweeper extends LootGame {
                 saveData();
 
                 if (board.checkWin()) {
-                    onGameWon();
+                    onGameLevelFinished();
                 }
             }
-
         }
     }
 
@@ -161,7 +169,7 @@ public class GameMineSweeper extends LootGame {
             }
 
             if (board.checkWin()) {
-                onGameWon();
+                onGameLevelFinished();
             }
         }
     }
@@ -202,12 +210,38 @@ public class GameMineSweeper extends LootGame {
     }
 
     private void onDetonateTimePassed() {
-        if (attemptCount < ATTEMPTS_ALLOWED) {
+        if (attemptCount < LootGamesConfig.minesweeper.attemptCount) {
             int longestDetTime = detonateBoard(4, false);//fixme balance strength
             updateStage(Stage.EXPLODING);
             ticks = longestDetTime + 2 * 20;//number - some pause after detonating
         } else {
             onGameLost();
+        }
+    }
+
+    private void onGameLevelFinished() {
+        if (currentLevel < 4) {
+
+            sendUpdatePacket("spawn_particles_level_beat", null);
+
+            NetworkUtils.sendMessageToAllNearby(getCentralGamePos(), NetworkUtils.color(new TextComponentTranslation("msg.lootgames.stage_complete"), TextFormatting.GREEN), DungeonGenerator.PUZZLEROOM_CENTER_TO_BORDER * 4);
+            getWorld().playSound(null, getCentralGamePos(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
+
+            masterTileEntity.destroyGameBlocks();
+            BlockMSActivator.generateGameStructure(getWorld(), getCentralGamePos(), currentLevel + 1);
+
+            LootGamesConfig.Minesweeper.Stage stageConfig = Objects.requireNonNull(LootGamesConfig.minesweeper.getStage(currentLevel + 1));
+            BlockPos startPos = getCentralGamePos().add(-stageConfig.boardSize / 2, 0, -stageConfig.boardSize / 2);
+
+            masterTileEntity.validate();
+            getWorld().setTileEntity(startPos, masterTileEntity);
+
+            board.resetBoard(stageConfig.boardSize, stageConfig.bombCount);
+            currentLevel++;
+
+            saveDataAndSendToClient();
+        } else {
+            onGameWon();
         }
     }
 
@@ -271,6 +305,11 @@ public class GameMineSweeper extends LootGame {
         if (isServerSide()) {
             NBTTagCompound c = new NBTTagCompound();
             c.setInteger("stage", stage.ordinal());
+
+            if (stageTo == Stage.DETONATING) {
+                c.setInteger("detonation_time", LootGamesConfig.minesweeper.detonationTimeInTicks);
+            }
+
             sendUpdatePacket("stageUpdate", c);
         }
 
@@ -281,7 +320,12 @@ public class GameMineSweeper extends LootGame {
     public void onUpdatePacket(String key, NBTTagCompound compoundIn) {
         switch (key) {
             case "stageUpdate":
-                updateStage(Stage.values()[compoundIn.getInteger("stage")]);
+                Stage stage = Stage.values()[compoundIn.getInteger("stage")];
+                updateStage(stage);
+                if (stage == Stage.DETONATING) {
+                    detonationTimeInTicks = compoundIn.getInteger("detonation_time");
+                }
+
                 break;
             case "gen_board":
                 readNBTFromClient(compoundIn);
@@ -289,6 +333,15 @@ public class GameMineSweeper extends LootGame {
             case "field_changed":
                 Pos2i pos = new Pos2i(compoundIn.getInteger("x"), compoundIn.getInteger("y"));
                 board.setField(pos, compoundIn.getInteger("type"), compoundIn.getBoolean("hidden"), compoundIn.getInteger("mark"));
+                break;
+            case "spawn_particles_level_beat":
+                for (int x = 0; x < getBoardSize(); x++) {
+                    for (int z = 0; z < getBoardSize(); z++) {
+                        getWorld().spawnParticle(EnumParticleTypes.VILLAGER_HAPPY, getMasterPos().getX() + x,
+                                getCentralGamePos().getY() + 1,
+                                getMasterPos().getZ() + z, 0.0, 0.2, 0.0);
+                    }
+                }
                 break;
         }
     }
@@ -305,7 +358,7 @@ public class GameMineSweeper extends LootGame {
      * Returns the blockpos in the center of the board.
      */
     public BlockPos getCentralGamePos() {
-        return masterTileEntity.getPos().add(getBoardSize() / 2 + 1, 0, getBoardSize() / 2 + 1);
+        return masterTileEntity.getPos().add(getBoardSize() / 2, 0, getBoardSize() / 2);
     }
 
     public MSBoard getBoard() {
@@ -379,6 +432,8 @@ public class GameMineSweeper extends LootGame {
         compound.setInteger("board_size", board.size());
         compound.setInteger("stage", stage.ordinal());
         compound.setInteger("ticks", ticks);
+
+        compound.setInteger("current_level", currentLevel);
     }
 
     @Override
@@ -389,6 +444,8 @@ public class GameMineSweeper extends LootGame {
         board.setSize(compound.getInteger("board_size"));
         stage = Stage.values()[compound.getInteger("stage")];
         ticks = compound.getInteger("ticks");
+
+        currentLevel = compound.getInteger("current_level");
     }
 
     public enum Stage {

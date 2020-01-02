@@ -10,17 +10,11 @@ import ru.timeconqueror.lootgames.api.block.BlockGame;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 
-public class BlockMSActivator extends BlockGame {
-    @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (!worldIn.isRemote) {//todo add advancement
-            genBoard(worldIn, pos);
-        }
-        return true;
-    }
+import java.util.Objects;
 
-    private void genBoard(World world, BlockPos centerPos) {
-        int size = LootGamesConfig.minesweeper.boardSize;
+public class BlockMSActivator extends BlockGame {
+    public static void generateGameStructure(World world, BlockPos centerPos, int level) {
+        int size = Objects.requireNonNull(LootGamesConfig.minesweeper.getStage(level)).boardSize;
         BlockPos startPos = centerPos.add(-size / 2, 0, -size / 2);
 
         for (int x = 0; x < size; x++) {
@@ -33,5 +27,13 @@ public class BlockMSActivator extends BlockGame {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (!worldIn.isRemote) {//todo add advancement
+            generateGameStructure(worldIn, pos, 1);
+        }
+        return true;
     }
 }

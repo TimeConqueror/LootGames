@@ -139,7 +139,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     }
 
     private void generateSubordinates(EntityPlayer player) {
-        world.playSound(null, pos, ModSounds.golStartGame, SoundCategory.MASTER, 0.75F, 1.0F);
+        world.playSound(null, pos, ModSounds.golStartGame, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
         for (EnumPosOffset value : EnumPosOffset.values()) {
             IBlockState state = ModBlocks.GOL_SUBORDINATE.getDefaultState().withProperty(BlockGOLSubordinate.OFFSET, value);
@@ -204,15 +204,15 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
                 NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 15);
                 if (currentRound >= LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).getMinRoundsRequiredToPass(world.provider.getDimension())) {
                     NetworkHandler.INSTANCE.sendToAllAround(new SMessageGOLParticle(getPos(), EnumParticleTypes.VILLAGER_HAPPY.getParticleID()), point);
-                    player.sendMessage(NetworkUtils.color(new TextComponentTranslation("msg.lootgames.gol_master.stage_complete"), TextFormatting.GREEN));
-                    world.playSound(null, getPos(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 0.75F, 1.0F);
+                    player.sendMessage(NetworkUtils.color(new TextComponentTranslation("msg.lootgames.stage_complete"), TextFormatting.GREEN));
+                    world.playSound(null, getPos(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
                     gameLevel++;
                     onGameLevelChanged();
                 }
 
                 NetworkHandler.INSTANCE.sendToAllAround(new SMessageGOLDrawStuff(getPos(), EnumDrawStuff.SEQUENCE_ACCEPTED.ordinal()), point);
-                world.playSound(null, getPos(), ModSounds.golSequenceComplete, SoundCategory.MASTER, 0.75F, 1.0F);
+                world.playSound(null, getPos(), ModSounds.golSequenceComplete, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
                 if (LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).randomizeSequence) {
                     generateSequence(symbolSequence.size() + 1);//TODO add config for randomizing only at beginning of stage, change then langs
@@ -225,7 +225,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
 
             symbolIndex++;
         } else {
-            world.playSound(null, pos, ModSounds.golSequenceWrong, SoundCategory.MASTER, 0.75F, 1.0F);
+            world.playSound(null, pos, ModSounds.golSequenceWrong, SoundCategory.BLOCKS, 0.75F, 1.0F);
             NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 15);
             NetworkHandler.INSTANCE.sendToAllAround(new SMessageGOLDrawStuff(getPos(), EnumDrawStuff.SEQUENCE_DENIED.ordinal()), point);
 
@@ -304,7 +304,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
                 break;
         }
 
-        world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_NOTE_HARP, SoundCategory.MASTER, 3.0F, getPitchForNote(note, octave), false);
+        world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_NOTE_HARP, SoundCategory.BLOCKS, 3.0F, getPitchForNote(note, octave), false);
     }
 
     private float getPitchForNote(NoteBlockEvent.Note note, NoteBlockEvent.Octave octave) {
@@ -356,7 +356,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
                 (maxLevelBeatList.size() == LootGamesConfig.gameOfLight.maxAttempts + 1 && getBestLevelReached() > 0)) {
             onGameWon(player);
         } else if (maxLevelBeatList.size() < LootGamesConfig.gameOfLight.maxAttempts + 1) {
-            world.playSound(null, getPos(), ModSounds.golStartGame, SoundCategory.MASTER, 0.75F, 1.0F);
+            world.playSound(null, getPos(), ModSounds.golStartGame, SoundCategory.BLOCKS, 0.75F, 1.0F);
             startGame(player);
         } else {
             onGameLost(player);
@@ -374,7 +374,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
 
         player.sendMessage(NetworkUtils.color(new TextComponentTranslation("msg.lootgames.gol_master.win"), TextFormatting.GREEN));
 
-        world.playSound(null, getPos(), ModSounds.golGameWin, SoundCategory.MASTER, 0.75F, 1.0F);
+        world.playSound(null, getPos(), ModSounds.golGameWin, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
         int bestLevelReached = getBestLevelReached();
         if (bestLevelReached != -1) {
@@ -396,7 +396,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
             AdvancementManager.WIN_GAME.trigger(((EntityPlayerMP) player), "lose");
         }
 
-        world.playSound(null, getPos(), ModSounds.golGameLose, SoundCategory.MASTER, 0.75F, 1.0F);
+        world.playSound(null, getPos(), ModSounds.golGameLose, SoundCategory.BLOCKS, 0.75F, 1.0F);
         player.sendMessage(NetworkUtils.color(new TextComponentTranslation("msg.lootgames.lose"), TextFormatting.DARK_PURPLE));
 
         destroyStructure();

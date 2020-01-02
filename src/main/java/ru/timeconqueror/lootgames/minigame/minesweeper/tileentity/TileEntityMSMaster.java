@@ -14,7 +14,7 @@ import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 
 public class TileEntityMSMaster extends TileEntityGameMaster<GameMineSweeper> {
     public TileEntityMSMaster() {
-        super(new GameMineSweeper(LootGamesConfig.minesweeper.boardSize, LootGamesConfig.minesweeper.bombAmount));
+        super(new GameMineSweeper(LootGamesConfig.minesweeper.stage1.boardSize, LootGamesConfig.minesweeper.stage1.bombCount));
     }
 
     @Override
@@ -41,10 +41,6 @@ public class TileEntityMSMaster extends TileEntityGameMaster<GameMineSweeper> {
     @Override
     protected void readNBTFromSave(NBTTagCompound compound) {
         super.readNBTFromSave(compound);
-    }
-
-    public boolean isBoardGenerated() {
-        return game.isBoardGenerated();
     }
 
     @Override

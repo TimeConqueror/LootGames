@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.minigame.minesweeper.tileentity.TileEntityMSMaster;
@@ -30,7 +30,7 @@ public class SMessageGameUpdate implements IMessage {
     public SMessageGameUpdate() {
     }
 
-    public SMessageGameUpdate(BlockPos masterPos, String key, @NotNull NBTTagCompound compound) {
+    public SMessageGameUpdate(BlockPos masterPos, String key, @Nullable NBTTagCompound compound) {
         this.pos = masterPos;
         this.compound = compound;
         this.key = key;
@@ -52,7 +52,7 @@ public class SMessageGameUpdate implements IMessage {
     public void toBytes(ByteBuf buf) {
         PacketBuffer buff = new PacketBuffer(buf);
         buff.writeBlockPos(pos);
-        buff.writeCompoundTag(compound);
+        buff.writeCompoundTag(compound == null ? new NBTTagCompound() : compound);
         ByteBufUtils.writeUTF8String(buff, key);
     }
 

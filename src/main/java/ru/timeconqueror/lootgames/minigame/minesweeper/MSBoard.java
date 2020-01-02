@@ -68,6 +68,13 @@ public class MSBoard {
     }
 
     void resetBoard() {
+        resetBoard(size, bombCount);
+    }
+
+    void resetBoard(int newBoardSize, int newBombCount) {
+        size = newBoardSize;
+        bombCount = newBombCount;
+
         board = null;
     }
 

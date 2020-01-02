@@ -20,13 +20,13 @@ tile.lootgames.gol_subordinate.name=Блок-подчинённый
 msg.lootgames.puzzle_master.broken=Кажется, этот блок сломан. Пожалуйста, сообщите об этой проблеме автору мода.
 msg.lootgames.puzzle_master.turned_off=Кажется, эта структура отключена высшими силами.
 
+msg.lootgames.stage_complete=Кажется, структура признаёт ваши старания...
 msg.lootgames.lose=Кажется, структура оскорбилась вашим провалом.
 
 msg.lootgames.gol_master.start=Давайте сыграем в игру? Нажмите на центральный блок!
 msg.lootgames.gol_master.rules=Вам просто нужно повторить цвета.
 msg.lootgames.gol_master.not_ready=Вы чувствуете, что структура еще не готова принимать ваш ответ
 msg.lootgames.gol_master.wrong_block=Похоже, вы коснулись не того цвета...
-msg.lootgames.gol_master.stage_complete=Кажется, структура признаёт ваши старания...
 msg.lootgames.gol_master.win=Структура довольна, и поэтому она вознаграждает вас!
 msg.lootgames.gol_master.reward_level_reached=Текущий достигнутый уровень награды: %d (Лучший: %d)
 

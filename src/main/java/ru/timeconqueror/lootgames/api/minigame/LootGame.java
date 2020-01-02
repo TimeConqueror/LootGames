@@ -7,6 +7,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.packet.SMessageGameUpdate;
 import ru.timeconqueror.lootgames.api.task.TEPostponeTaskScheduler;
 import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameMaster;
@@ -102,7 +103,7 @@ public abstract class LootGame {
      * @param key allows to understand what packet did we send via {@link #sendUpdatePacket(String, NBTTagCompound)}
      */
     @SideOnly(Side.CLIENT)
-    public void onUpdatePacket(String key, NBTTagCompound compoundIn) {
+    public void onUpdatePacket(String key, @Nullable NBTTagCompound compoundIn) {
     }
 
     /**

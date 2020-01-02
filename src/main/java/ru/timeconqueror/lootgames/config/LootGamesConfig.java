@@ -6,6 +6,7 @@ import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.api.auxiliary.IntHelper;
 import ru.timeconqueror.timecore.api.auxiliary.debug.LogHelper;
@@ -66,7 +67,7 @@ public class LootGamesConfig {
 
         worldGen.init();
         gameOfLight.initStages();
-//        minesweeper.init();//fixme undo
+        minesweeper.init();
     }
 
     public static class WorldGen {
@@ -261,6 +262,7 @@ public class LootGamesConfig {
             public int maxItems;
             @Config.Ignore
             private ResourceLocation lootTableRL;
+            private HashMap<Integer, DimConfig> dimensionsConfigsMap;
 
             public Stage(int minRoundsRequiredToPass, boolean randomizeSequence, int displayTime, String lootTable, int minItems, int maxItems) {
                 this.minRoundsRequiredToPass = minRoundsRequiredToPass;
@@ -270,8 +272,6 @@ public class LootGamesConfig {
                 this.minItems = minItems;
                 this.maxItems = maxItems;
             }
-
-            private HashMap<Integer, DimConfig> dimensionsConfigsMap;
 
             private void parseLootTable() {
                 lootTableRL = new ResourceLocation(lootTable);
@@ -354,25 +354,80 @@ public class LootGamesConfig {
     }
 
     public static class Minesweeper {
-        private static final int DEF_BOARD_SIZE = 15;
-        private static final int DEF_BOMB_AMOUNT = 35;
-        @Config.LangKey("config.lootgames.ms.board_size")
-        @Config.Comment({"The size of Minesweeper board. Accepts only odd numbers. If you set this to even number, then it will be increased by one.", "Default: 15"})
-        @Config.RangeInt(min = 5, max = 19)
-        public int boardSize = DEF_BOARD_SIZE;
-        @Config.LangKey("config.lootgames.ms.bomb_amount")
+        @Config.LangKey("config.lootgames.ms.bomb_amount")//FIXME Fix langs
         @Config.Comment({"The amount of bombs on the board.", "Default: 35"})
-        public int bombAmount = DEF_BOMB_AMOUNT;
+        public int detonationTimeInTicks = 3 * 20;
+
+        @Config.LangKey("config.lootgames.ms.bomb_amount")//FIXME Fix langs
+        @Config.Comment({"The amount of bombs on the board.", "Default: 35"})
+        public int attemptCount = 3;
+
+        @Config.LangKey("config.lootgames.gol.stage.1")//FIXME Fix langs
+        @Config.Comment("Regulates characteristics of stage 1.")
+        public Stage stage1 = new Stage(13, 28);
+        @Config.LangKey("config.lootgames.gol.stage.1")//FIXME Fix langs
+        @Config.Comment("Regulates characteristics of stage 1.")
+        public Stage stage2 = new Stage(15, 35);
+        @Config.LangKey("config.lootgames.gol.stage.1")//FIXME Fix langs
+        @Config.Comment("Regulates characteristics of stage 1.")
+        public Stage stage3 = new Stage(17, 40);
+        @Config.LangKey("config.lootgames.gol.stage.1")//FIXME Fix langs
+        @Config.Comment("Regulates characteristics of stage 1.")
+        public Stage stage4 = new Stage(19, 50);
+
 
         public void init() {
-            if (boardSize % 2 == 0) {
-                boardSize += 1;
+            stage1.init();
+            stage2.init();
+            stage3.init();
+            stage4.init();
+        }
+
+        @Nullable
+        public Stage getStage(int index) {
+            switch (index) {
+                case 1:
+                    return stage1;
+                case 2:
+                    return stage2;
+                case 3:
+                    return stage3;
+                case 4:
+                    return stage4;
+                default:
+                    return null;
             }
-//TODO chek
-            if (bombAmount > boardSize * boardSize - 1) {
-                LootGames.logHelper.error("Bomb count must be strictly less than amount of game fields. Current values: bomb count = {}, field count: {} (boardSize = {})\n Bomb amount and Board size values will be switched to default.", bombAmount, boardSize * boardSize, boardSize);
-                boardSize = DEF_BOARD_SIZE;
-                bombAmount = DEF_BOMB_AMOUNT;
+        }
+
+        public static class Stage {
+            @Config.LangKey("config.lootgames.gol.stage.min_rounds_required_to_pass")//FIXME Fix langs
+            @Config.Comment({"Minimum correct rounds required to complete this stage and unlock the chest. This can be adjusted per-Dimension in S:DimensionalConfig.",
+                    "Default: Stage 1 -> {5}, Stage 2 -> {10}, Stage 3 -> {15}, Stage 4 -> {20}"
+            })
+            @Config.RangeInt(min = 5, max = 19)
+            public int boardSize;
+
+            @Config.LangKey("config.lootgames.gol.stage.min_rounds_required_to_pass")//FIXME Fix langs
+            @Config.Comment({"Minimum correct rounds required to complete this stage and unlock the chest. This can be adjusted per-Dimension in S:DimensionalConfig.",
+                    "Default: Stage 1 -> {5}, Stage 2 -> {10}, Stage 3 -> {15}, Stage 4 -> {20}"
+            })
+            @Config.RangeInt(min = 1)
+            public int bombCount;
+
+            public Stage(int boardSize, int bombCount) {
+                this.boardSize = boardSize;
+                this.bombCount = bombCount;
+            }
+
+            public void init() {
+                if (boardSize % 2 == 0) {
+                    boardSize += 1;
+                }
+
+                if (bombCount > boardSize * boardSize - 1) {
+                    LootGames.logHelper.error("Bomb count must be strictly less than amount of game fields. Current values: bomb count = {}, field count: {} (boardSize = {})\n Bomb amount and Board size values will be switched to default.", bombCount, boardSize * boardSize, boardSize);
+                    bombCount = boardSize * boardSize - 2; // at least 1 field with no bomb
+                }
             }
         }
     }

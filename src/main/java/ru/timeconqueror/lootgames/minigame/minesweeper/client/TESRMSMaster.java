@@ -40,7 +40,7 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
                     int type = game.getBoard().getType(xL, zL);
 
                     if (!isHidden && type == BOMB) {
-                        int max = GameMineSweeper.TICKS_DETONATION_TIME;
+                        int max = game.detonationTimeInTicks;
                         int ticks = game.getTicks();
 
                         int times = 3;
