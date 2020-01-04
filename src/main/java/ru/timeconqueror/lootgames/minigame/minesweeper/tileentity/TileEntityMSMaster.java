@@ -9,12 +9,12 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
-import ru.timeconqueror.lootgames.config.LootGamesConfig;
+import ru.timeconqueror.lootgames.config.LGConfigMinesweeper;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 
 public class TileEntityMSMaster extends TileEntityGameMaster<GameMineSweeper> {
     public TileEntityMSMaster() {
-        super(new GameMineSweeper(LootGamesConfig.minesweeper.stage1.boardSize, LootGamesConfig.minesweeper.stage1.bombCount));
+        super(new GameMineSweeper(LGConfigMinesweeper.stage1.boardSize, LGConfigMinesweeper.stage1.bombCount));
     }
 
     @Override

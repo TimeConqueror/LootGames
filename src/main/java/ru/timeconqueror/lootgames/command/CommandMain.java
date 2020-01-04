@@ -9,7 +9,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.timecore.api.auxiliary.ConfigReloader;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -44,10 +43,6 @@ public class CommandMain extends CommandBase {
                 throw new WrongUsageException("command." + LootGames.MOD_ID + ".main.usage");
             }
         }
-    }
-
-    private void reloadConfigs() {
-        ConfigReloader.reloadConfigsFromFile(LootGames.MOD_ID, LootGames.MOD_ID);
     }
 
     private void printProfilingResults(ICommandSender sender) {

@@ -6,17 +6,14 @@ import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.api.auxiliary.IntHelper;
 import ru.timeconqueror.timecore.api.auxiliary.debug.LogHelper;
-import ru.timeconqueror.timecore.api.event.OnConfigReloadedEvent;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 @Mod.EventBusSubscriber
-@Config(modid = LootGames.MOD_ID, type = Config.Type.INSTANCE)
+@Config(modid = LootGames.MOD_ID)
 public class LootGamesConfig {
 
     @Config.LangKey("config.lootgames.category.worldgen")
@@ -27,12 +24,7 @@ public class LootGamesConfig {
     @Config.Comment("Regulates \"Game of Light\" minigame.")
     public static GOL gameOfLight = new GOL();
 
-    @Config.LangKey("config.lootgames.category.ms")
-    @Config.Comment("Regulates \"Minesweeper\" minigame.")
-    public static Minesweeper minesweeper = new Minesweeper();
-
     @Config.LangKey("config.lootgames.minigamesenabled")
-    @Config.Comment({"If this is set to false, then puzzle master won't start any game.", "Default: true"})
     public static boolean areMinigamesEnabled = true;
 
     @Config.LangKey("config.lootgames.enabledebug")
@@ -55,20 +47,12 @@ public class LootGamesConfig {
         }
     }
 
-    @SubscribeEvent
-    public static void onConfigReloaded(OnConfigReloadedEvent event) {
-        if (event.getModID().equals(LootGames.MOD_ID)) {
-            initExtras();
-        }
-    }
-
     public static void initExtras() {
         LootGames.logHelper.setDebugEnabled(enableDebug);
         LootGames.logHelper.setDebugLevel(debugLevel.equalsIgnoreCase("trace") ? LogHelper.Level.TRACE : LogHelper.Level.DEBUG);
 
         worldGen.init();
         gameOfLight.initStages();
-        minesweeper.init();
     }
 
     public static class WorldGen {
@@ -139,19 +123,19 @@ public class LootGamesConfig {
     }
 
     public static class GOL {
-        @Config.LangKey("config.lootgames.gol.stage.1")
+        @Config.LangKey("config.lootgames.common.stage.1")
         @Config.Comment("Regulates characteristics of stage 1.")
         public Stage stage1 = new Stage(5, false, 24, "minecraft:chests/simple_dungeon", 15, 15);
 
-        @Config.LangKey("config.lootgames.gol.stage.2")
+        @Config.LangKey("config.lootgames.common.stage.2")
         @Config.Comment("Regulates characteristics of stage 2.")
         public Stage stage2 = new Stage(10, false, 16, "minecraft:chests/jungle_temple", -1, -1);
 
-        @Config.LangKey("config.lootgames.gol.stage.3")
+        @Config.LangKey("config.lootgames.common.stage.3")
         @Config.Comment("Regulates characteristics of stage 3.")
         public Stage stage3 = new Stage(15, false, 12, "minecraft:chests/desert_pyramid", -1, -1);
 
-        @Config.LangKey("config.lootgames.gol.stage.4")
+        @Config.LangKey("config.lootgames.common.stage.4")
         @Config.Comment("Regulates characteristics of stage 4.")
         public Stage stage4 = new Stage(16, true, 10, "minecraft:chests/end_city_treasure", -1, -1);
 
@@ -234,9 +218,9 @@ public class LootGamesConfig {
             @Config.RangeInt(min = 2, max = 40)
             public int displayTime;
 
-            @Config.LangKey("config.lootgames.gol.stage.loot_table")
+            @Config.LangKey("config.lootgames.common.stage.loot_table")
             @Config.Comment({"Name of the loottable, items from which will be generated in the chest of this stage. This can be adjusted per-Dimension in S:DimensionalConfig.",
-                    "Default: Stage 1 -> minecraft:chests/simple_dungeon, Stage 2 -> minecraft:chests/abandoned_mineshaft, Stage 3 -> minecraft:chests/jungle_temple, Stage 4 -> minecraft:chests/stronghold_corridor"
+                    "Default: Stage 1 -> minecraft:chests/simple_dungeon, Stage 2 -> minecraft:chests/jungle_temple, Stage 3 -> minecraft:chests/desert_pyramid, Stage 4 -> minecraft:chests/end_city_treasure"
             })
             public String lootTable;
             @Config.LangKey("config.lootgames.gol.stage.dimconfig")
@@ -248,20 +232,20 @@ public class LootGamesConfig {
                     "Default: {}"})
             public String[] perDimensionConfigs = new String[]{};
 
-            @Config.LangKey("config.lootgames.gol.stage.min_items")
+            @Config.LangKey("config.lootgamescommon..stage.min_items")
             @Config.Comment({"Minimum amount of items to be generated in chest. Won't be applied, if count of items in bound loot table are less than it. If min and max are set to -1, the limits will be disabled.",
-                    "Default: Stage 1 -> {2}, Stage 2 -> {4}, Stage 3 -> {6}, Stage 4 -> {8}"
+                    "Default: Stage 1 -> {15}, Stage 2 -> {-1}, Stage 3 -> {-1}, Stage 4 -> {-1}"
             })
             @Config.RangeInt(min = -1, max = 256)
             public int minItems;
 
-            @Config.LangKey("config.lootgames.gol.stage.max_items")
+            @Config.LangKey("config.lootgames.common.stage.max_items")
             @Config.Comment({"Maximum amount of items to be generated in chest. If this is set to -1, max limit will be disabled.",
-                    "Default: Stage 1 -> {4}, Stage 2 -> {6}, Stage 3 -> {8}, Stage 4 -> {10}"
+                    "Default: Stage 1 -> {15}, Stage 2 -> {-1}, Stage 3 -> {-1}, Stage 4 -> {-1}"
             })
             @Config.RangeInt(min = -1, max = 256)
             public int maxItems;
-            @Config.Ignore
+
             private ResourceLocation lootTableRL;
             private HashMap<Integer, DimConfig> dimensionsConfigsMap;
 
@@ -349,84 +333,6 @@ public class LootGamesConfig {
                 DimConfig(String loottable, int minRoundRequiredToPass) {
                     lootTableRL = new ResourceLocation(loottable);
                     this.minRoundRequiredToPass = minRoundRequiredToPass;
-                }
-            }
-        }
-    }
-
-    public static class Minesweeper {
-        @Config.LangKey("config.lootgames.ms.bomb_amount")//FIXME Fix langs
-        @Config.Comment({"The amount of bombs on the board.", "Default: 35"})
-        public int detonationTimeInTicks = 3 * 20;
-
-        @Config.LangKey("config.lootgames.ms.bomb_amount")//FIXME Fix langs
-        @Config.Comment({"The amount of bombs on the board.", "Default: 35"})
-        public int attemptCount = 3;
-
-        @Config.LangKey("config.lootgames.gol.stage.1")//FIXME Fix langs
-        @Config.Comment("Regulates characteristics of stage 1.")
-        public Stage stage1 = new Stage(13, 28);
-        @Config.LangKey("config.lootgames.gol.stage.1")//FIXME Fix langs
-        @Config.Comment("Regulates characteristics of stage 1.")
-        public Stage stage2 = new Stage(15, 35);
-        @Config.LangKey("config.lootgames.gol.stage.1")//FIXME Fix langs
-        @Config.Comment("Regulates characteristics of stage 1.")
-        public Stage stage3 = new Stage(17, 40);
-        @Config.LangKey("config.lootgames.gol.stage.1")//FIXME Fix langs
-        @Config.Comment("Regulates characteristics of stage 1.")
-        public Stage stage4 = new Stage(19, 50);
-
-
-        public void init() {
-            for (int i = 1; i <= 4; i++) {
-                Objects.requireNonNull(getStage(i)).init();
-            }
-        }
-
-        @Nullable
-        public Stage getStage(int index) {
-            switch (index) {
-                case 1:
-                    return stage1;
-                case 2:
-                    return stage2;
-                case 3:
-                    return stage3;
-                case 4:
-                    return stage4;
-                default:
-                    return null;
-            }
-        }
-
-        public static class Stage {
-            @Config.LangKey("config.lootgames.gol.stage.min_rounds_required_to_pass")//FIXME Fix langs
-            @Config.Comment({"Minimum correct rounds required to complete this stage and unlock the chest. This can be adjusted per-Dimension in S:DimensionalConfig.",
-                    "Default: Stage 1 -> {5}, Stage 2 -> {10}, Stage 3 -> {15}, Stage 4 -> {20}"
-            })
-            @Config.RangeInt(min = 5, max = 19)
-            public int boardSize;
-
-            @Config.LangKey("config.lootgames.gol.stage.min_rounds_required_to_pass")//FIXME Fix langs
-            @Config.Comment({"Minimum correct rounds required to complete this stage and unlock the chest. This can be adjusted per-Dimension in S:DimensionalConfig.",
-                    "Default: Stage 1 -> {5}, Stage 2 -> {10}, Stage 3 -> {15}, Stage 4 -> {20}"
-            })
-            @Config.RangeInt(min = 1)
-            public int bombCount;
-
-            public Stage(int boardSize, int bombCount) {
-                this.boardSize = boardSize;
-                this.bombCount = bombCount;
-            }
-
-            public void init() {
-                if (boardSize % 2 == 0) {
-                    boardSize += 1;
-                }
-
-                if (bombCount > boardSize * boardSize - 1) {
-                    LootGames.logHelper.error("Bomb count must be strictly less than amount of game fields. Current values: bomb count = {}, field count: {} (boardSize = {})\n Bomb amount and Board size values will be switched to default.", bombCount, boardSize * boardSize, boardSize);
-                    bombCount = boardSize * boardSize - 2; // at least 1 field with no bomb
                 }
             }
         }

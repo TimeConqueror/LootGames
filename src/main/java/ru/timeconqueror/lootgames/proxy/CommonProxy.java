@@ -9,6 +9,7 @@ import ru.timeconqueror.lootgames.achievement.AdvancementManager;
 import ru.timeconqueror.lootgames.api.minigame.GameManager;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.task.TaskRegistry;
+import ru.timeconqueror.lootgames.config.LGConfigMinesweeper;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
 import ru.timeconqueror.lootgames.minigame.gameoflight.GameOfLight;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
@@ -32,6 +33,8 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent event) {
         LootGamesConfig.initExtras();
+        LGConfigMinesweeper.init();
+
         GameRegistry.registerWorldGenerator(new LootGamesWorldGen(), Integer.MAX_VALUE);
 
         LootGames.gameManager = new GameManager();

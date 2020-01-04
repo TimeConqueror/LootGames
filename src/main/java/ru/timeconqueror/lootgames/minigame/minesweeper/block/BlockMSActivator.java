@@ -7,14 +7,14 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.api.block.BlockGame;
-import ru.timeconqueror.lootgames.config.LootGamesConfig;
+import ru.timeconqueror.lootgames.config.LGConfigMinesweeper;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 
 import java.util.Objects;
 
 public class BlockMSActivator extends BlockGame {
     public static void generateGameStructure(World world, BlockPos centerPos, int level) {
-        int size = Objects.requireNonNull(LootGamesConfig.minesweeper.getStage(level)).boardSize;
+        int size = Objects.requireNonNull(LGConfigMinesweeper.getStage(level)).boardSize;
         BlockPos startPos = centerPos.add(-size / 2, 0, -size / 2);
 
         for (int x = 0; x < size; x++) {

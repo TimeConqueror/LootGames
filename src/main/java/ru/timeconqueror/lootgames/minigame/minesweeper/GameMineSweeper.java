@@ -17,13 +17,12 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.util.NBTUtils;
 import ru.timeconqueror.lootgames.api.util.NetworkUtils;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
-import ru.timeconqueror.lootgames.config.LootGamesConfig;
+import ru.timeconqueror.lootgames.config.LGConfigMinesweeper;
 import ru.timeconqueror.lootgames.minigame.minesweeper.block.BlockMSActivator;
 import ru.timeconqueror.lootgames.minigame.minesweeper.task.TaskMSCreateExplosion;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
@@ -65,7 +64,7 @@ public class GameMineSweeper extends LootGame {
         super.onTick();
         if (isServerSide()) {
             if (stage == Stage.DETONATING) {
-                if (ticks >= LootGamesConfig.minesweeper.detonationTimeInTicks) {
+                if (ticks >= LGConfigMinesweeper.detonationTimeInTicks) {
                     onDetonateTimePassed();
                 }
 
@@ -216,7 +215,7 @@ public class GameMineSweeper extends LootGame {
     }
 
     private void onDetonateTimePassed() {
-        if (attemptCount < LootGamesConfig.minesweeper.attemptCount) {
+        if (attemptCount < LGConfigMinesweeper.attemptCount) {
             int longestDetTime = detonateBoard(4, false);//fixme balance strength
             updateStage(Stage.EXPLODING);
             ticks = longestDetTime + 2 * 20;//number - some pause after detonating
@@ -240,7 +239,7 @@ public class GameMineSweeper extends LootGame {
             masterTileEntity.destroyGameBlocks();
             BlockMSActivator.generateGameStructure(getWorld(), getCentralGamePos(), currentLevel + 1);
 
-            LootGamesConfig.Minesweeper.Stage stageConfig = Objects.requireNonNull(LootGamesConfig.minesweeper.getStage(currentLevel + 1));
+            LGConfigMinesweeper.Stage stageConfig = LGConfigMinesweeper.getStage(currentLevel + 1);
             BlockPos startPos = getCentralGamePos().add(-stageConfig.boardSize / 2, 0, -stageConfig.boardSize / 2);
 
             masterTileEntity.validate();
@@ -300,7 +299,7 @@ public class GameMineSweeper extends LootGame {
             c.setInteger("stage", stage.ordinal());
 
             if (stageTo == Stage.DETONATING) {
-                c.setInteger("detonation_time", LootGamesConfig.minesweeper.detonationTimeInTicks);
+                c.setInteger("detonation_time", LGConfigMinesweeper.detonationTimeInTicks);
             }
 
             sendUpdatePacket("stageUpdate", c);

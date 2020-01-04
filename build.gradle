@@ -109,7 +109,7 @@ processResources {
         exclude 'mcmod.info'
     }
 
-    rename("lootgames_at.cfg", "META-INF/lootgames_at.cfg")
+//    rename("lootgames_at.cfg", "META-INF/lootgames_at.cfg")
 }
 
 jar {
@@ -118,6 +118,6 @@ jar {
 //            "MixinConfigs": "mixins.lootgames.json",
             "ForceLoadAsMod": true,
             "FMLCorePluginContainsFMLMod": "true",
-            "FMLAT": "lootgames_at.cfg"//TODO check
+//            "FMLAT": "lootgames_at.cfg"//TODO check
     )
 }
