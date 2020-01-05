@@ -1,28 +1,30 @@
 package ru.timeconqueror.lootgames.minigame.minesweeper;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.achievement.AdvancementManager;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
-import ru.timeconqueror.lootgames.api.util.NBTUtils;
-import ru.timeconqueror.lootgames.api.util.NetworkUtils;
-import ru.timeconqueror.lootgames.api.util.Pos2i;
+import ru.timeconqueror.lootgames.api.util.*;
 import ru.timeconqueror.lootgames.config.LGConfigMinesweeper;
+import ru.timeconqueror.lootgames.config.LootGamesConfig;
+import ru.timeconqueror.lootgames.minigame.gameoflight.GameOfLight;
 import ru.timeconqueror.lootgames.minigame.minesweeper.block.BlockMSActivator;
 import ru.timeconqueror.lootgames.minigame.minesweeper.task.TaskMSCreateExplosion;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
@@ -75,7 +77,7 @@ public class GameMineSweeper extends LootGame {
                 if (ticks <= 0) {
                     NetworkUtils.sendMessageToAllNearby(getCentralGamePos(),
                             NetworkUtils.color(new TextComponentTranslation("msg.lootgames.ms.new_attempt"), TextFormatting.AQUA),
-                            getBoardSize() / 2 + 7);
+                            getDefaultBroadcastDistance());
                     updateStage(Stage.WAITING);
 
                     board.resetBoard();
@@ -207,7 +209,7 @@ public class GameMineSweeper extends LootGame {
 
         NetworkUtils.sendMessageToAllNearby(getCentralGamePos(),
                 NetworkUtils.color(new TextComponentTranslation("msg.lootgames.ms.bomb_touched"), TextFormatting.DARK_PURPLE),
-                getBoardSize() / 2 + 7);
+                getDefaultBroadcastDistance());
 
         saveDataAndSendToClient();
 
@@ -250,12 +252,56 @@ public class GameMineSweeper extends LootGame {
 
             saveDataAndSendToClient();
         } else {
+            currentLevel++;
             winGame();
         }
     }
 
     private void onGameWon() {
-        NetworkUtils.sendMessageToAllNearby(getCentralGamePos(), new TextComponentString("You won"), getBoardSize() / 2 + 7);
+        List<EntityPlayerMP> players = NetworkUtils.getPlayersNearby(getCentralGamePos(), getDefaultBroadcastDistance());
+
+        for (EntityPlayerMP player : players) {
+            player.sendMessage(NetworkUtils.color(new TextComponentTranslation("msg.lootgames.win"), TextFormatting.GREEN));
+        }
+
+        masterTileEntity.destroyGameBlocks();
+
+        genLootChests(players);
+    }
+
+    private void genLootChests(List<EntityPlayerMP> players) {//fixme change advancements
+        if (currentLevel < 2) {
+            LootGames.logHelper.error("GenLootChests method was called in an appropriate time!");
+            return;
+        }
+
+        spawnLootChest(DirectionTetra.NORTH, 1);
+
+        if (currentLevel > 2) {
+
+            spawnLootChest(DirectionTetra.EAST, 2);
+        }
+
+        if (currentLevel > 3) {
+            for (EntityPlayerMP entityPlayerMP : players) {
+                AdvancementManager.WIN_GAME.trigger((entityPlayerMP), "ms_level3");
+            }
+
+            spawnLootChest(DirectionTetra.SOUTH, 3);
+        }
+
+        if (currentLevel > 4) {
+            for (EntityPlayerMP entityPlayerMP : players) {
+                AdvancementManager.WIN_GAME.trigger((entityPlayerMP), "ms_level4");
+            }
+            spawnLootChest(DirectionTetra.WEST, 4);
+        }
+    }
+
+    private void spawnLootChest(DirectionTetra direction, int gameLevel) {
+        LootGamesConfig.GOL.Stage stage = LootGamesConfig.gameOfLight.getStageByIndex(gameLevel);
+        GameUtils.SpawnChestInfo chestInfo = new GameUtils.SpawnChestInfo(GameOfLight.class, stage.getLootTableRL(getWorld().provider.getDimension()), stage.minItems, stage.maxItems);
+        GameUtils.spawnLootChest(getWorld(), getCentralGamePos(), direction, chestInfo);
     }
 
     private void onGameLost() {
@@ -264,7 +310,7 @@ public class GameMineSweeper extends LootGame {
 
         NetworkUtils.sendMessageToAllNearby(getCentralGamePos(),
                 NetworkUtils.color(new TextComponentTranslation("msg.lootgames.lose"), TextFormatting.DARK_PURPLE),
-                getBoardSize() / 2 + 7);
+                getDefaultBroadcastDistance());
     }
 
     /**

@@ -29,10 +29,10 @@ public class LGConfigMinesweeper {
     public static Stage stage1 = new Stage(13, 28, "minecraft:chests/simple_dungeon", 15, 15);
     @Config.LangKey("config.lootgames.common.stage.2")
     @Config.Comment("Regulates characteristics of stage 2.")
-    public static Stage stage2 = new Stage(15, 35, "minecraft:chests/jungle_temple", -1, -1);
+    public static Stage stage2 = new Stage(15, 35, "minecraft:chests/desert_pyramid", -1, -1);
     @Config.LangKey("config.lootgames.common.stage.3")
     @Config.Comment("Regulates characteristics of stage 3.")
-    public static Stage stage3 = new Stage(17, 40, "minecraft:chests/desert_pyramid", -1, -1);
+    public static Stage stage3 = new Stage(17, 40, "minecraft:chests/nether_bridge", -1, -1);
     @Config.LangKey("config.lootgames.common.stage.4")
     @Config.Comment("Regulates characteristics of stage 4.")
     public static Stage stage4 = new Stage(19, 50, "minecraft:chests/end_city_treasure", -1, -1);
@@ -83,7 +83,7 @@ public class LGConfigMinesweeper {
 
         @Config.LangKey("config.lootgames.common.stage.loot_table")
         @Config.Comment({"Name of the loottable, items from which will be generated in the chest of this stage. This can be adjusted per-Dimension in S:DimensionalConfig.",
-                "Default: Stage 1 -> minecraft:chests/simple_dungeon, Stage 2 -> minecraft:chests/jungle_temple, Stage 3 -> minecraft:chests/desert_pyramid, Stage 4 -> minecraft:chests/end_city_treasure"
+                "Default: Stage 1 -> minecraft:chests/simple_dungeon, Stage 2 -> minecraft:chests/desert_pyramid, Stage 3 -> minecraft:chests/nether_bridge, Stage 4 -> minecraft:chests/end_city_treasure"
         })
         public String lootTable;
 

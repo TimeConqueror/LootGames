@@ -4,6 +4,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.api.util.DirectionOctagonal;
 import ru.timeconqueror.lootgames.api.util.client.RenderUtils;
 import ru.timeconqueror.lootgames.packets.CMessageGOLFeedback;
 import ru.timeconqueror.lootgames.packets.NetworkHandler;
@@ -29,7 +30,7 @@ public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster
             drawStuff(te, EnumDrawStuff.SHOWING_SEQUENCE, x, y, z, te.getTicks(), partialTicks);
 
             if (!te.isOnPause()) {
-                if (!te.hasShowedAllSymbols()) {
+                if (te.isShowingSymbols()) {
                     drawSymbol(te, te.getCurrentSymbolPosOffset(), x, y, z, te.getTicks(), partialTicks);
                 } else if (!te.isFeedbackPacketReceived()) {
                     NetworkHandler.INSTANCE.sendToServer(new CMessageGOLFeedback(te.getPos())); //done to be lag-resistant
@@ -77,7 +78,7 @@ public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster
         GlStateManager.popMatrix();
     }
 
-    public void drawSymbol(TileEntityGOLMaster te, EnumPosOffset offset, double masterX, double masterY, double masterZ, int ticks, float partialTicks) {
+    public void drawSymbol(TileEntityGOLMaster te, DirectionOctagonal offset, double masterX, double masterY, double masterZ, int ticks, float partialTicks) {
         if (te.getTicks() > TileEntityGOLMaster.ticksPerShowSymbols) {
             return;
         }

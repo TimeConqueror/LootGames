@@ -1,19 +1,12 @@
 package ru.timeconqueror.lootgames.minigame.gameoflight;
 
-import net.minecraft.block.BlockChest;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
@@ -26,9 +19,13 @@ import net.minecraftforge.event.world.NoteBlockEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.achievement.AdvancementManager;
 import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameMaster;
+import ru.timeconqueror.lootgames.api.util.DirectionOctagonal;
+import ru.timeconqueror.lootgames.api.util.DirectionTetra;
+import ru.timeconqueror.lootgames.api.util.GameUtils;
 import ru.timeconqueror.lootgames.api.util.NetworkUtils;
 import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
 import ru.timeconqueror.lootgames.block.BlockGOLSubordinate;
@@ -107,7 +104,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
                         ticks++;
                     }
 
-                    if (!hasShowedAllSymbols() && !particleSent) {
+                    if (isShowingSymbols() && !particleSent) {
                         playFeedbackSound(getCurrentSymbolPosOffset());
                         spawnFeedbackParticles(EnumParticleTypes.SPELL, getPos().add(getCurrentSymbolPosOffset().getOffsetX(), 0, getCurrentSymbolPosOffset().getOffsetZ()));
                         particleSent = true;
@@ -141,7 +138,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     private void generateSubordinates(EntityPlayer player) {
         world.playSound(null, pos, ModSounds.golStartGame, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
-        for (EnumPosOffset value : EnumPosOffset.values()) {
+        for (DirectionOctagonal value : DirectionOctagonal.values()) {
             IBlockState state = ModBlocks.GOL_SUBORDINATE.getDefaultState().withProperty(BlockGOLSubordinate.OFFSET, value);
             world.setBlockState(pos.add(value.getOffsetX(), 0, value.getOffsetZ()), state);
         }
@@ -170,7 +167,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         player.sendMessage(NetworkUtils.color(new TextComponentTranslation("msg.lootgames.gol_master.not_ready"), TextFormatting.AQUA));
     }
 
-    public void onSubordinateClickedByPlayer(EnumPosOffset subordinateOffset, EntityPlayer player) {
+    public void onSubordinateClickedByPlayer(DirectionOctagonal subordinateOffset, EntityPlayer player) {
         if (gameStage == GameStage.WAITING_FOR_PLAYER_SEQUENCE) {
             if (world.isRemote) {
                 symbolsEnteredByPlayer.add(new ClickInfo(System.currentTimeMillis(), subordinateOffset));
@@ -188,8 +185,8 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         }
     }
 
-    private void checkPlayerReply(EnumPosOffset subordinateOffset, EntityPlayer player) {
-        if (EnumPosOffset.byIndex(symbolSequence.get(symbolIndex)) == subordinateOffset) {
+    private void checkPlayerReply(DirectionOctagonal subordinateOffset, EntityPlayer player) {
+        if (DirectionOctagonal.byIndex(symbolSequence.get(symbolIndex)) == subordinateOffset) {
 
             //If all sequence was replied
             if (symbolIndex == symbolSequence.size() - 1) {
@@ -273,7 +270,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     }
 
     @SideOnly(Side.CLIENT)
-    private void playFeedbackSound(EnumPosOffset offset) {
+    private void playFeedbackSound(DirectionOctagonal offset) {
         NoteBlockEvent.Note note = NoteBlockEvent.Note.G_SHARP;
         NoteBlockEvent.Octave octave = NoteBlockEvent.Octave.LOW;
         switch (offset) {
@@ -372,7 +369,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
             gameLevel -= 1;
         }
 
-        player.sendMessage(NetworkUtils.color(new TextComponentTranslation("msg.lootgames.gol_master.win"), TextFormatting.GREEN));
+        player.sendMessage(NetworkUtils.color(new TextComponentTranslation("msg.lootgames.win"), TextFormatting.GREEN));
 
         world.playSound(null, getPos(), ModSounds.golGameWin, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
@@ -388,6 +385,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         }
 
         destroyStructure();
+
         genLootChests(player);
     }
 
@@ -470,101 +468,32 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
             return;
         }
 
-        spawnLootChest(EnumPosOffset.NORTH, 1);
+        spawnLootChest(DirectionTetra.NORTH, 1);
 
         if (bestLevelReached > 1) {
 
-            spawnLootChest(EnumPosOffset.EAST, 2);
+            spawnLootChest(DirectionTetra.EAST, 2);
         }
 
         if (bestLevelReached > 2) {
             if (player instanceof EntityPlayerMP) {
                 AdvancementManager.WIN_GAME.trigger(((EntityPlayerMP) player), "gol_level3");
             }
-            spawnLootChest(EnumPosOffset.SOUTH, 3);
+            spawnLootChest(DirectionTetra.SOUTH, 3);
         }
 
         if (bestLevelReached > 3) {
             if (player instanceof EntityPlayerMP) {
                 AdvancementManager.WIN_GAME.trigger(((EntityPlayerMP) player), "gol_level4");
             }
-            spawnLootChest(EnumPosOffset.WEST, 4);
+            spawnLootChest(DirectionTetra.WEST, 4);
         }
     }
 
-    /**
-     * @param gameLevel 1-4.
-     */
-    private void spawnLootChest(EnumPosOffset pos, int gameLevel) {
-        if (world.isRemote) {
-            return;
-        }
-
+    private void spawnLootChest(DirectionTetra direction, int gameLevel) {
         LootGamesConfig.GOL.Stage stage = LootGamesConfig.gameOfLight.getStageByIndex(gameLevel);
-
-        IBlockState chest = Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING, pos == EnumPosOffset.NORTH ? EnumFacing.SOUTH : pos == EnumPosOffset.SOUTH ? EnumFacing.NORTH : pos == EnumPosOffset.EAST ? EnumFacing.WEST : pos == EnumPosOffset.WEST ? EnumFacing.EAST : EnumFacing.NORTH);
-        world.setBlockState(getPos().add(pos.getOffsetX(), 0, pos.getOffsetZ()), chest);
-
-        TileEntity te = world.getTileEntity(getPos().add(pos.getOffsetX(), 0, pos.getOffsetZ()));
-        if (te instanceof TileEntityChest) {
-            TileEntityChest teChest = (TileEntityChest) te;
-
-            teChest.setLootTable(stage.getLootTableRL(world.provider.getDimension()), 0);
-            teChest.fillWithLoot(null);
-
-            List<Integer> notEmptyIndexes = new ArrayList<>();
-            for (int i = 0; i < teChest.getSizeInventory(); i++) {
-                if (teChest.getStackInSlot(i) != ItemStack.EMPTY) {
-                    notEmptyIndexes.add(i);
-                }
-            }
-
-            if (notEmptyIndexes.size() == 0) {
-                ItemStack stack = new ItemStack(Blocks.STONE);
-                try {
-                    stack.setTagCompound(JsonToNBT.getTagFromJson(String.format("{display:{Name:\"The Sorry Stone\",Lore:[\"Modpack creator failed to configure the LootTables properly.\",\"Please report that LootList [%s] for %d stage is broken, thank you!\"]}}", stage.lootTable, gameLevel)));
-                } catch (NBTException e) {
-                    e.printStackTrace();
-                }
-
-                teChest.setInventorySlotContents(0, stack);
-
-                return;
-            }
-
-            //will shrink loot in chest if option is enabled
-            if (stage.minItems != -1 || stage.maxItems != -1) {
-                int min = stage.minItems == -1 ? 0 : stage.minItems;
-                int extra = (stage.maxItems == -1 ? notEmptyIndexes.size() : stage.maxItems) - stage.minItems;
-
-                int itemCount = extra < 1 ? min : min + LootGames.RAND.nextInt(extra);
-                if (itemCount < notEmptyIndexes.size()) {
-                    int[] itemsRemain = new int[itemCount];
-                    for (int i = 0; i < itemsRemain.length; i++) {
-                        int itemRemainArrIndex = LootGames.RAND.nextInt(notEmptyIndexes.size());
-                        int itemRemainChestIndex = notEmptyIndexes.get(itemRemainArrIndex);
-                        notEmptyIndexes.remove(itemRemainArrIndex);
-
-                        itemsRemain[i] = itemRemainChestIndex;
-                    }
-
-                    for (int i = 0; i < teChest.getSizeInventory(); i++) {
-                        boolean toDelete = true;
-
-                        for (int i1 : itemsRemain) {
-                            if (i == i1) {
-                                toDelete = false;
-                                break;
-                            }
-                        }
-
-                        if (toDelete) {
-                            teChest.removeStackFromSlot(i);
-                        }
-                    }
-                }
-            }
-        }
+        GameUtils.SpawnChestInfo chestInfo = new GameUtils.SpawnChestInfo(GameOfLight.class, stage.getLootTableRL(world.provider.getDimension()), stage.minItems, stage.maxItems);
+        GameUtils.spawnLootChest(getWorld(), getPos(), direction, chestInfo);
     }
 
     private void updateGameStage(GameStage gameStage) {
@@ -593,6 +522,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         }
     }
 
+    @NotNull
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
         return new AxisAlignedBB(getPos().add(-2, 0, -2), getPos().add(2, 1, 2));
@@ -602,12 +532,12 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         return gameStage;
     }
 
-    boolean hasShowedAllSymbols() {
-        return symbolIndex >= symbolSequence.size();
+    boolean isShowingSymbols() {
+        return symbolIndex < symbolSequence.size();
     }
 
-    EnumPosOffset getCurrentSymbolPosOffset() {
-        return EnumPosOffset.byIndex(symbolSequence.get(symbolIndex));
+    DirectionOctagonal getCurrentSymbolPosOffset() {
+        return DirectionOctagonal.byIndex(symbolSequence.get(symbolIndex));
     }
 
     int getTicks() {
@@ -691,16 +621,16 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         }
     }
 
-    public class ClickInfo {
+    public static class ClickInfo {
         private long msClickedTime;
-        private EnumPosOffset offset;
+        private DirectionOctagonal offset;
 
-        private ClickInfo(long msClickedTime, EnumPosOffset offset) {
+        private ClickInfo(long msClickedTime, DirectionOctagonal offset) {
             this.msClickedTime = msClickedTime;
             this.offset = offset;
         }
 
-        EnumPosOffset getOffset() {
+        DirectionOctagonal getOffset() {
             return offset;
         }
     }

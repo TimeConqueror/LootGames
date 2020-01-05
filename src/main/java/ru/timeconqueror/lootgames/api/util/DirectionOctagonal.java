@@ -1,9 +1,10 @@
-package ru.timeconqueror.lootgames.minigame.gameoflight;
+package ru.timeconqueror.lootgames.api.util;
 
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.NotNull;
 
-public enum EnumPosOffset implements IStringSerializable {
+public enum DirectionOctagonal implements IStringSerializable {
     NORTH(0, "north", 0, -1),
     NORTH_EAST(1, "north_east", 1, -1),
     EAST(2, "east", 1, 0),
@@ -13,10 +14,10 @@ public enum EnumPosOffset implements IStringSerializable {
     WEST(6, "west", -1, 0),
     NORTH_WEST(7, "north_west", -1, -1);
 
-    private static final EnumPosOffset[] LOOKUP = new EnumPosOffset[EnumPosOffset.values().length];
+    private static final DirectionOctagonal[] LOOKUP = new DirectionOctagonal[DirectionOctagonal.values().length];
 
     static {
-        for (EnumPosOffset value : values()) {
+        for (DirectionOctagonal value : values()) {
             LOOKUP[value.index] = value;
         }
     }
@@ -24,32 +25,38 @@ public enum EnumPosOffset implements IStringSerializable {
     private final String name;
     private final int index;
     /**
-     * Offset from master block
+     * Offset from center block
      */
     private final int offsetX;
     /**
-     * Offset from master block
+     * Offset from center block
      */
     private final int offsetZ;
 
-    EnumPosOffset(int index, String name, int offsetX, int offsetZ) {
+    DirectionOctagonal(int index, String name, int offsetX, int offsetZ) {
         this.index = index;
         this.name = name;
         this.offsetX = offsetX;
         this.offsetZ = offsetZ;
     }
 
-    public static EnumPosOffset byIndex(int index) {
+    public static DirectionOctagonal byIndex(int index) {
         return LOOKUP[index];
     }
 
+    @NotNull
     @Override
     public String getName() {
         return name;
     }
 
+    //TODO get rid of it
     public BlockPos getMasterBlockPos(BlockPos subordinatePos) {
         return subordinatePos.add(offsetX != 0 ? -offsetX : 0, 0, offsetZ != 0 ? -offsetZ : 0);
+    }
+
+    public BlockPos getOffsetBlockPos(BlockPos center) {
+        return center.add(getOffsetX(), 0, getOffsetZ());
     }
 
     public int getIndex() {

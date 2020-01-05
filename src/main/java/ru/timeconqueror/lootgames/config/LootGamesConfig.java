@@ -129,11 +129,11 @@ public class LootGamesConfig {
 
         @Config.LangKey("config.lootgames.common.stage.2")
         @Config.Comment("Regulates characteristics of stage 2.")
-        public Stage stage2 = new Stage(10, false, 16, "minecraft:chests/jungle_temple", -1, -1);
+        public Stage stage2 = new Stage(10, false, 16, "minecraft:chests/desert_pyramid", -1, -1);
 
         @Config.LangKey("config.lootgames.common.stage.3")
         @Config.Comment("Regulates characteristics of stage 3.")
-        public Stage stage3 = new Stage(15, false, 12, "minecraft:chests/desert_pyramid", -1, -1);
+        public Stage stage3 = new Stage(15, false, 12, "minecraft:chests/nether_bridge", -1, -1);
 
         @Config.LangKey("config.lootgames.common.stage.4")
         @Config.Comment("Regulates characteristics of stage 4.")
@@ -220,7 +220,7 @@ public class LootGamesConfig {
 
             @Config.LangKey("config.lootgames.common.stage.loot_table")
             @Config.Comment({"Name of the loottable, items from which will be generated in the chest of this stage. This can be adjusted per-Dimension in S:DimensionalConfig.",
-                    "Default: Stage 1 -> minecraft:chests/simple_dungeon, Stage 2 -> minecraft:chests/jungle_temple, Stage 3 -> minecraft:chests/desert_pyramid, Stage 4 -> minecraft:chests/end_city_treasure"
+                    "Default: Stage 1 -> minecraft:chests/simple_dungeon, Stage 2 -> minecraft:chests/desert_pyramid, Stage 3 -> minecraft:chests/nether_bridge, Stage 4 -> minecraft:chests/end_city_treasure"
             })
             public String lootTable;
             @Config.LangKey("config.lootgames.gol.stage.dimconfig")

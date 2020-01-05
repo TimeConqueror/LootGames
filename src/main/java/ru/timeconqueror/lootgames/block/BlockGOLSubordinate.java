@@ -11,19 +11,21 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.api.block.BlockGame;
-import ru.timeconqueror.lootgames.minigame.gameoflight.EnumPosOffset;
+import ru.timeconqueror.lootgames.api.util.DirectionOctagonal;
 import ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster;
 
 //TODO move to minigame
 public class BlockGOLSubordinate extends BlockGame {
-    public static final PropertyEnum<EnumPosOffset> OFFSET = PropertyEnum.create("offset", EnumPosOffset.class);
+    public static final PropertyEnum<DirectionOctagonal> OFFSET = PropertyEnum.create("offset", DirectionOctagonal.class);
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(OFFSET, EnumPosOffset.byIndex(meta));
+        return getDefaultState().withProperty(OFFSET, DirectionOctagonal.byIndex(meta));
     }
 
+    @NotNull
     @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, OFFSET);

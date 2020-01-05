@@ -72,6 +72,13 @@ public abstract class LootGame {
     }
 
     /**
+     * Returns default broadcast distance from dungeon central position.
+     */
+    public int getDefaultBroadcastDistance() {
+        return DungeonGenerator.PUZZLEROOM_CENTER_TO_BORDER + 7;//7 - it is just appropriate block distance after passing dungeon wall. Not so much, not so little.
+    }
+
+    /**
      * Should return the position of block, that is a part of shielded dungeon floor or has a neighbor, that is a shielded floor block.
      * Used, for example, to recursively reset shield of unbreakability on dungeon floor.
      */
