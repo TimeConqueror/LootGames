@@ -68,7 +68,9 @@ public abstract class LootGame {
 
     private void onGameEnded() {
         if (endGameCallback != null) endGameCallback.run();
+
         DungeonGenerator.resetUnbreakablePlayfield(getWorld(), getRoomFloorPos());
+        masterTileEntity.destroyGameBlocks();
     }
 
     /**

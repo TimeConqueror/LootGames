@@ -36,7 +36,6 @@ import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 
 //TODO Every fail bomb strength increases
 //TODO add custom Stage Class to improve readability of code (name, ticks before skipping, actions)
-//FIXME add bomb counter
 //TODO add win/lost achievements
 public class GameMineSweeper extends LootGame {
 
@@ -86,6 +85,9 @@ public class GameMineSweeper extends LootGame {
                     updateStage(Stage.WAITING);
 
                     board.resetBoard();
+
+                    sendUpdatePacket("reset_flag_counter", new NBTTagCompound());
+
                     saveDataAndSendToClient();
                 }
             }
@@ -269,8 +271,6 @@ public class GameMineSweeper extends LootGame {
             player.sendMessage(MessageUtils.color(new TextComponentTranslation("msg.lootgames.win"), TextFormatting.GREEN));
         }
 
-        masterTileEntity.destroyGameBlocks();
-
         genLootChests(players);
     }
 
@@ -354,9 +354,8 @@ public class GameMineSweeper extends LootGame {
             }
 
             sendUpdatePacket("stageUpdate", c);
+            saveData();
         }
-
-        saveData();
     }
 
     @Override
@@ -385,6 +384,9 @@ public class GameMineSweeper extends LootGame {
                                 getMasterPos().getZ() + z, 0.0, 0.2, 0.0);
                     }
                 }
+                break;
+            case "reset_flag_counter":
+                board.cFlaggedFields = 0;
                 break;
         }
     }
@@ -457,9 +459,10 @@ public class GameMineSweeper extends LootGame {
 
     @Override
     public void readNBTFromClient(NBTTagCompound compound) {
+        cIsGenerated = compound.getBoolean("is_generated");
+
         super.readNBTFromClient(compound);
 
-        cIsGenerated = compound.getBoolean("is_generated");
         if (compound.hasKey("board")) {
             NBTTagCompound boardTag = compound.getCompoundTag("board");
             MSField[][] boardArr = NBTUtils.readTwoDimArrFromNBT(boardTag, MSField.class, compoundIn ->
@@ -487,7 +490,6 @@ public class GameMineSweeper extends LootGame {
         board.setSize(compound.getInteger("board_size"));
         stage = Stage.values()[compound.getInteger("stage")];
         ticks = compound.getInteger("ticks");
-
         currentLevel = compound.getInteger("current_level");
     }
 

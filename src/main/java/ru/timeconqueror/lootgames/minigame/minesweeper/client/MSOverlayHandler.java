@@ -62,9 +62,7 @@ public class MSOverlayHandler {
         float maxRectWidth = 0;
         for (TileEntityMSMaster msMaster : MS_MASTERS) {
             GameMineSweeper game = msMaster.getGame();
-            int bombCount = game.getBoard().getBombCount() - game.getBoard().getcFlaggedFields();
-            BlockPos gamePos = game.getCentralGamePos();
-            String toDisplay = getBombDisplayString(bombCount, gamePos, extendedInfo);
+            String toDisplay = getBombDisplayString(game, extendedInfo);
 
             maxRectWidth = Math.max(maxRectWidth, fontRenderer.getStringWidth(toDisplay) + 5.5F * 2);
         }
@@ -77,27 +75,28 @@ public class MSOverlayHandler {
             ClientUtils.bindTexture(OVERLAY);
             GlStateManager.color(1, 1, 1);
 
-//            System.out.println(game.getBoard().getFlaggedFieldCount());
-            int bombCount = game.getBoard().getBombCount() - game.getBoard().getcFlaggedFields();
-            BlockPos gamePos = game.getCentralGamePos();
-            String toDisplay = getBombDisplayString(bombCount, gamePos, extendedInfo);
+            Color color = game.getStage() == GameMineSweeper.Stage.DETONATING || game.getStage() == GameMineSweeper.Stage.EXPLODING ? Color.RED : Color.WHITE;
+            String toDisplay = getBombDisplayString(game, extendedInfo);
 
             if (i == 0) {
                 RenderHelper.drawTexturedRect(5, 5, 15 * 1.5, 16.0 * 1.5, 0, 0, 0, 15, 16, 48);
 
                 RenderHelper.drawWidthExpandableTexturedRect(5 + 15 * 1.5F, 5, maxRectWidth, 0, firstSlotStart, firstSlotRepeat, firstSlotEnd, 48);
 
-                RenderHelper.drawYCenteredStringWithShadow(fontRenderer, toDisplay, 32.6F, 17.5F, Color.WHITE.getRGB());
+                RenderHelper.drawYCenteredStringWithShadow(fontRenderer, toDisplay, 32.6F, 17.5F, color.getRGB());
             } else {
                 RenderHelper.drawWidthExpandableTexturedRect(27.5F, startY, maxRectWidth, 0, extraSlotStart, extraSlotRepeat, extraSlotEnd, 48);
-                RenderHelper.drawYCenteredStringWithShadow(fontRenderer, toDisplay, 32.6F, startY + 8F, Color.WHITE.getRGB());
+                RenderHelper.drawYCenteredStringWithShadow(fontRenderer, toDisplay, 32.6F, startY + 8F, color.getRGB());
                 startY += 7 * 1.5F;
             }
         }
     }
 
-    private static String getBombDisplayString(int bombCount, BlockPos gamePos, boolean extended) {
-        return extended ? "x" + bombCount + " {" + gamePos.getX() + ", " + gamePos.getY() + ", " + gamePos.getZ() + "}" : "x" + bombCount;
+    private static String getBombDisplayString(GameMineSweeper game, boolean extended) {
+        int bombDisplay = game.getStage() == GameMineSweeper.Stage.DETONATING || game.getStage() == GameMineSweeper.Stage.EXPLODING ? game.getBoard().getBombCount() :
+                game.getBoard().getBombCount() - game.getBoard().getFlaggedField_c();
+        BlockPos gamePos = game.getCentralGamePos();
+        return extended ? "x" + bombDisplay + " {" + gamePos.getX() + ", " + gamePos.getY() + ", " + gamePos.getZ() + "}" : "x" + bombDisplay;
     }
 
     public static void addSupportedMaster(TileEntityMSMaster master) {

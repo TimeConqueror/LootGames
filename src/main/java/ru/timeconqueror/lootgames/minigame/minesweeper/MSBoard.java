@@ -19,7 +19,7 @@ public class MSBoard {
     private int bombCount;
 
     @SideOnly(Side.CLIENT)
-    private int cFlaggedFields = 0;
+    int cFlaggedFields = 0;
 
     public MSBoard(int size, int bombCount) {
         this.size = size;
@@ -27,7 +27,7 @@ public class MSBoard {
     }
 
     @SideOnly(Side.CLIENT)
-    private void updateFlaggedFields_c() {
+    void updateFlaggedFields_c() {
         cFlaggedFields = 0;
 
         for (MSField[] msFields : board) {
@@ -92,7 +92,6 @@ public class MSBoard {
         bombCount = newBombCount;
 
         board = null;
-        cFlaggedFields = 0;
     }
 
     boolean isBomb(int x, int y) {
@@ -272,7 +271,7 @@ public class MSBoard {
     }
 
     @SideOnly(Side.CLIENT)
-    public int getcFlaggedFields() {
+    public int getFlaggedField_c() {
         return cFlaggedFields;
     }
 
