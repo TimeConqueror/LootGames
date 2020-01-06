@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
+import ru.timeconqueror.timecore.api.auxiliary.DirectionTetra;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +31,7 @@ public class GameUtils {
 
         BlockPos placePos = centralPos.add(offset.getOffsetX(), 0, offset.getOffsetZ());
 
-        System.out.println(world.getBlockState(placePos));
         world.setBlockState(placePos, chest);
-
-        System.out.println(world.getBlockState(placePos));
 
         TileEntityChest teChest = (TileEntityChest) Objects.requireNonNull((world.getTileEntity(placePos)));
 

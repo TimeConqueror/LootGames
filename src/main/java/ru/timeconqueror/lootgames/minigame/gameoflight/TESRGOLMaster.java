@@ -5,9 +5,9 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.util.DirectionOctagonal;
-import ru.timeconqueror.lootgames.api.util.client.RenderUtils;
 import ru.timeconqueror.lootgames.packets.CMessageGOLFeedback;
 import ru.timeconqueror.lootgames.packets.NetworkHandler;
+import ru.timeconqueror.timecore.api.auxiliary.RenderHelper;
 
 import static ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster.EnumDrawStuff;
 import static ru.timeconqueror.lootgames.minigame.gameoflight.TileEntityGOLMaster.GameStage.*;
@@ -70,7 +70,7 @@ public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableAlpha();
         GlStateManager.disableColorMaterial();
-        RenderUtils.drawRect(0, 0, 48, 48, -0.07, textureX, textureY, 16, 16, f);
+        RenderHelper.drawTexturedRectP(0, 0, 48, 48, -0.07, textureX, textureY, 16, 16, f);
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
 
@@ -99,7 +99,7 @@ public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster
         float textureX = 16 + 16 * offset.getOffsetX();
         float textureY = 16 + 16 * offset.getOffsetZ();
 
-        RenderUtils.drawRect(0, 0, 48, 48, -0.07, textureX, textureY, 16, 16, f);
+        RenderHelper.drawTexturedRectP(0, 0, 48, 48, -0.07, textureX, textureY, 16, 16, f);
 
         GlStateManager.color(1, 1, 1);
         GlStateManager.popMatrix();
@@ -132,7 +132,7 @@ public class TESRGOLMaster extends TileEntitySpecialRenderer<TileEntityGOLMaster
         float textureStart = !isExpanding || ticks >= MAX_TICKS_EXPANDING ? 0F : 16F - 16F * (ticks + partialTicks) / MAX_TICKS_EXPANDING;
         float textureLength = !isExpanding || ticks >= MAX_TICKS_EXPANDING ? 48F : 32F + 16F * (ticks + partialTicks) / MAX_TICKS_EXPANDING - textureStart;
 
-        RenderUtils.drawRect(0, 0, length, length, -0.05, textureStart, textureStart, textureLength, textureLength, f);
+        RenderHelper.drawTexturedRectP(0, 0, length, length, -0.05, textureStart, textureStart, textureLength, textureLength, f);
 
         GlStateManager.color(1, 1, 1);
         GlStateManager.popMatrix();

@@ -5,15 +5,15 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.api.util.client.RenderUtils;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.minesweeper.tileentity.TileEntityMSMaster;
+import ru.timeconqueror.timecore.api.auxiliary.RenderHelper;
 
 import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField.*;
 
 public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> {
     private static final ResourceLocation MS_BOARD = new ResourceLocation(LootGames.MOD_ID, "textures/blocks/minesweeper/ms_board.png");
-    //TODO optimize drawRect
+
     @Override
     public void render(TileEntityMSMaster te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         bindTexture(MS_BOARD);
@@ -28,7 +28,7 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
         if (!game.cIsGenerated) {
             for (int xL = 0; xL < boardSize; xL++) {
                 for (int zL = 0; zL < boardSize; zL++) {
-                    RenderUtils.drawRect(xL, zL, xL + 1, zL + 1, -0.005F, 0, 0, 1, 1, 0.25F);
+                    RenderHelper.drawTexturedRectP(xL, zL, 1, 1, -0.005F, 0, 0, 1, 1, 0.25F);
                 }
             }
         } else {
@@ -49,12 +49,12 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
                         float extendedPeriod = period * (times + 1) / times; // is needed because we want that it will explode at red state that comes on half period.
                         double alphaFactor = Math.abs(Math.sin(Math.toRadians(ticks / extendedPeriod * 180F)));
 
-                        RenderUtils.drawRect(xL, zL, xL + 1, zL + 1, -0.005F, 1, 0, 1, 1, 0.25F);
+                        RenderHelper.drawTexturedRectP(xL, zL, 1, 1, -0.005F, 1, 0, 1, 1, 0.25F);
                         GlStateManager.enableBlend();
                         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
                         GlStateManager.enableAlpha();
                         GL11.glColor4d(1, 1, 1, alphaFactor);
-                        RenderUtils.drawRect(xL, zL, xL + 1, zL + 1, -0.005F, 1, 3, 1, 1, 0.25F);
+                        RenderHelper.drawTexturedRectP(xL, zL, 1, 1, -0.005F, 1, 3, 1, 1, 0.25F);
                         GlStateManager.disableAlpha();
                         GlStateManager.disableBlend();
                     } else {
@@ -85,13 +85,15 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
                             }
                         }
 
-                        RenderUtils.drawRect(xL, zL, xL + 1, zL + 1, -0.005F, textureX, textureY, 1, 1, 0.25F);
+                        RenderHelper.drawTexturedRectP(xL, zL, 1, 1, -0.005F, textureX, textureY, 1, 1, 0.25F);
                     }
                 }
             }
         }
         GlStateManager.enableLighting();
         GlStateManager.popMatrix();
+
+        MSOverlayHandler.addSupportedMaster(te);
     }
 
     @Override

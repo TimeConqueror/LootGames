@@ -15,7 +15,9 @@ import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.achievement.AdvancementManager;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
-import ru.timeconqueror.lootgames.api.util.*;
+import ru.timeconqueror.lootgames.api.util.GameUtils;
+import ru.timeconqueror.lootgames.api.util.NBTUtils;
+import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.config.LGConfigMinesweeper;
 import ru.timeconqueror.lootgames.config.LootGamesConfig;
 import ru.timeconqueror.lootgames.minigame.gameoflight.GameOfLight;
@@ -23,6 +25,9 @@ import ru.timeconqueror.lootgames.minigame.minesweeper.block.BlockMSActivator;
 import ru.timeconqueror.lootgames.minigame.minesweeper.task.TaskMSCreateExplosion;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
+import ru.timeconqueror.timecore.api.auxiliary.DirectionTetra;
+import ru.timeconqueror.timecore.api.auxiliary.MessageUtils;
+import ru.timeconqueror.timecore.api.auxiliary.NetworkUtils;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -76,7 +81,7 @@ public class GameMineSweeper extends LootGame {
 
                 if (ticks <= 0) {
                     NetworkUtils.sendMessageToAllNearby(getCentralGamePos(),
-                            NetworkUtils.color(new TextComponentTranslation("msg.lootgames.ms.new_attempt"), TextFormatting.AQUA),
+                            MessageUtils.color(new TextComponentTranslation("msg.lootgames.ms.new_attempt"), TextFormatting.AQUA),
                             getDefaultBroadcastDistance());
                     updateStage(Stage.WAITING);
 
@@ -208,7 +213,7 @@ public class GameMineSweeper extends LootGame {
         });
 
         NetworkUtils.sendMessageToAllNearby(getCentralGamePos(),
-                NetworkUtils.color(new TextComponentTranslation("msg.lootgames.ms.bomb_touched"), TextFormatting.DARK_PURPLE),
+                MessageUtils.color(new TextComponentTranslation("msg.lootgames.ms.bomb_touched"), TextFormatting.DARK_PURPLE),
                 getDefaultBroadcastDistance());
 
         saveDataAndSendToClient();
@@ -235,7 +240,7 @@ public class GameMineSweeper extends LootGame {
 
             sendUpdatePacket("spawn_particles_level_beat", null);
 
-            NetworkUtils.sendMessageToAllNearby(getCentralGamePos(), NetworkUtils.color(new TextComponentTranslation("msg.lootgames.stage_complete"), TextFormatting.GREEN), DungeonGenerator.PUZZLEROOM_CENTER_TO_BORDER * 4);
+            NetworkUtils.sendMessageToAllNearby(getCentralGamePos(), MessageUtils.color(new TextComponentTranslation("msg.lootgames.stage_complete"), TextFormatting.GREEN), DungeonGenerator.PUZZLEROOM_CENTER_TO_BORDER * 4);
             getWorld().playSound(null, getCentralGamePos(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
             masterTileEntity.destroyGameBlocks();
@@ -261,7 +266,7 @@ public class GameMineSweeper extends LootGame {
         List<EntityPlayerMP> players = NetworkUtils.getPlayersNearby(getCentralGamePos(), getDefaultBroadcastDistance());
 
         for (EntityPlayerMP player : players) {
-            player.sendMessage(NetworkUtils.color(new TextComponentTranslation("msg.lootgames.win"), TextFormatting.GREEN));
+            player.sendMessage(MessageUtils.color(new TextComponentTranslation("msg.lootgames.win"), TextFormatting.GREEN));
         }
 
         masterTileEntity.destroyGameBlocks();
@@ -309,7 +314,7 @@ public class GameMineSweeper extends LootGame {
         getWorld().createExplosion(null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 10, true);//fixme balance strength
 
         NetworkUtils.sendMessageToAllNearby(getCentralGamePos(),
-                NetworkUtils.color(new TextComponentTranslation("msg.lootgames.lose"), TextFormatting.DARK_PURPLE),
+                MessageUtils.color(new TextComponentTranslation("msg.lootgames.lose"), TextFormatting.DARK_PURPLE),
                 getDefaultBroadcastDistance());
     }
 

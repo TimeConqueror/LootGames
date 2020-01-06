@@ -172,6 +172,7 @@ public abstract class LootGame {
      * Reads the data that comes to client side.
      * Overriding is fine.
      */
+    @SideOnly(Side.CLIENT)
     public void readNBTFromClient(NBTTagCompound compound) {
         readCommonNBT(compound);
     }

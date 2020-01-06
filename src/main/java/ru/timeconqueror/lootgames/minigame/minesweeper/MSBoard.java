@@ -18,9 +18,25 @@ public class MSBoard {
     private int size;
     private int bombCount;
 
+    @SideOnly(Side.CLIENT)
+    private int cFlaggedFields = 0;
+
     public MSBoard(int size, int bombCount) {
         this.size = size;
         this.bombCount = bombCount;
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void updateFlaggedFields_c() {
+        cFlaggedFields = 0;
+
+        for (MSField[] msFields : board) {
+            for (MSField msField : msFields) {
+                if (msField.getMark() == MSField.FLAG) {
+                    cFlaggedFields++;
+                }
+            }
+        }
     }
 
     public boolean isGenerated() {
@@ -76,6 +92,7 @@ public class MSBoard {
         bombCount = newBombCount;
 
         board = null;
+        cFlaggedFields = 0;
     }
 
     boolean isBomb(int x, int y) {
@@ -97,7 +114,7 @@ public class MSBoard {
         for (MSField[] msFields : board) {
             for (MSField msField : msFields) {
                 if (msField.type == MSField.BOMB) {
-                    if (!msField.isHidden || msField.mark != MSField.FLAG) {
+                    if (!msField.isHidden || msField.getMark() != MSField.FLAG) {
                         winState = false;
                         break loop;
                     }
@@ -222,11 +239,24 @@ public class MSBoard {
 
     @SideOnly(Side.CLIENT)
     void setField(Pos2i pos, int type, boolean hidden, int mark) {
+        MSField oldField = board[pos.getX()][pos.getY()];
+        @MSField.Mark int oldMark = oldField.mark;
+
+        if (!hidden) mark = MSField.NO_MARK;
+
         board[pos.getX()][pos.getY()] = new MSField(type, hidden, mark);
+
+
+        if (oldMark == MSField.FLAG && mark != MSField.FLAG) {
+            cFlaggedFields--;
+        } else if (oldMark != MSField.FLAG && mark == MSField.FLAG) {
+            cFlaggedFields++;
+        }
     }
 
     void setBoard(MSField[][] board) {
         this.board = board;
+        updateFlaggedFields_c();
     }
 
     public int size() {
@@ -239,6 +269,11 @@ public class MSBoard {
 
     void setBombCount(int bombCount) {
         this.bombCount = bombCount;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public int getcFlaggedFields() {
+        return cFlaggedFields;
     }
 
     void setSize(int size) {
@@ -292,7 +327,7 @@ public class MSBoard {
             this.mark = mark;
         }
 
-        void swapMark() {
+        private void swapMark() {
             if (mark == 2) {
                 mark = 0;
             } else {
@@ -300,11 +335,11 @@ public class MSBoard {
             }
         }
 
-        void resetMark() {
-            mark = 0;
+        private void resetMark() {
+            mark = NO_MARK;
         }
 
-        void reveal() {
+        private void reveal() {
             isHidden = false;
             resetMark();
         }
@@ -356,7 +391,7 @@ public class MSBoard {
 
         @Override
         public String toString() {
-            return "Field{type: " + type + ", hidden:" + isHidden + ", mark:" + mark + "}";
+            return "Field{type: " + type + ", hidden: " + isHidden + ", mark: " + mark + "}";
         }
 
         @MagicConstant(intValues = {BOMB, EMPTY, 1, 2, 3, 4, 5, 6, 7, 8})
