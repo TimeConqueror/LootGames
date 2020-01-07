@@ -3,6 +3,8 @@ package ru.timeconqueror.lootgames.minigame.minesweeper.client;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
@@ -11,6 +13,7 @@ import ru.timeconqueror.timecore.api.auxiliary.RenderHelper;
 
 import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField.*;
 
+@SideOnly(Side.CLIENT)
 public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> {
     private static final ResourceLocation MS_BOARD = new ResourceLocation(LootGames.MOD_ID, "textures/blocks/minesweeper/ms_board.png");
 

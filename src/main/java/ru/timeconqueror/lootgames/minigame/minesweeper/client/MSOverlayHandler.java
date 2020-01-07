@@ -23,7 +23,7 @@ import java.util.ArrayList;
 //TODO F1 bug while looking at field
 //todo FIX SERVER
 @SideOnly(Side.CLIENT)
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(Side.CLIENT)
 public class MSOverlayHandler {
     private static final ResourceLocation OVERLAY = new ResourceLocation(LootGames.MOD_ID, "textures/gui/minesweeper/ms_overlay.png");
     private static final ArrayList<TileEntityMSMaster> MS_MASTERS = new ArrayList<>(1);
@@ -38,7 +38,7 @@ public class MSOverlayHandler {
 
     @SubscribeEvent
     public static void renderOverlay(RenderGameOverlayEvent.Post event) {
-        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
+        if (event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
             renderNearbyGameBombs();
             MS_MASTERS.clear();
         }

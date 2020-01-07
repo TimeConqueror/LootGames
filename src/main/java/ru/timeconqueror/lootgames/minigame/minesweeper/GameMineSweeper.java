@@ -109,10 +109,10 @@ public class GameMineSweeper extends LootGame {
             generateBoard(clickedPos);
         } else {
             if (sneaking) {
-                if (!board.isHidden(clickedPos)) {
-                    revealAllNeighbours(clickedPos, false);
-                } else {
+                if (board.isHidden(clickedPos)) {
                     swapFieldMark(clickedPos);
+                } else {
+                    revealAllNeighbours(clickedPos, false);
                 }
             } else {
                 if (board.getMark(clickedPos) == MSField.NO_MARK) {
@@ -226,11 +226,9 @@ public class GameMineSweeper extends LootGame {
                 }
 
                 Pos2i pos = mainPos.add(x, y);
-                if (board.hasFieldOn(pos)) {
-                    if (board.isHidden(pos)) {
-                        if (revealMarked || board.getMark(pos) != MSField.FLAG) {
-                            revealField(pos);
-                        }
+                if (board.hasFieldOn(pos) && board.isHidden(pos)) {
+                    if (revealMarked || board.getMark(pos) != MSField.FLAG) {
+                        revealField(pos);
                     }
                 }
             }
