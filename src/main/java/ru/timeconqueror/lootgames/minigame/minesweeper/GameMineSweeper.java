@@ -228,8 +228,8 @@ public class GameMineSweeper extends LootGame {
                 Pos2i pos = mainPos.add(x, y);
                 if (board.hasFieldOn(pos)) {
                     if (board.isHidden(pos)) {
-                        if (revealMarked || board.getMark(mainPos) == MSField.FLAG) {
-                            revealField(mainPos);
+                        if (revealMarked || board.getMark(pos) != MSField.FLAG) {
+                            revealField(pos);
                         }
                     }
                 }
