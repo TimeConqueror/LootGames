@@ -15,6 +15,7 @@ tile.lootgames.dungeon_lamp.1.name=Сломанная лампа подземе�
 tile.lootgames.puzzle_master.name=Мастер головоломок
 tile.lootgames.gol_master.name=Игра света
 tile.lootgames.gol_subordinate.name=Блок-подчинённый
+tile.lootgames.ms_activator.name=Сапёр
 
 # Messages
 msg.lootgames.puzzle_master.broken=Кажется, этот блок сломан. Пожалуйста, сообщите об этой проблеме автору мода.
@@ -118,10 +119,10 @@ config.lootgames.ms.board_size=Размер игровой доски
 config.lootgames.ms.board_size.tooltip=Размер игровой доски Сапёра. Принимает только нечётные числа. Если вы поставите чётное число, оно будет увеличено на 1.
 config.lootgames.ms.bomb_count=Количество бомб
 config.lootgames.ms.bomb_count.tooltip=Количество бомб на доске.
-config.lootgames.ms.detonation_time=Detonation Time
-config.lootgames.ms.detonation_time.tooltip=The time until bombs start to explode. Represented in ticks.
-config.lootgames.ms.attempt_count=Attempt Count
-config.lootgames.ms.attempt_count.tooltip=It represents the number of attempts the player has to beat the game successfully.
+config.lootgames.ms.detonation_time=Время детонации
+config.lootgames.ms.detonation_time.tooltip=Время, после которого бомбы начнут взрываться. Представлено в тиках.
+config.lootgames.ms.attempt_count=Количество попыток
+config.lootgames.ms.attempt_count.tooltip=Представляет собой количество попыток, которые даны игроку для успешного прохождения игры.
 
 config.lootgames.ms.stage.dimconfig=Настройки по измерениям
 config.lootgames.ms.stage.dimconfig.tooltip=Здесь вы можете добавить разные списки наград (англ. loot table) для каждого измерения. Если измерения нет в этом списке, игра возьмёт стандартный список награды для этого этапа.\nСинтаксис: <id_измерения>; <название_списка_наград_aka_loot_table>\n<название_списка_наград_aka_loot_table> - Название списка наград (англ. loot table), прикрепленных к сундуку этого этапа.\nОбщий пример: { 0; minecraft:chests/simple_dungeon }

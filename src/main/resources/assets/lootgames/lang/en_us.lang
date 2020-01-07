@@ -15,6 +15,7 @@ tile.lootgames.dungeon_lamp.1.name=Broken Dungeon Lamp
 tile.lootgames.puzzle_master.name=Puzzle Master
 tile.lootgames.gol_master.name=Game of Light
 tile.lootgames.gol_subordinate.name=Subordinate Block
+tile.lootgames.ms_activator.name=Minesweeper
 
 #Messages
 msg.lootgames.puzzle_master.broken=This block seems to be broken. Please send issue to mod author.

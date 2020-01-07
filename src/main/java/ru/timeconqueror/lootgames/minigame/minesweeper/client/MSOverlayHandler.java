@@ -20,8 +20,7 @@ import ru.timeconqueror.timecore.api.auxiliary.client.ClientUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
-//TODO F1 bug while looking at field
-//todo FIX SERVER
+
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class MSOverlayHandler {
@@ -101,6 +100,8 @@ public class MSOverlayHandler {
     }
 
     public static void addSupportedMaster(TileEntityMSMaster master) {
-        MS_MASTERS.add(master);
+        if (!Minecraft.getMinecraft().gameSettings.hideGUI || Minecraft.getMinecraft().currentScreen != null) {
+            MS_MASTERS.add(master);
+        }
     }
 }
