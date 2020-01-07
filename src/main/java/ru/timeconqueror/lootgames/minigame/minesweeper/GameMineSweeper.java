@@ -24,6 +24,7 @@ import ru.timeconqueror.lootgames.minigame.gameoflight.GameOfLight;
 import ru.timeconqueror.lootgames.minigame.minesweeper.block.BlockMSActivator;
 import ru.timeconqueror.lootgames.minigame.minesweeper.task.TaskMSCreateExplosion;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
+import ru.timeconqueror.lootgames.registry.ModSounds;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 import ru.timeconqueror.timecore.api.auxiliary.DirectionTetra;
 import ru.timeconqueror.timecore.api.auxiliary.MessageUtils;
@@ -52,6 +53,8 @@ public class GameMineSweeper extends LootGame {
     private Stage stage;
     private int ticks;
     private int attemptCount = 0;
+
+    private boolean playRevealNeighboursSound = true;
 
     public GameMineSweeper(int boardSize, int bombCount) {
         board = new MSBoard(boardSize, bombCount);
@@ -105,6 +108,7 @@ public class GameMineSweeper extends LootGame {
     }
 
     public void onFieldClicked(Pos2i clickedPos, boolean sneaking) {
+        getWorld().playSound(null, convertToBlockPos(clickedPos), SoundEvents.BLOCK_NOTE_HAT, SoundCategory.MASTER, 0.6F, 0.8F);
         if (!board.isGenerated()) {
             generateBoard(clickedPos);
         } else {
@@ -116,6 +120,7 @@ public class GameMineSweeper extends LootGame {
                 }
             } else {
                 if (board.getMark(clickedPos) == MSField.NO_MARK) {
+                    playRevealNeighboursSound = true;
                     revealField(clickedPos);
                 }
             }
@@ -157,8 +162,14 @@ public class GameMineSweeper extends LootGame {
                 sendUpdatePacket("field_changed", c);
 
                 if (type == MSField.EMPTY) {
+                    if (playRevealNeighboursSound) {
+                        getWorld().playSound(null, convertToBlockPos(pos), ModSounds.msOnEmptyRevealNeighbours, SoundCategory.MASTER, 0.6F, 1.0F);
+                        playRevealNeighboursSound = false;
+                    }
+
                     revealAllNeighbours(pos, true);
                 } else if (type == MSField.BOMB) {
+                    getWorld().playSound(null, convertToBlockPos(pos), ModSounds.msBombActivated, SoundCategory.MASTER, 0.6F, 1.0F);
                     onBombTriggered();
                 }
 

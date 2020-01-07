@@ -50,7 +50,7 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
                         float period = (float) max / times;
 
                         float extendedPeriod = period * (times + 1) / times; // is needed because we want that it will explode at red state that comes on half period.
-                        double alphaFactor = Math.abs(Math.sin(Math.toRadians(ticks / extendedPeriod * 180F)));
+                        double alphaFactor = game.getStage() == GameMineSweeper.Stage.EXPLODING ? 1 : Math.abs(Math.sin(Math.toRadians(ticks / extendedPeriod * 180F)));
 
                         RenderHelper.drawTexturedRectP(xL, zL, 1, 1, -0.005F, 1, 0, 1, 1, 0.25F);
                         GlStateManager.enableBlend();

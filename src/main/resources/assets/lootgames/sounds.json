@@ -44,6 +44,33 @@
       }
     ]
   },
+  "ms_start_game": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "lootgames:minesweeper/start_game",
+        "stream": false
+      }
+    ]
+  },
+  "ms_empty_revel_neighbours": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "lootgames:minesweeper/on_empty_reveal_neighbours",
+        "stream": false
+      }
+    ]
+  },
+  "bomb_activated": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "lootgames:minesweeper/bomb_activated",
+        "stream": false
+      }
+    ]
+  },
   "puzzle_master_strange": {
     "category": "master",
     "sounds": [

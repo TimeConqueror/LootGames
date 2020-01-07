@@ -4,11 +4,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.api.block.BlockGame;
 import ru.timeconqueror.lootgames.config.LGConfigMinesweeper;
 import ru.timeconqueror.lootgames.registry.ModBlocks;
+import ru.timeconqueror.lootgames.registry.ModSounds;
 
 import java.util.Objects;
 
@@ -33,6 +35,7 @@ public class BlockMSActivator extends BlockGame {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {//todo add advancement
             generateGameStructure(worldIn, pos, 1);
+            worldIn.playSound(null, pos, ModSounds.msStartGame, SoundCategory.BLOCKS, 0.6F, 1.0F);
         }
         return true;
     }
