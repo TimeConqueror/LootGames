@@ -20,7 +20,7 @@ import ru.timeconqueror.timecore.api.auxiliary.client.ClientUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
-
+//TODO F1 bug while looking at field
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber
 public class MSOverlayHandler {

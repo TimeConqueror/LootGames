@@ -43,7 +43,7 @@ public class TESRMSMaster extends TileEntitySpecialRenderer<TileEntityMSMaster> 
                         int max = game.detonationTimeInTicks;
                         int ticks = game.getTicks();
 
-                        int times = 3;
+                        int times = 9;
                         float period = (float) max / times;
 
                         float extendedPeriod = period * (times + 1) / times; // is needed because we want that it will explode at red state that comes on half period.

@@ -61,9 +61,9 @@ public class ModBlocks {
         ClientProxy.REGISTRY.registerBlockRender(GOL_MASTER);
 
         ClientProxy.REGISTRY.registerBlockRender(MS_ACTIVATOR);
-        ClientProxy.REGISTRY.registerBlockRender(MS_MASTER);
+//        ClientProxy.REGISTRY.registerBlockRender(MS_MASTER);
 
-        ClientProxy.REGISTRY.registerBlockRender(SMART_SUBORDINATE);
+//        ClientProxy.REGISTRY.registerBlockRender(SMART_SUBORDINATE);
     }
 
     public static void registerTileEntities() {
