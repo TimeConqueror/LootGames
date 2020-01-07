@@ -110,7 +110,7 @@ public class GameMineSweeper extends LootGame {
         } else {
             if (sneaking) {
                 if (!board.isHidden(clickedPos)) {
-                    revealAllNeighbours(clickedPos);
+                    revealAllNeighbours(clickedPos, false);
                 } else {
                     swapFieldMark(clickedPos);
                 }
@@ -135,7 +135,7 @@ public class GameMineSweeper extends LootGame {
         sendUpdatePacket("gen_board", writeNBTForClient());
 
         if (board.getType(clickedPos) == MSField.EMPTY) {
-            revealAllNeighbours(clickedPos);
+            revealAllNeighbours(clickedPos, true);
         }
 
         saveData();
@@ -157,7 +157,7 @@ public class GameMineSweeper extends LootGame {
                 sendUpdatePacket("field_changed", c);
 
                 if (type == MSField.EMPTY) {
-                    revealAllNeighbours(pos);
+                    revealAllNeighbours(pos, true);
                 } else if (type == MSField.BOMB) {
                     onBombTriggered();
                 }
@@ -193,7 +193,7 @@ public class GameMineSweeper extends LootGame {
         }
     }
 
-    private void revealAllNeighbours(Pos2i mainPos) {
+    private void revealAllNeighbours(Pos2i mainPos, boolean revealMarked) {
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
                 if (x == 0 && y == 0) {
@@ -203,7 +203,9 @@ public class GameMineSweeper extends LootGame {
                 Pos2i pos = mainPos.add(x, y);
                 if (board.hasFieldOn(pos)) {
                     if (board.isHidden(pos)) {
-                        revealField(pos);
+                        if (revealMarked || !(board.getMark(mainPos) != MSField.FLAG && board.getMark(mainPos) != MSField.QUESTION_MARK)) {
+                            revealField(mainPos);
+                        }
                     }
                 }
             }
