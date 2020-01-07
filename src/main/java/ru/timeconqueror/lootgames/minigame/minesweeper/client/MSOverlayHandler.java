@@ -21,6 +21,7 @@ import ru.timeconqueror.timecore.api.auxiliary.client.ClientUtils;
 import java.awt.*;
 import java.util.ArrayList;
 //TODO F1 bug while looking at field
+//todo FIX SERVER
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber
 public class MSOverlayHandler {

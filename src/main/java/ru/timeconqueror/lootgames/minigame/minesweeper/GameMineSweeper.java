@@ -37,6 +37,7 @@ import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 //TODO Every fail bomb strength increases
 //TODO add custom Stage Class to improve readability of code (name, ticks before skipping, actions)
 //TODO add win/lost achievements
+//TODO add autorevealing of neighbours
 public class GameMineSweeper extends LootGame {
 
     @SideOnly(Side.CLIENT)
@@ -108,7 +109,11 @@ public class GameMineSweeper extends LootGame {
             generateBoard(clickedPos);
         } else {
             if (sneaking) {
-                swapFieldMark(clickedPos);
+                if (!board.isHidden(clickedPos)) {
+                    revealAllNeighbours(clickedPos);
+                } else {
+                    swapFieldMark(clickedPos);
+                }
             } else {
                 if (board.getMark(clickedPos) == MSField.NO_MARK) {
                     revealField(clickedPos);
