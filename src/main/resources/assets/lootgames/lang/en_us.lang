@@ -32,6 +32,8 @@ msg.lootgames.gol_master.reward_level_reached=Current reward level reached: %d (
 
 msg.lootgames.ms.bomb_touched=Oops... It seems to be a BOOM. Run!
 msg.lootgames.ms.new_attempt=The structure calmed down and decided to give you one more chance.
+msg.lootgames.ms.reveal_on_hidden=You can't reveal neighbours around hidden field.
+msg.lootgames.ms.reveal_invalid_mark_count=You can't reveal neighbours around this field, because it differs with flagged fields around by the number of bombs.
 
 #Tooltips
 item.lootgames.dungeon_bricks.tooltip=Mobs can't spawn on this block.

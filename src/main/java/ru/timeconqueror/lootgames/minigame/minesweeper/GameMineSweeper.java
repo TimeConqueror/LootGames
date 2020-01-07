@@ -37,7 +37,7 @@ import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 //TODO Every fail bomb strength increases
 //TODO add custom Stage Class to improve readability of code (name, ticks before skipping, actions)
 //TODO add win/lost achievements
-//TODO add autorevealing of neighbours
+//TODO add default colors to warn, fail, win, etc
 public class GameMineSweeper extends LootGame {
 
     @SideOnly(Side.CLIENT)
@@ -194,6 +194,31 @@ public class GameMineSweeper extends LootGame {
     }
 
     private void revealAllNeighbours(Pos2i mainPos, boolean revealMarked) {
+        if (!revealMarked) {
+            if (board.isHidden(mainPos)) {
+                NetworkUtils.sendMessageToAllNearby(getCentralGamePos(), MessageUtils.color(new TextComponentTranslation("msg.lootgames.ms.reveal_on_hidden"), TextFormatting.YELLOW), getDefaultBroadcastDistance());
+                return;
+            }
+
+            int bombsAround = board.getType(mainPos);
+            if (bombsAround < 1) throw new IllegalStateException();
+
+            int marked = 0;
+            for (int x = -1; x <= 1; x++) {
+                for (int y = -1; y <= 1; y++) {
+                    Pos2i pos = mainPos.add(x, y);
+                    if (board.hasFieldOn(pos) && board.getMark(pos) == MSField.FLAG) {
+                        marked++;
+                    }
+                }
+            }
+
+            if (marked != bombsAround) {
+                NetworkUtils.sendMessageToAllNearby(getCentralGamePos(), MessageUtils.color(new TextComponentTranslation("msg.lootgames.ms.reveal_invalid_mark_count"), TextFormatting.YELLOW), getDefaultBroadcastDistance());
+                return;
+            }
+        }
+
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
                 if (x == 0 && y == 0) {
@@ -203,7 +228,7 @@ public class GameMineSweeper extends LootGame {
                 Pos2i pos = mainPos.add(x, y);
                 if (board.hasFieldOn(pos)) {
                     if (board.isHidden(pos)) {
-                        if (revealMarked || !(board.getMark(mainPos) != MSField.FLAG && board.getMark(mainPos) != MSField.QUESTION_MARK)) {
+                        if (revealMarked || board.getMark(mainPos) == MSField.FLAG) {
                             revealField(mainPos);
                         }
                     }
