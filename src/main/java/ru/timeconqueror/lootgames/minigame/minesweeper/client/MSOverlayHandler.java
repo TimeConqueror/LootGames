@@ -47,6 +47,10 @@ public class MSOverlayHandler {
         EntityPlayer player = Minecraft.getMinecraft().player;
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        GlStateManager.enableAlpha();
+
         MS_MASTERS.removeIf(tileEntityMSMaster -> {
             GameMineSweeper game = tileEntityMSMaster.getGame();
             BlockPos gamePos = game.getCentralGamePos();
@@ -90,6 +94,9 @@ public class MSOverlayHandler {
                 startY += 7 * 1.5F;
             }
         }
+
+        GlStateManager.disableAlpha();
+        GlStateManager.disableBlend();
     }
 
     private static String getBombDisplayString(GameMineSweeper game, boolean extended) {
