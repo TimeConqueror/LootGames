@@ -1,5 +1,6 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
@@ -8,11 +9,13 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.Nullable;
+import ru.timeconqueror.lootgames.achievement.AdvancementManager;
 import ru.timeconqueror.lootgames.api.packet.SMessageGameUpdate;
 import ru.timeconqueror.lootgames.api.task.TEPostponeTaskScheduler;
 import ru.timeconqueror.lootgames.api.tileentity.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.packets.NetworkHandler;
 import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
+import ru.timeconqueror.timecore.api.auxiliary.NetworkUtils;
 
 public abstract class LootGame {
     protected TileEntityGameMaster<?> masterTileEntity;
@@ -54,8 +57,15 @@ public abstract class LootGame {
      */
     protected final void winGame() {
         onGameEnded();
+
         if (winCallback != null) winCallback.run();
+
+        for (EntityPlayerMP entityPlayerMP : NetworkUtils.getPlayersNearby(getCentralRoomPos(), getDefaultBroadcastDistance())) {
+            AdvancementManager.WIN_GAME.trigger(entityPlayerMP, "win");
+        }
     }
+
+    protected abstract BlockPos getCentralRoomPos();
 
     /**
      * You should call it, when the game is lost. If you want to run something while it is called, use
@@ -63,7 +73,13 @@ public abstract class LootGame {
      */
     protected final void loseGame() {
         onGameEnded();
+
         if (loseCallback != null) loseCallback.run();
+
+        for (EntityPlayerMP entityPlayerMP : NetworkUtils.getPlayersNearby(getCentralRoomPos(), getDefaultBroadcastDistance())) {
+            AdvancementManager.WIN_GAME.trigger(entityPlayerMP, "lose");
+        }
+
     }
 
     private void onGameEnded() {

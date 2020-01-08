@@ -42,7 +42,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+//TODO add current level reached and attempts remain message
 public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> implements ITickable {
     static final int MAX_TICKS_EXPANDING = 20;
     private static final int TICKS_PAUSE_BETWEEN_SYMBOLS = 12;

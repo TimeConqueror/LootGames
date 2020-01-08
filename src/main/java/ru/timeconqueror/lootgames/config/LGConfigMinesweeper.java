@@ -26,16 +26,16 @@ public class LGConfigMinesweeper {
 
     @Config.LangKey("config.lootgames.common.stage.1")
     @Config.Comment("Regulates characteristics of stage 1.")
-    public static Stage stage1 = new Stage(13, 28, "minecraft:chests/simple_dungeon", 15, 15);
+    public static Stage stage1 = new Stage(13, 20, "minecraft:chests/simple_dungeon", 15, 15);
     @Config.LangKey("config.lootgames.common.stage.2")
     @Config.Comment("Regulates characteristics of stage 2.")
-    public static Stage stage2 = new Stage(15, 35, "minecraft:chests/desert_pyramid", -1, -1);
+    public static Stage stage2 = new Stage(15, 30, "minecraft:chests/desert_pyramid", -1, -1);
     @Config.LangKey("config.lootgames.common.stage.3")
     @Config.Comment("Regulates characteristics of stage 3.")
-    public static Stage stage3 = new Stage(17, 40, "minecraft:chests/nether_bridge", -1, -1);
+    public static Stage stage3 = new Stage(17, 42, "minecraft:chests/nether_bridge", -1, -1);
     @Config.LangKey("config.lootgames.common.stage.4")
     @Config.Comment("Regulates characteristics of stage 4.")
-    public static Stage stage4 = new Stage(19, 50, "minecraft:chests/end_city_treasure", -1, -1);
+    public static Stage stage4 = new Stage(19, 68, "minecraft:chests/end_city_treasure", -1, -1);
 
     @SubscribeEvent
     public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
@@ -69,14 +69,14 @@ public class LGConfigMinesweeper {
     public static class Stage {
         @Config.LangKey("config.lootgames.ms.board_size")
         @Config.Comment({"The size of Minesweeper board. Accepts only odd numbers. If you set this to even number, then it will be increased by one.",
-                "Default: Stage 1 -> {5}, Stage 2 -> {10}, Stage 3 -> {15}, Stage 4 -> {20}"//fixme stage defaults
+                "Default: Stage 1 -> {13}, Stage 2 -> {15}, Stage 3 -> {17}, Stage 4 -> {19}"
         })
         @Config.RangeInt(min = 5, max = 19)
         public int boardSize;
 
         @Config.LangKey("config.lootgames.ms.bomb_count")
         @Config.Comment({"The amount of bombs on the board.",
-                "Default: Stage 1 -> {5}, Stage 2 -> {10}, Stage 3 -> {15}, Stage 4 -> {20}"//fixme stage defaults
+                "Default: Stage 1 -> {20}, Stage 2 -> {30}, Stage 3 -> {42}, Stage 4 -> {20}"//fixme stage defaults
         })
         @Config.RangeInt(min = 1)
         public int bombCount;

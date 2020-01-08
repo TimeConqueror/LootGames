@@ -10,6 +10,11 @@ import ru.timeconqueror.lootgames.world.gen.DungeonGenerator;
 //TODO Move content here from TE
 public class GameOfLight extends LootGame {
     @Override
+    protected BlockPos getCentralRoomPos() {
+        return getMasterPos();
+    }
+
+    @Override
     protected BlockPos getRoomFloorPos() {
         return getMasterPos();
     }

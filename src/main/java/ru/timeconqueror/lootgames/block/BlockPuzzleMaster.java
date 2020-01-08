@@ -43,9 +43,7 @@ public class BlockPuzzleMaster extends BlockGame {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (worldIn.isRemote) {
-            return true;
-        } else {
+        if (!worldIn.isRemote) {
             if (worldIn.getTileEntity(pos) instanceof TileEntityPuzzleMaster) {
                 TileEntityPuzzleMaster te = (TileEntityPuzzleMaster) worldIn.getTileEntity(pos);
 
@@ -59,8 +57,9 @@ public class BlockPuzzleMaster extends BlockGame {
                     playerIn.sendMessage(new TextComponentTranslation("msg.lootgames.puzzle_master.broken"));
                 }
             }
-            return true;
         }
+
+        return true;
     }
 
     @Nullable
