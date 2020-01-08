@@ -82,7 +82,7 @@ public class LGConfigGOL {
         }
     }
 
-    private static void init() {
+    public static void init() {
         for (int i = 1; i <= 4; i++) {
             getStageByIndex(i).parseLootTable();
             getStageByIndex(i).parseDimConfigs();
@@ -143,7 +143,7 @@ public class LGConfigGOL {
                 "Default: {}"})
         public String[] perDimensionConfigs = new String[]{};
 
-        @Config.LangKey("config.lootgamescommon..stage.min_items")
+        @Config.LangKey("config.lootgames.common.stage.min_items")
         @Config.Comment({"Minimum amount of items to be generated in chest. Won't be applied, if count of items in bound loot table are less than it. If min and max are set to -1, the limits will be disabled.",
                 "Default: Stage 1 -> {15}, Stage 2 -> {-1}, Stage 3 -> {-1}, Stage 4 -> {-1}"
         })
@@ -228,13 +228,13 @@ public class LGConfigGOL {
         public int getMinRoundsRequiredToPass(int dimensionID) {
             DimConfig cfg = getDimConfig(dimensionID);
 
-            return cfg == null ? minRoundsRequiredToPass : getDimConfig(dimensionID).minRoundRequiredToPass;
+            return cfg == null ? minRoundsRequiredToPass : cfg.minRoundRequiredToPass;
         }
 
         public ResourceLocation getLootTableRL(int dimensionID) {
             DimConfig cfg = getDimConfig(dimensionID);
 
-            return cfg == null ? lootTableRL : getDimConfig(dimensionID).lootTableRL;
+            return cfg == null ? lootTableRL : cfg.lootTableRL;
         }
 
         private static class DimConfig {

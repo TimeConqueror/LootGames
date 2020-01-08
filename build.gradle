@@ -87,7 +87,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    implementation("ru.timeconqueror:Time-Core")
+    compile("ru.timeconqueror:Time-Core")
     implementation("org.jetbrains:annotations:18.0.0")
 }
 
@@ -112,12 +112,12 @@ processResources {
 //    rename("lootgames_at.cfg", "META-INF/lootgames_at.cfg")
 }
 
-jar {
-    manifest.attributes(
-//            "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-//            "MixinConfigs": "mixins.lootgames.json",
-            "ForceLoadAsMod": true,
-            "FMLCorePluginContainsFMLMod": "true",
-//            "FMLAT": "lootgames_at.cfg"//TODO check
-    )
-}
+    //jar {
+    //    manifest.attributes(
+    ////            "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+    ////            "MixinConfigs": "mixins.lootgames.json",
+    //            "ForceLoadAsMod": true,
+    //            "FMLCorePluginContainsFMLMod": "true",
+    ////            "FMLAT": "lootgames_at.cfg"
+    //    )
+    //}

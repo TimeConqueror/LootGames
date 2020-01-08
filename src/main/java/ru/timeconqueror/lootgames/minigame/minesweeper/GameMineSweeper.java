@@ -380,7 +380,7 @@ public class GameMineSweeper extends LootGame {
         board.forEach(pos2i -> {
             if (board.getType(pos2i) == MSField.BOMB) {
 
-                int detTime = LootGames.RAND.nextInt(3 * 20);
+                int detTime = LootGames.RAND.nextInt(45);
 
                 if (longestDetTime.get() < detTime) {
                     longestDetTime.set(detTime);
