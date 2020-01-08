@@ -20,8 +20,8 @@ import ru.timeconqueror.lootgames.api.util.GameUtils;
 import ru.timeconqueror.lootgames.api.util.NBTUtils;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
+import ru.timeconqueror.lootgames.config.LGConfigGOL;
 import ru.timeconqueror.lootgames.config.LGConfigMinesweeper;
-import ru.timeconqueror.lootgames.config.LootGamesConfig;
 import ru.timeconqueror.lootgames.minigame.gameoflight.GameOfLight;
 import ru.timeconqueror.lootgames.minigame.minesweeper.block.BlockMSActivator;
 import ru.timeconqueror.lootgames.minigame.minesweeper.task.TaskMSCreateExplosion;
@@ -357,7 +357,7 @@ public class GameMineSweeper extends LootGame {
     }
 
     private void spawnLootChest(DirectionTetra direction, int gameLevel) {
-        LootGamesConfig.GOL.Stage stage = LootGamesConfig.gameOfLight.getStageByIndex(gameLevel);
+        LGConfigGOL.Stage stage = LGConfigGOL.getStageByIndex(gameLevel);
         GameUtils.SpawnChestInfo chestInfo = new GameUtils.SpawnChestInfo(GameOfLight.class, stage.getLootTableRL(getWorld().provider.getDimension()), stage.minItems, stage.maxItems);
         GameUtils.spawnLootChest(getWorld(), getCentralGamePos(), direction, chestInfo);
     }

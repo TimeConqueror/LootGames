@@ -61,6 +61,8 @@ advancement.lootgames.ms.level4=Плохих сапёров не бывает
 advancement.lootgames.ms.level4.desc=Пройдите 4-ый уровень Сапёра
 
 # Configs
+config.lootgames.category.general=Общее
+config.lootgames.category.general.tooltip=Общие настройки
 config.lootgames.minigamesenabled=Включить мини-игры
 config.lootgames.minigamesenabled.tooltip=Если это равно false, мастер головоломок не начнёт ни одной игры.
 config.lootgames.enabledebug=Включить режим отладки

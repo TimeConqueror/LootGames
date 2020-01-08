@@ -62,6 +62,7 @@ advancement.lootgames.ms.level4.desc=Beat a Minesweeper at Level 4
 
 #Configs
 config.lootgames.category.general=General
+config.lootgames.category.general.tooltip=General settings
 config.lootgames.minigamesenabled=Enable minigames
 config.lootgames.minigamesenabled.tooltip=If this is set to false, then puzzle master won't start any game.
 config.lootgames.enabledebug=Enable Debug

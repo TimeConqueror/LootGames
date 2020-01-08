@@ -27,7 +27,7 @@ import ru.timeconqueror.lootgames.api.util.DirectionOctagonal;
 import ru.timeconqueror.lootgames.api.util.GameUtils;
 import ru.timeconqueror.lootgames.block.BlockDungeonLamp;
 import ru.timeconqueror.lootgames.block.BlockGOLSubordinate;
-import ru.timeconqueror.lootgames.config.LootGamesConfig;
+import ru.timeconqueror.lootgames.config.LGConfigGOL;
 import ru.timeconqueror.lootgames.packets.NetworkHandler;
 import ru.timeconqueror.lootgames.packets.SMessageGOLDrawStuff;
 import ru.timeconqueror.lootgames.packets.SMessageGOLParticle;
@@ -119,7 +119,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
         }
 
         if (!world.isRemote && gameStage == GameStage.WAITING_FOR_PLAYER_SEQUENCE) {
-            if (timeout >= LootGamesConfig.gameOfLight.timeout * 20) {
+            if (timeout >= LGConfigGOL.timeout * 20) {
                 updateGameStage(GameStage.WAITING_FOR_START);
             }
 
@@ -192,14 +192,14 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
             if (symbolIndex == symbolSequence.size() - 1) {
                 currentRound++;
 
-                if (currentRound >= LootGamesConfig.gameOfLight.stage4.getMinRoundsRequiredToPass(world.provider.getDimension())) {
+                if (currentRound >= LGConfigGOL.stage4.getMinRoundsRequiredToPass(world.provider.getDimension())) {
                     gameLevel = 4;
                     onGameEnded(player);
                     return;
                 }
 
                 NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 15);
-                if (currentRound >= LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).getMinRoundsRequiredToPass(world.provider.getDimension())) {
+                if (currentRound >= LGConfigGOL.getStageByIndex(gameLevel).getMinRoundsRequiredToPass(world.provider.getDimension())) {
                     NetworkHandler.INSTANCE.sendToAllAround(new SMessageGOLParticle(getPos(), EnumParticleTypes.VILLAGER_HAPPY.getParticleID()), point);
                     player.sendMessage(MessageUtils.color(new TextComponentTranslation("msg.lootgames.stage_complete"), TextFormatting.GREEN));
                     world.playSound(null, getPos(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
@@ -211,7 +211,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
                 NetworkHandler.INSTANCE.sendToAllAround(new SMessageGOLDrawStuff(getPos(), EnumDrawStuff.SEQUENCE_ACCEPTED.ordinal()), point);
                 world.playSound(null, getPos(), ModSounds.golSequenceComplete, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
-                if (LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).randomizeSequence) {
+                if (LGConfigGOL.getStageByIndex(gameLevel).randomizeSequence) {
                     generateSequence(symbolSequence.size() + 1);//TODO add config for randomizing only at beginning of stage, change then langs
                 } else {
                     addRandSymbolToSequence();
@@ -234,7 +234,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     }
 
     private void onGameLevelChanged() {
-        ticksPerShowSymbols = LootGamesConfig.gameOfLight.getStageByIndex(gameLevel).displayTime;
+        ticksPerShowSymbols = LGConfigGOL.getStageByIndex(gameLevel).displayTime;
     }
 
     private void generateSequence(int size) {
@@ -249,7 +249,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
             symbolSequence = new ArrayList<>();
         }
 
-        if (gameLevel >= LootGamesConfig.gameOfLight.expandFieldAtStage) {
+        if (gameLevel >= LGConfigGOL.expandFieldAtStage) {
             symbolSequence.add(LootGames.RAND.nextInt(8));
         } else {
             symbolSequence.add(LootGames.RAND.nextInt(4) * 2);
@@ -264,7 +264,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
 
         onGameLevelChanged();
 
-        generateSequence(LootGamesConfig.gameOfLight.startDigitAmount);
+        generateSequence(LGConfigGOL.startDigitAmount);
 
         updateGameStage(GameStage.SHOWING_SEQUENCE);
     }
@@ -350,9 +350,9 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
 
     private void onGameEnded(EntityPlayer player) {
         if (isLastStagePassed() ||
-                (maxLevelBeatList.size() == LootGamesConfig.gameOfLight.maxAttempts + 1 && getBestLevelReached() > 0)) {
+                (maxLevelBeatList.size() == LGConfigGOL.maxAttempts + 1 && getBestLevelReached() > 0)) {
             onGameWon(player);
-        } else if (maxLevelBeatList.size() < LootGamesConfig.gameOfLight.maxAttempts + 1) {
+        } else if (maxLevelBeatList.size() < LGConfigGOL.maxAttempts + 1) {
             world.playSound(null, getPos(), ModSounds.golStartGame, SoundCategory.BLOCKS, 0.75F, 1.0F);
             startGame(player);
         } else {
@@ -365,7 +365,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
             AdvancementManager.WIN_GAME.trigger(((EntityPlayerMP) player), "win");
         }
 
-        if (maxLevelBeatList.size() == LootGamesConfig.gameOfLight.maxAttempts + 1 && getBestLevelReached() > 0) {
+        if (maxLevelBeatList.size() == LGConfigGOL.maxAttempts + 1 && getBestLevelReached() > 0) {
             gameLevel -= 1;
         }
 
@@ -401,11 +401,11 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
 
         List<String> failEffects = new ArrayList<>();
 
-        if (LootGamesConfig.gameOfLight.onFailExplode)
+        if (LGConfigGOL.onFailExplode)
             failEffects.add("explode");
-        if (LootGamesConfig.gameOfLight.onFailLava)
+        if (LGConfigGOL.onFailLava)
             failEffects.add("lava");
-        if (LootGamesConfig.gameOfLight.onFailZombies)
+        if (LGConfigGOL.onFailZombies)
             failEffects.add("zombies");
 
         if (failEffects.size() != 0)
@@ -453,7 +453,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     }
 
     private boolean isLastStagePassed() {
-        return gameLevel == 4 && currentRound >= LootGamesConfig.gameOfLight.stage4.getMinRoundsRequiredToPass(world.provider.getDimension());
+        return gameLevel == 4 && currentRound >= LGConfigGOL.stage4.getMinRoundsRequiredToPass(world.provider.getDimension());
     }
 
     private void genLootChests(EntityPlayer player) {
@@ -491,7 +491,7 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> imple
     }
 
     private void spawnLootChest(DirectionTetra direction, int gameLevel) {
-        LootGamesConfig.GOL.Stage stage = LootGamesConfig.gameOfLight.getStageByIndex(gameLevel);
+        LGConfigGOL.Stage stage = LGConfigGOL.getStageByIndex(gameLevel);
         GameUtils.SpawnChestInfo chestInfo = new GameUtils.SpawnChestInfo(GameOfLight.class, stage.getLootTableRL(world.provider.getDimension()), stage.minItems, stage.maxItems);
         GameUtils.spawnLootChest(getWorld(), getPos(), direction, chestInfo);
     }
