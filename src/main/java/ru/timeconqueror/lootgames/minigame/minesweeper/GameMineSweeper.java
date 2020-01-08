@@ -37,7 +37,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 
-//TODO Every fail bomb strength increases
 //TODO add custom Stage Class to improve readability of code (name, ticks before skipping, actions)
 //TODO add default colors to warn, fail, win, etc
 public class GameMineSweeper extends LootGame {
@@ -324,7 +323,7 @@ public class GameMineSweeper extends LootGame {
         genLootChests(players);
     }
 
-    private void genLootChests(List<EntityPlayerMP> players) {//fixme change advancements
+    private void genLootChests(List<EntityPlayerMP> players) {
         if (currentLevel < 2) {
             LootGames.logHelper.error("GenLootChests method was called in an appropriate time!");
             return;
