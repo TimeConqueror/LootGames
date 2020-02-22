@@ -19,7 +19,7 @@ public class MSBoard {
     private int bombCount;
 
     @SideOnly(Side.CLIENT)
-    int cFlaggedFields = 0;
+    int cFlaggedFields;
 
     public MSBoard(int size, int bombCount) {
         this.size = size;
@@ -255,7 +255,6 @@ public class MSBoard {
 
     void setBoard(MSField[][] board) {
         this.board = board;
-        updateFlaggedFields_c();
     }
 
     public int size() {

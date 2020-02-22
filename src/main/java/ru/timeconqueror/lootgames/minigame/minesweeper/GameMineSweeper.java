@@ -520,6 +520,7 @@ public class GameMineSweeper extends LootGame {
             MSField[][] boardArr = NBTUtils.readTwoDimArrFromNBT(boardTag, MSField.class, compoundIn ->
                     new MSField(compoundIn.hasKey("type") ? compoundIn.getInteger("type") : MSField.EMPTY, compoundIn.getBoolean("hidden"), compoundIn.getInteger("mark")));
             board.setBoard(boardArr);
+            board.updateFlaggedFields_c();
         }
     }
 
