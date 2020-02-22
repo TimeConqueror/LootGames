@@ -16,6 +16,7 @@ tile.lootgames.puzzle_master.name=Мастер головоломок
 tile.lootgames.gol_master.name=Игра света
 tile.lootgames.gol_subordinate.name=Блок-подчинённый
 tile.lootgames.ms_activator.name=Сапёр
+tile.lootgames.smart_subordinate.name=Умный блок-подчинённый
 
 # Messages
 msg.lootgames.puzzle_master.broken=Кажется, этот блок сломан. Пожалуйста, сообщите об этой проблеме автору мода.
