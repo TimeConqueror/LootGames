@@ -1,1 +1,3 @@
-includeBuild("../Time-Core")
+include 'timecore'
+
+project(':timecore').projectDir = file('../TimeCore-1.14.4')
