@@ -1,13 +1,12 @@
 package ru.timeconqueror.lootgames;
 
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.timeconqueror.timecore.api.TimeMod;
 
 @Mod(LootGames.MODID)
-public class LootGames {
+public class LootGames extends TimeMod {
     public static final String MODID = "lootgames";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static LootGames INSTANCE = null;
@@ -16,9 +15,8 @@ public class LootGames {
         INSTANCE = this;
     }
 
-    private void setup(final FMLCommonSetupEvent event) {
-    }
-
-    private void doClientStuff(final FMLClientSetupEvent event) {
+    @Override
+    public String getModID() {
+        return MODID;
     }
 }

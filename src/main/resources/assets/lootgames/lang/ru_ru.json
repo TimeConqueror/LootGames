@@ -1,0 +1,10 @@
+{
+  "itemGroup.lootgames": "Loot Games",
+  "block.lootgames.dungeon_wall": "Стена подземелья",
+  "block.lootgames.dungeon_wall_cracked": "Потрескавшаяся стена подземелья",
+  "block.lootgames.dungeon_ceiling": "Потолок подземелья",
+  "block.lootgames.dungeon_ceiling_cracked": "Потрескавшийся потолок подземелья",
+  "block.lootgames.dungeon_floor": "Пол подземелья",
+  "block.lootgames.dungeon_floor_cracked": "Потрескавшийся пол подземелья",
+  "block.lootgames.dungeon_floor_shielded": "Защищённый пол подземелья"
+}
