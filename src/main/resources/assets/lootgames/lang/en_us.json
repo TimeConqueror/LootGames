@@ -6,5 +6,8 @@
   "block.lootgames.dungeon_ceiling_cracked": "Cracked Dungeon Ceiling",
   "block.lootgames.dungeon_floor": "Dungeon Floor",
   "block.lootgames.dungeon_floor_cracked": "Cracked Dungeon Floor",
-  "block.lootgames.dungeon_floor_shielded": "Shielded Dungeon Ceiling"
+  "block.lootgames.dungeon_floor_shielded": "Shielded Dungeon Floor",
+  "block.lootgames.dungeon_lamp": "Dungeon Lamp",
+  "block.lootgames.dungeon_lamp_broken": "Broken Dungeon Lamp",
+  "item.lootgames.dungeon_block.tooltip": "Mobs can't spawn on this block."
 }

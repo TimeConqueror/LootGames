@@ -14,21 +14,23 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import ru.timeconqueror.timecore.api.common.registry.block.BlockPropertiesFactory;
+import net.minecraftforge.common.ToolType;
+import ru.timeconqueror.timecore.api.registry.block.BlockPropertiesFactory;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class BlockDungeonBricks extends Block {
-    public static BlockPropertiesFactory defPropsCreator = new BlockPropertiesFactory(() -> Properties.create(Material.ROCK)
+public class BlockDungeon extends Block {
+    public static final BlockPropertiesFactory BRICKS_PROPS_CREATOR = new BlockPropertiesFactory(() -> Properties.create(Material.ROCK)
             .hardnessAndResistance(10.0F, 6.0F)
             .sound(SoundType.STONE));
 
-    public BlockDungeonBricks() {
-        super(defPropsCreator.createProps());
-    }
+    public static final BlockPropertiesFactory LAMP_PROPS_CREATOR = new BlockPropertiesFactory(() -> Properties.create(Material.GLASS)
+            .hardnessAndResistance(2.0F, 6.0F)
+            .sound(SoundType.GLASS)
+            .lightValue(15));
 
-    public BlockDungeonBricks(Properties props) {
+    public BlockDungeon(Properties props) {
         super(props);
     }
 
@@ -40,6 +42,12 @@ public class BlockDungeonBricks extends Block {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new TranslationTextComponent("item.lootgames.dungeon_bricks.tooltip"));
+        tooltip.add(new TranslationTextComponent("item.lootgames.dungeon_block.tooltip"));
+    }
+
+    @Nullable
+    @Override
+    public ToolType getHarvestTool(BlockState state) {
+        return ToolType.PICKAXE;
     }
 }

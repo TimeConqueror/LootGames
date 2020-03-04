@@ -6,5 +6,8 @@
   "block.lootgames.dungeon_ceiling_cracked": "Потрескавшийся потолок подземелья",
   "block.lootgames.dungeon_floor": "Пол подземелья",
   "block.lootgames.dungeon_floor_cracked": "Потрескавшийся пол подземелья",
-  "block.lootgames.dungeon_floor_shielded": "Защищённый пол подземелья"
+  "block.lootgames.dungeon_floor_shielded": "Защищённый пол подземелья",
+  "block.lootgames.dungeon_lamp": "Лампа подземелья",
+  "block.lootgames.dungeon_lamp_broken": "Сломанная лампа подземелья",
+  "item.lootgames.dungeon_block.tooltip": "Существа не могут спауниться на этом блоке."
 }
