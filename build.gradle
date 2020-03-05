@@ -31,6 +31,23 @@ archivesBaseName = 'LootGames'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
+repositories {
+    flatDir name: 'libs', dirs: [new File("libs").absolutePath]
+    flatDir {
+        dirs 'runtimeMods'
+    }
+    maven {
+        name = 'sponge'
+        url = 'https://repo.spongepowered.org/maven'
+    }
+    mavenCentral()
+    maven { url = 'https://files.minecraftforge.net/maven' }
+    maven {
+        name 'tterrag\'s Maven' // Mappings
+        url 'https://maven.tterrag.com/'
+    }
+}
+
 minecraft {
 
     // The mappings can be changed at any time, and must be in the following format.
@@ -40,8 +57,6 @@ minecraft {
     // Simply re-run your setup task after changing the mappings to update your workspace.
     mappings channel: 'stable', version: '56-1.14.3'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
-
-//     accessTransformer = file('../TimeCore-1.14.4/src/main/resources/META-INF/timecore_at.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -98,25 +113,9 @@ minecraft {
     }
 }
 
-repositories {
-    flatDir {
-        dirs 'runtimeMods'
-    }
-    maven {
-        name = 'sponge'
-        url = 'https://repo.spongepowered.org/maven'
-    }
-    mavenCentral()
-    maven { url = 'https://files.minecraftforge.net/maven' }
-}
-
 configurations {
     // configuration that holds jars to include in the jar
     shade
-}
-
-repositories {
-    flatDir name: 'libs', dirs: [new File("libs").absolutePath]
 }
 
 dependencies {

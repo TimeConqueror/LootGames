@@ -15,17 +15,17 @@ import net.minecraft.world.IBlockReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
-import ru.timeconqueror.timecore.api.registry.block.BlockPropertiesFactory;
+import ru.timeconqueror.timecore.api.registry.block.BlockPropsFactory;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockDungeon extends Block {
-    public static final BlockPropertiesFactory BRICKS_PROPS_CREATOR = new BlockPropertiesFactory(() -> Properties.create(Material.ROCK)
+    public static final BlockPropsFactory BRICKS_PROPS_CREATOR = new BlockPropsFactory(() -> Properties.create(Material.ROCK)
             .hardnessAndResistance(10.0F, 6.0F)
             .sound(SoundType.STONE));
 
-    public static final BlockPropertiesFactory LAMP_PROPS_CREATOR = new BlockPropertiesFactory(() -> Properties.create(Material.GLASS)
+    public static final BlockPropsFactory LAMP_PROPS_CREATOR = new BlockPropsFactory(() -> Properties.create(Material.GLASS)
             .hardnessAndResistance(2.0F, 6.0F)
             .sound(SoundType.GLASS)
             .lightValue(15));

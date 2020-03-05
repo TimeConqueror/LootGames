@@ -9,5 +9,6 @@
   "block.lootgames.dungeon_floor_shielded": "Защищённый пол подземелья",
   "block.lootgames.dungeon_lamp": "Лампа подземелья",
   "block.lootgames.dungeon_lamp_broken": "Сломанная лампа подземелья",
+  "block.lootgames.puzzle_master": "Мастер головоломок",
   "item.lootgames.dungeon_block.tooltip": "Существа не могут спауниться на этом блоке."
 }

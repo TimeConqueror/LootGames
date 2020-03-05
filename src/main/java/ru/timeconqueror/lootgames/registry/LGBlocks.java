@@ -1,30 +1,29 @@
 package ru.timeconqueror.lootgames.registry;
 
-import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.common.LGItemGroup;
 import ru.timeconqueror.lootgames.common.block.BlockDungeon;
+import ru.timeconqueror.lootgames.common.block.BlockPuzzleMaster;
 import ru.timeconqueror.timecore.api.registry.TimeAutoRegistry;
 import ru.timeconqueror.timecore.api.registry.block.BlockTimeRegistry;
 
 import static ru.timeconqueror.lootgames.common.block.BlockDungeon.BRICKS_PROPS_CREATOR;
 import static ru.timeconqueror.lootgames.common.block.BlockDungeon.LAMP_PROPS_CREATOR;
+import static ru.timeconqueror.timecore.api.registry.block.BlockPropsFactory.setUnbreakableAndInexplosive;
 
 @TimeAutoRegistry
 public class LGBlocks extends BlockTimeRegistry {
-    public static final BlockDungeon DUNGEON_WALL = new BlockDungeon(BRICKS_PROPS_CREATOR.createProps());
-    public static final BlockDungeon DUNGEON_WALL_CRACKED = new BlockDungeon(BRICKS_PROPS_CREATOR.createProps());
-    public static final BlockDungeon DUNGEON_CEILING = new BlockDungeon(BRICKS_PROPS_CREATOR.createProps());
-    public static final BlockDungeon DUNGEON_CEILING_CRACKED = new BlockDungeon(BRICKS_PROPS_CREATOR.createProps());
-    public static final BlockDungeon DUNGEON_FLOOR = new BlockDungeon(BRICKS_PROPS_CREATOR.createProps());
-    public static final BlockDungeon DUNGEON_FLOOR_CRACKED = new BlockDungeon(BRICKS_PROPS_CREATOR.createProps());
-    public static final BlockDungeon DUNGEON_FLOOR_SHIELDED = new BlockDungeon(BRICKS_PROPS_CREATOR.createProps().hardnessAndResistance(-1F, 3600000F));
+    public static final BlockDungeon DUNGEON_WALL = new BlockDungeon(BRICKS_PROPS_CREATOR.create());
+    public static final BlockDungeon DUNGEON_WALL_CRACKED = new BlockDungeon(BRICKS_PROPS_CREATOR.create());
+    public static final BlockDungeon DUNGEON_CEILING = new BlockDungeon(BRICKS_PROPS_CREATOR.create());
+    public static final BlockDungeon DUNGEON_CEILING_CRACKED = new BlockDungeon(BRICKS_PROPS_CREATOR.create());
+    public static final BlockDungeon DUNGEON_FLOOR = new BlockDungeon(BRICKS_PROPS_CREATOR.create());
+    public static final BlockDungeon DUNGEON_FLOOR_CRACKED = new BlockDungeon(BRICKS_PROPS_CREATOR.create());
+    public static final BlockDungeon DUNGEON_FLOOR_SHIELDED = new BlockDungeon(setUnbreakableAndInexplosive(BRICKS_PROPS_CREATOR.create()));
 
-    public static final BlockDungeon DUNGEON_LAMP = new BlockDungeon(LAMP_PROPS_CREATOR.createProps());
-    public static final BlockDungeon DUNGEON_LAMP_BROKEN = new BlockDungeon(LAMP_PROPS_CREATOR.createProps().lightValue(0));
+    public static final BlockDungeon DUNGEON_LAMP = new BlockDungeon(LAMP_PROPS_CREATOR.create());
+    public static final BlockDungeon DUNGEON_LAMP_BROKEN = new BlockDungeon(LAMP_PROPS_CREATOR.create().lightValue(0));
 
-    public LGBlocks() {
-        super(LootGames.INSTANCE);
-    }
+    public static final BlockPuzzleMaster PUZZLE_MASTER = new BlockPuzzleMaster();
 
     @Override
     public void register() {
@@ -37,5 +36,6 @@ public class LGBlocks extends BlockTimeRegistry {
         regBlock(DUNGEON_FLOOR_SHIELDED, "dungeon_floor_shielded").regDefaults(LGItemGroup.MAIN);
         regBlock(DUNGEON_LAMP, "dungeon_lamp").regDefaults(LGItemGroup.MAIN);
         regBlock(DUNGEON_LAMP_BROKEN, "dungeon_lamp_broken").regDefaults(LGItemGroup.MAIN);
+        regBlock(PUZZLE_MASTER, "puzzle_master").regDefaults(LGItemGroup.MAIN);
     }
 }

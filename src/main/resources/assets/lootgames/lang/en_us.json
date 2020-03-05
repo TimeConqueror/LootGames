@@ -9,5 +9,6 @@
   "block.lootgames.dungeon_floor_shielded": "Shielded Dungeon Floor",
   "block.lootgames.dungeon_lamp": "Dungeon Lamp",
   "block.lootgames.dungeon_lamp_broken": "Broken Dungeon Lamp",
+  "block.lootgames.puzzle_master": "Puzzle Master",
   "item.lootgames.dungeon_block.tooltip": "Mobs can't spawn on this block."
 }
