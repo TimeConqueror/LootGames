@@ -8,9 +8,9 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.network.PacketDistributor;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.api.packet.IGamePacket;
-import ru.timeconqueror.lootgames.api.packet.SMessageGameUpdate;
+import ru.timeconqueror.lootgames.api.packet.SPacketGameUpdate;
 import ru.timeconqueror.lootgames.api.task.TEPostponeTaskScheduler;
-import ru.timeconqueror.lootgames.common.packet.NetworkHandler;
+import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -25,7 +25,7 @@ public abstract class LootGame {
     }
 
     public void init() {
-        this.serverTaskPostponer = new TEPostponeTaskScheduler(masterTileEntity);
+        this.serverTaskPostponer = new TEPostponeTaskScheduler(getWorld());
     }
 
     public void onTick() {
@@ -110,6 +110,7 @@ public abstract class LootGame {
      * Writes data used only to save on server.
      * Overriding is fine.
      */
+    @OverridingMethodsMustInvokeSuper
     public CompoundNBT writeNBTForSaving() {
         CompoundNBT nbt = new CompoundNBT();
         nbt = writeCommonNBT(nbt);
@@ -121,6 +122,7 @@ public abstract class LootGame {
      * Reads data from server-saved NBT.
      * Overriding is fine.
      */
+    @OverridingMethodsMustInvokeSuper
     public void readNBTFromSave(CompoundNBT compound) {
         readCommonNBT(compound);
 
@@ -133,6 +135,7 @@ public abstract class LootGame {
      * Writes the data used only for sending to client, not to save it.
      * Overriding is fine.
      */
+    @OverridingMethodsMustInvokeSuper
     public CompoundNBT writeNBTForClient() {
         CompoundNBT nbt = new CompoundNBT();
         nbt = writeCommonNBT(nbt);
@@ -144,7 +147,7 @@ public abstract class LootGame {
      */
     public void sendUpdatePacket(IGamePacket<LootGame> packet) {
         Chunk chunk = getWorld().getChunkAt(masterTileEntity.getPos());
-        NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new SMessageGameUpdate(this, packet));
+        LGNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new SPacketGameUpdate(this, packet));
     }
 
     /**
@@ -158,6 +161,7 @@ public abstract class LootGame {
      * Reads the data that comes to client side.
      * Overriding is fine.
      */
+    @OverridingMethodsMustInvokeSuper
     public void readNBTFromClient(CompoundNBT compound) {
         readCommonNBT(compound);
     }
@@ -165,6 +169,7 @@ public abstract class LootGame {
     /**
      * Writes data to be used both server->client syncing and world saving
      */
+    @OverridingMethodsMustInvokeSuper
     public CompoundNBT writeCommonNBT(CompoundNBT compound) {
         return compound;
     }
@@ -172,6 +177,7 @@ public abstract class LootGame {
     /**
      * Reads data that comes from both server->client syncing and world restoring from save
      */
+    @OverridingMethodsMustInvokeSuper
     public void readCommonNBT(CompoundNBT compound) {
     }
 }

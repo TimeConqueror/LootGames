@@ -3,14 +3,14 @@ package ru.timeconqueror.lootgames.registry;
 import ru.timeconqueror.lootgames.common.LGItemGroup;
 import ru.timeconqueror.lootgames.common.block.BlockDungeon;
 import ru.timeconqueror.lootgames.common.block.BlockPuzzleMaster;
-import ru.timeconqueror.timecore.api.registry.TimeAutoRegistry;
+import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
 import ru.timeconqueror.timecore.api.registry.block.BlockTimeRegistry;
 
 import static ru.timeconqueror.lootgames.common.block.BlockDungeon.BRICKS_PROPS_CREATOR;
 import static ru.timeconqueror.lootgames.common.block.BlockDungeon.LAMP_PROPS_CREATOR;
 import static ru.timeconqueror.timecore.api.registry.block.BlockPropsFactory.setUnbreakableAndInexplosive;
 
-@TimeAutoRegistry
+@TimeAutoRegistrable
 public class LGBlocks extends BlockTimeRegistry {
     public static final BlockDungeon DUNGEON_WALL = new BlockDungeon(BRICKS_PROPS_CREATOR.create());
     public static final BlockDungeon DUNGEON_WALL_CRACKED = new BlockDungeon(BRICKS_PROPS_CREATOR.create());

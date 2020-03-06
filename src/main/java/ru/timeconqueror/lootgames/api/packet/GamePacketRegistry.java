@@ -3,20 +3,37 @@ package ru.timeconqueror.lootgames.api.packet;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.jetbrains.annotations.NotNull;
+import ru.timeconqueror.timecore.api.registry.Initable;
+import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
+import ru.timeconqueror.timecore.api.registry.TimeRegistry;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Objects;
-import java.util.Set;
 
-public class GamePacketRegistry {
+/**
+ * Used for game packet adding. You may extend it and do your stuff in {@link #register()} method.<br>
+ * <p>
+ * Any your registry that extends it should be annotated with {@link TimeAutoRegistrable}
+ * to create its instance automatically and provide register features.<br>
+ *
+ * <b><font color="yellow">WARNING: Any annotated registry class must contain constructor without params or exception will be thrown.</b><br>
+ */
+public abstract class GamePacketRegistry extends TimeRegistry implements Initable {
     private static final BiMap<PacketInfo, Class<? extends IGamePacket<?>>> GAME_PACKET_MAP = HashBiMap.create();
-    private static final Set<String> REGISTERED_MOD_IDS = new HashSet<>();
+    private static final HashMap<String, GamePacketManager> REGISTERED_MANAGERS = new HashMap<>();
 
-    public static GamePacketManager newManager(String modID) {
-        if (!REGISTERED_MOD_IDS.add(modID)) {
-            throw new IllegalArgumentException("The mod id " + modID + " is already registered!");
+    /**
+     * Returns the mod-dependent manager to register packets from your mod.
+     */
+    public static GamePacketManager getManager() {
+        String modID = getModID();
+        GamePacketManager manager = REGISTERED_MANAGERS.get(modID);
+        if (manager == null) {
+            manager = new GamePacketManager(modID);
+            REGISTERED_MANAGERS.put(modID, manager);
         }
-        return new GamePacketManager(modID);
+
+        return manager;
     }
 
     @NotNull
@@ -46,7 +63,7 @@ public class GamePacketRegistry {
             this.modID = modID;
         }
 
-        public void registerPacket(int id, Class<? extends IGamePacket<?>> gamePacketClass) {
+        protected void registerPacket(int id, Class<? extends IGamePacket<?>> gamePacketClass) {
             try {
                 GAME_PACKET_MAP.put(new PacketInfo(modID, id), gamePacketClass);
             } catch (IllegalArgumentException e) {

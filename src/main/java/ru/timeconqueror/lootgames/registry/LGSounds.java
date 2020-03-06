@@ -1,10 +1,10 @@
 package ru.timeconqueror.lootgames.registry;
 
-import ru.timeconqueror.timecore.api.registry.TimeAutoRegistry;
-import ru.timeconqueror.timecore.api.registry.sound.SoundTimeRegistry;
-import ru.timeconqueror.timecore.api.registry.sound.TimeSound;
+import ru.timeconqueror.timecore.api.common.sound.TimeSound;
+import ru.timeconqueror.timecore.api.registry.SoundTimeRegistry;
+import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
 
-@TimeAutoRegistry
+@TimeAutoRegistrable
 public class LGSounds extends SoundTimeRegistry {
     public static final TimeSound GOL_START_GAME = createSound("gol_start_game");
     public static final TimeSound GOL_SEQUENCE_WRONG = createSound("gol_sequence_wrong");

@@ -5,9 +5,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 
 /**
- * @apiNote You must create a <font color="red">public empty constructor</font>
- * that will be used by schedulers to create an instance after restoring world.
+ * While implementing ITask instance, you should also register {@link ITaskFactory} in {@link TaskRegistry}/
  */
 public interface ITask extends INBTSerializable<CompoundNBT> {
     void run(World world);
+
+    interface ITaskFactory<T extends ITask> {
+        T create();
+    }
 }

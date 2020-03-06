@@ -3,22 +3,22 @@ package ru.timeconqueror.lootgames.api.task;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
+import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.timecore.api.exception.NotExistsException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-//TODO DO ON GLOBAL IN THE WORLD
 public class TEPostponeTaskScheduler implements INBTSerializable<ListNBT> {
     private final ArrayList<TaskWrapper> tasks = new ArrayList<>();
 
-    private final TileEntity tileEntity;
+    private final World world;
 
-    public TEPostponeTaskScheduler(TileEntity tileEntity) {
-        this.tileEntity = tileEntity;
+    public TEPostponeTaskScheduler(@NotNull World world) {
+        this.world = world;
     }
 
     /**
@@ -41,7 +41,7 @@ public class TEPostponeTaskScheduler implements INBTSerializable<ListNBT> {
                 TaskWrapper task = iterator.next();
 
                 if (task.timeBeforeStart <= 0) {
-                    task.run(tileEntity.getWorld());
+                    task.run(world);
                     iterator.remove();
                 } else {
                     task.decreaseTimer();
@@ -69,29 +69,32 @@ public class TEPostponeTaskScheduler implements INBTSerializable<ListNBT> {
         return out;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void deserializeNBT(ListNBT nbt) {
         for (INBT in : nbt) {
             CompoundNBT c = (CompoundNBT) in;
             int time = c.getInt("time");
 
-            Class<? extends ITask> taskClass = TaskRegistry.getTaskClass(c.getString("name"));
-            if (taskClass == null) {
-                LootGames.LOGGER.error("You didn't register task class {} in TaskRegistry. It will be skipped.", c.getString("name"));
-                return;
-            }
-
-            ITask task;
+            Class<?> clazz = null;
             try {
-                task = taskClass.newInstance();
-                task.deserializeNBT(c.getCompound("task"));
-            } catch (InstantiationException | IllegalAccessException e) {
-                LootGames.LOGGER.error("Can't create task {} while restoring world from save. It will be skipped.", taskClass);
-                e.printStackTrace();
-                return;
-            }
+                clazz = Class.forName(c.getString("name"));
+                Class<? extends ITask> taskClass = (Class<? extends ITask>) clazz;
 
-            tasks.add(new TaskWrapper(time, task));
+                ITask task = TaskRegistry.createTask(taskClass);
+
+                task.deserializeNBT(c.getCompound("task"));
+
+                tasks.add(new TaskWrapper(time, task));
+            } catch (ClassNotFoundException e) {
+                LootGames.LOGGER.error("Can't found class for name: {} . Skipping...", c.getString("name"));
+            } catch (ClassCastException e) {
+                LootGames.LOGGER.error("Restored class name {} doesn't inherit {}. Skipping...", clazz, ITask.class);
+                e.printStackTrace();
+            } catch (NotExistsException e) {
+                LootGames.LOGGER.error("Mod author didn't register factory for task class {} in TaskRegistry. Skipping...", clazz);
+                e.printStackTrace();
+            }
         }
     }
 

@@ -21,4 +21,8 @@ public abstract class NBTGamePacket<T extends LootGame> implements IGamePacket<T
     public void decode(PacketBuffer bufferFrom) {
         compound = bufferFrom.readCompoundTag();
     }
+
+    public CompoundNBT getCompound() {
+        return compound;
+    }
 }
