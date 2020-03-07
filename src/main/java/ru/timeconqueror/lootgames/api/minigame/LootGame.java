@@ -6,15 +6,19 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.network.PacketDistributor;
+import ru.timeconqueror.lootgames.api.advancement.LGAdvancementManager;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.api.packet.IGamePacket;
 import ru.timeconqueror.lootgames.api.packet.SPacketGameUpdate;
 import ru.timeconqueror.lootgames.api.task.TEPostponeTaskScheduler;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
+import ru.timeconqueror.timecore.api.util.NetworkUtils;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.Objects;
+
+import static ru.timeconqueror.lootgames.common.advancement.EndGameTrigger.EndType;
 
 public abstract class LootGame {
     protected TileEntityGameMaster<?> masterTileEntity;
@@ -54,7 +58,8 @@ public abstract class LootGame {
     @OverridingMethodsMustInvokeSuper
     protected void triggerGameWin() {
         onGameEnd();
-//        NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(), player -> AdvancementManager.WIN_GAME.trigger(player, "win"));//fixme uncomment
+        NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(),
+                player -> LGAdvancementManager.END_GAME.trigger(player, EndType.WIN));
     }
 
     /**
@@ -64,7 +69,8 @@ public abstract class LootGame {
     @OverridingMethodsMustInvokeSuper
     protected void triggerGameLose() {
         onGameEnd();
-//        NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(), player -> AdvancementManager.WIN_GAME.trigger(player, "lose"));//fixme uncomment
+        NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(),
+                player -> LGAdvancementManager.END_GAME.trigger(player, EndType.LOSE));
     }
 
     /**

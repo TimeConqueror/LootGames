@@ -206,7 +206,7 @@ public class DungeonGenerator {
 //                    IBlockState blockState = world.getBlockState(pos);
 
                     // Skip TE check for GT Blockores
-                    //TODO Add GT Compatibility in 1.12.2
+                    //TODO Add GT Compatibility
 //                    UniqueIdentifier tBlockID = GameRegistry.findUniqueIdentifierFor(tBlock);
 //                    if (tBlockID.modId.equalsIgnoreCase("gregtech") && tBlockID.name.toLowerCase().contains("blockores"))
 //                        continue;
