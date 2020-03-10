@@ -1,8 +1,12 @@
 package ru.timeconqueror.lootgames.registry;
 
+import ru.timeconqueror.lootgames.api.block.BlockSmartSubordinate;
 import ru.timeconqueror.lootgames.common.LGItemGroup;
 import ru.timeconqueror.lootgames.common.block.BlockDungeon;
+import ru.timeconqueror.lootgames.common.block.BlockMSActivator;
+import ru.timeconqueror.lootgames.common.block.BlockMSMaster;
 import ru.timeconqueror.lootgames.common.block.BlockPuzzleMaster;
+import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
 import ru.timeconqueror.timecore.api.registry.block.BlockTimeRegistry;
 
@@ -24,6 +28,10 @@ public class LGBlocks extends BlockTimeRegistry {
     public static final BlockDungeon DUNGEON_LAMP_BROKEN = new BlockDungeon(LAMP_PROPS_CREATOR.create().lightValue(0));
 
     public static final BlockPuzzleMaster PUZZLE_MASTER = new BlockPuzzleMaster();
+    public static final BlockSmartSubordinate SMART_SUBORDINATE = new BlockSmartSubordinate();
+
+    public static final BlockMSActivator MS_ACTIVATOR = new BlockMSActivator();
+    public static final BlockMSMaster MS_MASTER = new BlockMSMaster();
 
     @Override
     public void register() {
@@ -37,5 +45,8 @@ public class LGBlocks extends BlockTimeRegistry {
         regBlock(DUNGEON_LAMP, "dungeon_lamp").regDefaults(LGItemGroup.MAIN);
         regBlock(DUNGEON_LAMP_BROKEN, "dungeon_lamp_broken").regDefaults(LGItemGroup.MAIN);
         regBlock(PUZZLE_MASTER, "puzzle_master").regDefaults(LGItemGroup.MAIN);
+        regBlock(SMART_SUBORDINATE, "smart_subordinate").regDefaultStateAndModel(new TextureLocation(getModID(), "block/dungeon_floor_shielded"));
+        regBlock(MS_ACTIVATOR, "ms_activator").regDefaults(LGItemGroup.MAIN);
+        regBlock(MS_MASTER, "ms_master").regDefaultStateAndModel(new TextureLocation(getModID(), "block/dungeon_floor_shielded"));
     }
 }

@@ -27,14 +27,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static ru.timeconqueror.lootgames.common.advancement.ActivateBlockTrigger.BlockActivatedInfo;
+import static ru.timeconqueror.lootgames.common.advancement.ActivateBlockTrigger.ExtraInfo;
 import static ru.timeconqueror.lootgames.common.advancement.ActivateBlockTrigger.Instance;
 
-public class ActivateBlockTrigger extends TimeSimpleTrigger<BlockActivatedInfo, Instance> {
+public class ActivateBlockTrigger extends TimeSimpleTrigger<ExtraInfo, Instance> {
     private static final ResourceLocation ID = LootGames.INSTANCE.createRl("activate_block");
 
     @Override
-    public PerPlayerListenerSet<BlockActivatedInfo, Instance> createListenerSet(PlayerAdvancements advancements) {
+    public PerPlayerListenerSet<ExtraInfo, Instance> createListenerSet(PlayerAdvancements advancements) {
         return new PerPlayerListenerSet<>(advancements);
     }
 
@@ -87,17 +87,17 @@ public class ActivateBlockTrigger extends TimeSimpleTrigger<BlockActivatedInfo, 
         return new Instance(block, map, locationpredicate, itempredicate);
     }
 
-    public static class BlockActivatedInfo {
+    public static class ExtraInfo {
         private BlockPos pos;
         private ItemStack item;
 
-        public BlockActivatedInfo(BlockPos pos, ItemStack item) {
+        public ExtraInfo(BlockPos pos, ItemStack item) {
             this.pos = pos;
             this.item = item;
         }
     }
 
-    public static class Instance extends TimeSimpleTrigger.TimeCriterionInstance<BlockActivatedInfo> {
+    public static class Instance extends TimeSimpleTrigger.TimeCriterionInstance<ExtraInfo> {
         private final Block block;
         private final Map<IProperty<?>, Object> properties;
         private final LocationPredicate location;
@@ -112,7 +112,7 @@ public class ActivateBlockTrigger extends TimeSimpleTrigger<BlockActivatedInfo, 
         }
 
         @Override
-        public boolean test(ServerPlayerEntity player, BlockActivatedInfo info) {
+        public boolean test(ServerPlayerEntity player, ExtraInfo info) {
             ServerWorld world = player.getServerWorld();
 
             BlockState state = world.getBlockState(info.pos);

@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.api.block.tile;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -165,10 +165,10 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
     /**
      * Will be called when subordinate block is clicked by player.
      *
-     * @param subordinatePos pos of subordinate block.
      * @param player         player, who clicked the subordinate block.
+     * @param subordinatePos pos of subordinate block.
      */
-    public void onSubordinateBlockClicked(BlockPos subordinatePos, PlayerEntity player) {
+    public void onSubordinateBlockClicked(ServerPlayerEntity player, BlockPos subordinatePos) {
     }
 
     /**

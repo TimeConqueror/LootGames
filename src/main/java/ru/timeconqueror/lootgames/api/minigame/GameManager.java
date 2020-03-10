@@ -16,9 +16,10 @@ public class GameManager {
     /**
      * Register game and its factory.
      */
-//    public <T extends LootGame> void registerGameGenerator(ILootGameFactory generator) {
-//        GAME_GEN_LIST.add(generator);
-//    }
+    public void registerGameGenerator(ILootGameFactory generator) {
+        GAME_GEN_LIST.add(generator);
+    }
+
     public static boolean isGameListEmpty() {
         return GAME_GEN_LIST.isEmpty();
     }

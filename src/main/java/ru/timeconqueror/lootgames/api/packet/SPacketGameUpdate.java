@@ -11,7 +11,7 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.timecore.api.common.packet.ITimePacket;
 
 import java.util.function.Supplier;
-//Todo maybe also add T to packet and handler?
+//Todo maybe also addNBT T to packet and handler?
 public class SPacketGameUpdate implements ITimePacket {
     private IServerGamePacket<?> gamePacket;
     private BlockPos masterPos;

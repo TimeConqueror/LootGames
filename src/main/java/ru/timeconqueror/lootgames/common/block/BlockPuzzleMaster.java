@@ -25,7 +25,7 @@ import ru.timeconqueror.lootgames.common.block.tile.TileEntityPuzzleMaster;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-import static ru.timeconqueror.lootgames.common.advancement.ActivateBlockTrigger.BlockActivatedInfo;
+import static ru.timeconqueror.lootgames.common.advancement.ActivateBlockTrigger.ExtraInfo;
 import static ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator.*;
 
 public class BlockPuzzleMaster extends BlockGame {
@@ -70,7 +70,7 @@ public class BlockPuzzleMaster extends BlockGame {
 
                 GameManager.GenResult genResult = LootGamesAPI.getGameManager().generateRandomGame(worldIn, pos, bottomPos, topPos);
                 if (genResult.wasGenerated()) {
-                    LGAdvancementManager.ACTIVATE_BLOCK.trigger((ServerPlayerEntity) player, new BlockActivatedInfo(pos, player.getHeldItem(handIn)));
+                    LGAdvancementManager.ACTIVATE_BLOCK.trigger((ServerPlayerEntity) player, new ExtraInfo(pos, player.getHeldItem(handIn)));
                 } else {
                     player.sendMessage(new StringTextComponent(genResult.getError()));//TODO move error to lang file
                     worldIn.setBlockState(pos, state, 2);

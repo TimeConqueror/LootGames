@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.api.block;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -46,7 +47,7 @@ public class BlockSmartSubordinate extends BlockGame {
             BlockPos masterPos = getMasterPos(worldIn, pos);
             TileEntity te = worldIn.getTileEntity(masterPos);
             if (te instanceof TileEntityGameMaster<?>) {
-                ((TileEntityGameMaster<?>) te).onSubordinateBlockClicked(pos, player);
+                ((TileEntityGameMaster<?>) te).onSubordinateBlockClicked(((ServerPlayerEntity) player), pos);
             } else {
                 player.sendMessage(new StringTextComponent("The game doesn't seem to work. Please, send the issue to mod author."));
             }
