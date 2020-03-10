@@ -11,12 +11,12 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.timecore.api.common.packet.ITimePacket;
 
 import java.util.function.Supplier;
-
+//Todo maybe also add T to packet and handler?
 public class SPacketGameUpdate implements ITimePacket {
-    private IGamePacket<?> gamePacket;
+    private IServerGamePacket<?> gamePacket;
     private BlockPos masterPos;
 
-    public <T extends LootGame> SPacketGameUpdate(T game, IGamePacket<T> gamePacket) {
+    public <T extends LootGame<T>> SPacketGameUpdate(LootGame<T> game, IServerGamePacket<T> gamePacket) {
         this.masterPos = game.getMasterPos();
         this.gamePacket = gamePacket;
     }
@@ -34,7 +34,7 @@ public class SPacketGameUpdate implements ITimePacket {
         public void encode(SPacketGameUpdate packet, PacketBuffer buffer) {
             buffer.writeBlockPos(packet.masterPos);
 
-            GamePacketRegistry.PacketInfo info = GamePacketRegistry.getInfo((Class<? extends IGamePacket<?>>) packet.gamePacket.getClass());
+            GamePacketRegistry.PacketInfo info = GamePacketRegistry.getInfo((Class<? extends IServerGamePacket<?>>) packet.gamePacket.getClass());
             buffer.writeString(info.getModID());
             buffer.writeInt(info.getPacketID());
             packet.gamePacket.encode(buffer);
@@ -46,7 +46,7 @@ public class SPacketGameUpdate implements ITimePacket {
             packet.masterPos = buffer.readBlockPos();
 
             GamePacketRegistry.PacketInfo info = new GamePacketRegistry.PacketInfo(buffer.readString(), buffer.readInt());
-            Class<? extends IGamePacket<?>> packetClass = GamePacketRegistry.getPacketClass(info);
+            Class<? extends IServerGamePacket<?>> packetClass = GamePacketRegistry.getPacketClass(info);
 
             try {
                 packet.gamePacket = packetClass.newInstance();
@@ -67,7 +67,7 @@ public class SPacketGameUpdate implements ITimePacket {
                 TileEntity te = world.getTileEntity(packet.masterPos);
                 if (te instanceof TileEntityGameMaster<?>) {
                     TileEntityGameMaster<?> master = ((TileEntityGameMaster<?>) te);
-                    master.getGame().onUpdatePacket((IGamePacket<LootGame>) packet.gamePacket);
+                    master.getGame().onUpdatePacket(packet.gamePacket);
 
                 } else {
                     throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos: " + packet.masterPos);

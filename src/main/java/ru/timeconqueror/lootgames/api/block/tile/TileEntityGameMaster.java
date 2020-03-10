@@ -43,7 +43,11 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
     @Override
     public final CompoundNBT write(CompoundNBT compound) {
         compound = writeNBTForSaving(compound);
-        compound.put("game", game.writeNBTForSaving());
+
+        CompoundNBT gameTag = new CompoundNBT();
+        game.writeNBTForSaving(gameTag);
+
+        compound.put("game", gameTag);
 
         compound = writeCommonNBT(compound);
 
@@ -125,7 +129,9 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
 
         writeCommonNBT(compound);
 
-        compound.put("game_synced", game.writeNBTForClient());
+        CompoundNBT gameTag = new CompoundNBT();
+        game.writeNBTForClient(gameTag);
+        compound.put("game_synced", gameTag);
 
         compound.putByte("client_flag", (byte) 0);
         return compound;

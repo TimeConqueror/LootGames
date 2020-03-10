@@ -60,7 +60,7 @@ public class BlockSmartSubordinate extends BlockGame {
         BlockState state;
 
         while (true) {
-            foundPos = foundPos.add(-1, 0, 0);//FIXME change to readable method
+            foundPos = foundPos.west();
 
             state = world.getBlockState(foundPos);
 
@@ -69,13 +69,13 @@ public class BlockSmartSubordinate extends BlockGame {
             }
 
             if (!(state.getBlock() instanceof BlockSmartSubordinate)) {
-                foundPos = foundPos.add(1, 0, 0);//FIXME change to readable method
+                foundPos = foundPos.east();
                 break;
             }
         }
 
         while (true) {
-            foundPos = foundPos.add(0, 0, -1);//FIXME change to readable method
+            foundPos = foundPos.north();
 
             state = world.getBlockState(foundPos);
 
@@ -84,7 +84,7 @@ public class BlockSmartSubordinate extends BlockGame {
             }
 
             if (!(state.getBlock() instanceof BlockSmartSubordinate)) {
-                foundPos = foundPos.add(0, 0, 1);//FIXME change to readable method
+                foundPos = foundPos.south();
                 break;
             }
         }

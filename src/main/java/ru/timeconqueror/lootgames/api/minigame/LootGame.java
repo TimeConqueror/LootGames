@@ -6,25 +6,30 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.network.PacketDistributor;
+import org.intellij.lang.annotations.MagicConstant;
+import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.api.advancement.LGAdvancementManager;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
-import ru.timeconqueror.lootgames.api.packet.IGamePacket;
+import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.api.packet.SPacketGameUpdate;
 import ru.timeconqueror.lootgames.api.task.TEPostponeTaskScheduler;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 
+import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.Objects;
 
-import static ru.timeconqueror.lootgames.common.advancement.EndGameTrigger.EndType;
+import static ru.timeconqueror.lootgames.common.advancement.EndGameTrigger.TYPE_LOSE;
+import static ru.timeconqueror.lootgames.common.advancement.EndGameTrigger.TYPE_WIN;
 
-public abstract class LootGame {
-    protected TileEntityGameMaster<?> masterTileEntity;
+public abstract class LootGame<T extends LootGame<T>> {
+    protected TileEntityGameMaster<T> masterTileEntity;
     protected TEPostponeTaskScheduler serverTaskPostponer;
+    protected Stage stage;
 
-    public void setMasterTileEntity(TileEntityGameMaster<?> masterTileEntity) {
+    public void setMasterTileEntity(TileEntityGameMaster<T> masterTileEntity) {
         this.masterTileEntity = masterTileEntity;
     }
 
@@ -32,10 +37,21 @@ public abstract class LootGame {
         this.serverTaskPostponer = new TEPostponeTaskScheduler(getWorld());
     }
 
+    @OverridingMethodsMustInvokeSuper
     public void onTick() {
         if (isServerSide()) {
             serverTaskPostponer.onUpdate();
         }
+
+        if (stage != null) {
+            if (stage.side == Stage.BOTH || (stage.side == Stage.SERVER && isServerSide() || (stage.side == Stage.CLIENT && !isServerSide()))) {
+                stage.onTick();
+            }
+        }
+    }
+
+    public T typed() {
+        return ((T) this);
     }
 
     public boolean isServerSide() {
@@ -43,6 +59,7 @@ public abstract class LootGame {
         return !world.isRemote;
     }
 
+    @NotNull
     public World getWorld() {
         return Objects.requireNonNull(masterTileEntity.getWorld());
     }
@@ -59,7 +76,7 @@ public abstract class LootGame {
     protected void triggerGameWin() {
         onGameEnd();
         NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(),
-                player -> LGAdvancementManager.END_GAME.trigger(player, EndType.WIN));
+                player -> LGAdvancementManager.END_GAME.trigger(player, TYPE_WIN));
     }
 
     /**
@@ -70,7 +87,7 @@ public abstract class LootGame {
     protected void triggerGameLose() {
         onGameEnd();
         NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(),
-                player -> LGAdvancementManager.END_GAME.trigger(player, EndType.LOSE));
+                player -> LGAdvancementManager.END_GAME.trigger(player, TYPE_LOSE));
     }
 
     /**
@@ -117,11 +134,9 @@ public abstract class LootGame {
      * Overriding is fine.
      */
     @OverridingMethodsMustInvokeSuper
-    public CompoundNBT writeNBTForSaving() {
-        CompoundNBT nbt = new CompoundNBT();
-        nbt = writeCommonNBT(nbt);
+    public void writeNBTForSaving(CompoundNBT nbt) {
+        writeCommonNBT(nbt);
         nbt.put("task_scheduler", serverTaskPostponer.serializeNBT());
-        return nbt;
     }
 
     /**
@@ -138,29 +153,27 @@ public abstract class LootGame {
     }
 
     /**
-     * Writes the data used only for sending to client, not to save it.
-     * Overriding is fine.
-     */
-    @OverridingMethodsMustInvokeSuper
-    public CompoundNBT writeNBTForClient() {
-        CompoundNBT nbt = new CompoundNBT();
-        nbt = writeCommonNBT(nbt);
-        return nbt;
-    }
-
-    /**
      * Sends update packet to the client with given {@link CompoundNBT} to all players, tracking the game.
      */
-    public void sendUpdatePacket(IGamePacket<LootGame> packet) {
+    public void sendUpdatePacket(IServerGamePacket<T> packet) {
         Chunk chunk = getWorld().getChunkAt(masterTileEntity.getPos());
         LGNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new SPacketGameUpdate(this, packet));
     }
 
     /**
-     * Fired on client when {@link IGamePacket} comes from server.
+     * Fired on client when {@link IServerGamePacket} comes from server.
      */
-    public void onUpdatePacket(IGamePacket<LootGame> packet) {
-        packet.runOnReceptionSide(this);
+    public void onUpdatePacket(IServerGamePacket<T> packet) {
+        packet.runOnClient(this);
+    }
+
+    /**
+     * Writes the data used only for sending to client, not to save it.
+     * Overriding is fine.
+     */
+    @OverridingMethodsMustInvokeSuper
+    public void writeNBTForClient(CompoundNBT nbt) {
+        writeCommonNBT(nbt);
     }
 
     /**
@@ -176,8 +189,8 @@ public abstract class LootGame {
      * Writes data to be used both server->client syncing and world saving
      */
     @OverridingMethodsMustInvokeSuper
-    public CompoundNBT writeCommonNBT(CompoundNBT compound) {
-        return compound;
+    public void writeCommonNBT(CompoundNBT compound) {
+        compound.put("stage", stage.serialize());
     }
 
     /**
@@ -185,5 +198,60 @@ public abstract class LootGame {
      */
     @OverridingMethodsMustInvokeSuper
     public void readCommonNBT(CompoundNBT compound) {
+        stage = createStageFromNBT(compound.getCompound("stage"));
+    }
+
+    public void switchStage(@Nullable Stage stage) {
+        Stage old = this.stage;
+        if (old != null) old.onEnd();
+
+        this.stage = stage;
+
+        onStageUpdate(old, stage);
+        if (this.stage != null) this.stage.onStart();
+    }
+
+    protected void onStageUpdate(Stage oldStage, Stage newStage) {
+        saveData();
+    }
+
+    public abstract Stage createStageFromNBT(CompoundNBT stageNBT);
+
+    public Stage getStage() {
+        return stage;
+    }
+
+    public abstract static class Stage {
+        public static final int CLIENT = 0;
+        public static final int SERVER = 1;
+        public static final int BOTH = 2;
+
+        @MagicConstant(intValues = {CLIENT, SERVER, BOTH})
+        private int side;
+
+        public Stage(@MagicConstant(intValues = {CLIENT, SERVER, BOTH}) int side) {
+            this.side = side;
+        }
+
+        public void onStart() {
+
+        }
+
+        public void onTick() {
+
+        }
+
+        public void onEnd() {
+
+        }
+
+        public CompoundNBT serialize() {
+            CompoundNBT nbt = new CompoundNBT();
+            nbt.putString("id", getID());
+
+            return nbt;
+        }
+
+        public abstract String getID();
     }
 }
