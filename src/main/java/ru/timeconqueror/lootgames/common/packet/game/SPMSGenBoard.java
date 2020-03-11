@@ -17,6 +17,6 @@ public class SPMSGenBoard extends NBTGamePacket<GameMineSweeper> {
 
     @Override
     public void runOnClient(LootGame<GameMineSweeper> game) {
-        game.readNBTFromClient(getCompound());
+        game.readNBTAtClient(getCompound());
     }
 }

@@ -295,10 +295,10 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
     }
 
     @Override
-    public void readNBTFromClient(CompoundNBT compound) {
+    public void readNBTAtClient(CompoundNBT compound) {
         cIsGenerated = compound.getBoolean("is_generated");
 
-        super.readNBTFromClient(compound);
+        super.readNBTAtClient(compound);
 
         if (compound.contains("board")) {
             CompoundNBT boardTag = compound.getCompound("board");

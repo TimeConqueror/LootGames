@@ -62,7 +62,7 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
         //If read from client side
         if (compound.contains("client_flag")) {
             readNBTFromClient(compound);
-            game.readNBTFromClient(compound.getCompound("game_synced"));
+            game.readNBTAtClient(compound.getCompound("game_synced"));
         } else {
             readNBTFromSave(compound);
             game.readNBTFromSave(compound.getCompound("game"));
@@ -144,7 +144,7 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
         readNBTFromClient(compound);
         readCommonNBT(compound);
 
-        game.readNBTFromClient(compound.getCompound("game_synced"));
+        game.readNBTAtClient(compound.getCompound("game_synced"));
     }
 
     @Override

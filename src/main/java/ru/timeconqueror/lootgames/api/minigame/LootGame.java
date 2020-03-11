@@ -181,7 +181,7 @@ public abstract class LootGame<T extends LootGame<T>> {
      * Overriding is fine.
      */
     @OverridingMethodsMustInvokeSuper
-    public void readNBTFromClient(CompoundNBT compound) {
+    public void readNBTAtClient(CompoundNBT compound) {
         readCommonNBT(compound);
     }
 
