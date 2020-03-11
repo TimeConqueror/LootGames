@@ -339,12 +339,6 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         }
     }
 
-    public enum StageLegacy {
-        WAITING,
-        DETONATING,
-        EXPLODING
-    }
-
     public static class Factory implements ILootGameFactory {
         @Override
         public void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos, BlockPos bottomPos, BlockPos topPos) {

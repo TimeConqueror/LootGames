@@ -60,6 +60,7 @@ minecraft {
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
+    def disableRefMapArg = 'mixin.env.disableRefMap=true'
     runs {
         client {
             workingDirectory project.file('run')
@@ -70,7 +71,7 @@ minecraft {
             // Recommended logging level for the console
 //            property 'forge.logging.console.level', 'debug'
 
-            args 'mixin.env.disableRefMap=true'
+            args disableRefMapArg
             
             mods {
                 lootgames {
@@ -88,7 +89,7 @@ minecraft {
             // Recommended logging level for the console
             //property 'forge.logging.console.level', 'debug'
 
-            args 'mixin.env.disableRefMap=true'
+            args disableRefMapArg
 
             mods {
                 lootgames {
@@ -106,8 +107,7 @@ minecraft {
             // Recommended logging level for the console
 //            property 'forge.logging.console.level', 'debug'
 
-//            def
-            args '--mod', 'lootgames', '--all', '--output', ("\"" + projectDir.path + "/src/main/resources/\"")
+            args disableRefMapArg, '--mod', 'lootgames', '--all', '--output', ("\"" + projectDir.path + "/src/main/resources/\"")
 
             mods {
                 lootgames {
