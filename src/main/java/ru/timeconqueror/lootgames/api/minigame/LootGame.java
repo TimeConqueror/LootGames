@@ -8,6 +8,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.advancement.LGAdvancementManager;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
@@ -17,7 +18,6 @@ import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 
-import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.Objects;
 
@@ -34,7 +34,7 @@ public abstract class LootGame<T extends LootGame<T>> {
     }
 
     public void init() {
-        this.serverTaskPostponer = new TEPostponeTaskScheduler(getWorld());
+        this.serverTaskPostponer = new TEPostponeTaskScheduler(masterTileEntity);
     }
 
     @OverridingMethodsMustInvokeSuper
@@ -190,7 +190,9 @@ public abstract class LootGame<T extends LootGame<T>> {
      */
     @OverridingMethodsMustInvokeSuper
     public void writeCommonNBT(CompoundNBT compound) {
-        compound.put("stage", stage.serialize());
+        if (stage != null) {
+            compound.put("stage", stage.serialize());
+        }
     }
 
     /**
@@ -215,8 +217,10 @@ public abstract class LootGame<T extends LootGame<T>> {
         saveData();
     }
 
+    @Nullable
     public abstract Stage createStageFromNBT(CompoundNBT stageNBT);
 
+    @Nullable
     public Stage getStage() {
         return stage;
     }

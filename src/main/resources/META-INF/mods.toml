@@ -29,7 +29,7 @@ displayURL="https://www.curseforge.com/minecraft/mc-mods/loot-games" #optional
 authors=["Time_Conqueror", "Namikon"] #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Play minigames to obtain loot
+Play minigames to obtain the loot
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.lootgames]] #optional

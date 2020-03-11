@@ -18,7 +18,7 @@ import java.util.Objects;
 public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntity implements ITickableTileEntity {
     protected T game;
 
-    public TileEntityGameMaster(TileEntityType<?> tileEntityTypeIn, T game) {
+    public TileEntityGameMaster(TileEntityType<? extends TileEntityGameMaster<T>> tileEntityTypeIn, T game) {
         super(tileEntityTypeIn);
         this.game = game;
         game.setMasterTileEntity(this);

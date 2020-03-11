@@ -44,8 +44,8 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
     public GameMineSweeper() {
     }
 
-    public GameMineSweeper(int boardSize, int bombCount) {
-        board = new MSBoard(boardSize, bombCount);
+    public GameMineSweeper(int startBoardSize, int startBombCount) {
+        board = new MSBoard(startBoardSize, startBombCount);
         switchStage(new StageWaiting());
     }
 
@@ -337,6 +337,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
             default:
                 throw new IllegalArgumentException("Unknown state with id: " + stageNBT.getString("id") + "!");
         }
+
     }
 
     public static class Factory implements ILootGameFactory {

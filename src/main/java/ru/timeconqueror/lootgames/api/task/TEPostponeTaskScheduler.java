@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.api.task;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
@@ -15,10 +16,10 @@ import java.util.Iterator;
 public class TEPostponeTaskScheduler implements INBTSerializable<ListNBT> {
     private final ArrayList<TaskWrapper> tasks = new ArrayList<>();
 
-    private final World world;
+    private final TileEntity tileEntity;
 
-    public TEPostponeTaskScheduler(@NotNull World world) {
-        this.world = world;
+    public TEPostponeTaskScheduler(@NotNull TileEntity tileEntity) {
+        this.tileEntity = tileEntity;
     }
 
     /**
@@ -41,7 +42,7 @@ public class TEPostponeTaskScheduler implements INBTSerializable<ListNBT> {
                 TaskWrapper task = iterator.next();
 
                 if (task.timeBeforeStart <= 0) {
-                    task.run(world);
+                    task.run(tileEntity.getWorld());
                     iterator.remove();
                 } else {
                     task.decreaseTimer();

@@ -4,6 +4,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.network.PacketBuffer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 
 import java.util.function.Supplier;
@@ -15,7 +16,7 @@ public abstract class NBTGamePacket<T extends LootGame<T>> implements IServerGam
         this(compoundSupplier.get());
     }
 
-    public NBTGamePacket(@NotNull CompoundNBT compound) {
+    public NBTGamePacket(@Nullable CompoundNBT compound) {
         this.compound = compound;
     }
 
