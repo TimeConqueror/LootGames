@@ -1,9 +1,11 @@
 package ru.timeconqueror.lootgames.registry.internal;
 
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.task.TaskRegistry;
+import ru.timeconqueror.lootgames.minigame.pipes.GamePipes;
 import ru.timeconqueror.timecore.api.registry.Initable;
 import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
 
@@ -14,6 +16,8 @@ public class LGMiscRegistry implements Initable {
         TaskRegistry.registerTaskFactory(TaskCreateExplosion.class, TaskCreateExplosion::new);
 
         GamePacketRegistry.GamePacketManager manager = GamePacketRegistry.getManager();
+
+        LootGamesAPI.getGameManager().registerGameGenerator(new GamePipes.Factory());
 
         int id = -1;
 //        manager.registerPacket(++id, SPMSacketChangeStage.class);

@@ -2,10 +2,7 @@ package ru.timeconqueror.lootgames.registry;
 
 import ru.timeconqueror.lootgames.api.block.BlockSmartSubordinate;
 import ru.timeconqueror.lootgames.common.LGItemGroup;
-import ru.timeconqueror.lootgames.common.block.BlockDungeon;
-import ru.timeconqueror.lootgames.common.block.BlockMSActivator;
-import ru.timeconqueror.lootgames.common.block.BlockMSMaster;
-import ru.timeconqueror.lootgames.common.block.BlockPuzzleMaster;
+import ru.timeconqueror.lootgames.common.block.*;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
 import ru.timeconqueror.timecore.api.registry.block.BlockTimeRegistry;
@@ -32,7 +29,8 @@ public class LGBlocks extends BlockTimeRegistry {
 
     public static final BlockMSActivator MS_ACTIVATOR = new BlockMSActivator();
     public static final BlockMSMaster MS_MASTER = new BlockMSMaster();
-    public static final BlockMSMaster PIPES_MASTER = new BlockMSMaster();
+    public static final BlockPipesActivator PIPES_ACTIVATOR = new BlockPipesActivator();
+    public static final BlockPipesMaster PIPES_MASTER = new BlockPipesMaster();
 
     @Override
     public void register() {
@@ -49,6 +47,7 @@ public class LGBlocks extends BlockTimeRegistry {
         regBlock(SMART_SUBORDINATE, "smart_subordinate").regDefaultStateAndModel(new TextureLocation(getModID(), "block/dungeon_floor_shielded"));
         regBlock(MS_ACTIVATOR, "ms_activator").regDefaults(LGItemGroup.MAIN);
         regBlock(MS_MASTER, "ms_master").regDefaultStateAndModel(new TextureLocation(getModID(), "block/dungeon_floor_shielded"));
+        regBlock(PIPES_ACTIVATOR, "pipes_activator").regDefaults(LGItemGroup.MAIN);
         regBlock(PIPES_MASTER, "pipes_master").regDefaultStateAndModel(new TextureLocation(getModID(), "block/dungeon_floor_shielded"));
     }
 }

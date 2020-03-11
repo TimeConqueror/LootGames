@@ -1,11 +1,11 @@
 package ru.timeconqueror.lootgames.api;
 
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import ru.timeconqueror.lootgames.api.minigame.GameManager;
+import ru.timeconqueror.timecore.api.common.event.FMLModConstructedEvent;
 import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
 
-@TimeAutoRegistrable
+@TimeAutoRegistrable(target = TimeAutoRegistrable.Target.CLASS)
 public class LootGamesAPI {
     private static GameManager gameManager;
 
@@ -14,7 +14,7 @@ public class LootGamesAPI {
     }
 
     @SubscribeEvent
-    public static void init(FMLCommonSetupEvent event) {
+    public static void init(FMLModConstructedEvent event) {
         gameManager = new GameManager();
     }
 }

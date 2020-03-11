@@ -2,9 +2,9 @@ package ru.timeconqueror.lootgames.minigame.pipes.board;
 
 public class PipesBoard {
 
-    private static final int CHUNK_SIZE = 6;
-    private static final int CELL_BITS = 5;
-    private static final int CELL_MASK = 0b11111;
+    private static final int CHUNK_SIZE = 5;
+    private static final int CELL_BITS = 6;
+    private static final int CELL_MASK = 0b111111;
 
     private int size;
     private int[] field; // chunks with CHUNK_SIZE cells per chunk

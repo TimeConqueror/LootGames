@@ -2,11 +2,11 @@ package ru.timeconqueror.lootgames.minigame.pipes.board;
 
 public class PipeState {
 
-    // all registered state : 8 types with 4 rotations
-    private static PipeState[] states = new PipeState[32];
+    // all registered state : 14 types with 4 rotations
+    private static PipeState[] states = new PipeState[56];
 
     static {
-        for (int type = 0; type < 8; type++) {
+        for (int type = 0; type < 14; type++) {
             for (int rotation = 0; rotation < 4; rotation++) {
                 PipeState state = new PipeState(type, rotation);
                 states[state.id] = state;
@@ -30,7 +30,7 @@ public class PipeState {
     }
 
     /**
-     * @return id of pipe type without rotation from 0 to 8 (excluded)
+     * @return id of pipe type without rotation from 0 to 14 (excluded)
      */
     public int getPipeType() {
         return pipeType;
