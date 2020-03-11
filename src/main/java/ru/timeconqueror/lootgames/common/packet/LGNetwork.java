@@ -1,6 +1,7 @@
 package ru.timeconqueror.lootgames.common.packet;
 
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import ru.timeconqueror.lootgames.api.packet.SPacketGameUpdate;
 import ru.timeconqueror.timecore.api.registry.PacketTimeRegistry;
 import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
 
@@ -14,6 +15,6 @@ public class LGNetwork extends PacketTimeRegistry {
 
     @Override
     protected void register() {
-//        regPacket(INSTANCE, SMessageGameUpdate.class, SMessageGameUpdate::encode, SMessageGameUpdate::decode, SMessageGameUpdate::handle);
+        regPacket(INSTANCE, SPacketGameUpdate.class, new SPacketGameUpdate.Handler());
     }
 }
