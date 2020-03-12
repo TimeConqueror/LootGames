@@ -20,6 +20,8 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
         GamePipes game = te.getGame();
         int size = game.getBoardSize();
 
+        int anim = (int) (te.getAge() / 2 % 32);
+
         bindTexture(BOARD);
         GlStateManager.pushMatrix();
 
@@ -41,9 +43,9 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 buf.pos(i, 0, j).tex(0.0, 0.0).endVertex();
-                buf.pos(i, 0, j + 1).tex(0.0, 0.25).endVertex();
-                buf.pos(i + 1, 0, j + 1).tex(0.25, 0.25).endVertex();
-                buf.pos(i + 1, 0, j).tex(0.25, 0.0).endVertex();
+                buf.pos(i, 0, j + 1).tex(0.0, 0.25 / 32).endVertex();
+                buf.pos(i + 1, 0, j + 1).tex(0.25 / 32, 0.25 / 32).endVertex();
+                buf.pos(i + 1, 0, j).tex(0.25 / 32, 0.0).endVertex();
 
                 PipeState state = game.getBoard().getState(i, j);
                 int type = state.getPipeType();
@@ -54,10 +56,10 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
                     double tx = (double) (type % 4) / 4;
                     double ty = (double) (type / 4) / 4;
 
-                    textures(buf.pos(i, height, j), tx, ty, 0, rotation).endVertex();
-                    textures(buf.pos(i, height, j + 1), tx, ty, 1, rotation).endVertex();
-                    textures(buf.pos(i + 1, height, j + 1), tx, ty, 2, rotation).endVertex();
-                    textures(buf.pos(i + 1, height, j), tx, ty, 3, rotation).endVertex();
+                    textures(buf.pos(i, height, j), tx, ty, 0, rotation, anim).endVertex();
+                    textures(buf.pos(i, height, j + 1), tx, ty, 1, rotation, anim).endVertex();
+                    textures(buf.pos(i + 1, height, j + 1), tx, ty, 2, rotation, anim).endVertex();
+                    textures(buf.pos(i + 1, height, j), tx, ty, 3, rotation, anim).endVertex();
                 }
             }
         }
@@ -70,17 +72,19 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
         GlStateManager.popMatrix();
     }
 
-    private BufferBuilder textures(BufferBuilder buf, double tx, double ty, int i, int rotation) {
+    private BufferBuilder textures(BufferBuilder buf, double tx, double ty, int i, int rotation, int animation) {
+        double sy = animation;
+
         int c = (i + rotation) % 4;
         switch (c) {
             case 0:
-                return buf.tex(tx, ty);
+                return buf.tex(tx, (sy + ty) / 32);
             case 1:
-                return buf.tex(tx, ty + 0.25);
+                return buf.tex(tx, (sy + ty + 0.25) / 32);
             case 2:
-                return buf.tex(tx + 0.25, ty + 0.25);
+                return buf.tex(tx + 0.25, (sy + ty + 0.25) / 32);
             default:
-                return buf.tex(tx + 0.25, ty);
+                return buf.tex(tx + 0.25, (sy + ty) / 32);
         }
     }
 

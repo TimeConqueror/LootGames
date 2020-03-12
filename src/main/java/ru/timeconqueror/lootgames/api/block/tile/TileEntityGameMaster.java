@@ -17,6 +17,7 @@ import java.util.Objects;
 
 public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntity implements ITickableTileEntity {
     protected T game;
+    private long age;
 
     public TileEntityGameMaster(TileEntityType<? extends TileEntityGameMaster<T>> tileEntityTypeIn, T game) {
         super(tileEntityTypeIn);
@@ -25,8 +26,13 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
         game.init();
     }
 
+    public long getAge() {
+        return age;
+    }
+
     @Override
     public void tick() {
+        age++;
         game.onTick();
     }
 
