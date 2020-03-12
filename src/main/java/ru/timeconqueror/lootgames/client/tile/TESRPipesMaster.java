@@ -44,8 +44,8 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
             for (int j = 0; j < size; j++) {
                 buf.pos(i, 0, j).tex(0.0, 0.0).endVertex();
                 buf.pos(i, 0, j + 1).tex(0.0, 0.25 / 32).endVertex();
-                buf.pos(i + 1, 0, j + 1).tex(0.25 / 32, 0.25 / 32).endVertex();
-                buf.pos(i + 1, 0, j).tex(0.25 / 32, 0.0).endVertex();
+                buf.pos(i + 1, 0, j + 1).tex(0.25, 0.25 / 32).endVertex();
+                buf.pos(i + 1, 0, j).tex(0.25, 0.0).endVertex();
 
                 PipeState state = game.getBoard().getState(i, j);
                 int type = state.getPipeType();
