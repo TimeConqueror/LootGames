@@ -150,6 +150,7 @@ public class PipesBoard {
             }
         }
 
+        rotateAt(sx, sy, 1);
         rotateAt(sx, sy, rnd.nextInt(4) - 2);
 
         removeDirty();
