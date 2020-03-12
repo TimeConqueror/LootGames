@@ -19,6 +19,8 @@ public class GamePipes extends LootGame<GamePipes> {
     public GamePipes(int size, float difficulty) {
         this.board = new PipesBoard(size);
         this.difficulty = difficulty;
+
+        this.board.fillBoard(5, size * 2);
     }
 
     @Override
@@ -44,8 +46,33 @@ public class GamePipes extends LootGame<GamePipes> {
         return board.getSize();
     }
 
-    public void clickField(ServerPlayerEntity player, Pos2i pos) {
+    public PipesBoard getBoard() {
+        return board;
+    }
 
+    @Override
+    public void writeCommonNBT(CompoundNBT compound) {
+        super.writeCommonNBT(compound);
+        compound.putInt("Size", getBoardSize());
+        compound.put("Board", board.serializeNBT());
+    }
+
+    @Override
+    public void readCommonNBT(CompoundNBT compound) {
+        super.readCommonNBT(compound);
+        int size = compound.getInt("Size");
+        if (board == null || size != board.getSize()) {
+            board = new PipesBoard(size);
+        }
+        board.deserializeNBT(compound.getCompound("Board"));
+    }
+
+    public void clickField(ServerPlayerEntity player, Pos2i pos) {
+        board.rotateAt(pos.getX(), pos.getY(), player.isSneaking() ? -1 : 1);
+        if (board.isDirty()) {
+            masterTileEntity.markDirty();
+            sendUpdatePacket(board.exportDirtyChunks());
+        }
     }
 
     public static class Factory implements ILootGameFactory {
@@ -57,7 +84,7 @@ public class GamePipes extends LootGame<GamePipes> {
     }
 
     public static void generateGameStructure(World world, BlockPos centerPos, int level) {
-        int size = 9;
+        int size = 19;
         BlockPos startPos = centerPos.add(-size / 2, 0, -size / 2);
 
         for (int x = 0; x < size; x++) {

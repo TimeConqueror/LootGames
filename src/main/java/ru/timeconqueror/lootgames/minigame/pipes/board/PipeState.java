@@ -18,10 +18,14 @@ public class PipeState {
         return states[id];
     }
 
-    private int pipeType;
-    private int rotation;
+    public static PipeState byData(int type, int rotation) {
+        return byId(type * 4 + rotation);
+    }
 
-    private int id;
+    private final int pipeType;
+    private final int rotation;
+
+    private final int id;
 
     public PipeState(int pipeType, int rotation) {
         this.pipeType = pipeType;
@@ -43,9 +47,59 @@ public class PipeState {
         return rotation;
     }
 
+    public boolean isSource() {
+        return pipeType == 1;
+    }
+
+    public boolean isSink() {
+        return pipeType == 7 || pipeType == 13;
+    }
+
+    public boolean isPowered() {
+        return !isEmpty() && (isSource() || isPoweredNotSource());
+    }
+
+    public boolean canBePowered() {
+        return pipeType > 1 && pipeType < 8;
+    }
+
+    public boolean isPoweredNotSource() {
+        return pipeType > 7;
+    }
+
+    public boolean isEmpty() {
+        return pipeType == 0;
+    }
+
     public PipeState rotate(int delta) {
-        int rotatedId = pipeType * 4 + (rotation + delta) % 4;
-        return byId(rotatedId);
+        return byData(pipeType, (rotation + 4 + delta) % 4);
+    }
+
+    public boolean hasConnectionFrom(int rotation) {
+        return hasConnectionAt((rotation + 2) % 4);
+    }
+
+    public boolean hasConnectionAt(int rotation) {
+        int rot = (8 + rotation - this.rotation) % 4;
+        switch (rot) {
+            case 0:
+                return !isEmpty();
+            case 1:
+                return pipeType == 5 || pipeType == 6 || pipeType == 11 || pipeType == 12;
+            case 2:
+                return pipeType == 3 || pipeType == 6 || pipeType == 9 || pipeType == 12;
+            default:
+                return pipeType == 4 || pipeType == 5 || pipeType == 6 || pipeType == 10 || pipeType == 11 || pipeType == 12;
+        }
+    }
+
+    public PipeState toggle() {
+        if (pipeType > 7) {
+            return byData(pipeType - 6, rotation);
+        } else if (pipeType > 1) {
+            return byData(pipeType + 6, rotation);
+        }
+        return this;
     }
 
     public int getId() {

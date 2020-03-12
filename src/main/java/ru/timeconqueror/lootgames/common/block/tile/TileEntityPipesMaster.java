@@ -16,7 +16,7 @@ public class TileEntityPipesMaster extends TileEntityGameMaster<GamePipes> {
 
     public TileEntityPipesMaster() {
 //        super(LGTiles.MS_MASTER, new GameMineSweeper(LGConfigMinesweeper.stage1.boardSize, LGConfigMinesweeper.stage1.bombCount));//fixme restore
-        super(LGTiles.PIPES_MASTER, new GamePipes(9, 0.5f));
+        super(LGTiles.PIPES_MASTER, new GamePipes(19, 0.5f));
     }
 
     @Override
