@@ -26,6 +26,7 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
         setLightmapDisabled(true);
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
+        GlStateManager.disableFog();
         GlStateManager.disableBlend();
         GlStateManager.disableLighting();
         GlStateManager.enableTexture();
@@ -64,6 +65,7 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
         tessellator.draw();
 
         setLightmapDisabled(false);
+        GlStateManager.enableFog();
         GlStateManager.enableLighting();
         GlStateManager.popMatrix();
     }
