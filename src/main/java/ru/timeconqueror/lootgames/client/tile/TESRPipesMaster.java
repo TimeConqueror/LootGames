@@ -1,6 +1,5 @@
 package ru.timeconqueror.lootgames.client.tile;
 
-import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -24,7 +23,7 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
         bindTexture(BOARD);
         GlStateManager.pushMatrix();
 
-        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 0, 61680);
+        setLightmapDisabled(true);
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         GlStateManager.disableBlend();
@@ -36,7 +35,7 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
         BufferBuilder buf = tessellator.getBuffer();
         buf.begin(7, DefaultVertexFormats.POSITION_TEX);
 
-        double height = 0.1;
+        double height = 0.01;
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -64,6 +63,7 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
 
         tessellator.draw();
 
+        setLightmapDisabled(false);
         GlStateManager.enableLighting();
         GlStateManager.popMatrix();
     }
