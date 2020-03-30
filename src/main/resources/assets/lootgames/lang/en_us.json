@@ -10,5 +10,7 @@
   "block.lootgames.dungeon_lamp": "Dungeon Lamp",
   "block.lootgames.dungeon_lamp_broken": "Broken Dungeon Lamp",
   "block.lootgames.puzzle_master": "Puzzle Master",
-  "item.lootgames.dungeon_block.tooltip": "Mobs can't spawn on this block."
+  "item.lootgames.dungeon_block.tooltip": "Mobs can't spawn on this block.",
+  "config.lootgames.disable_minigames": "If this is set to true, then puzzle master won't start any new game.",
+  "config.lootgames.enable_debug": "If this is equal true, then it will print additional info to log files."
 }

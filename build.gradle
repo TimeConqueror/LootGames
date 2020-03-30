@@ -3,21 +3,15 @@ buildscript {
         maven { url = 'https://files.minecraftforge.net/maven' }
         jcenter()
         mavenCentral()
-        maven {
-            name = 'sponge'
-            url = 'https://repo.spongepowered.org/maven'
-        }
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
-apply plugin: 'org.spongepowered.mixin'
 
 file "build.properties" withReader {
     def prop = new Properties()
@@ -31,23 +25,6 @@ archivesBaseName = 'LootGames'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
-repositories {
-    flatDir name: 'libs', dirs: [new File("libs").absolutePath]
-    flatDir {
-        dirs 'runtimeMods'
-    }
-    maven {
-        name = 'sponge'
-        url = 'https://repo.spongepowered.org/maven'
-    }
-    mavenCentral()
-    maven { url = 'https://files.minecraftforge.net/maven' }
-    maven {
-        name 'tterrag\'s Maven' // Mappings
-        url 'https://maven.tterrag.com/'
-    }
-}
-
 minecraft {
 
     // The mappings can be changed at any time, and must be in the following format.
@@ -60,7 +37,7 @@ minecraft {
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
-    def disableRefMapArg = 'mixin.env.disableRefMap=true'
+    def extraArgs = 'mixin.env.disableRefMap=true'.split(' ')
     runs {
         client {
             workingDirectory project.file('run')
@@ -71,7 +48,10 @@ minecraft {
             // Recommended logging level for the console
 //            property 'forge.logging.console.level', 'debug'
 
-            args disableRefMapArg
+            def newArgs = new ArrayList()
+            newArgs.addAll(args)
+            newArgs.addAll(extraArgs)
+            setArgs(newArgs)
             
             mods {
                 lootgames {
@@ -89,7 +69,10 @@ minecraft {
             // Recommended logging level for the console
             //property 'forge.logging.console.level', 'debug'
 
-            args disableRefMapArg
+            def newArgs = new ArrayList()
+            newArgs.addAll(args)
+            newArgs.addAll(extraArgs)
+            setArgs(newArgs)
 
             mods {
                 lootgames {
@@ -106,8 +89,12 @@ minecraft {
 
             // Recommended logging level for the console
 //            property 'forge.logging.console.level', 'debug'
+            args '--mod', 'lootgames', '--all', '--output', ("\"" + projectDir.path + "/src/main/resources/\"")
+            def newArgs = new ArrayList()
+            newArgs.addAll(args)
+            newArgs.addAll(extraArgs)
+            setArgs(newArgs)
 
-            args disableRefMapArg, '--mod', 'lootgames', '--all', '--output', ("\"" + projectDir.path + "/src/main/resources/\"")
 
             mods {
                 lootgames {
@@ -118,9 +105,16 @@ minecraft {
     }
 }
 
-configurations {
-    // configuration that holds jars to include in the jar
-    shade
+repositories {
+    flatDir {
+        dirs 'libs', 'runtimeMods'
+    }
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    mavenCentral()
 }
 
 dependencies {
@@ -142,12 +136,13 @@ dependencies {
         }
     }
 
-    implementation 'org.jetbrains:annotations:18.0.0'
+    compileOnly 'org.jetbrains:annotations:18.0.0'
 
-    compile(fg.deobf("ru.timeconqueror:TimeCore:1.1.0.0:"))
+    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.1.0.0"))
+
+    runtimeOnly fg.deobf("mezz.jei:jei-1.14.4:6.0.0.27")
 }
 
-// Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
         attributes([

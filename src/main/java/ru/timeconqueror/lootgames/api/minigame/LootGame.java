@@ -27,6 +27,8 @@ import static ru.timeconqueror.lootgames.common.advancement.EndGameTrigger.TYPE_
 public abstract class LootGame<T extends LootGame<T>> {
     protected TileEntityGameMaster<T> masterTileEntity;
     protected TEPostponeTaskScheduler serverTaskPostponer;
+
+    @Nullable
     protected Stage stage;
 
     public void setMasterTileEntity(TileEntityGameMaster<T> masterTileEntity) {
