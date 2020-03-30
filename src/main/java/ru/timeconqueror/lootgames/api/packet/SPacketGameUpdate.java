@@ -50,6 +50,7 @@ public class SPacketGameUpdate implements ITimePacket {
 
             try {
                 packet.gamePacket = packetClass.newInstance();
+                packet.gamePacket.decode(buffer);
             } catch (InstantiationException e) {//FIXME test if it only kicks from server or halt client? and what if server will catch it?
                 throw new RuntimeException("Can't decode received game packet, due to lack of public nullary constructor in " + packetClass, e);
             } catch (IllegalAccessException e) {
@@ -62,18 +63,21 @@ public class SPacketGameUpdate implements ITimePacket {
         @Override
         public void onPacketReceived(SPacketGameUpdate packet, Supplier<NetworkEvent.Context> supplier) {
             NetworkEvent.Context ctx = supplier.get();//FIXME test disabled on server side? do only for client!
-            ctx.enqueueWork(() -> {
-                World world = packet.getWorld(ctx);
-                TileEntity te = world.getTileEntity(packet.masterPos);
-                if (te instanceof TileEntityGameMaster<?>) {
-                    TileEntityGameMaster<?> master = ((TileEntityGameMaster<?>) te);
-                    master.getGame().onUpdatePacket(packet.gamePacket);
 
-                } else {
-                    throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos: " + packet.masterPos);
-                    //FIXME test if it only kicks from server or halt client? and what if server will catch it?
-                }
-            });
+            if (packet.gamePacket != null) {
+                ctx.enqueueWork(() -> {
+                    World world = packet.getWorld(ctx);
+                    TileEntity te = world.getTileEntity(packet.masterPos);
+                    if (te instanceof TileEntityGameMaster<?>) {
+                        TileEntityGameMaster<?> master = ((TileEntityGameMaster<?>) te);
+                        master.getGame().onUpdatePacket(packet.gamePacket);
+
+                    } else {
+                        throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos: " + packet.masterPos);
+                        //FIXME test if it only kicks from server or halt client? and what if server will catch it?
+                    }
+                });
+            }
         }
     }
 }
