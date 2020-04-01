@@ -1,0 +1,133 @@
+package ru.timeconqueror.lootgames.api.util;
+
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.ChestBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.tileentity.ChestTileEntity;
+import net.minecraft.tileentity.LockableLootTileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import ru.timeconqueror.lootgames.api.minigame.LootGame;
+import ru.timeconqueror.timecore.api.util.DirectionTetra;
+import ru.timeconqueror.timecore.api.util.RandHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+public class RewardUtils {
+
+    //TODO comment
+    public static void spawnLootChest(World world, BlockPos centralPos, DirectionTetra offset, SpawnChestData chestData) {
+        if (world.isRemote) {
+            return;
+        }
+
+        BlockState chest = Blocks.CHEST.getDefaultState().with(ChestBlock.FACING,
+                offset == DirectionTetra.WEST ? Direction.EAST :
+                        offset == DirectionTetra.EAST ? Direction.WEST :
+                                offset == DirectionTetra.NORTH ? Direction.SOUTH :
+                                        Direction.NORTH);
+
+        BlockPos placePos = centralPos.add(offset.getOffsetX(), 0, offset.getOffsetZ());
+
+        world.setBlockState(placePos, chest);
+
+        ChestTileEntity teChest = (ChestTileEntity) Objects.requireNonNull((world.getTileEntity(placePos)));
+
+        LockableLootTileEntity.setLootTable(world, world.rand, placePos, chestData.getLootTableRL());
+        teChest.setLootTable(chestData.getLootTableRL(), 0);
+        teChest.fillWithLoot(null);
+
+        List<Integer> notEmptyIndexes = new ArrayList<>();
+        for (int i = 0; i < teChest.getSizeInventory(); i++) {
+            if (teChest.getStackInSlot(i) != ItemStack.EMPTY) {
+                notEmptyIndexes.add(i);
+            }
+        }
+
+        if (notEmptyIndexes.size() == 0) {
+            ItemStack stack = new ItemStack(Blocks.STONE);
+            try {
+                stack.setTag(JsonToNBT.getTagFromJson(String.format("{display:{Name:\"The Sorry Stone\",Lore:[\"Modpack creator failed to configure the LootTables properly.\",\"Please report that LootList [%s] for %s stage is broken, thank you!\"]}}", chestData.getLootTableRL(), chestData.getGameName())));
+            } catch (CommandSyntaxException e) {
+                e.printStackTrace();
+            }
+
+            teChest.setInventorySlotContents(0, stack);
+
+            return;
+        }
+
+        int minItems = chestData.getMinItems();
+        int maxItems = chestData.getMaxItems();
+
+        //will shrink loot in chest if option is enabled
+        if (minItems != -1 || maxItems != -1) {
+            int min = minItems == -1 ? 0 : minItems;
+            int extra = (maxItems == -1 ? notEmptyIndexes.size() : maxItems) - minItems;
+
+            int itemCount = extra < 1 ? min : min + RandHelper.RAND.nextInt(extra);
+            if (itemCount < notEmptyIndexes.size()) {
+                int[] itemsRemain = new int[itemCount];
+                for (int i = 0; i < itemsRemain.length; i++) {
+                    int itemRemainArrIndex = RandHelper.RAND.nextInt(notEmptyIndexes.size());
+                    int itemRemainChestIndex = notEmptyIndexes.get(itemRemainArrIndex);
+                    notEmptyIndexes.remove(itemRemainArrIndex);
+
+                    itemsRemain[i] = itemRemainChestIndex;
+                }
+
+                for (int i = 0; i < teChest.getSizeInventory(); i++) {
+                    boolean toDelete = true;
+
+                    for (int i1 : itemsRemain) {
+                        if (i == i1) {
+                            toDelete = false;
+                            break;
+                        }
+                    }
+
+                    if (toDelete) {
+                        teChest.removeStackFromSlot(i);
+                    }
+                }
+            }
+        }
+    }
+
+    public static class SpawnChestData {
+        private ResourceLocation lootTableRL;
+        private String gameName;
+        private int minItems;
+        private int maxItems;
+
+        public SpawnChestData(LootGame<?> game, ResourceLocation lootTableRL, int minItems, int maxItems) {
+            this.lootTableRL = lootTableRL;
+            this.minItems = minItems;
+            this.maxItems = maxItems;
+            this.gameName = game.getClass().getSimpleName();
+        }
+
+        public String getGameName() {
+            return gameName;
+        }
+
+        public int getMaxItems() {
+            return maxItems;
+        }
+
+        public int getMinItems() {
+            return minItems;
+        }
+
+        public ResourceLocation getLootTableRL() {
+            return lootTableRL;
+        }
+    }
+}

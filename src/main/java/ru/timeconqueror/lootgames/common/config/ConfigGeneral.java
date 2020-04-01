@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ConfigGeneral extends Config {
+    public static final ConfigGeneral INSTANCE = new ConfigGeneral();
 
     public ForgeConfigSpec.BooleanValue DISABLE_MINIGAMES;
     public ForgeConfigSpec.BooleanValue ENABLE_DEBUG;

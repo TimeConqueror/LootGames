@@ -5,7 +5,7 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 
-public class SPMSResetFlags implements IServerGamePacket<GameMineSweeper> {
+public class SPMSResetFlags implements IServerGamePacket {
     @Override
     public void encode(PacketBuffer bufferTo) {
 
@@ -17,7 +17,7 @@ public class SPMSResetFlags implements IServerGamePacket<GameMineSweeper> {
     }
 
     @Override
-    public void runOnClient(LootGame<GameMineSweeper> game) {
-        game.typed().getBoard().cSetFlaggedFields(0);
+    public void runOnClient(LootGame<?> game) {
+        ((GameMineSweeper) game).getBoard().cSetFlaggedFields(0);
     }
 }

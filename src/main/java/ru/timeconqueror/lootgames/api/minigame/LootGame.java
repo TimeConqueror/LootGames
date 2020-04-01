@@ -6,15 +6,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.network.PacketDistributor;
-import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.advancement.LGAdvancementManager;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.api.packet.SPacketGameUpdate;
-import ru.timeconqueror.lootgames.api.task.TEPostponeTaskScheduler;
+import ru.timeconqueror.lootgames.api.task.TETaskScheduler;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
+import ru.timeconqueror.lootgames.common.packet.game.SPacketChangeStage;
 import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 
@@ -26,39 +26,44 @@ import static ru.timeconqueror.lootgames.common.advancement.EndGameTrigger.TYPE_
 
 public abstract class LootGame<T extends LootGame<T>> {
     protected TileEntityGameMaster<T> masterTileEntity;
-    protected TEPostponeTaskScheduler serverTaskPostponer;
-
+    protected TETaskScheduler taskScheduler;
     @Nullable
-    protected Stage stage;
+    protected Stage<T> stage;
+    private boolean firstTickPassed;
 
     public void setMasterTileEntity(TileEntityGameMaster<T> masterTileEntity) {
         this.masterTileEntity = masterTileEntity;
     }
 
-    public void init() {
-        this.serverTaskPostponer = new TEPostponeTaskScheduler(masterTileEntity);
+    /**
+     * Method where you need to init anything, that requires world and {@link #masterTileEntity} to be not null.
+     * Will be called on the first tick.
+     */
+    @OverridingMethodsMustInvokeSuper
+    protected void init() {
+        if (taskScheduler == null && isServerSide()) {
+            taskScheduler = new TETaskScheduler(masterTileEntity);
+        }
     }
 
     @OverridingMethodsMustInvokeSuper
     public void onTick() {
+        if (!firstTickPassed) {
+            init();
+            firstTickPassed = true;
+        }
+
         if (isServerSide()) {
-            serverTaskPostponer.onUpdate();
+            taskScheduler.onUpdate();
         }
 
         if (stage != null) {
-            if (stage.side == Stage.BOTH || (stage.side == Stage.SERVER && isServerSide() || (stage.side == Stage.CLIENT && !isServerSide()))) {
-                stage.onTick();
-            }
+            stage.onTick(this);
         }
     }
 
-    public T typed() {
-        return ((T) this);
-    }
-
     public boolean isServerSide() {
-        World world = Objects.requireNonNull(masterTileEntity.getWorld());
-        return !world.isRemote;
+        return !getWorld().isRemote;
     }
 
     @NotNull
@@ -138,7 +143,7 @@ public abstract class LootGame<T extends LootGame<T>> {
     @OverridingMethodsMustInvokeSuper
     public void writeNBTForSaving(CompoundNBT nbt) {
         writeCommonNBT(nbt);
-        nbt.put("task_scheduler", serverTaskPostponer.serializeNBT());
+        nbt.put("task_scheduler", taskScheduler.serializeNBT());
     }
 
     /**
@@ -151,13 +156,14 @@ public abstract class LootGame<T extends LootGame<T>> {
 
         ListNBT schedulerTag = (ListNBT) compound.get("task_scheduler");
 
-        serverTaskPostponer.deserializeNBT(Objects.requireNonNull(schedulerTag));
+        taskScheduler = new TETaskScheduler(masterTileEntity);
+        taskScheduler.deserializeNBT(Objects.requireNonNull(schedulerTag));
     }
 
     /**
      * Sends update packet to the client with given {@link CompoundNBT} to all players, tracking the game.
      */
-    public void sendUpdatePacket(IServerGamePacket<T> packet) {
+    public void sendUpdatePacket(IServerGamePacket packet) {
         Chunk chunk = getWorld().getChunkAt(masterTileEntity.getPos());
         LGNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new SPacketGameUpdate(this, packet));
     }
@@ -165,7 +171,7 @@ public abstract class LootGame<T extends LootGame<T>> {
     /**
      * Fired on client when {@link IServerGamePacket} comes from server.
      */
-    public void onUpdatePacket(IServerGamePacket<T> packet) {
+    public void onUpdatePacket(IServerGamePacket packet) {
         packet.runOnClient(this);
     }
 
@@ -202,52 +208,49 @@ public abstract class LootGame<T extends LootGame<T>> {
      */
     @OverridingMethodsMustInvokeSuper
     public void readCommonNBT(CompoundNBT compound) {
-        stage = createStageFromNBT(compound.getCompound("stage"));
+        stage = compound.contains("stage") ? createStageFromNBT(compound.getCompound("stage")) : null;
+//        stage.onStart();//FIXME FIXME FIXME
     }
 
-    public void switchStage(@Nullable Stage stage) {
-        Stage old = this.stage;
-        if (old != null) old.onEnd();
+    public void switchStage(@Nullable Stage<T> stage) {
+        Stage<T> old = this.stage;
+        if (old != null) old.onEnd(this);
 
         this.stage = stage;
 
         onStageUpdate(old, stage);
-        if (this.stage != null) this.stage.onStart();
+
+        if (this.stage != null) this.stage.onStart(this);
     }
 
-    protected void onStageUpdate(Stage oldStage, Stage newStage) {
-        saveData();
+
+    //    @SuppressWarnings({"unchecked", "rawtypes"})
+    protected void onStageUpdate(Stage<T> oldStage, Stage<T> newStage) {
+        if (isServerSide()) {
+            saveData();
+            sendUpdatePacket(new SPacketChangeStage(this));
+        }
     }
 
     @Nullable
-    public abstract Stage createStageFromNBT(CompoundNBT stageNBT);
+    public abstract Stage<T> createStageFromNBT(CompoundNBT stageNBT);
 
     @Nullable
-    public Stage getStage() {
+    public Stage<T> getStage() {
         return stage;
     }
 
-    public abstract static class Stage {
-        public static final int CLIENT = 0;
-        public static final int SERVER = 1;
-        public static final int BOTH = 2;
+    public abstract static class Stage<T extends LootGame<T>> {
 
-        @MagicConstant(intValues = {CLIENT, SERVER, BOTH})
-        private int side;
-
-        public Stage(@MagicConstant(intValues = {CLIENT, SERVER, BOTH}) int side) {
-            this.side = side;
-        }
-
-        public void onStart() {
+        protected void onStart(LootGame<T> game) {
 
         }
 
-        public void onTick() {
+        protected void onTick(LootGame<T> game) {
 
         }
 
-        public void onEnd() {
+        protected void onEnd(LootGame<T> game) {
 
         }
 

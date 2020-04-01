@@ -1,9 +1,10 @@
 package ru.timeconqueror.lootgames.common;
 
-import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.registry.LGBlocks;
 
 public class LGItemGroup extends ItemGroup {
     public static final LGItemGroup MAIN = new LGItemGroup(LootGames.MODID);
@@ -12,8 +13,9 @@ public class LGItemGroup extends ItemGroup {
         super(label);
     }
 
+    @NotNull
     @Override
     public ItemStack createIcon() {
-        return new ItemStack(Blocks.ACACIA_BUTTON);//FIXME CHANGE
+        return new ItemStack(LGBlocks.PUZZLE_MASTER);
     }
 }

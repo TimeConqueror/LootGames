@@ -7,11 +7,17 @@ import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard;
 
-public class SPMSFieldChanged implements IServerGamePacket<GameMineSweeper> {
+public class SPMSFieldChanged implements IServerGamePacket {
     private Pos2i pos;
     private int type;
     private MSBoard.Mark mark;
     private boolean hidden;
+
+    /**
+     * Only for using via reflection
+     */
+    public SPMSFieldChanged() {
+    }
 
     public SPMSFieldChanged(Pos2i pos, int type, MSBoard.Mark mark, boolean hidden) {
         this.pos = pos;
@@ -38,7 +44,7 @@ public class SPMSFieldChanged implements IServerGamePacket<GameMineSweeper> {
     }
 
     @Override
-    public void runOnClient(LootGame<GameMineSweeper> game) {
-        game.typed().getBoard().cSetField(pos, type, mark, hidden);
+    public void runOnClient(LootGame<?> game) {
+        ((GameMineSweeper) game).getBoard().cSetField(pos, type, mark, hidden);
     }
 }

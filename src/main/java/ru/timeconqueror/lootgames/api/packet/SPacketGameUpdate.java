@@ -11,12 +11,12 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.timecore.api.common.packet.ITimePacket;
 
 import java.util.function.Supplier;
-//Todo maybe also addNBT T to packet and handler?
+
 public class SPacketGameUpdate implements ITimePacket {
-    private IServerGamePacket<?> gamePacket;
+    private IServerGamePacket gamePacket;
     private BlockPos masterPos;
 
-    public <T extends LootGame<T>> SPacketGameUpdate(LootGame<T> game, IServerGamePacket<T> gamePacket) {
+    public <T extends LootGame<T>> SPacketGameUpdate(LootGame<T> game, IServerGamePacket gamePacket) {
         this.masterPos = game.getMasterPos();
         this.gamePacket = gamePacket;
     }
@@ -34,7 +34,7 @@ public class SPacketGameUpdate implements ITimePacket {
         public void encode(SPacketGameUpdate packet, PacketBuffer buffer) {
             buffer.writeBlockPos(packet.masterPos);
 
-            GamePacketRegistry.PacketInfo info = GamePacketRegistry.getInfo((Class<? extends IServerGamePacket<?>>) packet.gamePacket.getClass());
+            GamePacketRegistry.PacketInfo info = GamePacketRegistry.getInfo(packet.gamePacket.getClass());
             buffer.writeString(info.getModID());
             buffer.writeInt(info.getPacketID());
             packet.gamePacket.encode(buffer);
@@ -46,7 +46,7 @@ public class SPacketGameUpdate implements ITimePacket {
             packet.masterPos = buffer.readBlockPos();
 
             GamePacketRegistry.PacketInfo info = new GamePacketRegistry.PacketInfo(buffer.readString(), buffer.readInt());
-            Class<? extends IServerGamePacket<?>> packetClass = GamePacketRegistry.getPacketClass(info);
+            Class<? extends IServerGamePacket> packetClass = GamePacketRegistry.getPacketClass(info);
 
             try {
                 packet.gamePacket = packetClass.newInstance();
@@ -64,7 +64,7 @@ public class SPacketGameUpdate implements ITimePacket {
         public void onPacketReceived(SPacketGameUpdate packet, Supplier<NetworkEvent.Context> supplier) {
             NetworkEvent.Context ctx = supplier.get();//FIXME test disabled on server side? do only for client!
 
-            if (packet.gamePacket != null) {
+            if (packet.gamePacket != null) {//FIXME here shouldn't be null pointer
                 ctx.enqueueWork(() -> {
                     World world = packet.getWorld(ctx);
                     TileEntity te = world.getTileEntity(packet.masterPos);

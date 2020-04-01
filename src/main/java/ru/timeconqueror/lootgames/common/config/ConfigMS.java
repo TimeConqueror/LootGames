@@ -16,13 +16,15 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ConfigMS extends Config {
+    public static final ConfigMS INSTANCE = new ConfigMS();
+
     public ForgeConfigSpec.IntValue DETONATION_TIME;
     public ForgeConfigSpec.IntValue ATTEMPT_COUNT;
 
-    public Stage STAGE_1;
-    public Stage STAGE_2;
-    public Stage STAGE_3;
-    public Stage STAGE_4;
+    public StageConfig STAGE_1;
+    public StageConfig STAGE_2;
+    public StageConfig STAGE_3;
+    public StageConfig STAGE_4;
 
     @Override
     public ForgeConfigSpec setup() {
@@ -35,16 +37,36 @@ public class ConfigMS extends Config {
 
         String sorryMsg = "\nIgnore stage prefix, it is here because of new forge config system knows nothing about property ordering. Waiting for fix... :c";
 
-        STAGE_1 = new Stage("y_stage_1", new Stage.DefaultData(6, 20, "minecraft:chests/simple_dungeon", 15, 15));
+        STAGE_1 = new StageConfig("y_stage_1", new StageConfig.DefaultData(6, 20, "minecraft:chests/simple_dungeon", 15, 15));
         builder.addAndSetupSection(STAGE_1, "stage", "Regulates characteristics of stage 1." + sorryMsg);
-        STAGE_2 = new Stage("y_stage_2", new Stage.DefaultData(7, 30, "minecraft:chests/desert_pyramid", -1, -1));
+        STAGE_2 = new StageConfig("y_stage_2", new StageConfig.DefaultData(7, 30, "minecraft:chests/desert_pyramid", -1, -1));
         builder.addAndSetupSection(STAGE_2, "stage", "Regulates characteristics of stage 2." + sorryMsg);
-        STAGE_3 = new Stage("z_stage_3", new Stage.DefaultData(8, 42, "minecraft:chests/nether_bridge", -1, -1));
+        STAGE_3 = new StageConfig("z_stage_3", new StageConfig.DefaultData(8, 42, "minecraft:chests/nether_bridge", -1, -1));
         builder.addAndSetupSection(STAGE_3, "stage", "Regulates characteristics of stage 3." + sorryMsg);
-        STAGE_4 = new Stage("q_stage_4", new Stage.DefaultData(9, 68, "minecraft:chests/end_city_treasure", -1, -1));
+        STAGE_4 = new StageConfig("q_stage_4", new StageConfig.DefaultData(9, 68, "minecraft:chests/end_city_treasure", -1, -1));
         builder.addAndSetupSection(STAGE_4, "stage", "Regulates characteristics of stage 4." + sorryMsg);
 
         return builder.build();
+    }
+
+    /**
+     * @param index - 1-4 (inclusive)
+     *              Can return true, if index will be out of bounds.
+     * @throws RuntimeException if stage config was not found for provided index.
+     */
+    public StageConfig getStageByIndex(int index) {
+        switch (index) {
+            case 1:
+                return STAGE_1;
+            case 2:
+                return STAGE_2;
+            case 3:
+                return STAGE_3;
+            case 4:
+                return STAGE_4;
+            default:
+                throw new RuntimeException("Provided unknown stage config index " + index + ", please contact with mod author.");
+        }
     }
 
     @Override
@@ -67,7 +89,7 @@ public class ConfigMS extends Config {
         return "Regulates \"Minesweeper\" minigame.";
     }
 
-    public static class Stage extends ConfigSection {
+    public static class StageConfig extends ConfigSection {
         public ForgeConfigSpec.IntValue BOMB_COUNT;
         public ForgeConfigSpec.IntValue MIN_ITEMS;
         public ForgeConfigSpec.IntValue MAX_ITEMS;
@@ -80,7 +102,7 @@ public class ConfigMS extends Config {
         private ResourceLocation defaultLootTable;
         private HashMap<Integer, ResourceLocation> dimensionsConfigsMap;
 
-        public Stage(String key, DefaultData defData) {
+        public StageConfig(String key, DefaultData defData) {
             this.defData = defData;
             this.key = key;
         }

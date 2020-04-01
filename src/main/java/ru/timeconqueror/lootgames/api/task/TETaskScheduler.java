@@ -13,12 +13,12 @@ import ru.timeconqueror.timecore.api.exception.NotExistsException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class TEPostponeTaskScheduler implements INBTSerializable<ListNBT> {
+public class TETaskScheduler implements INBTSerializable<ListNBT> {
     private final ArrayList<TaskWrapper> tasks = new ArrayList<>();
 
     private final TileEntity tileEntity;
 
-    public TEPostponeTaskScheduler(@NotNull TileEntity tileEntity) {
+    public TETaskScheduler(@NotNull TileEntity tileEntity) {
         this.tileEntity = tileEntity;
     }
 

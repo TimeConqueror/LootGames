@@ -1,4 +1,4 @@
-package ru.timeconqueror.lootgames.client.tile;
+package ru.timeconqueror.lootgames.client.render.tile;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.BufferBuilder;

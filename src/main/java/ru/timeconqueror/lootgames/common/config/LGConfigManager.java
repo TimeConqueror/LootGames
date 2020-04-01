@@ -6,16 +6,13 @@ import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
 
 @TimeAutoRegistrable
 public class LGConfigManager extends ConfigManager {
-    private static ConfigGeneral GENERAL_CONFIG = new ConfigGeneral();
-    private static ConfigMS MS_CONFIG = new ConfigMS();
-
     static String resolve(String path) {
         return LootGames.MODID + "/" + path;
     }
 
     @Override
     protected void register() {
-        registerConfig(GENERAL_CONFIG);
-        registerConfig(MS_CONFIG);
+        registerConfig(ConfigGeneral.INSTANCE);
+        registerConfig(ConfigMS.INSTANCE);
     }
 }

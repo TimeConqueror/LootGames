@@ -333,7 +333,7 @@ public class MSBoard {
         }
 
         public static Mark getNext(Mark mark) {
-            return mark.id >= LOOKUP.length ? LOOKUP[0] : LOOKUP[++mark.id];
+            return mark.id >= LOOKUP.length - 1 ? LOOKUP[0] : LOOKUP[mark.id + 1];
         }
 
         public Mark getNext() {

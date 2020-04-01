@@ -23,7 +23,6 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
         super(tileEntityTypeIn);
         this.game = game;
         game.setMasterTileEntity(this);
-        game.init();
     }
 
     public long getAge() {

@@ -5,7 +5,7 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.minigame.pipes.GamePipes;
 
-public class PacketPipesGameChangeChunks implements IServerGamePacket<GamePipes> {
+public class PacketPipesGameChangeChunks implements IServerGamePacket {
 
     private int[] ids;
     private int[] chunks;
@@ -15,6 +15,9 @@ public class PacketPipesGameChangeChunks implements IServerGamePacket<GamePipes>
         this.chunks = chunks;
     }
 
+    /**
+     * Only for using via reflection
+     */
     public PacketPipesGameChangeChunks() {
     }
 
@@ -31,7 +34,7 @@ public class PacketPipesGameChangeChunks implements IServerGamePacket<GamePipes>
     }
 
     @Override
-    public void runOnClient(LootGame<GamePipes> game) {
-        game.typed().getBoard().setChunks(ids, chunks);
+    public void runOnClient(LootGame<?> game) {
+        ((GamePipes) game).getBoard().setChunks(ids, chunks);
     }
 }

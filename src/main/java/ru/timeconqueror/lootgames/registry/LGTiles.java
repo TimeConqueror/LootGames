@@ -1,7 +1,8 @@
 package ru.timeconqueror.lootgames.registry;
 
 import net.minecraft.tileentity.TileEntityType;
-import ru.timeconqueror.lootgames.client.tile.TESRPipesMaster;
+import ru.timeconqueror.lootgames.client.render.tile.TESRMSMaster;
+import ru.timeconqueror.lootgames.client.render.tile.TESRPipesMaster;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityPipesMaster;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityPuzzleMaster;
@@ -18,7 +19,7 @@ public class LGTiles extends TileEntityTimeRegistry {
     @Override
     public void register() {
         PUZZLE_MASTER = regTileEntity(TileEntityPuzzleMaster.class, TileEntityPuzzleMaster::new, "puzzle_master", LGBlocks.PUZZLE_MASTER).retrieveTileEntityType();
-        MS_MASTER = regTileEntity(TileEntityMSMaster.class, TileEntityMSMaster::new, "ms_master", LGBlocks.MS_MASTER).retrieveTileEntityType();
+        MS_MASTER = regTileEntity(TileEntityMSMaster.class, TileEntityMSMaster::new, "ms_master", LGBlocks.MS_MASTER).regCustomRenderer(() -> TESRMSMaster::new).retrieveTileEntityType();
         PIPES_MASTER = regTileEntity(TileEntityPipesMaster.class, TileEntityPipesMaster::new, "pipes_master", LGBlocks.PIPES_MASTER).regCustomRenderer(() -> TESRPipesMaster::new).retrieveTileEntityType();
     }
 }

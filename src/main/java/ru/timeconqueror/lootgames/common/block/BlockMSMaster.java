@@ -11,14 +11,11 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.api.block.BlockGameMaster;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
+import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
 
 import java.util.Objects;
 
 public class BlockMSMaster extends BlockGameMaster {
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return false;
-    }
 
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
@@ -35,6 +32,6 @@ public class BlockMSMaster extends BlockGameMaster {
 
     @Override
     public @NotNull TileEntityGameMaster<?> createTileEntity(BlockState state, IBlockReader world) {
-        return null;
+        return new TileEntityMSMaster();
     }
 }

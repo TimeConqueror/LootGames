@@ -34,7 +34,7 @@ public class GamePipes extends LootGame<GamePipes> {
     }
 
     @Override
-    public Stage createStageFromNBT(CompoundNBT stageNBT) {
+    public Stage<GamePipes> createStageFromNBT(CompoundNBT stageNBT) {
         return null;
     }
 
