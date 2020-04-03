@@ -125,9 +125,9 @@ public class ConfigMS extends Config {
                     .defineInRange("bomb_count", defData.bombCount, 1, Integer.MAX_VALUE);
             DEF_LOOT_TABLE_CFG = builder.comment("Name of the loottable, items from which will be generated in the chest of this stage. This can be adjusted per-Dimension in S:DimensionalConfig.")
                     .define("loot_table", defData.lootTable);
-            MIN_ITEMS = builder.comment("Minimum amount of items to be generated in chest. Won't be applied, if count of items in bound loot table are less than it. If min and max are set to -1, the limits will be disabled.")
-                    .defineInRange("min_items", defData.minItems, -1, 256);//FIXME maybe not amount but amount of types?
-            MAX_ITEMS = builder.comment("Maximum amount of items to be generated in chest. If this is set to -1, max limit will be disabled.")//FIXME maybe not amount but amount of types?
+            MIN_ITEMS = builder.comment("Minimum amount of item stacks to be generated in chest. Won't be applied, if count of items in bound loot table are less than it. If min and max are set to -1, the limits will be disabled.")
+                    .defineInRange("min_items", defData.minItems, -1, 256);
+            MAX_ITEMS = builder.comment("Maximum amount of item stacks to be generated in chest. If this is set to -1, max limit will be disabled.")
                     .defineInRange("max_items", defData.maxItems, -1, 256);
 
             PER_DIM_CFG = builder.comment("Here you can add different loottables to each dimension. If dimension isn't in this list, then game will take default loottable for this stage.",

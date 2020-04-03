@@ -22,7 +22,16 @@ import java.util.Objects;
 
 public class RewardUtils {
 
-    //TODO comment
+    /**
+     * Spawns chest with provided {@link SpawnChestData} in 1 block offset from central position.
+     *
+     * @param world      world where to spawn chest
+     * @param centralPos position around which chest will be spawned
+     * @param offset     in what direction of {@code centralPos} chest should be placed.
+     *                   For example, if you set the offset to {@link DirectionTetra#NORTH},
+     *                   chest will be spawned 1 block north of the {@code centralPos} with south facing.
+     * @param chestData  data which contains the rules of setting chest content
+     */
     public static void spawnLootChest(World world, BlockPos centralPos, DirectionTetra offset, SpawnChestData chestData) {
         if (world.isRemote) {
             return;
@@ -54,12 +63,12 @@ public class RewardUtils {
         if (notEmptyIndexes.size() == 0) {
             ItemStack stack = new ItemStack(Blocks.STONE);
             try {
-                stack.setTag(JsonToNBT.getTagFromJson(String.format("{display:{Name:\"The Sorry Stone\",Lore:[\"Modpack creator failed to configure the LootTables properly.\",\"Please report that LootList [%s] for %s stage is broken, thank you!\"]}}", chestData.getLootTableRL(), chestData.getGameName())));
+                stack.setTag(JsonToNBT.getTagFromJson(String.format("{display:{Name:\"{\\\"text\\\":\\\"The Sorry Stone\\\", \\\"color\\\":\\\"blue\\\", \\\"bold\\\": \\\"true\\\"}\", Lore: [\"{\\\"text\\\":\\\"Modpack creator failed to configure the LootTables properly.\\\\nPlease report that Loot Table [%s] for %s stage is broken, thank you!\\\"}\"]}}", chestData.getLootTableRL(), chestData.getGameName())));//TODO when copying back to 1.12.2 - this tag don't work, only old one
             } catch (CommandSyntaxException e) {
                 e.printStackTrace();
             }
 
-            teChest.setInventorySlotContents(0, stack);
+            teChest.setInventorySlotContents(teChest.getSizeInventory() / 2, stack);
 
             return;
         }
@@ -107,6 +116,16 @@ public class RewardUtils {
         private int minItems;
         private int maxItems;
 
+        /**
+         * @param game        game, which calls this method
+         * @param lootTableRL loot table, from which items will be set in spawned chest.
+         *                    If loot table won't be found, the game will place "sorry-stone" in the chest.
+         * @param minItems    minimum amount of item stacks to be generated in chest.
+         *                    Won't be applied, if count of items in bound loot table are less than it.
+         *                    If min and max are set to -1, the limits will be disabled.
+         * @param maxItems    maximum amount of item stacks to be generated in chest.
+         *                    If this is set to -1, max limit will be disabled.
+         */
         public SpawnChestData(LootGame<?> game, ResourceLocation lootTableRL, int minItems, int maxItems) {
             this.lootTableRL = lootTableRL;
             this.minItems = minItems;

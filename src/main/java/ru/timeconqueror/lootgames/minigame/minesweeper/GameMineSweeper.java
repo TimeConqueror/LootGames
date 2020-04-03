@@ -36,7 +36,11 @@ import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 import static ru.timeconqueror.timecore.api.util.NetworkUtils.*;
 
 //TODO add default colors to warn, fail, win, etc
-//TOD add check if tileentity is nearby or blocksmetsubordinte
+//TODo add check if tileentity is nearby or blocksmartsubordinate or masterplacer
+//TODO improve first click - it shouldn't be random.
+//TODO change generation random - depending on world is bad.
+//TODO add leveling info in chat
+//todo add game rules in chat
 public class GameMineSweeper extends LootGame<GameMineSweeper> {
     public boolean cIsGenerated;
 
