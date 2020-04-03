@@ -5,12 +5,12 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.minigame.pipes.GamePipes;
 
-public class PacketPipesGameChangeChunks implements IServerGamePacket {
+public class SPPipesGameChangeChunks implements IServerGamePacket {
 
     private int[] ids;
     private int[] chunks;
 
-    public PacketPipesGameChangeChunks(int[] ids, int[] chunks) {
+    public SPPipesGameChangeChunks(int[] ids, int[] chunks) {
         this.ids = ids;
         this.chunks = chunks;
     }
@@ -18,7 +18,7 @@ public class PacketPipesGameChangeChunks implements IServerGamePacket {
     /**
      * Only for using via reflection
      */
-    public PacketPipesGameChangeChunks() {
+    public SPPipesGameChangeChunks() {
     }
 
     @Override

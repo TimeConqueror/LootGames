@@ -22,9 +22,9 @@ public class LGMiscRegistry {
         LootGamesAPI.getGameManager().registerGameGenerator(new GamePipes.Factory());
 
         int id = -1;
-        manager.registerPacket(++id, SPacketChangeStage.class);
+        manager.registerPacket(++id, SPChangeStage.class);
 
-        manager.registerPacket(++id, PacketPipesGameChangeChunks.class);
+        manager.registerPacket(++id, SPPipesGameChangeChunks.class);
 
         manager.registerPacket(++id, SPMSFieldChanged.class);
         manager.registerPacket(++id, SPMSGenBoard.class);

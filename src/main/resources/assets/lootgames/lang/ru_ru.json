@@ -10,5 +10,13 @@
   "block.lootgames.dungeon_lamp": "Лампа подземелья",
   "block.lootgames.dungeon_lamp_broken": "Сломанная лампа подземелья",
   "block.lootgames.puzzle_master": "Мастер головоломок",
-  "item.lootgames.dungeon_block.tooltip": "Существа не могут спауниться на этом блоке."
+  "item.lootgames.dungeon_block.tooltip": "Существа не могут спауниться на этом блоке.",
+  "msg.lootgames.stage_complete": "Кажется, структура признаёт ваши старания...",
+  "msg.lootgames.win": "Структура довольна, и поэтому она вознаграждает вас!",
+  "msg.lootgames.lose": "Кажется, структура оскорбилась вашим провалом.",
+  "msg.lootgames.attempt_left": "Попыток осталось: %d.",
+  "msg.lootgames.ms.bomb_touched": "Упс... Сейчас будет БУМ. Бегите!",
+  "msg.lootgames.ms.new_attempt": "Структура успокоилась. Вы можете попытаться сыграть вновь.",
+  "msg.lootgames.ms.reveal_on_hidden": "Вы не можете открыть соседей вокруг неоткрытого поля.",
+  "msg.lootgames.ms.reveal_invalid_mark_count": "Вы не можете открыть соседей этого поля, потому что его значение отличается от количества соседей c флажком."
 }

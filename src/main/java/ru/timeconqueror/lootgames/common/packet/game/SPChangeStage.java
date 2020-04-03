@@ -4,14 +4,14 @@ import net.minecraft.nbt.CompoundNBT;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.NBTGamePacket;
 
-public class SPacketChangeStage extends NBTGamePacket {
+public class SPChangeStage extends NBTGamePacket {
     /**
      * Only for using via reflection
      */
-    public SPacketChangeStage() {
+    public SPChangeStage() {
     }
 
-    public SPacketChangeStage(LootGame<?> game) {
+    public SPChangeStage(LootGame<?> game) {
         super(game.getStage() != null ? game.getStage().serialize() : null);
     }
 

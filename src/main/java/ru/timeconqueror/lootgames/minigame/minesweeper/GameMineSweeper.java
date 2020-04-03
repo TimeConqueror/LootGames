@@ -36,6 +36,7 @@ import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 import static ru.timeconqueror.timecore.api.util.NetworkUtils.*;
 
 //TODO add default colors to warn, fail, win, etc
+//TOD add check if tileentity is nearby or blocksmetsubordinte
 public class GameMineSweeper extends LootGame<GameMineSweeper> {
     public boolean cIsGenerated;
 
@@ -137,10 +138,6 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
 
         List<ServerPlayerEntity> players = getPlayersNearby(getCentralGamePos(), getBroadcastDistance());
 
-        for (ServerPlayerEntity player : players) {
-            player.sendMessage(format(new TranslationTextComponent("msg.lootgames.win"), TextFormatting.GREEN));
-        }
-
         genLootChests(players);
     }
 
@@ -187,10 +184,6 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
 
         BlockPos expPos = getCentralGamePos();
         getWorld().createExplosion(null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 9, Explosion.Mode.DESTROY);
-
-        sendMessageToAllNearby(getCentralGamePos(),
-                format(new TranslationTextComponent("msg.lootgames.lose"), TextFormatting.DARK_PURPLE),
-                getBroadcastDistance());
     }
 
     @Override

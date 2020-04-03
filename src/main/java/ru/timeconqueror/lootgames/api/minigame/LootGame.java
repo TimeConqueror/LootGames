@@ -3,6 +3,8 @@ package ru.timeconqueror.lootgames.api.minigame;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -14,7 +16,7 @@ import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.api.packet.SPacketGameUpdate;
 import ru.timeconqueror.lootgames.api.task.TETaskScheduler;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
-import ru.timeconqueror.lootgames.common.packet.game.SPacketChangeStage;
+import ru.timeconqueror.lootgames.common.packet.game.SPChangeStage;
 import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 
@@ -23,6 +25,7 @@ import java.util.Objects;
 
 import static ru.timeconqueror.lootgames.common.advancement.EndGameTrigger.TYPE_LOSE;
 import static ru.timeconqueror.lootgames.common.advancement.EndGameTrigger.TYPE_WIN;
+import static ru.timeconqueror.timecore.api.util.NetworkUtils.format;
 
 public abstract class LootGame<T extends LootGame<T>> {
     protected TileEntityGameMaster<T> masterTileEntity;
@@ -83,7 +86,10 @@ public abstract class LootGame<T extends LootGame<T>> {
     protected void triggerGameWin() {
         onGameEnd();
         NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(),
-                player -> LGAdvancementManager.END_GAME.trigger(player, TYPE_WIN));
+                player -> {
+                    LGAdvancementManager.END_GAME.trigger(player, TYPE_WIN);
+                    player.sendMessage(format(new TranslationTextComponent("msg.lootgames.win"), TextFormatting.GREEN));
+                });
     }
 
     /**
@@ -94,7 +100,10 @@ public abstract class LootGame<T extends LootGame<T>> {
     protected void triggerGameLose() {
         onGameEnd();
         NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(),
-                player -> LGAdvancementManager.END_GAME.trigger(player, TYPE_LOSE));
+                player -> {
+                    LGAdvancementManager.END_GAME.trigger(player, TYPE_LOSE);
+                    player.sendMessage(format(new TranslationTextComponent("msg.lootgames.lose"), TextFormatting.DARK_PURPLE));
+                });
     }
 
     /**
@@ -209,7 +218,6 @@ public abstract class LootGame<T extends LootGame<T>> {
     @OverridingMethodsMustInvokeSuper
     public void readCommonNBT(CompoundNBT compound) {
         stage = compound.contains("stage") ? createStageFromNBT(compound.getCompound("stage")) : null;
-//        stage.onStart();//FIXME FIXME FIXME
     }
 
     public void switchStage(@Nullable Stage<T> stage) {
@@ -223,12 +231,10 @@ public abstract class LootGame<T extends LootGame<T>> {
         if (this.stage != null) this.stage.onStart(this);
     }
 
-
-    //    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void onStageUpdate(Stage<T> oldStage, Stage<T> newStage) {
         if (isServerSide()) {
             saveData();
-            sendUpdatePacket(new SPacketChangeStage(this));
+            sendUpdatePacket(new SPChangeStage(this));
         }
     }
 
@@ -242,6 +248,9 @@ public abstract class LootGame<T extends LootGame<T>> {
 
     public abstract static class Stage<T extends LootGame<T>> {
 
+        /**
+         * Called when the game was switched to this stage.
+         */
         protected void onStart(LootGame<T> game) {
 
         }
@@ -250,6 +259,9 @@ public abstract class LootGame<T extends LootGame<T>> {
 
         }
 
+        /**
+         * Called when the game was switched from this stage to another one.
+         */
         protected void onEnd(LootGame<T> game) {
 
         }

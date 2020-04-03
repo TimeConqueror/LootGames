@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.minigame.pipes.board;
 
 import net.minecraft.nbt.CompoundNBT;
-import ru.timeconqueror.lootgames.common.packet.game.PacketPipesGameChangeChunks;
+import ru.timeconqueror.lootgames.common.packet.game.SPPipesGameChangeChunks;
 
 import java.util.*;
 
@@ -240,7 +240,7 @@ public class PipesBoard {
         }
     }
 
-    public PacketPipesGameChangeChunks exportDirtyChunks() {
+    public SPPipesGameChangeChunks exportDirtyChunks() {
         int[] ids = new int[dirtyChunksCount];
         int[] data = new int[dirtyChunksCount];
 
@@ -253,7 +253,7 @@ public class PipesBoard {
             }
         }
 
-        return new PacketPipesGameChangeChunks(ids, data);
+        return new SPPipesGameChangeChunks(ids, data);
     }
 
     public boolean isDirty() {
