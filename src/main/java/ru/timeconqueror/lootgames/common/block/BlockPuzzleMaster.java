@@ -21,12 +21,12 @@ import ru.timeconqueror.lootgames.api.advancement.LGAdvancementManager;
 import ru.timeconqueror.lootgames.api.block.BlockGame;
 import ru.timeconqueror.lootgames.api.minigame.GameManager;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityPuzzleMaster;
+import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
 import static ru.timeconqueror.lootgames.common.advancement.ActivateBlockTrigger.ExtraInfo;
-import static ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator.*;
 
 public class BlockPuzzleMaster extends BlockGame {
     @Override
@@ -63,8 +63,8 @@ public class BlockPuzzleMaster extends BlockGame {
 //                    return true;
 //                }//fixme uncomment
 
-                BlockPos bottomPos = new BlockPos(pos.add(-PUZZLEROOM_CENTER_TO_BORDER, -PUZZLEROOM_MASTER_TE_OFFSET, -PUZZLEROOM_CENTER_TO_BORDER));
-                BlockPos topPos = bottomPos.add(PUZZLEROOM_CENTER_TO_BORDER * 2 + 1, PUZZLEROOM_HEIGHT, PUZZLEROOM_CENTER_TO_BORDER * 2 + 1);
+                BlockPos bottomPos = new BlockPos(pos.add(-GameDungeonStructure.ROOM_WIDTH / 2 + 1, -GameDungeonStructure.MASTER_BLOCK_OFFSET, -GameDungeonStructure.ROOM_WIDTH / 2 + 1));
+                BlockPos topPos = bottomPos.add(GameDungeonStructure.ROOM_WIDTH, -GameDungeonStructure.ROOM_HEIGHT, GameDungeonStructure.ROOM_WIDTH);
 
                 worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
 

@@ -18,6 +18,7 @@ import ru.timeconqueror.lootgames.api.task.TETaskScheduler;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.packet.game.SPChangeStage;
 import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
+import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -122,7 +123,7 @@ public abstract class LootGame<T extends LootGame<T>> {
      * You may use it, for example, for triggering advancements and sending text messages.
      */
     public int getBroadcastDistance() {
-        return DungeonGenerator.PUZZLEROOM_CENTER_TO_BORDER + 3;//3 - it is just extra block distance after passing dungeon wall. Not so much, not so little.
+        return GameDungeonStructure.ROOM_WIDTH / 2 + 3;//3 - it is just extra block distance after passing dungeon wall. Not so much, not so little.
     }
 
     /**

@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
-import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
+import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
 import ru.timeconqueror.lootgames.minigame.pipes.board.PipesBoard;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 
@@ -78,7 +78,7 @@ public class GamePipes extends LootGame<GamePipes> {
     public static class Factory implements ILootGameFactory {
         @Override
         public void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos, BlockPos bottomPos, BlockPos topPos) {
-            BlockPos floorCenterPos = puzzleMasterPos.add(0, -DungeonGenerator.PUZZLEROOM_MASTER_TE_OFFSET + 1, 0);
+            BlockPos floorCenterPos = puzzleMasterPos.add(0, -GameDungeonStructure.MASTER_BLOCK_OFFSET + 1, 0);
             world.setBlockState(floorCenterPos, LGBlocks.PIPES_ACTIVATOR.getDefaultState());
         }
     }

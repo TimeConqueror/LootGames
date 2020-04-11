@@ -1,4 +1,4 @@
-package ru.timeconqueror.lootgames.registry.internal;
+package ru.timeconqueror.lootgames.registry;
 
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -7,6 +7,7 @@ import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.task.TaskRegistry;
 import ru.timeconqueror.lootgames.common.packet.game.*;
+import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.pipes.GamePipes;
 import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
 
@@ -19,6 +20,7 @@ public class LGMiscRegistry {
 
         GamePacketRegistry.GamePacketManager manager = GamePacketRegistry.getManager();
 
+        LootGamesAPI.getGameManager().registerGameGenerator(new GameMineSweeper.Factory());
         LootGamesAPI.getGameManager().registerGameGenerator(new GamePipes.Factory());
 
         int id = -1;

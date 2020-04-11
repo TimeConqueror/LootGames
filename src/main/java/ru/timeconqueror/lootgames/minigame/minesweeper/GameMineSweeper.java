@@ -22,7 +22,7 @@ import ru.timeconqueror.lootgames.common.packet.game.SPMSFieldChanged;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSGenBoard;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSResetFlags;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSSpawnLevelBeatParticles;
-import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
+import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
 import ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.Mark;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
@@ -114,7 +114,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
 
             sendUpdatePacket(new SPMSSpawnLevelBeatParticles());
 
-            sendMessageToAllNearby(getCentralGamePos(), format(new TranslationTextComponent("msg.lootgames.stage_complete"), TextFormatting.GREEN), DungeonGenerator.PUZZLEROOM_CENTER_TO_BORDER * 4);
+            sendMessageToAllNearby(getCentralGamePos(), format(new TranslationTextComponent("msg.lootgames.stage_complete"), TextFormatting.GREEN), getBroadcastDistance());
             getWorld().playSound(null, getCentralGamePos(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
             masterTileEntity.destroyGameBlocks();
@@ -304,7 +304,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
     public static class Factory implements ILootGameFactory {
         @Override
         public void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos, BlockPos bottomPos, BlockPos topPos) {
-            BlockPos floorCenterPos = puzzleMasterPos.add(0, -DungeonGenerator.PUZZLEROOM_MASTER_TE_OFFSET + 1, 0);
+            BlockPos floorCenterPos = puzzleMasterPos.add(0, -GameDungeonStructure.MASTER_BLOCK_OFFSET + 1, 0);
             world.setBlockState(floorCenterPos, LGBlocks.MS_ACTIVATOR.getDefaultState());
         }
     }
