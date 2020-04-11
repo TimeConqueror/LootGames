@@ -6,6 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.feature.structure.ScatteredStructurePiece;
 import net.minecraft.world.gen.feature.structure.StructurePiece;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
@@ -34,13 +35,12 @@ public class GameDungeonPieces {
     private static final CorruptedBlockSelector WALL_SELECTOR = new CorruptedBlockSelector(DUNGEON_WALL, DUNGEON_WALL_CRACKED, true);
     private static final CorruptedBlockSelector LAMP_SELECTOR = new CorruptedBlockSelector(DUNGEON_LAMP, DUNGEON_LAMP_BROKEN, true);
 
-    public static class MainRoom extends StructurePiece {
+    public static class MainRoom extends ScatteredStructurePiece {
         /**
          * This is the constructor we use ourselves, the other constructor is needed for the piece type
          */
-        protected MainRoom(BlockPos pos) {
-            super(LGStructures.GD_PIECE_MAIN_ROOM, 0);
-            boundingBox = new MutableBoundingBox(pos, pos.add(ROOM_WIDTH, ROOM_HEIGHT, ROOM_WIDTH));
+        protected MainRoom(BlockPos pos, Random rand) {
+            super(LGStructures.GD_PIECE_MAIN_ROOM, rand, pos.getX(), pos.getY(), pos.getZ(), ROOM_WIDTH, ROOM_HEIGHT, ROOM_WIDTH);
         }
 
         /**
@@ -60,10 +60,10 @@ public class GameDungeonPieces {
 
             int centerY = ROOM_HEIGHT / 2;
 
-            fillWithRandomizedBlocks(world, bb, 0, 0, 0, ROOM_WIDTH, 0, ROOM_WIDTH, true/*param - doNotReplaceAir*/, rand, FLOOR_SELECTOR);
-            fillWithBlocks(world, bb, 1, 1, 1, ROOM_WIDTH - 1, 1, ROOM_WIDTH - 1, DUNGEON_FLOOR_SHIELDED, DUNGEON_FLOOR_SHIELDED, true /*param - doNotReplaceAir*/);
-            fillWithRandomizedBlocks(world, bb, 0, 1, 0, ROOM_WIDTH, centerY - 1, ROOM_WIDTH, true/*param - doNotReplaceAir*/, rand, WALL_SELECTOR);
-            fillWithRandomizedBlocks(world, bb, 0, centerY, 0, ROOM_WIDTH, centerY, ROOM_WIDTH, true/*param - doNotReplaceAir*/, rand, LAMP_SELECTOR);
+            fillWithRandomizedBlocks(world, bb, 0, 0, 0, ROOM_WIDTH, 0, ROOM_WIDTH, false/*param - doNotReplaceAir*/, rand, FLOOR_SELECTOR);
+            fillWithBlocks(world, bb, 1, 1, 1, ROOM_WIDTH - 1, 1, ROOM_WIDTH - 1, DUNGEON_FLOOR_SHIELDED, DUNGEON_FLOOR_SHIELDED, false /*param - doNotReplaceAir*/);
+            fillWithRandomizedBlocks(world, bb, 0, 1, 0, ROOM_WIDTH, centerY - 1, ROOM_WIDTH, false/*param - doNotReplaceAir*/, rand, WALL_SELECTOR);
+            fillWithRandomizedBlocks(world, bb, 0, centerY, 0, ROOM_WIDTH, centerY, ROOM_WIDTH, false/*param - doNotReplaceAir*/, rand, LAMP_SELECTOR);
             fillWithRandomizedBlocks(world, bb, 0, centerY + 1, 0, ROOM_WIDTH, ROOM_HEIGHT - 1, ROOM_WIDTH, false/*param - doNotReplaceAir*/, rand, WALL_SELECTOR);
             fillWithRandomizedBlocks(world, bb, 0, ROOM_HEIGHT, 0, ROOM_WIDTH, ROOM_HEIGHT, ROOM_WIDTH, false/*param - doNotReplaceAir*/, rand, CEILING_SELECTOR);
 

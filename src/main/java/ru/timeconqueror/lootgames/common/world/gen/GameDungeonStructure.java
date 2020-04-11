@@ -83,7 +83,7 @@ public class GameDungeonStructure extends ScatteredStructure<NoFeatureConfig> {
 
             int yDungeonBottom = Math.min(Math.min(ya, yb), Math.min(yc, yd)) - DISTANCE_FROM_SURFACE - ROOM_HEIGHT;
 
-            MainRoom room = new MainRoom(new BlockPos(chunkX * 16, yDungeonBottom, chunkZ * 16));
+            MainRoom room = new MainRoom(new BlockPos(chunkX * 16, yDungeonBottom, chunkZ * 16), rand);
             this.components.add(room);
 
             //This should be called last, after all components have been added
