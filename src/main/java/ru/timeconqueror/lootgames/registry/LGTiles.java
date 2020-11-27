@@ -11,12 +11,14 @@ import ru.timeconqueror.lootgames.common.block.tile.TileEntityPuzzleMaster;
 import ru.timeconqueror.timecore.registry.AutoRegistrable;
 import ru.timeconqueror.timecore.registry.newreg.TileEntityRegister;
 
+import static ru.timeconqueror.timecore.util.Hacks.promise;
+
 @ObjectHolder(LootGames.MODID)
 public class LGTiles {
 
-    public static TileEntityType<TileEntityPuzzleMaster> PUZZLE_MASTER;
-    public static TileEntityType<TileEntityMSMaster> MS_MASTER;
-    public static TileEntityType<TileEntityPipesMaster> PIPES_MASTER;
+    public static final TileEntityType<TileEntityPuzzleMaster> PUZZLE_MASTER = promise();
+    public static final TileEntityType<TileEntityMSMaster> MS_MASTER = promise();
+    public static final TileEntityType<TileEntityPipesMaster> PIPES_MASTER = promise();
 
     private static class Init {
         @AutoRegistrable
