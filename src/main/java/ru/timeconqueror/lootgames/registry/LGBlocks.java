@@ -9,7 +9,6 @@ import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 import ru.timeconqueror.timecore.registry.AutoRegistrable;
 import ru.timeconqueror.timecore.registry.BlockPropsFactory;
 import ru.timeconqueror.timecore.registry.newreg.BlockRegister;
-import ru.timeconqueror.timecore.util.Hacks;
 
 import static ru.timeconqueror.lootgames.common.block.BlockDungeon.BRICKS_PROPS_CREATOR;
 import static ru.timeconqueror.lootgames.common.block.BlockDungeon.LAMP_PROPS_CREATOR;
@@ -49,8 +48,8 @@ public class LGBlocks {
             REGISTER.register("dungeon_floor", () -> new BlockDungeon(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("cracked_dungeon_floor", () -> new BlockDungeon(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("shielded_dungeon_floor", () -> new BlockDungeon(BlockPropsFactory.unbreakable(BRICKS_PROPS_CREATOR.create()))).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("dungeon_lamp", () -> new BlockDungeon(BlockPropsFactory.unbreakable(LAMP_PROPS_CREATOR.create()))).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("broken_dungeon_lamp", () -> new BlockDungeon(BlockPropsFactory.unbreakable(LAMP_PROPS_CREATOR.create().lightLevel(value -> 0)))).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("dungeon_lamp", () -> new BlockDungeon(LAMP_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("broken_dungeon_lamp", () -> new BlockDungeon(LAMP_PROPS_CREATOR.create().lightLevel(value -> 0))).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("puzzle_master", BlockPuzzleMaster::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
 
             TextureLocation shieldedDungeonFloorText = new TextureLocation(REGISTER.getModId(), "block/shielded_dungeon_floor");

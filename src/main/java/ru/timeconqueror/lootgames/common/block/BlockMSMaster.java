@@ -13,19 +13,14 @@ import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.api.block.BlockGameMaster;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
-
-import java.util.Objects;
+import ru.timeconqueror.lootgames.utils.WorldUtils;
 
 public class BlockMSMaster extends BlockGameMaster {
 
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!worldIn.isClientSide()) {
-            TileEntityGameMaster<?> te = (TileEntityGameMaster<?>) worldIn.getBlockEntity(pos);
-
-            Objects.requireNonNull(te);
-
-            te.onSubordinateBlockClicked(((ServerPlayerEntity) player), pos);
+            WorldUtils.forTileWithWarn(worldIn, pos, TileEntityGameMaster.class, te -> te.onSubordinateBlockClicked(((ServerPlayerEntity) player), pos));
         }
 
         return ActionResultType.SUCCESS;
