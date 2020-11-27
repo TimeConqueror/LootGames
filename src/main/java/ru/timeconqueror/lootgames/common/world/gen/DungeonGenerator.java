@@ -45,7 +45,7 @@ public class DungeonGenerator {
 
     private static boolean resetUnbreakableFieldsStartingFrom(World world, BlockPos blockPos) {
         BlockState state = world.getBlockState(blockPos);
-        if (state.getBlock() == LGBlocks.DUNGEON_FLOOR_SHIELDED) {
+        if (state.getBlock() == LGBlocks.SHIELDED_DUNGEON_FLOOR) {
             world.setBlockAndUpdate(blockPos, DUNGEON_FLOOR);
 
             resetUnbreakableFieldsStartingFrom(world, blockPos.north());

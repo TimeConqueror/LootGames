@@ -12,16 +12,16 @@ public class LGBlockLootTableSet extends BlockLootTableSet {
     @Override
     public void register() {
         //TODO add silk touch to prevent cracking
-        registerLootTable(LGBlocks.DUNGEON_CEILING, block -> createSelfDropDispatchTable(block, FLIP_COIN_CHANCE, ItemLootEntry.lootTableItem(LGBlocks.DUNGEON_CEILING_CRACKED)));
-        registerLootTable(LGBlocks.DUNGEON_FLOOR, block -> createSelfDropDispatchTable(block, FLIP_COIN_CHANCE, ItemLootEntry.lootTableItem(LGBlocks.DUNGEON_FLOOR_CRACKED)));
-        registerLootTable(LGBlocks.DUNGEON_WALL, block -> createSelfDropDispatchTable(block, FLIP_COIN_CHANCE, ItemLootEntry.lootTableItem(LGBlocks.DUNGEON_WALL_CRACKED)));
+        registerLootTable(LGBlocks.DUNGEON_CEILING, block -> createSelfDropDispatchTable(block, FLIP_COIN_CHANCE, ItemLootEntry.lootTableItem(LGBlocks.CRACKED_DUNGEON_CEILING)));
+        registerLootTable(LGBlocks.DUNGEON_FLOOR, block -> createSelfDropDispatchTable(block, FLIP_COIN_CHANCE, ItemLootEntry.lootTableItem(LGBlocks.CRACKED_DUNGEON_FLOOR)));
+        registerLootTable(LGBlocks.DUNGEON_WALL, block -> createSelfDropDispatchTable(block, FLIP_COIN_CHANCE, ItemLootEntry.lootTableItem(LGBlocks.CRACKED_DUNGEON_WALL)));
 
-        registerDropsSelf(LGBlocks.DUNGEON_CEILING_CRACKED);
-        registerDropsSelf(LGBlocks.DUNGEON_FLOOR_CRACKED);
-        registerDropsSelf(LGBlocks.DUNGEON_WALL_CRACKED);
+        registerDropsSelf(LGBlocks.CRACKED_DUNGEON_CEILING);
+        registerDropsSelf(LGBlocks.CRACKED_DUNGEON_FLOOR);
+        registerDropsSelf(LGBlocks.CRACKED_DUNGEON_WALL);
 
         //TODO add silk touch to prevent breaking
-        registerLootTable(LGBlocks.DUNGEON_LAMP, block -> createSelfDropDispatchTable(block, FLIP_COIN_CHANCE, ItemLootEntry.lootTableItem(LGBlocks.DUNGEON_LAMP_BROKEN)));
-        registerDropsSelf(LGBlocks.DUNGEON_LAMP_BROKEN);
+        registerLootTable(LGBlocks.DUNGEON_LAMP, block -> createSelfDropDispatchTable(block, FLIP_COIN_CHANCE, ItemLootEntry.lootTableItem(LGBlocks.BROKEN_DUNGEON_LAMP)));
+        registerDropsSelf(LGBlocks.BROKEN_DUNGEON_LAMP);
     }
 }

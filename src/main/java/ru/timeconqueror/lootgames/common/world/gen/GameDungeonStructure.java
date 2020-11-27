@@ -1,30 +1,25 @@
 package ru.timeconqueror.lootgames.common.world.gen;
 
-//import com.mojang.datafixers.Dynamic;
-//import net.minecraft.util.math.BlockPos;
-//import net.minecraft.util.math.ChunkPos;
-//import net.minecraft.util.math.MutableBoundingBox;
-//import net.minecraft.world.IWorld;
-//import net.minecraft.world.biome.Biome;
-//import net.minecraft.world.gen.ChunkGenerator;
-//import net.minecraft.world.gen.Heightmap;
-//import net.minecraft.world.gen.feature.NoFeatureConfig;
-//import net.minecraft.world.gen.feature.structure.ScatteredStructure;
-//import net.minecraft.world.gen.feature.structure.Structure;
-//import net.minecraft.world.gen.feature.structure.StructureStart;
-//import net.minecraft.world.gen.feature.template.TemplateManager;
-//import ru.timeconqueror.lootgames.LootGames;
-//import ru.timeconqueror.lootgames.common.world.gen.GameDungeonPieces.MainRoom;
+import com.mojang.serialization.Codec;
+import net.minecraft.world.gen.feature.NoFeatureConfig;
+import net.minecraft.world.gen.feature.structure.Structure;
+import org.apache.commons.lang3.NotImplementedException;
 
-import java.util.Random;
-import java.util.function.Function;
+public class GameDungeonStructure extends Structure<NoFeatureConfig> {
+    public static final int ROOM_WIDTH = 21;
+    public static final int ROOM_INNER_WIDTH = ROOM_WIDTH - 2;
+    public static final int ROOM_HEIGHT = 9;
+    public static final int DISTANCE_FROM_SURFACE = 8;
+    public static final int MASTER_BLOCK_OFFSET = 3;
 
-//public class GameDungeonStructure extends ScatteredStructure<NoFeatureConfig> {
-//    public static final int ROOM_WIDTH = 21;
-//    public static final int ROOM_INNER_WIDTH = ROOM_WIDTH - 2;
-//    public static final int ROOM_HEIGHT = 9;
-//    public static final int DISTANCE_FROM_SURFACE = 8;
-//    public static final int MASTER_BLOCK_OFFSET = 3;
+    public GameDungeonStructure(Codec<NoFeatureConfig> codec_) {
+        super(codec_);
+    }
+
+    @Override
+    public IStartFactory<NoFeatureConfig> getStartFactory() {
+        throw new NotImplementedException("");
+    }
 //
 //    public GameDungeonStructure(Function<Dynamic<?>, ? extends NoFeatureConfig> configFactoryIn) {
 //        super(configFactoryIn);
@@ -95,4 +90,4 @@ import java.util.function.Function;
 //            super.generateStructure(worldIn, rand, structurebb, pos);
 //        }
 //    }
-//}
+}

@@ -1,30 +1,19 @@
 package ru.timeconqueror.lootgames.common.world.gen;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableBoundingBox;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.feature.structure.ScatteredStructurePiece;
-import net.minecraft.world.gen.feature.structure.StructurePiece;
-import net.minecraft.world.gen.feature.template.TemplateManager;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
-import ru.timeconqueror.timecore.api.util.RandHelper;
-
-import java.util.Random;
 
 public class GameDungeonPieces {
     private static final BlockState PUZZLE_MASTER = LGBlocks.PUZZLE_MASTER.defaultBlockState();
     private static final BlockState DUNGEON_CEILING = LGBlocks.DUNGEON_CEILING.defaultBlockState();
-    private static final BlockState DUNGEON_CEILING_CRACKED = LGBlocks.DUNGEON_CEILING_CRACKED.defaultBlockState();
+    private static final BlockState DUNGEON_CEILING_CRACKED = LGBlocks.CRACKED_DUNGEON_CEILING.defaultBlockState();
     private static final BlockState DUNGEON_WALL = LGBlocks.DUNGEON_WALL.defaultBlockState();
-    private static final BlockState DUNGEON_WALL_CRACKED = LGBlocks.DUNGEON_WALL_CRACKED.defaultBlockState();
+    private static final BlockState DUNGEON_WALL_CRACKED = LGBlocks.CRACKED_DUNGEON_WALL.defaultBlockState();
     private static final BlockState DUNGEON_FLOOR = LGBlocks.DUNGEON_FLOOR.defaultBlockState();
-    private static final BlockState DUNGEON_FLOOR_CRACKED = LGBlocks.DUNGEON_FLOOR_CRACKED.defaultBlockState();
-    private static final BlockState DUNGEON_FLOOR_SHIELDED = LGBlocks.DUNGEON_FLOOR_SHIELDED.defaultBlockState();
+    private static final BlockState DUNGEON_FLOOR_CRACKED = LGBlocks.CRACKED_DUNGEON_FLOOR.defaultBlockState();
+    private static final BlockState DUNGEON_FLOOR_SHIELDED = LGBlocks.SHIELDED_DUNGEON_FLOOR.defaultBlockState();
     private static final BlockState DUNGEON_LAMP = LGBlocks.DUNGEON_LAMP.defaultBlockState();
-    private static final BlockState DUNGEON_LAMP_BROKEN = LGBlocks.DUNGEON_LAMP_BROKEN.defaultBlockState();
+    private static final BlockState DUNGEON_LAMP_BROKEN = LGBlocks.BROKEN_DUNGEON_LAMP.defaultBlockState();
 
 //    private static final CorruptedBlockSelector FLOOR_SELECTOR = new CorruptedBlockSelector(DUNGEON_FLOOR, DUNGEON_FLOOR_CRACKED);
 //    private static final CorruptedBlockSelector CEILING_SELECTOR = new CorruptedBlockSelector(DUNGEON_CEILING, DUNGEON_CEILING_CRACKED);

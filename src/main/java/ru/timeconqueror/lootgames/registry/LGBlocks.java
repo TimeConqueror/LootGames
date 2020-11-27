@@ -18,15 +18,15 @@ import static ru.timeconqueror.timecore.util.Hacks.promise;
 @ObjectHolder(LootGames.MODID)
 public class LGBlocks {
     public static final BlockDungeon DUNGEON_CEILING = promise();
-    public static final BlockDungeon DUNGEON_CEILING_CRACKED = promise();
+    public static final BlockDungeon CRACKED_DUNGEON_CEILING = promise();
     public static final BlockDungeon DUNGEON_WALL = promise();
-    public static final BlockDungeon DUNGEON_WALL_CRACKED = promise();
+    public static final BlockDungeon CRACKED_DUNGEON_WALL = promise();
     public static final BlockDungeon DUNGEON_FLOOR = promise();
-    public static final BlockDungeon DUNGEON_FLOOR_CRACKED = promise();
-    public static final BlockDungeon DUNGEON_FLOOR_SHIELDED = promise();
+    public static final BlockDungeon CRACKED_DUNGEON_FLOOR = promise();
+    public static final BlockDungeon SHIELDED_DUNGEON_FLOOR = promise();
 
     public static final BlockDungeon DUNGEON_LAMP = promise();
-    public static final BlockDungeon DUNGEON_LAMP_BROKEN = promise();
+    public static final BlockDungeon BROKEN_DUNGEON_LAMP = promise();
 
     public static final BlockPuzzleMaster PUZZLE_MASTER = promise();
     public static final BlockSmartSubordinate SMART_SUBORDINATE = promise();
@@ -43,20 +43,22 @@ public class LGBlocks {
         @AutoRegistrable.InitMethod
         private static void register() {
             REGISTER.register("dungeon_ceiling", () -> new BlockDungeon(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("dungeon_ceiling_cracked", () -> new BlockDungeon(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("cracked_dungeon_ceiling", () -> new BlockDungeon(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("dungeon_wall", () -> new BlockDungeon(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("dungeon_wall_cracked", () -> new BlockDungeon(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("cracked_dungeon_wall", () -> new BlockDungeon(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("dungeon_floor", () -> new BlockDungeon(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("dungeon_floor_cracked", () -> new BlockDungeon(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("dungeon_floor_shielded", () -> new BlockDungeon(BlockPropsFactory.unbreakable(BRICKS_PROPS_CREATOR.create()))).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("cracked_dungeon_floor", () -> new BlockDungeon(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("shielded_dungeon_floor", () -> new BlockDungeon(BlockPropsFactory.unbreakable(BRICKS_PROPS_CREATOR.create()))).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("dungeon_lamp", () -> new BlockDungeon(BlockPropsFactory.unbreakable(LAMP_PROPS_CREATOR.create()))).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("dungeon_lamp_broken", () -> new BlockDungeon(BlockPropsFactory.unbreakable(LAMP_PROPS_CREATOR.create().lightLevel(value -> 0)))).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("broken_dungeon_lamp", () -> new BlockDungeon(BlockPropsFactory.unbreakable(LAMP_PROPS_CREATOR.create().lightLevel(value -> 0)))).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("puzzle_master", BlockPuzzleMaster::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("smart_subordinate", BlockSmartSubordinate::new).genDefaultStateAndModel(new TextureLocation(REGISTER.getModId(), "block/dungeon_floor_shielded")).regDefaultBlockItem(LGItemGroup.MAIN);
+
+            TextureLocation shieldedDungeonFloorText = new TextureLocation(REGISTER.getModId(), "block/shielded_dungeon_floor");
+            REGISTER.register("smart_subordinate", BlockSmartSubordinate::new).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("ms_activator", BlockMSActivator::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("ms_master", BlockMSMaster::new).genDefaultStateAndModel(new TextureLocation(REGISTER.getModId(), "block/dungeon_floor_shielded")).regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("ms_master", BlockMSMaster::new).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("pipes_activator", BlockPipesActivator::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("pipes_master", BlockPipesMaster::new).genDefaultStateAndModel(new TextureLocation(REGISTER.getModId(), "block/dungeon_floor_shielded")).regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("pipes_master", BlockPipesMaster::new).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
         }
     }
 }
