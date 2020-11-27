@@ -19,7 +19,7 @@
             },
             {
               "type": "minecraft:item",
-              "name": "lootgames:dungeon_lamp_broken"
+              "name": "lootgames:broken_dungeon_lamp"
             }
           ]
         }

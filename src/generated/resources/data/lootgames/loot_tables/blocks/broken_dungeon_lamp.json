@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "lootgames:dungeon_wall_cracked"
+          "name": "lootgames:broken_dungeon_lamp"
         }
       ],
       "conditions": [

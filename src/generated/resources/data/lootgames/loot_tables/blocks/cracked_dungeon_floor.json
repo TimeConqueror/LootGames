@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "lootgames:dungeon_ceiling_cracked"
+          "name": "lootgames:cracked_dungeon_floor"
         }
       ],
       "conditions": [

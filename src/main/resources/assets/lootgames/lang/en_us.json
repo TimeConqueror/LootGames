@@ -10,13 +10,15 @@
   "block.lootgames.dungeon_lamp": "Dungeon Lamp",
   "block.lootgames.broken_dungeon_lamp": "Broken Dungeon Lamp",
   "block.lootgames.puzzle_master": "Puzzle Master",
-  "item.lootgames.dungeon_block.tooltip": "Mobs can't spawn on this block.",
+  "item.lootgames.dungeon_block.tooltip": "Mobs can\u0027t spawn on this block.",
   "msg.lootgames.stage_complete": "The structure seems to acknowledge your efforts...",
   "msg.lootgames.win": "The structure is pleased and rewards you!",
   "msg.lootgames.lose": "The structure seems to be offended by your failure.",
   "msg.lootgames.attempt_left": "You have %d attempts left.",
   "msg.lootgames.ms.bomb_touched": "Oops... It seems to be a BOOM. Run!",
   "msg.lootgames.ms.new_attempt": "The structure calmed down. You can try to play again.",
-  "msg.lootgames.ms.reveal_on_hidden": "You can't reveal neighbours around hidden field.",
-  "msg.lootgames.ms.reveal_invalid_mark_count": "You can't reveal neighbours around this field, because it differs with flagged fields around by the number of bombs."
+  "msg.lootgames.ms.reveal_on_hidden": "You can\u0027t reveal neighbours around hidden field.",
+  "msg.lootgames.ms.reveal_invalid_mark_count": "You can\u0027t reveal neighbours around this field, because it differs with flagged fields around by the number of bombs.",
+  "#MARK AUTO GEN START": "",
+  "#MARK AUTO GEN END": ""
 }

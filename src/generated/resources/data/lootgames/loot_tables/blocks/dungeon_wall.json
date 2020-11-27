@@ -19,7 +19,7 @@
             },
             {
               "type": "minecraft:item",
-              "name": "lootgames:dungeon_wall_cracked"
+              "name": "lootgames:cracked_dungeon_wall"
             }
           ]
         }

@@ -15,11 +15,11 @@
                   "chance": 0.5
                 }
               ],
-              "name": "lootgames:dungeon_ceiling"
+              "name": "lootgames:dungeon_floor"
             },
             {
               "type": "minecraft:item",
-              "name": "lootgames:dungeon_ceiling_cracked"
+              "name": "lootgames:cracked_dungeon_floor"
             }
           ]
         }
