@@ -10,7 +10,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
-import ru.timeconqueror.lootgames.api.advancement.LGAdvancementManager;
+import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
@@ -22,18 +22,19 @@ import ru.timeconqueror.lootgames.common.packet.game.SPMSFieldChanged;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSGenBoard;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSResetFlags;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSSpawnLevelBeatParticles;
-import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
 import ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.Mark;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.util.DirectionTetra;
 import ru.timeconqueror.timecore.api.util.RandHelper;
+import ru.timeconqueror.timecore.util.ChatUtils;
+import ru.timeconqueror.timecore.util.NetworkUtils;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
-import static ru.timeconqueror.timecore.api.util.NetworkUtils.*;
+import static ru.timeconqueror.timecore.util.NetworkUtils.getPlayersNearby;
 
 //TODO add default colors to warn, fail, win, etc
 //TODo add check if tileentity is nearby or blocksmartsubordinate or masterplacer
@@ -58,16 +59,16 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
     }
 
     public static void generateGameStructure(World world, BlockPos centerPos, int level) {
-        int size = ConfigMS.INSTANCE.getStageByIndex(level).getBoardSize();
-        BlockPos startPos = centerPos.add(-size / 2, 0, -size / 2);
+        int size = LGConfigs.MINESWEEPER.getStageByIndex(level).getBoardSize();
+        BlockPos startPos = centerPos.offset(-size / 2, 0, -size / 2);
 
         for (int x = 0; x < size; x++) {
             for (int z = 0; z < size; z++) {
-                BlockPos pos = startPos.add(x, 0, z);
+                BlockPos pos = startPos.offset(x, 0, z);
                 if (x == 0 && z == 0) {
-                    world.setBlockState(pos, LGBlocks.MS_MASTER.getDefaultState());
+                    world.setBlockAndUpdate(pos, LGBlocks.MS_MASTER.defaultBlockState());
                 } else {
-                    world.setBlockState(pos, LGBlocks.SMART_SUBORDINATE.getDefaultState());
+                    world.setBlockAndUpdate(pos, LGBlocks.SMART_SUBORDINATE.defaultBlockState());
                 }
             }
         }
@@ -114,17 +115,17 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
 
             sendUpdatePacket(new SPMSSpawnLevelBeatParticles());
 
-            sendMessageToAllNearby(getCentralGamePos(), format(new TranslationTextComponent("msg.lootgames.stage_complete"), TextFormatting.GREEN), getBroadcastDistance());
-            getWorld().playSound(null, getCentralGamePos(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
+            sendForEachNearby(new TranslationTextComponent("msg.lootgames.stage_complete"), TextFormatting.GREEN);
+            getWorld().playSound(null, getCentralGamePos(), SoundEvents.PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
             masterTileEntity.destroyGameBlocks();
             generateGameStructure(getWorld(), getCentralGamePos(), currentLevel + 1);
 
-            ConfigMS.StageConfig stageConfig = ConfigMS.INSTANCE.getStageByIndex(currentLevel + 1);
-            BlockPos startPos = getCentralGamePos().add(-stageConfig.getBoardSize() / 2, 0, -stageConfig.getBoardSize() / 2);
+            ConfigMS.StageConfig stageConfig = LGConfigs.MINESWEEPER.getStageByIndex(currentLevel + 1);
+            BlockPos startPos = getCentralGamePos().offset(-stageConfig.getBoardSize() / 2, 0, -stageConfig.getBoardSize() / 2);
 
-            masterTileEntity.validate();
-            getWorld().setTileEntity(startPos, masterTileEntity);
+            masterTileEntity.clearRemoved();
+            getWorld().setBlockEntity(startPos, masterTileEntity);
 
             board.resetBoard(stageConfig.getBoardSize(), stageConfig.BOMB_COUNT.get());
             currentLevel++;
@@ -151,11 +152,11 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         }
 
         BlockPos central = getCentralGamePos();
-        BlockState state = LGBlocks.DUNGEON_LAMP.getDefaultState();
-        getWorld().setBlockState(central.add(1, 0, 1), state);
-        getWorld().setBlockState(central.add(1, 0, -1), state);
-        getWorld().setBlockState(central.add(-1, 0, 1), state);
-        getWorld().setBlockState(central.add(-1, 0, -1), state);
+        BlockState state = LGBlocks.DUNGEON_LAMP.defaultBlockState();
+        getWorld().setBlockAndUpdate(central.offset(1, 0, 1), state);
+        getWorld().setBlockAndUpdate(central.offset(1, 0, -1), state);
+        getWorld().setBlockAndUpdate(central.offset(-1, 0, 1), state);
+        getWorld().setBlockAndUpdate(central.offset(-1, 0, -1), state);
 
         spawnLootChest(DirectionTetra.NORTH, 1);
 
@@ -170,15 +171,15 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
 
         if (currentLevel > 4) {
             for (ServerPlayerEntity entityPlayerMP : players) {
-                LGAdvancementManager.END_GAME.trigger((entityPlayerMP), "ms_level4");
+//                LGAdvancementTriggers.END_GAME.trigger((entityPlayerMP), "ms_level4");//FIXME
             }
             spawnLootChest(DirectionTetra.WEST, 4);
         }
     }
 
     private void spawnLootChest(DirectionTetra direction, int gameLevel) {
-        ConfigMS.StageConfig stage = ConfigMS.INSTANCE.getStageByIndex(gameLevel);
-        SpawnChestData chestData = new SpawnChestData(this, stage.getLootTable(getWorld().getWorldType().getId()), stage.MIN_ITEMS.get(), stage.MAX_ITEMS.get());
+        ConfigMS.StageConfig stage = LGConfigs.MINESWEEPER.getStageByIndex(gameLevel);
+        SpawnChestData chestData = new SpawnChestData(this, stage.getLootTable(getWorld().dimension().location()), stage.MIN_ITEMS.get(), stage.MAX_ITEMS.get());
         RewardUtils.spawnLootChest(getWorld(), getCentralGamePos(), direction, chestData);
     }
 
@@ -187,7 +188,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         super.triggerGameLose();
 
         BlockPos expPos = getCentralGamePos();
-        getWorld().createExplosion(null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 9, Explosion.Mode.DESTROY);
+        getWorld().explode(null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 9, Explosion.Mode.DESTROY);
     }
 
     @Override
@@ -197,7 +198,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
     }
 
     public BlockPos convertToBlockPos(int x, int y) {
-        return masterTileEntity.getPos().add(x, 0, y);
+        return masterTileEntity.getBlockPos().offset(x, 0, y);
     }
 
     public BlockPos convertToBlockPos(Pos2i pos) {
@@ -208,7 +209,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
      * Returns the blockpos in the center of the board.
      */
     public BlockPos getCentralGamePos() {
-        return masterTileEntity.getPos().add(getBoardSize() / 2, 0, getBoardSize() / 2);
+        return masterTileEntity.getBlockPos().offset(getBoardSize() / 2, 0, getBoardSize() / 2);
     }
 
     public MSBoard getBoard() {
@@ -304,8 +305,8 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
     public static class Factory implements ILootGameFactory {
         @Override
         public void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos, BlockPos bottomPos, BlockPos topPos) {
-            BlockPos floorCenterPos = puzzleMasterPos.add(0, -GameDungeonStructure.MASTER_BLOCK_OFFSET + 1, 0);
-            world.setBlockState(floorCenterPos, LGBlocks.MS_ACTIVATOR.getDefaultState());
+            BlockPos floorCenterPos = puzzleMasterPos.offset(0, -3/*instead of GameDungeonStructure.MASTER_BLOCK_OFFSET*/ + 1, 0);
+            world.setBlockAndUpdate(floorCenterPos, LGBlocks.MS_ACTIVATOR.defaultBlockState());
         }
     }
 
@@ -316,14 +317,14 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         }
 
         public void onFieldClicked(ServerPlayerEntity player, Pos2i clickedPos) {
-            getWorld().playSound(null, convertToBlockPos(clickedPos), SoundEvents.BLOCK_NOTE_BLOCK_HAT, SoundCategory.MASTER, 0.6F, 0.8F);
+            getWorld().playSound(null, convertToBlockPos(clickedPos), SoundEvents.NOTE_BLOCK_HAT, SoundCategory.MASTER, 0.6F, 0.8F);
 
             if (!board.isGenerated()) {
                 generateBoard(player, clickedPos);
             } else {
                 playRevealNeighboursSound = true;
 
-                if (player.isSneaking()) {
+                if (player.isShiftKeyDown()) {
                     if (board.isHidden(clickedPos)) {
                         swapFieldMark(clickedPos);
                     } else {
@@ -378,7 +379,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         private void revealAllNeighbours(ServerPlayerEntity player, Pos2i mainPos, boolean revealMarked) {
             if (!revealMarked) {
                 if (board.isHidden(mainPos)) {
-                    player.sendMessage(format(new TranslationTextComponent("msg.lootgames.ms.reveal_on_hidden"), TextFormatting.YELLOW));
+                    NetworkUtils.sendMessage(player, ChatUtils.format(new TranslationTextComponent("msg.lootgames.ms.reveal_on_hidden"), TextFormatting.YELLOW));
                     return;
                 }
 
@@ -396,7 +397,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
                 }
 
                 if (marked != bombsAround) {
-                    player.sendMessage(format(new TranslationTextComponent("msg.lootgames.ms.reveal_invalid_mark_count"), TextFormatting.YELLOW));
+                    NetworkUtils.sendMessage(player, ChatUtils.format(new TranslationTextComponent("msg.lootgames.ms.reveal_invalid_mark_count"), TextFormatting.YELLOW));
                     return;
                 }
             }
@@ -442,9 +443,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
                 }
             });
 
-            sendMessageToAllNearby(getCentralGamePos(),
-                    format(new TranslationTextComponent("msg.lootgames.ms.bomb_touched"), TextFormatting.DARK_PURPLE),
-                    getBroadcastDistance());
+            sendForEachNearby(new TranslationTextComponent("msg.lootgames.ms.bomb_touched"), TextFormatting.DARK_PURPLE);
 
             saveDataAndSendToClient();
 
@@ -462,7 +461,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         private final int detonationTimeInTicks;
 
         public StageDetonating() {
-            this(ConfigMS.INSTANCE.DETONATION_TIME.get());
+            this(LGConfigs.MINESWEEPER.DETONATION_TIME.get());
         }
 
         public StageDetonating(int detonationTimeInTicks) {
@@ -473,7 +472,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         public void onTick(LootGame<GameMineSweeper> game) {
             if (isServerSide()) {
                 if (ticks >= detonationTimeInTicks) {
-                    if (attemptCount < ConfigMS.INSTANCE.ATTEMPT_COUNT.get()) {
+                    if (attemptCount < LGConfigs.MINESWEEPER.ATTEMPT_COUNT.get()) {
                         switchStage(new StageExploding());
                     } else {
                         if (currentLevel > 1) {
@@ -521,10 +520,8 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
                 ticks--;
 
                 if (ticks <= 0) {
-                    sendMessageToAllNearby(getCentralGamePos(),
-                            format(new TranslationTextComponent("msg.lootgames.ms.new_attempt"), TextFormatting.AQUA),
-                            getBroadcastDistance());
-                    sendMessageToAllNearby(getCentralGamePos(), format(new TranslationTextComponent("msg.lootgames.attempt_left", ConfigMS.INSTANCE.ATTEMPT_COUNT.get() - attemptCount), TextFormatting.RED), getBroadcastDistance());
+                    sendForEachNearby(new TranslationTextComponent("msg.lootgames.ms.new_attempt"), TextFormatting.AQUA);
+                    sendForEachNearby(new TranslationTextComponent("msg.lootgames.attempt_left", LGConfigs.MINESWEEPER.ATTEMPT_COUNT.get() - attemptCount), TextFormatting.RED);
 
                     switchStage(new StageWaiting());
 

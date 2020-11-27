@@ -18,7 +18,7 @@ public class DungeonGenerator {
 //    private static final BlockState DUNGEON_CEILING_CRACKED = LGBlocks.DUNGEON_CEILING_CRACKED.getDefaultState();
 //    private static final BlockState DUNGEON_WALL = LGBlocks.DUNGEON_WALL.getDefaultState();
 //    private static final BlockState DUNGEON_WALL_CRACKED = LGBlocks.DUNGEON_WALL_CRACKED.getDefaultState();
-    private static final BlockState DUNGEON_FLOOR = LGBlocks.DUNGEON_FLOOR.getDefaultState();
+    private static final BlockState DUNGEON_FLOOR = LGBlocks.DUNGEON_FLOOR.defaultBlockState();
 
     //    private static final BlockState DUNGEON_FLOOR_CRACKED = LGBlocks.DUNGEON_FLOOR_CRACKED.getDefaultState();
 //    private static final BlockState DUNGEON_FLOOR_SHIELDED = LGBlocks.DUNGEON_FLOOR_SHIELDED.getDefaultState();
@@ -46,7 +46,7 @@ public class DungeonGenerator {
     private static boolean resetUnbreakableFieldsStartingFrom(World world, BlockPos blockPos) {
         BlockState state = world.getBlockState(blockPos);
         if (state.getBlock() == LGBlocks.DUNGEON_FLOOR_SHIELDED) {
-            world.setBlockState(blockPos, DUNGEON_FLOOR);
+            world.setBlockAndUpdate(blockPos, DUNGEON_FLOOR);
 
             resetUnbreakableFieldsStartingFrom(world, blockPos.north());
             resetUnbreakableFieldsStartingFrom(world, blockPos.east());

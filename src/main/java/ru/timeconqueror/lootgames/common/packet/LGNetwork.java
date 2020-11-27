@@ -1,20 +1,17 @@
 package ru.timeconqueror.lootgames.common.packet;
 
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.packet.SPacketGameUpdate;
-import ru.timeconqueror.timecore.api.registry.PacketTimeRegistry;
-import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
+import ru.timeconqueror.timecore.registry.AutoRegistrable;
+import ru.timeconqueror.timecore.registry.newreg.PacketRegister;
 
-@TimeAutoRegistrable
-public class LGNetwork extends PacketTimeRegistry {
+public class LGNetwork {
+    @AutoRegistrable
+    private static final PacketRegister REGISTER = new PacketRegister(LootGames.MODID);
+
     private static final String PROTOCOL_VERSION = "1";//TODO check between versions
-    public static final SimpleChannel INSTANCE = PacketTimeRegistry.newChannel("main",
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals);
-
-    @Override
-    protected void register() {
-        regPacket(INSTANCE, SPacketGameUpdate.class, new SPacketGameUpdate.Handler());
-    }
+    public static final SimpleChannel INSTANCE = REGISTER.createChannel("main", () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals)
+            .regPacket(SPacketGameUpdate.class, new SPacketGameUpdate.Handler())
+            .asChannel();
 }

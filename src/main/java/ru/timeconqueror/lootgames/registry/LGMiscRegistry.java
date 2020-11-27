@@ -1,7 +1,9 @@
 package ru.timeconqueror.lootgames.registry;
 
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
@@ -9,16 +11,15 @@ import ru.timeconqueror.lootgames.api.task.TaskRegistry;
 import ru.timeconqueror.lootgames.common.packet.game.*;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.pipes.GamePipes;
-import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
 
-@TimeAutoRegistrable(target = TimeAutoRegistrable.Target.CLASS)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class LGMiscRegistry {
 
     @SubscribeEvent
     public static void onInit(FMLCommonSetupEvent event) {
         TaskRegistry.registerTaskFactory(TaskCreateExplosion.class, TaskCreateExplosion::new);
 
-        GamePacketRegistry.GamePacketManager manager = GamePacketRegistry.getManager();
+        GamePacketRegistry.GamePacketManager manager = GamePacketRegistry.getManager(LootGames.MODID);
 
         LootGamesAPI.getGameManager().registerGameGenerator(new GameMineSweeper.Factory());
         LootGamesAPI.getGameManager().registerGameGenerator(new GamePipes.Factory());

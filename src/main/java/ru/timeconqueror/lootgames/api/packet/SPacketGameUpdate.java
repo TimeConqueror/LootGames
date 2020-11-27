@@ -35,7 +35,7 @@ public class SPacketGameUpdate implements ITimePacket {
             buffer.writeBlockPos(packet.masterPos);
 
             GamePacketRegistry.PacketInfo info = GamePacketRegistry.getInfo(packet.gamePacket.getClass());
-            buffer.writeString(info.getModID());
+            buffer.writeUtf(info.getModID());
             buffer.writeInt(info.getPacketID());
             packet.gamePacket.encode(buffer);
         }
@@ -45,7 +45,7 @@ public class SPacketGameUpdate implements ITimePacket {
             SPacketGameUpdate packet = new SPacketGameUpdate();
             packet.masterPos = buffer.readBlockPos();
 
-            GamePacketRegistry.PacketInfo info = new GamePacketRegistry.PacketInfo(buffer.readString(), buffer.readInt());
+            GamePacketRegistry.PacketInfo info = new GamePacketRegistry.PacketInfo(buffer.readUtf(), buffer.readInt());
             Class<? extends IServerGamePacket> packetClass = GamePacketRegistry.getPacketClass(info);
 
             try {
@@ -67,7 +67,7 @@ public class SPacketGameUpdate implements ITimePacket {
             if (packet.gamePacket != null) {//FIXME here shouldn't be null pointer
                 ctx.enqueueWork(() -> {
                     World world = packet.getWorld(ctx);
-                    TileEntity te = world.getTileEntity(packet.masterPos);
+                    TileEntity te = world.getBlockEntity(packet.masterPos);
                     if (te instanceof TileEntityGameMaster<?>) {
                         TileEntityGameMaster<?> master = ((TileEntityGameMaster<?>) te);
                         master.getGame().onUpdatePacket(packet.gamePacket);

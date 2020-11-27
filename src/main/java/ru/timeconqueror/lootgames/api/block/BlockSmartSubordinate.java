@@ -4,12 +4,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
+import ru.timeconqueror.timecore.util.NetworkUtils;
 
 /**
  * Subordinate block for minigames. Will find master block and notify it. The master block must be at the north-west corner of the game
@@ -19,14 +21,14 @@ public class BlockSmartSubordinate extends BlockGame {
     private static boolean underBreaking = false;
 
     @Override
-    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!worldIn.isRemote && !underBreaking) {
+    public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!worldIn.isClientSide() && !underBreaking) {
             underBreaking = true;
             destroyStructure(worldIn, pos);
             underBreaking = false;
         }
 
-        super.onReplaced(state, worldIn, pos, newState, isMoving);
+        super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
     /**
@@ -34,7 +36,7 @@ public class BlockSmartSubordinate extends BlockGame {
      */
     private void destroyStructure(World worldIn, BlockPos pos) {
         BlockPos masterPos = getMasterPos(worldIn, pos);
-        TileEntity te = worldIn.getTileEntity(masterPos);
+        TileEntity te = worldIn.getBlockEntity(masterPos);
 
         if (te instanceof TileEntityGameMaster<?>) {
             ((TileEntityGameMaster<?>) te).destroyGameBlocks();
@@ -42,18 +44,18 @@ public class BlockSmartSubordinate extends BlockGame {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (!worldIn.isRemote) {
+    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+        if (!worldIn.isClientSide()) {
             BlockPos masterPos = getMasterPos(worldIn, pos);
-            TileEntity te = worldIn.getTileEntity(masterPos);
+            TileEntity te = worldIn.getBlockEntity(masterPos);
             if (te instanceof TileEntityGameMaster<?>) {
                 ((TileEntityGameMaster<?>) te).onSubordinateBlockClicked(((ServerPlayerEntity) player), pos);
             } else {
-                player.sendMessage(new StringTextComponent("The game doesn't seem to work. Please, send the issue to mod author."));
+                NetworkUtils.sendMessage(player, new StringTextComponent("The game doesn't seem to work. Please, send the issue to mod author."));
             }
         }
 
-        return true;
+        return ActionResultType.SUCCESS;
     }
 
     public BlockPos getMasterPos(World world, BlockPos pos) {
@@ -65,7 +67,7 @@ public class BlockSmartSubordinate extends BlockGame {
 
             state = world.getBlockState(foundPos);
 
-            if (world.getTileEntity(foundPos) instanceof TileEntityGameMaster<?>) {
+            if (world.getBlockEntity(foundPos) instanceof TileEntityGameMaster<?>) {
                 break;
             }
 
@@ -80,7 +82,7 @@ public class BlockSmartSubordinate extends BlockGame {
 
             state = world.getBlockState(foundPos);
 
-            if (world.getTileEntity(foundPos) instanceof TileEntityGameMaster<?>) {
+            if (world.getBlockEntity(foundPos) instanceof TileEntityGameMaster<?>) {
                 break;
             }
 

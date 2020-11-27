@@ -15,20 +15,20 @@ import net.minecraft.world.IBlockReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
-import ru.timeconqueror.timecore.api.registry.block.BlockPropsFactory;
+import org.jetbrains.annotations.Nullable;
+import ru.timeconqueror.timecore.registry.BlockPropsFactory;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockDungeon extends Block {
-    public static final BlockPropsFactory BRICKS_PROPS_CREATOR = new BlockPropsFactory(() -> Properties.create(Material.ROCK)
-            .hardnessAndResistance(10.0F, 6.0F)
+    public static final BlockPropsFactory BRICKS_PROPS_CREATOR = new BlockPropsFactory(() -> Properties.of(Material.STONE)
+            .strength(10.0F, 6.0F)
             .sound(SoundType.STONE));
 
-    public static final BlockPropsFactory LAMP_PROPS_CREATOR = new BlockPropsFactory(() -> Properties.create(Material.GLASS)
-            .hardnessAndResistance(2.0F, 6.0F)
+    public static final BlockPropsFactory LAMP_PROPS_CREATOR = new BlockPropsFactory(() -> Properties.of(Material.GLASS)
+            .strength(2.0F, 6.0F)
             .sound(SoundType.GLASS)
-            .lightValue(15));
+            .lightLevel(value -> 15));
 
     public BlockDungeon(Properties props) {
         super(props);
@@ -40,9 +40,9 @@ public class BlockDungeon extends Block {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new TranslationTextComponent("item.lootgames.dungeon_block.tooltip"));
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
     @Nullable

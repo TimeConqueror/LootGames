@@ -1,0 +1,20 @@
+ext.updateConfigs = new Runnable() {
+    @Override
+    void run() {
+        file "build.properties" withReader {
+            def prop = new Properties()
+            prop.load(it)
+            ext.buildProps = new ConfigSlurper().parse prop
+        }
+
+        if(file("secret.properties").exists()) {
+            file "secret.properties" withReader {
+                def prop = new Properties()
+                prop.load(it)
+                ext.secretProps = new ConfigSlurper().parse prop
+            }
+        }
+    }
+}
+
+updateConfigs.run()

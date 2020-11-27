@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ConfigMS extends Config {
-    public static final ConfigMS INSTANCE = new ConfigMS();
-
     public ForgeConfigSpec.IntValue DETONATION_TIME;
     public ForgeConfigSpec.IntValue ATTEMPT_COUNT;
 
@@ -26,10 +24,12 @@ public class ConfigMS extends Config {
     public StageConfig STAGE_3;
     public StageConfig STAGE_4;
 
-    @Override
-    public ForgeConfigSpec setup() {
-        ImprovedConfigBuilder builder = new ImprovedConfigBuilder(this);
+    public ConfigMS(ModConfig.@NotNull Type type, @NotNull String key, @Nullable String comment) {
+        super(type, key, comment);
+    }
 
+    @Override
+    public void setup(ImprovedConfigBuilder builder) {
         DETONATION_TIME = builder.comment("The time until bombs start to explode. Represented in ticks.")
                 .defineInRange("detonation_time", 3 * 20, 0, 600);
         ATTEMPT_COUNT = builder.comment("It represents the number of attempts the player has to beat the game successfully.")
@@ -45,8 +45,6 @@ public class ConfigMS extends Config {
         builder.addAndSetupSection(STAGE_3, "stage", "Regulates characteristics of stage 3." + sorryMsg);
         STAGE_4 = new StageConfig("q_stage_4", new StageConfig.DefaultData(9, 68, "minecraft:chests/end_city_treasure", -1, -1));
         builder.addAndSetupSection(STAGE_4, "stage", "Regulates characteristics of stage 4." + sorryMsg);
-
-        return builder.build();
     }
 
     /**
@@ -71,22 +69,7 @@ public class ConfigMS extends Config {
 
     @Override
     public @NotNull String getRelativePath() {
-        return LGConfigManager.resolve("games/minesweeper.toml");
-    }
-
-    @Override
-    public ModConfig.Type getType() {
-        return ModConfig.Type.COMMON;
-    }
-
-    @Override
-    public @NotNull String getKey() {
-        return "ms";
-    }
-
-    @Override
-    public @Nullable String getComment() {
-        return "Regulates \"Minesweeper\" minigame.";
+        return LGConfigs.resolve("games/minesweeper.toml");
     }
 
     public static class StageConfig extends ConfigSection {
@@ -97,24 +80,13 @@ public class ConfigMS extends Config {
         private ForgeConfigSpec.ConfigValue<String> DEF_LOOT_TABLE_CFG;
         private ForgeConfigSpec.ConfigValue<List<? extends String>> PER_DIM_CFG;
 
-        private DefaultData defData;
-        private String key;
+        private final DefaultData defData;
         private ResourceLocation defaultLootTable;
         private HashMap<Integer, ResourceLocation> dimensionsConfigsMap;
 
         public StageConfig(String key, DefaultData defData) {
+            super(key, null);
             this.defData = defData;
-            this.key = key;
-        }
-
-        @Override
-        public @Nullable String getComment() {
-            return null;
-        }
-
-        @Override
-        public @NotNull String getKey() {
-            return key;
         }
 
         @Override
@@ -196,18 +168,18 @@ public class ConfigMS extends Config {
             }
         }
 
-        public ResourceLocation getLootTable(int dimensionID) {
-            ResourceLocation lootTableDim = dimensionsConfigsMap.get(dimensionID);
+        public ResourceLocation getLootTable(ResourceLocation dimensionId) {
+            ResourceLocation lootTableDim = dimensionsConfigsMap.get(dimensionId);
 
             return lootTableDim == null ? defaultLootTable : lootTableDim;
         }
 
         private static class DefaultData {
-            private int boardRadius;
-            private int bombCount;
-            private String lootTable;
-            private int minItems;
-            private int maxItems;
+            private final int boardRadius;
+            private final int bombCount;
+            private final String lootTable;
+            private final int minItems;
+            private final int maxItems;
 
             public DefaultData(int boardRadius, int bombCount, String lootTable, int minItems, int maxItems) {
                 this.boardRadius = boardRadius;

@@ -33,29 +33,29 @@ public class RewardUtils {
      * @param chestData  data which contains the rules of setting chest content
      */
     public static void spawnLootChest(World world, BlockPos centralPos, DirectionTetra offset, SpawnChestData chestData) {
-        if (world.isRemote) {
+        if (world.isClientSide()) {
             return;
         }
 
-        BlockState chest = Blocks.CHEST.getDefaultState().with(ChestBlock.FACING,
+        BlockState chest = Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING,
                 offset == DirectionTetra.WEST ? Direction.EAST :
                         offset == DirectionTetra.EAST ? Direction.WEST :
                                 offset == DirectionTetra.NORTH ? Direction.SOUTH :
                                         Direction.NORTH);
 
-        BlockPos placePos = centralPos.add(offset.getOffsetX(), 0, offset.getOffsetZ());
+        BlockPos placePos = centralPos.offset(offset.getOffsetX(), 0, offset.getOffsetZ());
 
-        world.setBlockState(placePos, chest);
+        world.setBlockAndUpdate(placePos, chest);
 
-        ChestTileEntity teChest = (ChestTileEntity) Objects.requireNonNull((world.getTileEntity(placePos)));
+        ChestTileEntity teChest = (ChestTileEntity) Objects.requireNonNull((world.getBlockEntity(placePos)));
 
-        LockableLootTileEntity.setLootTable(world, world.rand, placePos, chestData.getLootTableRL());
+        LockableLootTileEntity.setLootTable(world, world.random, placePos, chestData.getLootTableRL());
         teChest.setLootTable(chestData.getLootTableRL(), 0);
-        teChest.fillWithLoot(null);
+        teChest.unpackLootTable(null);
 
         List<Integer> notEmptyIndexes = new ArrayList<>();
-        for (int i = 0; i < teChest.getSizeInventory(); i++) {
-            if (teChest.getStackInSlot(i) != ItemStack.EMPTY) {
+        for (int i = 0; i < teChest.getContainerSize(); i++) {
+            if (teChest.getItem(i) != ItemStack.EMPTY) {
                 notEmptyIndexes.add(i);
             }
         }
@@ -63,12 +63,12 @@ public class RewardUtils {
         if (notEmptyIndexes.size() == 0) {
             ItemStack stack = new ItemStack(Blocks.STONE);
             try {
-                stack.setTag(JsonToNBT.getTagFromJson(String.format("{display:{Name:\"{\\\"text\\\":\\\"The Sorry Stone\\\", \\\"color\\\":\\\"blue\\\", \\\"bold\\\": \\\"true\\\"}\", Lore: [\"{\\\"text\\\":\\\"Modpack creator failed to configure the LootTables properly.\\\\nPlease report that Loot Table [%s] for %s stage is broken, thank you!\\\"}\"]}}", chestData.getLootTableRL(), chestData.getGameName())));//TODO when copying back to 1.12.2 - this tag don't work, only old one
+                stack.setTag(JsonToNBT.parseTag(String.format("{display:{Name:\"{\\\"text\\\":\\\"The Sorry Stone\\\", \\\"color\\\":\\\"blue\\\", \\\"bold\\\": \\\"true\\\"}\", Lore: [\"{\\\"text\\\":\\\"Modpack creator failed to configure the LootTables properly.\\\\nPlease report that Loot Table [%s] for %s stage is broken, thank you!\\\"}\"]}}", chestData.getLootTableRL(), chestData.getGameName())));//TODO when copying back to 1.12.2 - this tag don't work, only old one
             } catch (CommandSyntaxException e) {
                 e.printStackTrace();
             }
 
-            teChest.setInventorySlotContents(teChest.getSizeInventory() / 2, stack);
+            teChest.setItem(teChest.getContainerSize() / 2, stack);
 
             return;
         }
@@ -92,7 +92,7 @@ public class RewardUtils {
                     itemsRemain[i] = itemRemainChestIndex;
                 }
 
-                for (int i = 0; i < teChest.getSizeInventory(); i++) {
+                for (int i = 0; i < teChest.getContainerSize(); i++) {
                     boolean toDelete = true;
 
                     for (int i1 : itemsRemain) {
@@ -103,7 +103,7 @@ public class RewardUtils {
                     }
 
                     if (toDelete) {
-                        teChest.removeStackFromSlot(i);
+                        teChest.removeItemNoUpdate(i);
                     }
                 }
             }

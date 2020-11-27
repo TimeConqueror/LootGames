@@ -7,7 +7,6 @@ import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
-import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
 import ru.timeconqueror.lootgames.minigame.pipes.board.PipesBoard;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 
@@ -25,7 +24,7 @@ public class GamePipes extends LootGame<GamePipes> {
 
     @Override
     protected BlockPos getCentralRoomPos() {
-        return masterTileEntity.getPos().add(getBoardSize() / 2, 0, getBoardSize() / 2);
+        return masterTileEntity.getBlockPos().offset(getBoardSize() / 2, 0, getBoardSize() / 2);
     }
 
     @Override
@@ -68,9 +67,9 @@ public class GamePipes extends LootGame<GamePipes> {
     }
 
     public void clickField(ServerPlayerEntity player, Pos2i pos) {
-        board.rotateAt(pos.getX(), pos.getY(), player.isSneaking() ? -1 : 1);
+        board.rotateAt(pos.getX(), pos.getY(), player.isShiftKeyDown() ? -1 : 1);
         if (board.isDirty()) {
-            masterTileEntity.markDirty();
+            masterTileEntity.setChanged();
             sendUpdatePacket(board.exportDirtyChunks());
         }
     }
@@ -78,22 +77,22 @@ public class GamePipes extends LootGame<GamePipes> {
     public static class Factory implements ILootGameFactory {
         @Override
         public void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos, BlockPos bottomPos, BlockPos topPos) {
-            BlockPos floorCenterPos = puzzleMasterPos.add(0, -GameDungeonStructure.MASTER_BLOCK_OFFSET + 1, 0);
-            world.setBlockState(floorCenterPos, LGBlocks.PIPES_ACTIVATOR.getDefaultState());
+            BlockPos floorCenterPos = puzzleMasterPos.offset(0, -3/*instead of GameDungeonStructure.MASTER_BLOCK_OFFSET*/ + 1, 0);
+            world.setBlockAndUpdate(floorCenterPos, LGBlocks.PIPES_ACTIVATOR.defaultBlockState());
         }
     }
 
     public static void generateGameStructure(World world, BlockPos centerPos, int level) {
         int size = 19;
-        BlockPos startPos = centerPos.add(-size / 2, 0, -size / 2);
+        BlockPos startPos = centerPos.offset(-size / 2, 0, -size / 2);
 
         for (int x = 0; x < size; x++) {
             for (int z = 0; z < size; z++) {
-                BlockPos pos = startPos.add(x, 0, z);
+                BlockPos pos = startPos.offset(x, 0, z);
                 if (x == 0 && z == 0) {
-                    world.setBlockState(pos, LGBlocks.PIPES_MASTER.getDefaultState());
+                    world.setBlockAndUpdate(pos, LGBlocks.PIPES_MASTER.defaultBlockState());
                 } else {
-                    world.setBlockState(pos, LGBlocks.SMART_SUBORDINATE.getDefaultState());
+                    world.setBlockAndUpdate(pos, LGBlocks.SMART_SUBORDINATE.defaultBlockState());
                 }
             }
         }

@@ -26,7 +26,7 @@
       }
     ]
   },
-  "gol_gameover_win": {
+  "gol_game_win": {
     "category": "master",
     "sounds": [
       {
@@ -35,7 +35,7 @@
       }
     ]
   },
-  "gol_gameover_lose": {
+  "gol_game_lose": {
     "category": "master",
     "sounds": [
       {
@@ -53,7 +53,7 @@
       }
     ]
   },
-  "ms_empty_revel_neighbours": {
+  "ms_on_empty_reveal_neighbours": {
     "category": "master",
     "sounds": [
       {
@@ -62,7 +62,7 @@
       }
     ]
   },
-  "bomb_activated": {
+  "ms_bomb_activated": {
     "category": "master",
     "sounds": [
       {

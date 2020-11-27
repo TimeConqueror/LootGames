@@ -14,7 +14,7 @@ public class TileEntityPuzzleMaster extends TileEntity implements ITickableTileE
 
     @Override
     public void tick() {
-        if (!world.isRemote) {
+        if (!level.isClientSide()) {
             if (RandHelper.RAND.nextInt(100) <= 10) {
                 if (lastSoundTick < System.currentTimeMillis()) {
                     lastSoundTick = System.currentTimeMillis() + (RandHelper.RAND.nextInt(90) + 30) * 1000;

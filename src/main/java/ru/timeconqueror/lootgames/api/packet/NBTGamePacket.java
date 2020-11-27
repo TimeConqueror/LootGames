@@ -29,7 +29,7 @@ public abstract class NBTGamePacket implements IServerGamePacket {
         bufferTo.writeBoolean(compound != null);
 
         if (compound != null) {
-            bufferTo.writeCompoundTag(compound);
+            bufferTo.writeNbt(compound);
         }
     }
 
@@ -37,7 +37,7 @@ public abstract class NBTGamePacket implements IServerGamePacket {
     public void decode(PacketBuffer bufferFrom) {
         boolean isNotNull = bufferFrom.readBoolean();
         if (isNotNull) {
-            compound = bufferFrom.readCompoundTag();
+            compound = bufferFrom.readNbt();
         } else compound = null;
     }
 

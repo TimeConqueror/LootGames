@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ConfigGeneral extends Config {
-    public static final ConfigGeneral INSTANCE = new ConfigGeneral();
 
     public ForgeConfigSpec.BooleanValue DISABLE_MINIGAMES;
     public ForgeConfigSpec.BooleanValue ENABLE_DEBUG;
@@ -22,10 +21,12 @@ public class ConfigGeneral extends Config {
 
     public WorldGenCategory WORLD_GEN;
 
-    @Override
-    public ForgeConfigSpec setup() {
-        ImprovedConfigBuilder builder = new ImprovedConfigBuilder(this);
+    public ConfigGeneral(ModConfig.@NotNull Type type, @NotNull String key, @Nullable String comment) {
+        super(type, key, comment);
+    }
 
+    @Override
+    public void setup(ImprovedConfigBuilder builder) {
         DISABLE_MINIGAMES = builder.comment("If this is set to true, then puzzle master won't start any new game.")
                 .define("disable_minigames", false);
         ENABLE_DEBUG = builder.comment("If this is equal true, then it will print additional info to log files.")
@@ -38,28 +39,11 @@ public class ConfigGeneral extends Config {
 
         WORLD_GEN = new WorldGenCategory();
         builder.addAndSetupSection(WORLD_GEN);
-
-        return builder.build();
     }
 
     @Override
     public @NotNull String getRelativePath() {
-        return LGConfigManager.resolve("general.toml");
-    }
-
-    @Override
-    public ModConfig.Type getType() {
-        return ModConfig.Type.COMMON;
-    }
-
-    @Override
-    public @NotNull String getKey() {
-        return "general";
-    }
-
-    @Override
-    public @Nullable String getComment() {
-        return "General Settings";
+        return LGConfigs.resolve("general.toml");
     }
 
     public static class WorldGenCategory extends ConfigSection {
@@ -67,14 +51,8 @@ public class ConfigGeneral extends Config {
         private ForgeConfigSpec.ConfigValue<List<? extends String>> DIM_AND_RHOMB_LIST;
         private HashMap<Integer, Integer> dimRhombs;
 
-        @Override
-        public @Nullable String getComment() {
-            return "Regulates dungeon appearing in world.";
-        }
-
-        @Override
-        public @NotNull String getKey() {
-            return "worldgen";
+        public WorldGenCategory() {
+            super("worldgen", "Regulates dungeon appearing in world.");
         }
 
         @Override

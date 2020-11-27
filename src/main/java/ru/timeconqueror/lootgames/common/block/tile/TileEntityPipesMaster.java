@@ -21,7 +21,7 @@ public class TileEntityPipesMaster extends TileEntityGameMaster<GamePipes> {
 
     @Override
     public void onSubordinateBlockClicked(ServerPlayerEntity player, BlockPos subordinatePos) {
-        Pos2i pos = GameMineSweeper.convertToGamePos(getPos(), subordinatePos);
+        Pos2i pos = GameMineSweeper.convertToGamePos(getBlockPos(), subordinatePos);
         game.clickField(player, pos);
     }
 
@@ -29,7 +29,7 @@ public class TileEntityPipesMaster extends TileEntityGameMaster<GamePipes> {
     public void destroyGameBlocks() {
         for (int x = 0; x < game.getBoardSize(); x++) {
             for (int z = 0; z < game.getBoardSize(); z++) {
-                getWorld().setBlockState(getPos().add(x, 0, z), Blocks.AIR.getDefaultState(), 2);
+                getLevel().setBlock(getBlockPos().offset(x, 0, z), Blocks.AIR.defaultBlockState(), 2);
             }
         }
     }

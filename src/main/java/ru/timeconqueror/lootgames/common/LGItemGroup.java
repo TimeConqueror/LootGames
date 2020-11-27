@@ -15,7 +15,7 @@ public class LGItemGroup extends ItemGroup {
 
     @NotNull
     @Override
-    public ItemStack createIcon() {
+    public ItemStack makeIcon() {
         return new ItemStack(LGBlocks.PUZZLE_MASTER);
     }
 }

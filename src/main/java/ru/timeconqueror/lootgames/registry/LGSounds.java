@@ -1,33 +1,42 @@
 package ru.timeconqueror.lootgames.registry;
 
+import net.minecraftforge.registries.ObjectHolder;
+import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.api.common.sound.TimeSound;
-import ru.timeconqueror.timecore.api.registry.SoundTimeRegistry;
-import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
+import ru.timeconqueror.timecore.registry.AutoRegistrable;
+import ru.timeconqueror.timecore.registry.newreg.SoundRegister;
 
-@TimeAutoRegistrable
-public class LGSounds extends SoundTimeRegistry {
-    public static final TimeSound GOL_START_GAME = createSound("gol_start_game");
-    public static final TimeSound GOL_SEQUENCE_WRONG = createSound("gol_sequence_wrong");
-    public static final TimeSound GOL_SEQUENCE_COMPLETE = createSound("gol_sequence_complete");
-    public static final TimeSound GOL_GAME_WIN = createSound("gol_gameover_win");
-    public static final TimeSound GOL_GAME_LOSE = createSound("gol_gameover_lose");
+import static ru.timeconqueror.timecore.util.Hacks.promise;
 
-    public static final TimeSound MS_START_GAME = createSound("ms_start_game");
-    public static final TimeSound MS_ON_EMPTY_REVEAL_NEIGHBOURS = createSound("ms_empty_revel_neighbours");
-    public static final TimeSound MS_BOMB_ACTIVATED = createSound("bomb_activated");
+@ObjectHolder(LootGames.MODID)
+public class LGSounds {
+    public static final TimeSound GOL_START_GAME = promise();
+    public static final TimeSound GOL_SEQUENCE_WRONG = promise();
+    public static final TimeSound GOL_SEQUENCE_COMPLETE = promise();
+    public static final TimeSound GOL_GAME_WIN = promise();
+    public static final TimeSound GOL_GAME_LOSE = promise();
 
-    public static TimeSound PUZZLE_MASTER_STRANGE = createSound("puzzle_master_strange");
+    public static final TimeSound MS_START_GAME = promise();
+    public static final TimeSound MS_ON_EMPTY_REVEAL_NEIGHBOURS = promise();
+    public static final TimeSound MS_BOMB_ACTIVATED = promise();
 
-    @Override
-    public void register() {
-        regSound(GOL_START_GAME);
-        regSound(GOL_SEQUENCE_WRONG);
-        regSound(GOL_SEQUENCE_COMPLETE);
-        regSound(GOL_GAME_WIN);
-        regSound(GOL_GAME_LOSE);
-        regSound(MS_START_GAME);
-        regSound(MS_ON_EMPTY_REVEAL_NEIGHBOURS);
-        regSound(MS_BOMB_ACTIVATED);
-        regSound(PUZZLE_MASTER_STRANGE);
+    public static TimeSound PUZZLE_MASTER_STRANGE;
+
+    private static class Init {
+        @AutoRegistrable
+        private static final SoundRegister REGISTER = new SoundRegister(LootGames.MODID);
+
+        @AutoRegistrable.InitMethod
+        private static void register() {
+            REGISTER.register("gol_start_game");
+            REGISTER.register("gol_sequence_wrong");
+            REGISTER.register("gol_sequence_complete");
+            REGISTER.register("gol_game_win");
+            REGISTER.register("gol_game_lose");
+            REGISTER.register("ms_start_game");
+            REGISTER.register("ms_on_empty_reveal_neighbours");
+            REGISTER.register("ms_bomb_activated");
+            REGISTER.register("puzzle_master_strange");
+        }
     }
 }

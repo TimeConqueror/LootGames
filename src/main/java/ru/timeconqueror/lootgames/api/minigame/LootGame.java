@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.api.minigame;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -10,7 +11,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.timeconqueror.lootgames.api.advancement.LGAdvancementManager;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.api.packet.SPacketGameUpdate;
@@ -18,15 +18,11 @@ import ru.timeconqueror.lootgames.api.task.TETaskScheduler;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.packet.game.SPChangeStage;
 import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
-import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
-import ru.timeconqueror.timecore.api.util.NetworkUtils;
+import ru.timeconqueror.timecore.util.ChatUtils;
+import ru.timeconqueror.timecore.util.NetworkUtils;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.Objects;
-
-import static ru.timeconqueror.lootgames.common.advancement.EndGameTrigger.TYPE_LOSE;
-import static ru.timeconqueror.lootgames.common.advancement.EndGameTrigger.TYPE_WIN;
-import static ru.timeconqueror.timecore.api.util.NetworkUtils.format;
 
 public abstract class LootGame<T extends LootGame<T>> {
     protected TileEntityGameMaster<T> masterTileEntity;
@@ -67,16 +63,16 @@ public abstract class LootGame<T extends LootGame<T>> {
     }
 
     public boolean isServerSide() {
-        return !getWorld().isRemote;
+        return !getWorld().isClientSide();
     }
 
     @NotNull
     public World getWorld() {
-        return Objects.requireNonNull(masterTileEntity.getWorld());
+        return Objects.requireNonNull(masterTileEntity.getLevel());
     }
 
     public BlockPos getMasterPos() {
-        return masterTileEntity.getPos();
+        return masterTileEntity.getBlockPos();
     }
 
     /**
@@ -88,8 +84,8 @@ public abstract class LootGame<T extends LootGame<T>> {
         onGameEnd();
         NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(),
                 player -> {
-                    LGAdvancementManager.END_GAME.trigger(player, TYPE_WIN);
-                    player.sendMessage(format(new TranslationTextComponent("msg.lootgames.win"), TextFormatting.GREEN));
+//                    LGAdvancementTriggers.END_GAME.trigger(player, TYPE_WIN);//FIXME
+                    player.sendMessage(ChatUtils.format(new TranslationTextComponent("msg.lootgames.win"), TextFormatting.GREEN), player.getUUID());
                 });
     }
 
@@ -102,8 +98,8 @@ public abstract class LootGame<T extends LootGame<T>> {
         onGameEnd();
         NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(),
                 player -> {
-                    LGAdvancementManager.END_GAME.trigger(player, TYPE_LOSE);
-                    player.sendMessage(format(new TranslationTextComponent("msg.lootgames.lose"), TextFormatting.DARK_PURPLE));
+//                    LGAdvancementTriggers.END_GAME.trigger(player, TYPE_LOSE);//FIXME
+                    player.sendMessage(ChatUtils.format(new TranslationTextComponent("msg.lootgames.lose"), TextFormatting.DARK_PURPLE), player.getUUID());
                 });
     }
 
@@ -123,7 +119,15 @@ public abstract class LootGame<T extends LootGame<T>> {
      * You may use it, for example, for triggering advancements and sending text messages.
      */
     public int getBroadcastDistance() {
-        return GameDungeonStructure.ROOM_WIDTH / 2 + 3;//3 - it is just extra block distance after passing dungeon wall. Not so much, not so little.
+        return  32 /*instead of GameDungeonStructure.ROOM_WIDTH FIXME*/ / 2 + 3;//3 - it is just extra block distance after passing dungeon wall. Not so much, not so little.
+    }
+
+    public void sendForEachNearby(ITextComponent component) {
+        NetworkUtils.sendForEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(), component);
+    }
+
+    public void sendForEachNearby(ITextComponent component, TextFormatting format) {
+        sendForEachNearby(ChatUtils.format(component, format));
     }
 
     /**
@@ -143,7 +147,7 @@ public abstract class LootGame<T extends LootGame<T>> {
      * Saves current data to the disk without sending update to client.
      */
     public void saveData() {
-        masterTileEntity.markDirty();
+        masterTileEntity.setChanged();
     }
 
     /**
@@ -174,7 +178,7 @@ public abstract class LootGame<T extends LootGame<T>> {
      * Sends update packet to the client with given {@link CompoundNBT} to all players, tracking the game.
      */
     public void sendUpdatePacket(IServerGamePacket packet) {
-        Chunk chunk = getWorld().getChunkAt(masterTileEntity.getPos());
+        Chunk chunk = getWorld().getChunkAt(masterTileEntity.getBlockPos());
         LGNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new SPacketGameUpdate(this, packet));
     }
 

@@ -3,34 +3,28 @@ package ru.timeconqueror.lootgames.api.packet;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.jetbrains.annotations.NotNull;
-import ru.timeconqueror.timecore.api.registry.Initable;
-import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
-import ru.timeconqueror.timecore.api.registry.TimeRegistry;
+import ru.timeconqueror.timecore.registry.AutoRegistrable;
+import ru.timeconqueror.timecore.registry.newreg.TimeRegister;
 
 import java.util.HashMap;
 import java.util.Objects;
 
-/**
- * Used for game packet adding. You may extend it and do your stuff in {@link #register()} method.<br>
- * <p>
- * Any your registry that extends it should be annotated with {@link TimeAutoRegistrable}
- * to create its instance automatically and provide register features.<br>
- *
- * <b><font color="yellow">WARNING: Any annotated registry class must contain constructor without params or exception will be thrown.</b><br>
- */
-public abstract class GamePacketRegistry extends TimeRegistry implements Initable {
+public abstract class GamePacketRegistry extends TimeRegister {
     private static final BiMap<PacketInfo, Class<? extends IServerGamePacket>> GAME_PACKET_MAP = HashBiMap.create();
     private static final HashMap<String, GamePacketManager> REGISTERED_MANAGERS = new HashMap<>();
+
+    public GamePacketRegistry(String modid) {
+        super(modid);
+    }
 
     /**
      * Returns the mod-dependent manager to register packets from your mod.
      */
-    public static GamePacketManager getManager() {
-        String modID = getModID();
-        GamePacketManager manager = REGISTERED_MANAGERS.get(modID);
+    public static GamePacketManager getManager(String modId) {
+        GamePacketManager manager = REGISTERED_MANAGERS.get(modId);
         if (manager == null) {
-            manager = new GamePacketManager(modID);
-            REGISTERED_MANAGERS.put(modID, manager);
+            manager = new GamePacketManager(modId);
+            REGISTERED_MANAGERS.put(modId, manager);
         }
 
         return manager;

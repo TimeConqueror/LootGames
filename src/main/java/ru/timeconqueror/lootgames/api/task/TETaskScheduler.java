@@ -42,7 +42,7 @@ public class TETaskScheduler implements INBTSerializable<ListNBT> {
                 TaskWrapper task = iterator.next();
 
                 if (task.timeBeforeStart <= 0) {
-                    task.run(tileEntity.getWorld());
+                    task.run(tileEntity.getLevel());
                     iterator.remove();
                 } else {
                     task.decreaseTimer();

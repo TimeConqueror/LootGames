@@ -1,3 +1,4 @@
+/*
 package ru.timeconqueror.lootgames.common.advancement;
 
 import com.google.gson.JsonDeserializationContext;
@@ -5,13 +6,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.advancements.PlayerAdvancements;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.advancements.criterion.LocationPredicate;
+import net.minecraft.advancements.criterion.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.IProperty;
+import net.minecraft.loot.ConditionArrayParser;
+import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -31,11 +32,28 @@ import static ru.timeconqueror.lootgames.common.advancement.ActivateBlockTrigger
 import static ru.timeconqueror.lootgames.common.advancement.ActivateBlockTrigger.Instance;
 
 public class ActivateBlockTrigger extends TimeSimpleTrigger<ExtraInfo, Instance> {
-    private static final ResourceLocation ID = LootGames.INSTANCE.createRl("activate_block");
+    private static final ResourceLocation ID = LootGames.rl("activate_block");
 
     @Override
     public PerPlayerListenerSet<ExtraInfo, Instance> createListenerSet(PlayerAdvancements advancements) {
         return new PerPlayerListenerSet<>(advancements);
+    }
+
+    @Override
+    public Instance createInstance(JsonObject jsonObject, ConditionArrayParser conditionArrayParser) {
+        return null;
+    }
+
+    public EnterBlockTrigger.Instance createInstance(JsonObject json, EntityPredicate.AndPredicate entityPredicate, ConditionArrayParser conditionsParser) {
+        Block block = deserializeBlock(json);
+        StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.fromJson(json.get("state"));
+        if (block != null) {
+            statepropertiespredicate.checkState(block.getStateDefinition(), (propertyIn) -> {
+                throw new JsonSyntaxException("Block " + block + " has no property " + propertyIn);
+            });
+        }
+
+        return new EnterBlockTrigger.Instance(entityPredicate, block, statepropertiespredicate);
     }
 
     @Override
@@ -47,14 +65,14 @@ public class ActivateBlockTrigger extends TimeSimpleTrigger<ExtraInfo, Instance>
     public Instance deserializeInstance(JsonObject json, JsonDeserializationContext context) {
         Block block = null;
         if (json.has("block")) {
-            ResourceLocation resourcelocation = new ResourceLocation(JSONUtils.getString(json, "block"));
+            ResourceLocation resourcelocation = new ResourceLocation(JSONUtils.getAsString(json, "block"));
             block = ForgeRegistries.BLOCKS.getValue(resourcelocation);
             if (block == null) {
                 throw new JsonSyntaxException("Unknown block type '" + resourcelocation + "'");
             }
         }
 
-        Map<IProperty<?>, Object> map = null;
+        Map<Property<?>, Object> map = null;
         if (json.has("state")) {
             if (block == null) {
                 throw new JsonSyntaxException("Can't define block state without a specific block type");
@@ -62,14 +80,14 @@ public class ActivateBlockTrigger extends TimeSimpleTrigger<ExtraInfo, Instance>
 
             StateContainer<Block, BlockState> stateContainer = block.getStateContainer();
 
-            for (Map.Entry<String, JsonElement> entry : JSONUtils.getJsonObject(json, "state").entrySet()) {
-                IProperty<?> property = stateContainer.getProperty(entry.getKey());
+            for (Map.Entry<String, JsonElement> entry : JSONUtils.getAsJsonObject(json, "state").entrySet()) {
+                Property<?> property = stateContainer.getProperty(entry.getKey());
                 if (property == null) {
                     throw new JsonSyntaxException("Unknown block state property '" + entry.getKey() + "' for block '" + ForgeRegistries.BLOCKS.getKey(block) + "'");
                 }
 
-                String s = JSONUtils.getString(entry.getValue(), entry.getKey());
-                Optional<?> optional = property.parseValue(s);
+                String s = JSONUtils.getAsString(entry.getValue(), entry.getKey());
+                Optional<?> optional = property.getValue(s);
                 if (!optional.isPresent()) {
                     throw new JsonSyntaxException("Invalid block state value '" + s + "' for property '" + entry.getKey() + "' on block '" + ForgeRegistries.BLOCKS.getKey(block) + "'");
                 }
@@ -82,8 +100,8 @@ public class ActivateBlockTrigger extends TimeSimpleTrigger<ExtraInfo, Instance>
             }
         }
 
-        LocationPredicate locationpredicate = LocationPredicate.deserialize(json.get("location"));
-        ItemPredicate itempredicate = ItemPredicate.deserialize(json.get("item"));
+        LocationPredicate locationpredicate = LocationPredicate.fromJson(json.get("location"));
+        ItemPredicate itempredicate = ItemPredicate.fromJson(json.get("item"));
         return new Instance(block, map, locationpredicate, itempredicate);
     }
 
@@ -99,11 +117,11 @@ public class ActivateBlockTrigger extends TimeSimpleTrigger<ExtraInfo, Instance>
 
     public static class Instance extends TimeSimpleTrigger.TimeCriterionInstance<ExtraInfo> {
         private final Block block;
-        private final Map<IProperty<?>, Object> properties;
+        private final Map<Property<?>, Object> properties;
         private final LocationPredicate location;
         private final ItemPredicate item;
 
-        Instance(@Nullable Block block, @Nullable Map<IProperty<?>, Object> propertiesIn, LocationPredicate locationIn, ItemPredicate itemIn) {
+        Instance(@Nullable Block block, @Nullable Map<Property<?>, Object> propertiesIn, LocationPredicate locationIn, ItemPredicate itemIn) {
             super(ID);
             this.block = block;
             this.properties = propertiesIn;
@@ -120,7 +138,7 @@ public class ActivateBlockTrigger extends TimeSimpleTrigger<ExtraInfo, Instance>
                 return false;
             } else {
                 if (this.properties != null) {
-                    for (Map.Entry<IProperty<?>, Object> entry : this.properties.entrySet()) {
+                    for (Map.Entry<Property<?>, Object> entry : this.properties.entrySet()) {
                         if (state.get(entry.getKey()) != entry.getValue()) {
                             return false;
                         }
@@ -145,7 +163,7 @@ public class ActivateBlockTrigger extends TimeSimpleTrigger<ExtraInfo, Instance>
             if (this.properties != null) {
                 JsonObject jsonProperties = new JsonObject();
 
-                for (Map.Entry<IProperty<?>, Object> entry : this.properties.entrySet()) {
+                for (Map.Entry<Property<?>, Object> entry : this.properties.entrySet()) {
                     jsonProperties.addProperty(entry.getKey().getName(), Util.getValueName(entry.getKey(), entry.getValue()));
                 }
 
@@ -158,3 +176,4 @@ public class ActivateBlockTrigger extends TimeSimpleTrigger<ExtraInfo, Instance>
         }
     }
 }
+*/
