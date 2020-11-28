@@ -23,13 +23,17 @@ public abstract class BlockGameMaster extends BlockGame implements ILeftInteract
 
     @Override
     public boolean onLeftClick(World world, PlayerEntity player, BlockPos pos, Direction face) {
-        if (face == Direction.UP) {
+        if (shouldHandleLeftClick(player, face)) {
             handleLeftClick(player, world, pos, pos, face);
 
             return true;
         }
 
         return false;
+    }
+
+    public static boolean shouldHandleLeftClick(PlayerEntity player, Direction face) {
+        return face == Direction.UP && !player.isShiftKeyDown();
     }
 
     public static void handleLeftClick(PlayerEntity player, World world, BlockPos masterPos, BlockPos subordinatePos, Direction face) {

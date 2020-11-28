@@ -64,7 +64,7 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
 
     @Override
     public boolean onLeftClick(World world, PlayerEntity player, BlockPos pos, Direction face) {
-        if (face == Direction.UP) {
+        if (BlockGameMaster.shouldHandleLeftClick(player, face)) {
             if (!world.isClientSide()) {
                 forMasterTile(world, pos, (tileEntityGameMaster, masterPos) -> BlockGameMaster.handleLeftClick(player, world, masterPos, pos, face));
             }

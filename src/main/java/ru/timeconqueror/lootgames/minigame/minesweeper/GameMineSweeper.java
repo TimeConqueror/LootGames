@@ -324,13 +324,13 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
                 playRevealNeighboursSound = true;
 
                 if (hand == Hand.MAIN_HAND) {
-                    if (player.isShiftKeyDown()) {
-                        revealAllNeighbours(player, clickedPos, false);
-                    } else if (board.getMark(clickedPos) == Mark.NO_MARK) {
+                    if (board.getMark(clickedPos) == Mark.NO_MARK) {
                         revealField(player, clickedPos);
                     }
                 } else {
-                    if (board.isHidden(clickedPos)) {
+                    if (player.isShiftKeyDown()) {
+                        revealAllNeighbours(player, clickedPos, false);
+                    } else if (board.isHidden(clickedPos)) {
                         swapFieldMark(clickedPos);
                     }
                 }
