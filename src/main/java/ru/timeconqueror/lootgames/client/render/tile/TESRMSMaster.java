@@ -101,8 +101,8 @@ public class TESRMSMaster extends TileEntityRenderer<TileEntityMSMaster> {
 //        MSOverlayHandler.addSupportedMaster(te);//FIXME restore
     }
 
-//    @Override
-//    public boolean isGlobalRenderer(TileEntityMSMaster te) {
-//        return true;
-//    }
+    @Override
+    public boolean shouldRenderOffScreen(TileEntityMSMaster te) {
+        return true;
+    }
 }

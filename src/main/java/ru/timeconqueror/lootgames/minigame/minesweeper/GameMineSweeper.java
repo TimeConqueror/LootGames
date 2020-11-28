@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.minigame.minesweeper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -94,9 +95,9 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         return getCentralGamePos();
     }
 
-    public void clickField(ServerPlayerEntity player, Pos2i clickedPos) {
+    public void click(ServerPlayerEntity player, Pos2i clickedPos, Hand hand) {
         if (stage instanceof StageWaiting) {
-            ((StageWaiting) stage).onFieldClicked(player, clickedPos);
+            ((StageWaiting) stage).onClick(player, clickedPos, hand);
         }
     }
 
@@ -314,7 +315,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         public StageWaiting() {
         }
 
-        public void onFieldClicked(ServerPlayerEntity player, Pos2i clickedPos) {
+        public void onClick(ServerPlayerEntity player, Pos2i clickedPos, Hand hand) {
             getWorld().playSound(null, convertToBlockPos(clickedPos), SoundEvents.NOTE_BLOCK_HAT, SoundCategory.MASTER, 0.6F, 0.8F);
 
             if (!board.isGenerated()) {
@@ -322,15 +323,15 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
             } else {
                 playRevealNeighboursSound = true;
 
-                if (player.isShiftKeyDown()) {
-                    if (board.isHidden(clickedPos)) {
-                        swapFieldMark(clickedPos);
-                    } else {
+                if (hand == Hand.MAIN_HAND) {
+                    if (player.isShiftKeyDown()) {
                         revealAllNeighbours(player, clickedPos, false);
+                    } else if (board.getMark(clickedPos) == Mark.NO_MARK) {
+                        revealField(player, clickedPos);
                     }
                 } else {
-                    if (board.getMark(clickedPos) == Mark.NO_MARK) {
-                        revealField(player, clickedPos);
+                    if (board.isHidden(clickedPos)) {
+                        swapFieldMark(clickedPos);
                     }
                 }
             }

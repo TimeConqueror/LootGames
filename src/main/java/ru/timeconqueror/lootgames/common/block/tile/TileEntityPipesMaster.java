@@ -20,7 +20,7 @@ public class TileEntityPipesMaster extends TileEntityGameMaster<GamePipes> {
     }
 
     @Override
-    public void onSubordinateBlockClicked(ServerPlayerEntity player, BlockPos subordinatePos) {
+    public void onBlockRightClicked(ServerPlayerEntity player, BlockPos subordinatePos) {
         Pos2i pos = GameMineSweeper.convertToGamePos(getBlockPos(), subordinatePos);
         game.clickField(player, pos);
     }

@@ -9,11 +9,14 @@ buildscript {
             url = 'https://repo.spongepowered.org/maven'
         }
         maven { url = "https://plugins.gradle.org/m2/" }
+        maven {
+            name = "TimeConqueror's Maven"
+            url = "https://repo.repsy.io/mvn/timeconqueror/mc/"
+        }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.0.188'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.0.187-patched'
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-        classpath 'com.wynprice.cursemaven:CurseMaven:2.1.4'
     }
 }
 
@@ -26,7 +29,6 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'com.wynprice.cursemaven'
 
 apply from: 'gradle/scripts/configs.gradle'
 
@@ -163,7 +165,7 @@ dependencies {
 
     compileOnly 'org.jetbrains:annotations:18.0.0'
 
-    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.3-3.1.0.0.build38"))
+    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.3-3.1.0.0.build38", false))
 
 //    runtimeOnly fg.deobf("mezz.jei:jei-1.14.4:6.0.0.27")
 }

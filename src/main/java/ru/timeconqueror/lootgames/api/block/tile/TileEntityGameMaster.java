@@ -10,10 +10,8 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
-import ru.timeconqueror.timecore.util.Hacks;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -172,12 +170,22 @@ public abstract class TileEntityGameMaster<T extends LootGame> extends TileEntit
     }
 
     /**
-     * Will be called when subordinate block is clicked by player.
+     * Will be called when subordinate block is right-clicked by player.
      *
      * @param player         player, who clicked the subordinate block.
      * @param subordinatePos pos of subordinate block.
      */
-    public void onSubordinateBlockClicked(ServerPlayerEntity player, BlockPos subordinatePos) {
+    public void onBlockRightClicked(ServerPlayerEntity player, BlockPos subordinatePos) {
+    }
+
+    /**
+     * Will be called when subordinate block is left-clicked by player.
+     *
+     * @param player         player, who clicked the subordinate block.
+     * @param subordinatePos pos of subordinate block.
+     */
+    public void onBlockLeftClick(ServerPlayerEntity player, BlockPos subordinatePos) {
+
     }
 
     /**

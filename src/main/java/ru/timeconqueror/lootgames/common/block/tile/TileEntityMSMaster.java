@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.common.block.tile;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
@@ -18,10 +19,16 @@ public class TileEntityMSMaster extends TileEntityGameMaster<GameMineSweeper> {
     }
 
     @Override
-    public void onSubordinateBlockClicked(ServerPlayerEntity player, BlockPos subordinatePos) {
+    public void onBlockRightClicked(ServerPlayerEntity player, BlockPos subordinatePos) {
         Pos2i pos = GameMineSweeper.convertToGamePos(getBlockPos(), subordinatePos);
 
-        game.clickField(player, pos);
+        game.click(player, pos, Hand.OFF_HAND);
+    }
+
+    @Override
+    public void onBlockLeftClick(ServerPlayerEntity player, BlockPos subordinatePos) {
+        Pos2i pos = GameMineSweeper.convertToGamePos(getBlockPos(), subordinatePos);
+        game.click(player, pos, Hand.MAIN_HAND);
     }
 
     @Override

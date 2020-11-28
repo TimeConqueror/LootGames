@@ -25,7 +25,7 @@ public class BlockPipesMaster extends BlockGameMaster {
 
             Objects.requireNonNull(te);
 
-            te.onSubordinateBlockClicked(((ServerPlayerEntity) player), pos);
+            te.onBlockRightClicked(((ServerPlayerEntity) player), pos);
         }
 
         return ActionResultType.SUCCESS;
