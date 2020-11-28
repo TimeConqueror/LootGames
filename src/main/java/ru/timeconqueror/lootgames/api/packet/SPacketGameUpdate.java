@@ -10,6 +10,7 @@ import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.timecore.api.common.packet.ITimePacket;
 
+import java.io.IOException;
 import java.util.function.Supplier;
 
 public class SPacketGameUpdate implements ITimePacket {
@@ -31,7 +32,7 @@ public class SPacketGameUpdate implements ITimePacket {
 
     public static class Handler implements ITimePacketHandler<SPacketGameUpdate> {
         @Override
-        public void encode(SPacketGameUpdate packet, PacketBuffer buffer) {
+        public void encode(SPacketGameUpdate packet, PacketBuffer buffer) throws IOException {
             buffer.writeBlockPos(packet.masterPos);
 
             GamePacketRegistry.PacketInfo info = GamePacketRegistry.getInfo(packet.gamePacket.getClass());
@@ -41,7 +42,7 @@ public class SPacketGameUpdate implements ITimePacket {
         }
 
         @Override
-        public SPacketGameUpdate decode(PacketBuffer buffer) {
+        public SPacketGameUpdate decode(PacketBuffer buffer) throws IOException {
             SPacketGameUpdate packet = new SPacketGameUpdate();
             packet.masterPos = buffer.readBlockPos();
 
@@ -52,7 +53,7 @@ public class SPacketGameUpdate implements ITimePacket {
                 packet.gamePacket = packetClass.newInstance();
                 packet.gamePacket.decode(buffer);
             } catch (InstantiationException e) {//FIXME test if it only kicks from server or halt client? and what if server will catch it?
-                throw new RuntimeException("Can't decode received game packet, due to lack of public nullary constructor in " + packetClass, e);
+                throw new RuntimeException("Can't decodeStrictly received game packet, due to lack of public nullary constructor in " + packetClass, e);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }

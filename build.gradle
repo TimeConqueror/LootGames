@@ -163,7 +163,7 @@ dependencies {
 
     compileOnly 'org.jetbrains:annotations:18.0.0'
 
-    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.3-3.1.0.0.build37"))
+    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.3-3.1.0.0.build38"))
 
 //    runtimeOnly fg.deobf("mezz.jei:jei-1.14.4:6.0.0.27")
 }

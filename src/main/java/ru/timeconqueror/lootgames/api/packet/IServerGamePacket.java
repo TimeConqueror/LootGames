@@ -3,10 +3,12 @@ package ru.timeconqueror.lootgames.api.packet;
 import net.minecraft.network.PacketBuffer;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 
-public interface IServerGamePacket {
-    void encode(PacketBuffer bufferTo);
+import java.io.IOException;
 
-    void decode(PacketBuffer bufferFrom);
+public interface IServerGamePacket {
+    void encode(PacketBuffer bufferTo) throws IOException;
+
+    void decode(PacketBuffer bufferFrom) throws IOException;
 
     void runOnClient(LootGame<?> game);
 }

@@ -1,14 +1,14 @@
 package ru.timeconqueror.lootgames.minigame.minesweeper;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.common.util.INBTSerializable;
-import org.intellij.lang.annotations.MagicConstant;
-import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.api.util.NBTUtils;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
+import ru.timeconqueror.lootgames.utils.CodecUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -55,13 +55,11 @@ public class MSBoard {
         return getField(x, y).isHidden;
     }
 
-    @MSField.Type
-    public int getType(Pos2i pos) {
+    public Type getType(Pos2i pos) {
         return getField(pos).type;
     }
 
-    @MSField.Type
-    public int getType(int x, int y) {
+    public Type getType(int x, int y) {
         return getField(x, y).type;
     }
 
@@ -89,11 +87,11 @@ public class MSBoard {
     }
 
     boolean isBomb(int x, int y) {
-        return getType(x, y) == MSField.BOMB;
+        return getType(x, y) == Type.BOMB;
     }
 
     boolean isBomb(Pos2i pos) {
-        return getType(pos) == MSField.BOMB;
+        return getType(pos) == Type.BOMB;
     }
 
     public boolean hasFieldOn(Pos2i pos) {
@@ -106,7 +104,7 @@ public class MSBoard {
         loop:
         for (MSField[] msFields : board) {
             for (MSField msField : msFields) {
-                if (msField.type == MSField.BOMB) {
+                if (msField.type == Type.BOMB) {
                     if (!msField.isHidden || msField.mark != Mark.FLAG) {
                         winState = false;
                         break loop;
@@ -123,7 +121,7 @@ public class MSBoard {
         return winState;
     }
 
-    private MSField getField(Pos2i pos) {
+    public MSField getField(Pos2i pos) {
         return board[pos.getX()][pos.getY()];
     }
 
@@ -153,19 +151,19 @@ public class MSBoard {
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                board[i][j] = new MSField(-2, true, Mark.NO_MARK);
+                board[i][j] = new MSField(null, true, Mark.NO_MARK);
             }
         }
 
         for (Integer integer : fields.subList(0, bombCount)) {
-            board[integer % size][integer / size].type = MSField.BOMB;
+            board[integer % size][integer / size].type = Type.BOMB;
         }
 
         //adding numbers and spaces
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 if (!isBomb(i, j)) {
-                    board[i][j].type = getConnectedBombCount(i, j);
+                    board[i][j].type = Type.byId((byte) getConnectedBombCount(i, j));
                 }
             }
         }
@@ -230,18 +228,18 @@ public class MSBoard {
         }
     }
 
-    public void cSetField(Pos2i pos, int type, Mark mark, boolean hidden) {
+    public void cSetField(Pos2i pos, MSField field) {
         MSField oldField = board[pos.getX()][pos.getY()];
         Mark oldMark = oldField.mark;
 
-        if (!hidden) mark = Mark.NO_MARK;
+        if (!field.isHidden) field.mark = Mark.NO_MARK;
 
-        board[pos.getX()][pos.getY()] = new MSField(type, hidden, mark);
+        board[pos.getX()][pos.getY()] = field;
 
 
-        if (oldMark == Mark.FLAG && mark != Mark.FLAG) {
+        if (oldMark == Mark.FLAG && field.mark != Mark.FLAG) {
             cFlaggedFields--;
-        } else if (oldMark != Mark.FLAG && mark == Mark.FLAG) {
+        } else if (oldMark != Mark.FLAG && field.mark == Mark.FLAG) {
             cFlaggedFields++;
         }
     }
@@ -275,92 +273,39 @@ public class MSBoard {
     }
 
     CompoundNBT writeNBTForSaving() {
-        return NBTUtils.writeTwoDimArrToNBT(board);
+        return CodecUtils.write2DimArr(board, MSField.SAVE_CODEC);
     }
 
     CompoundNBT writeNBTForClient() {
-        return NBTUtils.<MSField>writeTwoDimArrToNBT(board, field -> {
-            CompoundNBT c = new CompoundNBT();
-
-            c.putBoolean("hidden", field.isHidden());
-            c.putInt("mark", field.getMark().id);
-
-            if (!field.isHidden()) {
-                c.putInt("type", field.getType());
-            }
-
-            return c;
-        });
+        return CodecUtils.write2DimArr(board, MSField.SYNC_CODEC);
     }
 
     void readNBTFromClient(CompoundNBT boardTag) {
-        MSField[][] boardArr = NBTUtils.readTwoDimArrFromNBT(boardTag, MSField.class, compoundIn ->
-                new MSField(compoundIn.contains("type") ? compoundIn.getInt("type") : MSField.EMPTY, compoundIn.getBoolean("hidden"), Mark.byID(compoundIn.getInt("mark"))));
-        setBoard(boardArr);
+        setBoard(CodecUtils.read2DimArr(boardTag, MSField.class, MSField.SYNC_CODEC));
         updateFlaggedFields_c();
     }
 
     void readNBTFromSave(CompoundNBT boardTag) {
-        MSField[][] boardArr = NBTUtils.readTwoDimArrFromNBT(boardTag, MSField.class, () -> new MSField(MSField.EMPTY, true, Mark.NO_MARK));
-        setBoard(boardArr);
+        setBoard(CodecUtils.read2DimArr(boardTag, MSField.class, MSField.SAVE_CODEC));
     }
 
-    public enum Mark {
-        NO_MARK(0),
-        FLAG(1),
-        QUESTION_MARK(2);
-
-        private static final Mark[] LOOKUP;
-
-        static {
-            LOOKUP = new Mark[values().length];
-            for (Mark value : values()) {
-                LOOKUP[value.id] = value;
-            }
-        }
-
-        private int id;
-
-        Mark(int id) {
-            this.id = id;
-        }
-
-        public static Mark byID(int id) {
-            if (id >= LOOKUP.length) {
-                LootGames.LOGGER.error("Provided unknown id: {}, switched to NO_MARK (0).", id);
-            }
-            return LOOKUP[id];
-        }
-
-        public static Mark getNext(Mark mark) {
-            return mark.id >= LOOKUP.length - 1 ? LOOKUP[0] : LOOKUP[mark.id + 1];
-        }
-
-        public Mark getNext() {
-            return getNext(this);
-        }
-
-        public int getID() {
-            return id;
-        }
-    }
-
-    public static class MSField implements INBTSerializable<CompoundNBT> {
-        public static final int BOMB = -1;
-        public static final int EMPTY = 0;
-        /**
-         * Type of cell.
-         *
-         * <p>   -1      - Bomb.
-         * <p>   0       - Empty cell.
-         * <p>   1 - 8   - Cell with number.
-         */
-        private int type;
-
+    public static class MSField {
+        private Type type;
         private Mark mark;
         private boolean isHidden;
 
-        MSField(int type, boolean isHidden, Mark mark) {
+        public static final Codec<MSField> SYNC_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Type.CODEC.optionalFieldOf("type").forGetter(msField -> Optional.ofNullable(!msField.isHidden() ? msField.getType() : null)),
+                Codec.BOOL.fieldOf("hidden").forGetter(MSField::isHidden),
+                Mark.CODEC.fieldOf("mark").forGetter(MSField::getMark)
+        ).apply(instance, (Optional<Type> type, Boolean isHidden, Mark mark) -> new MSField(type.orElse(Type.EMPTY), isHidden, mark)));
+        public static final Codec<MSField> SAVE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Type.CODEC.fieldOf("type").forGetter(MSField::getType),
+                Codec.BOOL.fieldOf("hidden").forGetter(MSField::isHidden),
+                Mark.CODEC.fieldOf("mark").forGetter(MSField::getMark)
+        ).apply(instance, MSField::new));
+
+        MSField(Type type, boolean isHidden, Mark mark) {
             this.type = type;
             this.isHidden = isHidden;
             this.mark = mark;
@@ -379,15 +324,7 @@ public class MSBoard {
             resetMark();
         }
 
-        /**
-         * Returns the type of cell.
-         *
-         * <p>   -1      - Bomb.
-         * <p>   0       - Empty cell.
-         * <p>   1 - 9   - Cell with number.
-         */
-        @Type
-        public int getType() {
+        public Type getType() {
             return type;
         }
 
@@ -395,34 +332,13 @@ public class MSBoard {
             return mark;
         }
 
-        @Override
-        public CompoundNBT serializeNBT() {
-            CompoundNBT field = new CompoundNBT();
-            field.putInt("mark", mark.id);
-            field.putBoolean("hidden", isHidden);
-            field.putInt("type", type);
-
-            return field;
-        }
-
         public boolean isHidden() {
             return isHidden;
         }
 
         @Override
-        public void deserializeNBT(CompoundNBT nbt) {
-            isHidden = nbt.getBoolean("hidden");
-            mark = Mark.byID(nbt.getInt("mark"));
-            type = nbt.getInt("type");
-        }
-
-        @Override
         public String toString() {
             return "Field{type: " + type + ", hidden: " + isHidden + ", mark: " + mark + "}";
-        }
-
-        @MagicConstant(intValues = {BOMB, EMPTY, 1, 2, 3, 4, 5, 6, 7, 8})
-        public @interface Type {
         }
     }
 }

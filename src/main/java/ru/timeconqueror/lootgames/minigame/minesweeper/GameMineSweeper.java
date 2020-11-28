@@ -10,7 +10,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
-import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
@@ -18,11 +17,11 @@ import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.api.util.RewardUtils;
 import ru.timeconqueror.lootgames.api.util.RewardUtils.SpawnChestData;
 import ru.timeconqueror.lootgames.common.config.ConfigMS;
+import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSFieldChanged;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSGenBoard;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSResetFlags;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSSpawnLevelBeatParticles;
-import ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.Mark;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.util.DirectionTetra;
@@ -33,7 +32,6 @@ import ru.timeconqueror.timecore.util.NetworkUtils;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard.MSField;
 import static ru.timeconqueror.timecore.util.NetworkUtils.getPlayersNearby;
 
 //TODO add default colors to warn, fail, win, etc
@@ -47,7 +45,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
 
     private int currentLevel = 1;
 
-    private MSBoard board;
+    private final MSBoard board;
 
     private int ticks;
     private int attemptCount = 0;
@@ -342,7 +340,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
             board.generate(clickedPos);
             sendUpdatePacket(new SPMSGenBoard(GameMineSweeper.this));
 
-            if (board.getType(clickedPos) == MSField.EMPTY) {
+            if (board.getType(clickedPos) == Type.EMPTY) {
                 revealAllNeighbours(player, clickedPos, true);
             }
 
@@ -353,18 +351,18 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
             if (board.isHidden(pos)) {
                 board.reveal(pos);
 
-                int type = board.getType(pos);
+                Type type = board.getType(pos);
 
-                sendUpdatePacket(new SPMSFieldChanged(pos, type, Mark.NO_MARK, false));
+                sendUpdatePacket(new SPMSFieldChanged(pos, board.getField(pos)));
 
-                if (type == MSField.EMPTY) {
+                if (type == Type.EMPTY) {
                     if (playRevealNeighboursSound) {
                         getWorld().playSound(null, convertToBlockPos(pos), LGSounds.MS_ON_EMPTY_REVEAL_NEIGHBOURS, SoundCategory.MASTER, 0.6F, 1.0F);
                         playRevealNeighboursSound = false;
                     }
 
                     revealAllNeighbours(player, pos, true);
-                } else if (type == MSField.BOMB) {
+                } else if (type == Type.BOMB) {
                     triggerBombs(pos);
                 }
 
@@ -383,7 +381,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
                     return;
                 }
 
-                int bombsAround = board.getType(mainPos);
+                int bombsAround = board.getType(mainPos).getId();
                 if (bombsAround < 1) throw new IllegalStateException();
 
                 int marked = 0;
@@ -422,7 +420,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
             if (board.isHidden(pos)) {
                 board.swapMark(pos);
 
-                sendUpdatePacket(new SPMSFieldChanged(pos, MSField.EMPTY, board.getMark(pos), true));
+                sendUpdatePacket(new SPMSFieldChanged(pos, board.getField(pos)));
                 saveData();
             }
 
@@ -542,7 +540,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
             AtomicInteger longestDetTime = new AtomicInteger();
 
             board.forEach(pos2i -> {
-                if (board.getType(pos2i) == MSField.BOMB) {
+                if (board.getType(pos2i) == Type.BOMB) {
 
                     int detTime = RandHelper.RAND.nextInt(45);
 

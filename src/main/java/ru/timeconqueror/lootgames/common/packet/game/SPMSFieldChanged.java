@@ -7,11 +7,11 @@ import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard;
 
+import java.io.IOException;
+
 public class SPMSFieldChanged implements IServerGamePacket {
     private Pos2i pos;
-    private int type;
-    private MSBoard.Mark mark;
-    private boolean hidden;
+    private MSBoard.MSField field;
 
     /**
      * Only for using via reflection
@@ -19,32 +19,28 @@ public class SPMSFieldChanged implements IServerGamePacket {
     public SPMSFieldChanged() {
     }
 
-    public SPMSFieldChanged(Pos2i pos, int type, MSBoard.Mark mark, boolean hidden) {
+    public SPMSFieldChanged(Pos2i pos, MSBoard.MSField field) {
         this.pos = pos;
-        this.type = type;
-        this.mark = mark;
-        this.hidden = hidden;
+        this.field = field;
     }
 
     @Override
-    public void encode(PacketBuffer bufferTo) {
+    public void encode(PacketBuffer bufferTo) throws IOException {
         bufferTo.writeInt(pos.getX());
         bufferTo.writeInt(pos.getY());
-        bufferTo.writeInt(type);
-        bufferTo.writeInt(mark.getID());
-        bufferTo.writeBoolean(hidden);
+
+        bufferTo.writeWithCodec(MSBoard.MSField.SYNC_CODEC, field);
     }
 
     @Override
-    public void decode(PacketBuffer bufferFrom) {
+    public void decode(PacketBuffer bufferFrom) throws IOException {
         pos = new Pos2i(bufferFrom.readInt(), bufferFrom.readInt());
-        type = bufferFrom.readInt();
-        mark = MSBoard.Mark.byID(bufferFrom.readInt());
-        hidden = bufferFrom.readBoolean();
+
+        this.field = bufferFrom.readWithCodec(MSBoard.MSField.SYNC_CODEC);
     }
 
     @Override
     public void runOnClient(LootGame<?> game) {
-        ((GameMineSweeper) game).getBoard().cSetField(pos, type, mark, hidden);
+        ((GameMineSweeper) game).getBoard().cSetField(pos, field);
     }
 }
