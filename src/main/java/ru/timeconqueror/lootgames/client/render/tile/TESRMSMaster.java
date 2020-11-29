@@ -13,7 +13,7 @@ import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.minesweeper.Mark;
 import ru.timeconqueror.lootgames.minigame.minesweeper.Type;
-import ru.timeconqueror.lootgames.utils.DrawHelper;
+import ru.timeconqueror.timecore.util.client.DrawHelper;
 
 public class TESRMSMaster extends TileEntityRenderer<TileEntityMSMaster> {
     private static final ResourceLocation MS_BOARD = new ResourceLocation(LootGames.MODID, "textures/game/ms_board.png");

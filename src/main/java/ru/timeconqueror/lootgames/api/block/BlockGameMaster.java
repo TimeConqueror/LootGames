@@ -9,7 +9,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
-import ru.timeconqueror.lootgames.utils.WorldUtils;
+import ru.timeconqueror.timecore.util.WorldUtils;
 
 public abstract class BlockGameMaster extends BlockGame implements ILeftInteractible {
 

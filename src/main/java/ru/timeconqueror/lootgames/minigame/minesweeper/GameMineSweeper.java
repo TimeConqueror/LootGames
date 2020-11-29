@@ -41,6 +41,7 @@ import static ru.timeconqueror.timecore.util.NetworkUtils.getPlayersNearby;
 //TODO change generation random - depending on world is bad.
 //TODO add leveling info in chat
 //todo add game rules in chat
+//TODO remove break particle before left click interact
 public class GameMineSweeper extends LootGame<GameMineSweeper> {
     public boolean cIsGenerated;
 

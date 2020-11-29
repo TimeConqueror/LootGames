@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.block.BlockGameMaster;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
-import ru.timeconqueror.lootgames.utils.WorldUtils;
+import ru.timeconqueror.timecore.util.WorldUtils;
 
 public class BlockMSMaster extends BlockGameMaster {
 

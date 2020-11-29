@@ -2,7 +2,7 @@ package ru.timeconqueror.lootgames.minigame.minesweeper;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
-import ru.timeconqueror.lootgames.utils.CodecUtils;
+import ru.timeconqueror.timecore.util.CodecUtils;
 
 import java.util.function.Consumer;
 
