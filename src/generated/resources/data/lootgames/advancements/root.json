@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "lootgames:puzzle_master"
+    },
+    "title": {
+      "translate": "advancement.lootgames.root"
+    },
+    "description": {
+      "translate": "advancement.lootgames.root.desc"
+    },
+    "frame": "goal",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false,
+    "background": "lootgames:textures/blocks/dungeon_floor.png"
+  },
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick",
+      "conditions": {}
+    }
+  },
+  "requirements": [
+    [
+      "tick"
+    ]
+  ]
+}

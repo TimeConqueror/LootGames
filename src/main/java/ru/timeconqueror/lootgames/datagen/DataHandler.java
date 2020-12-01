@@ -3,19 +3,20 @@ package ru.timeconqueror.lootgames.datagen;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
-import ru.timeconqueror.timecore.devtools.gen.loottable.LootTableSet;
-import ru.timeconqueror.timecore.devtools.gen.loottable.TimeLootTableProvider;
+import ru.timeconqueror.timecore.devtools.gen.advancement.TimeAdvancementGenerator;
+import ru.timeconqueror.timecore.devtools.gen.loottable.TimeLootTableGenerator;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class DataHandler {
     @SubscribeEvent
     public static void onDataEvent(GatherDataEvent event) {
-        TimeLootTableProvider lootTableProvider = new TimeLootTableProvider(event.getGenerator());
+        TimeLootTableGenerator lootTableGenerator = new TimeLootTableGenerator(event.getGenerator())
+                .addSet(new LGBlockLootTableSet());
 
-        LootTableSet set = new LGBlockLootTableSet();
+        TimeAdvancementGenerator advancementGenerator = new TimeAdvancementGenerator(event.getGenerator()).
+                addSet(new LGAdvancementSet());
 
-        lootTableProvider.addLootTableSet(set);
-
-        event.getGenerator().addProvider(lootTableProvider);
+        event.getGenerator().addProvider(lootTableGenerator);
+        event.getGenerator().addProvider(advancementGenerator);
     }
 }
