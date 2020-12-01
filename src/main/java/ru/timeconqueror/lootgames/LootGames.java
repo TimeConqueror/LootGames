@@ -2,8 +2,10 @@ package ru.timeconqueror.lootgames;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.timecore.api.TimeMod;
 
 @Mod(LootGames.MODID)
@@ -14,6 +16,10 @@ public class LootGames implements TimeMod {
 
     public LootGames() {
         INSTANCE = this;
+    }
+
+    private void onSetup(FMLCommonSetupEvent event) {
+        LGAdvancementTriggers.class.getName(); //loads class
     }
 
     public static ResourceLocation rl(String path) {

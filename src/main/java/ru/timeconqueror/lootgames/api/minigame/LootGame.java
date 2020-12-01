@@ -15,9 +15,11 @@ import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.api.packet.SPacketGameUpdate;
 import ru.timeconqueror.lootgames.api.task.TETaskScheduler;
+import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.packet.game.SPChangeStage;
 import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
+import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.timecore.util.ChatUtils;
 import ru.timeconqueror.timecore.util.NetworkUtils;
 
@@ -84,7 +86,7 @@ public abstract class LootGame<T extends LootGame<T>> {
         onGameEnd();
         NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(),
                 player -> {
-//                    LGAdvancementTriggers.END_GAME.trigger(player, TYPE_WIN);//FIXME
+                    LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_WIN);
                     player.sendMessage(ChatUtils.format(new TranslationTextComponent("msg.lootgames.win"), TextFormatting.GREEN), player.getUUID());
                 });
     }
@@ -98,7 +100,7 @@ public abstract class LootGame<T extends LootGame<T>> {
         onGameEnd();
         NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(),
                 player -> {
-//                    LGAdvancementTriggers.END_GAME.trigger(player, TYPE_LOSE);//FIXME
+                    LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_LOSE);
                     player.sendMessage(ChatUtils.format(new TranslationTextComponent("msg.lootgames.lose"), TextFormatting.DARK_PURPLE), player.getUUID());
                 });
     }
