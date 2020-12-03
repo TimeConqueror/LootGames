@@ -1,0 +1,31 @@
+{
+  "parent": "lootgames:root",
+  "display": {
+    "icon": {
+      "item": "lootgames:dungeon_lamp"
+    },
+    "title": {
+      "translate": "advancement.lootgames.find_dungeon"
+    },
+    "description": {
+      "translate": "advancement.lootgames.find_dungeon.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "click": {
+      "trigger": "lootgames:activate_block",
+      "conditions": {
+        "block": "lootgames:puzzle_master"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "click"
+    ]
+  ]
+}

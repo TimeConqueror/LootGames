@@ -62,10 +62,10 @@ public class BlockPuzzleMaster extends BlockGame {
 //                BlockPos topPos = bottomPos.offset(GameDungeonStructure.ROOM_WIDTH, -GameDungeonStructure.ROOM_HEIGHT, GameDungeonStructure.ROOM_WIDTH);
 
                 worldIn.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-
+                //TODO restore
 //                GameManager.GenResult genResult = LootGamesAPI.getGameManager().generateRandomGame(worldIn, pos, bottomPos, topPos);
 //                if (genResult.wasGenerated()) {
-////                    LGAdvancementTriggers.ACTIVATE_BLOCK.trigger((ServerPlayerEntity) player, new ExtraInfo(pos, player.getHeldItem(handIn)));TODO restore
+//                    LGAdvancementTriggers.USE_BLOCK.trigger((ServerPlayerEntity) player, new ExtraInfo(state, pos, player.getItemInHand(handIn)));
 //                } else {
 //                    NetworkUtils.sendMessage(player, new StringTextComponent(genResult.getError()));//TODO move error to lang file
 //                    worldIn.setBlock(pos, state, 2);

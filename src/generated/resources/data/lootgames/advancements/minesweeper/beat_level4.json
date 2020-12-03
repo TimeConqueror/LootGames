@@ -1,0 +1,31 @@
+{
+  "parent": "lootgames:minesweeper/start",
+  "display": {
+    "icon": {
+      "item": "lootgames:ms_activator"
+    },
+    "title": {
+      "translate": "advancement.lootgames.ms.beat_level4"
+    },
+    "description": {
+      "translate": "advancement.lootgames.ms.beat_level4.desc"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "end_level4": {
+      "trigger": "lootgames:end_minigame",
+      "conditions": {
+        "type": "ms_level4"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "end_level4"
+    ]
+  ]
+}

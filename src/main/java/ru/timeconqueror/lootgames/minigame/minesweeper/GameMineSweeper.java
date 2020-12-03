@@ -23,6 +23,7 @@ import ru.timeconqueror.lootgames.common.packet.game.SPMSFieldChanged;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSGenBoard;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSResetFlags;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSSpawnLevelBeatParticles;
+import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.util.DirectionTetra;
@@ -43,6 +44,8 @@ import static ru.timeconqueror.timecore.util.NetworkUtils.getPlayersNearby;
 //todo add game rules in chat
 //TODO remove break particle before left click interact
 public class GameMineSweeper extends LootGame<GameMineSweeper> {
+    public static final String ADV_TYPE_BEAT_LEVEL4 = "ms_level4";
+
     public boolean cIsGenerated;
 
     private int currentLevel = 1;
@@ -171,7 +174,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
 
         if (currentLevel > 4) {
             for (ServerPlayerEntity entityPlayerMP : players) {
-//                LGAdvancementTriggers.END_GAME.trigger((entityPlayerMP), "ms_level4");//FIXME
+                LGAdvancementTriggers.END_GAME.trigger((entityPlayerMP), ADV_TYPE_BEAT_LEVEL4);
             }
             spawnLootChest(DirectionTetra.WEST, 4);
         }
