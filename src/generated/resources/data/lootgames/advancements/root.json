@@ -13,7 +13,7 @@
     "show_toast": false,
     "announce_to_chat": false,
     "hidden": false,
-    "background": "lootgames:textures/blocks/dungeon_floor.png"
+    "background": "lootgames:textures/block/dungeon_floor.png"
   },
   "criteria": {
     "tick": {

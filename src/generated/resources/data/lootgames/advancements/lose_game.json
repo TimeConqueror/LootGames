@@ -2,7 +2,7 @@
   "parent": "lootgames:find_dungeon",
   "display": {
     "icon": {
-      "item": "minecraft:nether_star"
+      "item": "minecraft:skeleton_skull"
     },
     "title": {
       "translate": "advancement.lootgames.lose_game"
@@ -13,7 +13,7 @@
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": true,
-    "hidden": false
+    "hidden": true
   },
   "criteria": {
     "lose": {

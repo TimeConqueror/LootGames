@@ -23,7 +23,7 @@ public class LGAdvancementSet implements IAdvancementSet {
                         .display(LGBlocks.PUZZLE_MASTER,
                                 new TranslationTextComponent("advancement.lootgames.root"),
                                 new TranslationTextComponent("advancement.lootgames.root.desc"),
-                                LootGames.rl("textures/blocks/dungeon_floor.png"),
+                                LootGames.rl("textures/block/dungeon_floor.png"),
                                 FrameType.GOAL,
                                 false, /*Whether or not to show the toast pop up after completing this advancement*/
                                 false, /*Whether or not to announce in the chat when this advancement has been completed*/
@@ -59,14 +59,14 @@ public class LGAdvancementSet implements IAdvancementSet {
         Advancement loseGame = saveFunction.process(LootGames.rl("lose_game"),
                 Advancement.Builder.advancement()
                         .parent(findDungeon)
-                        .display(Items.NETHER_STAR,
+                        .display(Items.SKELETON_SKULL,
                                 new TranslationTextComponent("advancement.lootgames.lose_game"),
                                 new TranslationTextComponent("advancement.lootgames.lose_game.desc"),
                                 null,
                                 FrameType.TASK,
                                 true,
                                 true,
-                                false)
+                                true)
                         .addCriterion("lose", new EndGameTrigger.Instance(EndGameTrigger.TYPE_LOSE, AndPredicate.ANY)));
 
         Advancement startMinesweeper = saveFunction.process(LootGames.rl("minesweeper/start"),
@@ -85,7 +85,7 @@ public class LGAdvancementSet implements IAdvancementSet {
         Advancement msBeatLevel4 = saveFunction.process(LootGames.rl("minesweeper/beat_level4"),
                 Advancement.Builder.advancement()
                         .parent(startMinesweeper)
-                        .display(LGBlocks.MS_ACTIVATOR,
+                        .display(Items.CREEPER_HEAD,
                                 new TranslationTextComponent("advancement.lootgames.ms.beat_level4"),
                                 new TranslationTextComponent("advancement.lootgames.ms.beat_level4.desc"),
                                 null,

@@ -18,7 +18,7 @@ import ru.timeconqueror.timecore.util.CodecUtils;
 import ru.timeconqueror.timecore.util.ExtraCodecs;
 
 public class UseBlockTrigger extends AbstractCriterionTrigger<UseBlockTrigger.Instance> {
-    private static final ResourceLocation ID = LootGames.rl("activate_block");
+    private static final ResourceLocation ID = LootGames.rl("use_block");
 
     @Override
     protected Instance createInstance(JsonObject json, EntityPredicate.AndPredicate playerPredicate, ConditionArrayParser conditionsParser) {

@@ -2,7 +2,7 @@
   "parent": "lootgames:minesweeper/start",
   "display": {
     "icon": {
-      "item": "lootgames:ms_activator"
+      "item": "minecraft:creeper_head"
     },
     "title": {
       "translate": "advancement.lootgames.ms.beat_level4"

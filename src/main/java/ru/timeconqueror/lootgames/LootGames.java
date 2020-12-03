@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.timecore.api.TimeMod;
+import ru.timeconqueror.timecore.util.reflection.ReflectionHelper;
 
 @Mod(LootGames.MODID)
 public class LootGames implements TimeMod {
@@ -19,7 +20,7 @@ public class LootGames implements TimeMod {
     }
 
     private void onSetup(FMLCommonSetupEvent event) {
-        LGAdvancementTriggers.class.getName(); //loads class
+        ReflectionHelper.createClass(LGAdvancementTriggers.class.getName());
     }
 
     public static ResourceLocation rl(String path) {

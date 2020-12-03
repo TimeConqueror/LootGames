@@ -17,7 +17,7 @@
   },
   "criteria": {
     "click": {
-      "trigger": "lootgames:activate_block",
+      "trigger": "lootgames:use_block",
       "conditions": {
         "block": "lootgames:ms_activator"
       }

@@ -173,9 +173,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         }
 
         if (currentLevel > 4) {
-            for (ServerPlayerEntity entityPlayerMP : players) {
-                LGAdvancementTriggers.END_GAME.trigger((entityPlayerMP), ADV_TYPE_BEAT_LEVEL4);
-            }
+            players.forEach(player -> LGAdvancementTriggers.END_GAME.trigger(player, ADV_TYPE_BEAT_LEVEL4));
             spawnLootChest(DirectionTetra.WEST, 4);
         }
     }
