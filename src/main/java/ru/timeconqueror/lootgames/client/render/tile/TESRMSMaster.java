@@ -54,8 +54,9 @@ public class TESRMSMaster extends TileEntityRenderer<TileEntityMSMaster> {
                         int max = stage instanceof StageDetonating ? ((StageDetonating) stage).getDetonationTicks() : 1;
                         int ticks = game.getTicks();
 
-                        int times = 9;
-                        float period = (float) max / times;
+                        float period = 8;
+
+                        float times = max / period;
 
                         float extendedPeriod = period * (times + 1) / times; // is needed because we want that it will explode at red state that comes on half period.
                         double alphaFactor = stage instanceof StageExploding ? 1 : Math.abs(Math.sin(Math.toRadians(ticks / extendedPeriod * 180F)));

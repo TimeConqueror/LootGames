@@ -236,7 +236,7 @@ public abstract class LootGame<T extends LootGame<T>> {
     @OverridingMethodsMustInvokeSuper
     public void writeCommonNBT(CompoundNBT compound) {
         serializeStage(this, compound);
-        LOGGER.debug(DEBUG_MARKER, TextFormatting.DARK_BLUE + "Serialized stage: '{}'", stage);
+        LOGGER.debug(DEBUG_MARKER, color("Serialized stage: '{}'"), stage);
     }
 
     /**
@@ -246,7 +246,7 @@ public abstract class LootGame<T extends LootGame<T>> {
     public void readCommonNBT(CompoundNBT compound) {
         justPlaced = false;
         stage = deserializeStage(this, compound);
-        LOGGER.debug(DEBUG_MARKER, TextFormatting.DARK_BLUE + "Deserialized stage: '{}'", stage);
+        LOGGER.debug(DEBUG_MARKER, color("Deserialized stage: '{}'"), stage);
     }
 
     public void switchStage(@Nullable Stage<T> stage) {
@@ -255,7 +255,7 @@ public abstract class LootGame<T extends LootGame<T>> {
 
         this.stage = stage;
 
-        LOGGER.debug(DEBUG_MARKER, TextFormatting.DARK_BLUE + "Switching from stage '{}' to '{}'", old, stage);
+        LOGGER.debug(DEBUG_MARKER, color("Switching from stage '{}' to '{}'"), old, stage);
         onStageUpdate(old, stage);
 
         if (this.stage != null) this.stage.onStart(this);
@@ -325,5 +325,9 @@ public abstract class LootGame<T extends LootGame<T>> {
         } else {
             return null;
         }
+    }
+
+    private static String color(String str) {
+        return TextFormatting.DARK_BLUE + str;
     }
 }
