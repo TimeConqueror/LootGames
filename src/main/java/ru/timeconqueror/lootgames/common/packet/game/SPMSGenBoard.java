@@ -23,7 +23,7 @@ public class SPMSGenBoard extends NBTGamePacket {
     }
 
     @Override
-    public void runOnClient(LootGame<?> game) {
+    public <T extends LootGame<T>> void runOnClient(LootGame<T> game) {
         game.readNBTAtClient(getCompound());
     }
 }

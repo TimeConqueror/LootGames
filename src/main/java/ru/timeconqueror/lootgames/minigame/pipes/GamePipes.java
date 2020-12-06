@@ -13,7 +13,7 @@ import ru.timeconqueror.lootgames.registry.LGBlocks;
 public class GamePipes extends LootGame<GamePipes> {
 
     private PipesBoard board;
-    private float difficulty;
+    private final float difficulty;
 
     public GamePipes(int size, float difficulty) {
         this.board = new PipesBoard(size);
@@ -33,7 +33,7 @@ public class GamePipes extends LootGame<GamePipes> {
     }
 
     @Override
-    public Stage<GamePipes> createStageFromNBT(CompoundNBT stageNBT) {
+    public Stage<GamePipes> createStageFromNBT(String id, CompoundNBT stageNBT) {
         return null;
     }
 

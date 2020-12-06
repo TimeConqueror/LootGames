@@ -9,7 +9,7 @@ import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.api.common.config.Config;
 import ru.timeconqueror.timecore.api.common.config.ConfigSection;
 import ru.timeconqueror.timecore.api.common.config.ImprovedConfigBuilder;
-import ru.timeconqueror.timecore.api.util.ParseUtils;
+import ru.timeconqueror.timecore.util.ParseUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;

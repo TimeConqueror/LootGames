@@ -8,9 +8,12 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
+import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper.StageDetonating;
+import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper.StageExploding;
 import ru.timeconqueror.lootgames.minigame.minesweeper.Mark;
 import ru.timeconqueror.lootgames.minigame.minesweeper.Type;
 import ru.timeconqueror.timecore.util.client.DrawHelper;
@@ -26,6 +29,7 @@ public class TESRMSMaster extends TileEntityRenderer<TileEntityMSMaster> {
     public void render(TileEntityMSMaster te, float partialTicks, MatrixStack matrix, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         GameMineSweeper game = te.getGame();
         int boardSize = game.getBoardSize();
+        LootGame.Stage<GameMineSweeper> stage = game.getStage();
 
         matrix.pushPose();
         matrix.translate(0, 1, 0);
@@ -47,15 +51,14 @@ public class TESRMSMaster extends TileEntityRenderer<TileEntityMSMaster> {
 
                     IVertexBuilder brightenedBuilder = bufferIn.getBuffer(LGRenderTypes.brightened(MS_BOARD));
                     if (!isHidden && type == Type.BOMB) {
-//                        int max = game.detonationTimeInTicks;//FIXME restore
-                        int max = 1;
+                        int max = stage instanceof StageDetonating ? ((StageDetonating) stage).getDetonationTicks() : 1;
                         int ticks = game.getTicks();
 
                         int times = 9;
                         float period = (float) max / times;
 
                         float extendedPeriod = period * (times + 1) / times; // is needed because we want that it will explode at red state that comes on half period.
-                        double alphaFactor = game.getStage() instanceof GameMineSweeper.StageExploding ? 1 : Math.abs(Math.sin(Math.toRadians(ticks / extendedPeriod * 180F)));
+                        double alphaFactor = stage instanceof StageExploding ? 1 : Math.abs(Math.sin(Math.toRadians(ticks / extendedPeriod * 180F)));
                         int alphaColor = DrawHelper.changeAlpha(0xFFFFFFFF, (int) (alphaFactor * 255));
 
                         DrawHelper.drawTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, 1, 0, 1, 1, 4F);

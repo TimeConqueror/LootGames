@@ -3,7 +3,7 @@ package ru.timeconqueror.lootgames.common.block.tile;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import ru.timeconqueror.lootgames.registry.LGTiles;
-import ru.timeconqueror.timecore.api.util.RandHelper;
+import ru.timeconqueror.timecore.util.RandHelper;
 
 public class TileEntityPuzzleMaster extends TileEntity implements ITickableTileEntity {
     private long lastSoundTick = 0L;

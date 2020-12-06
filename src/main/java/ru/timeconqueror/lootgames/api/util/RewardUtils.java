@@ -13,8 +13,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
-import ru.timeconqueror.timecore.api.util.DirectionTetra;
-import ru.timeconqueror.timecore.api.util.RandHelper;
+import ru.timeconqueror.timecore.util.DirectionTetra;
+import ru.timeconqueror.timecore.util.RandHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,10 +111,10 @@ public class RewardUtils {
     }
 
     public static class SpawnChestData {
-        private ResourceLocation lootTableRL;
-        private String gameName;
-        private int minItems;
-        private int maxItems;
+        private final ResourceLocation lootTableRL;
+        private final String gameName;
+        private final int minItems;
+        private final int maxItems;
 
         /**
          * @param game        game, which calls this method

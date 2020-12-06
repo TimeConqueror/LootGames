@@ -26,10 +26,10 @@ import ru.timeconqueror.lootgames.common.packet.game.SPMSSpawnLevelBeatParticles
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
-import ru.timeconqueror.timecore.api.util.DirectionTetra;
-import ru.timeconqueror.timecore.api.util.RandHelper;
 import ru.timeconqueror.timecore.util.ChatUtils;
+import ru.timeconqueror.timecore.util.DirectionTetra;
 import ru.timeconqueror.timecore.util.NetworkUtils;
+import ru.timeconqueror.timecore.util.RandHelper;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -83,9 +83,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
     }
 
     @Override
-    protected void init() {
-        super.init();
-
+    public void onPlace() {
         stage = new StageWaiting();
     }
 
@@ -290,8 +288,8 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
     }
 
     @Override
-    public Stage<GameMineSweeper> createStageFromNBT(CompoundNBT stageNBT) {
-        switch (stageNBT.getString("id")) {
+    public Stage<GameMineSweeper> createStageFromNBT(String id, CompoundNBT stageNBT) {
+        switch (id) {
             case StageWaiting.ID:
                 return new StageWaiting();
             case StageDetonating.ID:
@@ -299,7 +297,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
             case StageExploding.ID:
                 return new StageExploding();
             default:
-                throw new IllegalArgumentException("Unknown state with id: " + stageNBT.getString("id") + "!");
+                throw new IllegalArgumentException("Unknown state with id: " + id + "!");
         }
     }
 
@@ -459,20 +457,20 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
 
     public class StageDetonating extends Stage<GameMineSweeper> {
         private static final String ID = "detonating";
-        private final int detonationTimeInTicks;
+        private final int detonationTicks;
 
         public StageDetonating() {
             this(LGConfigs.MINESWEEPER.DETONATION_TIME.get());
         }
 
-        public StageDetonating(int detonationTimeInTicks) {
-            this.detonationTimeInTicks = detonationTimeInTicks;
+        public StageDetonating(int detonationTicks) {
+            this.detonationTicks = detonationTicks;
         }
 
         @Override
         public void onTick(LootGame<GameMineSweeper> game) {
             if (isServerSide()) {
-                if (ticks >= detonationTimeInTicks) {
+                if (ticks >= detonationTicks) {
                     if (attemptCount < LGConfigs.MINESWEEPER.ATTEMPT_COUNT.get()) {
                         switchStage(new StageExploding());
                     } else {
@@ -488,6 +486,10 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
             ticks++;
         }
 
+        public int getDetonationTicks() {
+            return detonationTicks;
+        }
+
         @Override
         public String getID() {
             return ID;
@@ -496,7 +498,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         @Override
         public CompoundNBT serialize() {
             CompoundNBT nbt = super.serialize();
-            nbt.putInt("detonation_time", detonationTimeInTicks);
+            nbt.putInt("detonation_time", detonationTicks);
             return nbt;
         }
     }

@@ -12,16 +12,18 @@ public class SPChangeStage extends NBTGamePacket {
     }
 
     public SPChangeStage(LootGame<?> game) {
-        super(game.getStage() != null ? game.getStage().serialize() : null);
+        super(() -> {
+            CompoundNBT compoundNBT = new CompoundNBT();
+            LootGame.serializeStage(game, compoundNBT);
+            return compoundNBT;
+        });
     }
 
-
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public void runOnClient(LootGame<?> game) {
+    public <T extends LootGame<T>> void runOnClient(LootGame<T> game) {
         CompoundNBT compound = getCompound();
 
-        LootGame.Stage stage = compound != null ? game.createStageFromNBT(compound) : null;
+        LootGame.Stage<T> stage = LootGame.deserializeStage(game, compound);
         game.switchStage(stage);
     }
 }

@@ -34,7 +34,7 @@ public class SPPipesGameChangeChunks implements IServerGamePacket {
     }
 
     @Override
-    public void runOnClient(LootGame<?> game) {
+    public <T extends LootGame<T>> void runOnClient(LootGame<T> game) {
         ((GamePipes) game).getBoard().setChunks(ids, chunks);
     }
 }

@@ -3,7 +3,7 @@ package ru.timeconqueror.lootgames.api;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import ru.timeconqueror.lootgames.api.minigame.GameManager;
-import ru.timeconqueror.timecore.api.common.event.FMLModConstructedEvent;
+import ru.timeconqueror.timecore.api.common.event.FMLModInitializedEvent;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class LootGamesAPI {
@@ -14,7 +14,7 @@ public class LootGamesAPI {
     }
 
     @SubscribeEvent
-    public static void init(FMLModConstructedEvent event) {
+    public static void init(FMLModInitializedEvent event) {
         gameManager = new GameManager();
     }
 }

@@ -82,7 +82,8 @@ minecraft {
 //            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
             // Recommended logging level for the console
-//            property 'forge.logging.console.level', 'debug'
+            property 'forge.logging.console.level', 'debug'
+            property 'lootgames.logging.markers', 'LOOTGAME'
 
             setJvmArgs(jvmArgs)
 
@@ -165,7 +166,7 @@ dependencies {
 
     compileOnly 'org.jetbrains:annotations:18.0.0'
 
-    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.4-3.1.0.2.build7", true))
+    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.4-3.1.0.2.build16", true))
 
 //    runtimeOnly fg.deobf("mezz.jei:jei-1.14.4:6.0.0.27")
 }

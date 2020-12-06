@@ -9,6 +9,10 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.network.PacketDistributor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
@@ -27,11 +31,18 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.Objects;
 
 public abstract class LootGame<T extends LootGame<T>> {
+    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Marker DEBUG_MARKER = MarkerManager.getMarker("LOOTGAME");
+
     protected TileEntityGameMaster<T> masterTileEntity;
     protected TETaskScheduler taskScheduler;
     @Nullable
     protected Stage<T> stage;
     private boolean firstTickPassed;
+    /**
+     * Determines if tile entity is placed, but was never read from nbt.
+     */
+    private boolean justPlaced = true;
 
     public void setMasterTileEntity(TileEntityGameMaster<T> masterTileEntity) {
         this.masterTileEntity = masterTileEntity;
@@ -42,16 +53,26 @@ public abstract class LootGame<T extends LootGame<T>> {
      * Will be called on the first tick.
      */
     @OverridingMethodsMustInvokeSuper
-    protected void init() {
+    public void onLoad() {
         if (taskScheduler == null && isServerSide()) {
             taskScheduler = new TETaskScheduler(masterTileEntity);
         }
+
+        if (justPlaced) {
+            onPlace();
+        }
+    }
+
+    /**
+     * Called when tile entity is just placed in world and has never been read from nbt.
+     */
+    public void onPlace() {
     }
 
     @OverridingMethodsMustInvokeSuper
     public void onTick() {
         if (!firstTickPassed) {
-            init();
+            onLoad();
             firstTickPassed = true;
         }
 
@@ -121,7 +142,7 @@ public abstract class LootGame<T extends LootGame<T>> {
      * You may use it, for example, for triggering advancements and sending text messages.
      */
     public int getBroadcastDistance() {
-        return  32 /*instead of GameDungeonStructure.ROOM_WIDTH FIXME*/ / 2 + 3;//3 - it is just extra block distance after passing dungeon wall. Not so much, not so little.
+        return 32 /*instead of GameDungeonStructure.ROOM_WIDTH FIXME*/ / 2 + 3;//3 - it is just extra block distance after passing dungeon wall. Not so much, not so little.
     }
 
     public void sendForEachNearby(ITextComponent component) {
@@ -214,9 +235,8 @@ public abstract class LootGame<T extends LootGame<T>> {
      */
     @OverridingMethodsMustInvokeSuper
     public void writeCommonNBT(CompoundNBT compound) {
-        if (stage != null) {
-            compound.put("stage", stage.serialize());
-        }
+        serializeStage(this, compound);
+        LOGGER.debug(DEBUG_MARKER, TextFormatting.DARK_BLUE + "Serialized stage: '{}'", stage);
     }
 
     /**
@@ -224,7 +244,9 @@ public abstract class LootGame<T extends LootGame<T>> {
      */
     @OverridingMethodsMustInvokeSuper
     public void readCommonNBT(CompoundNBT compound) {
-        stage = compound.contains("stage") ? createStageFromNBT(compound.getCompound("stage")) : null;
+        justPlaced = false;
+        stage = deserializeStage(this, compound);
+        LOGGER.debug(DEBUG_MARKER, TextFormatting.DARK_BLUE + "Deserialized stage: '{}'", stage);
     }
 
     public void switchStage(@Nullable Stage<T> stage) {
@@ -233,6 +255,7 @@ public abstract class LootGame<T extends LootGame<T>> {
 
         this.stage = stage;
 
+        LOGGER.debug(DEBUG_MARKER, TextFormatting.DARK_BLUE + "Switching from stage '{}' to '{}'", old, stage);
         onStageUpdate(old, stage);
 
         if (this.stage != null) this.stage.onStart(this);
@@ -246,7 +269,7 @@ public abstract class LootGame<T extends LootGame<T>> {
     }
 
     @Nullable
-    public abstract Stage<T> createStageFromNBT(CompoundNBT stageNBT);
+    public abstract Stage<T> createStageFromNBT(String id, CompoundNBT stageNBT);
 
     @Nullable
     public Stage<T> getStage() {
@@ -254,7 +277,6 @@ public abstract class LootGame<T extends LootGame<T>> {
     }
 
     public abstract static class Stage<T extends LootGame<T>> {
-
         /**
          * Called when the game was switched to this stage.
          */
@@ -274,12 +296,34 @@ public abstract class LootGame<T extends LootGame<T>> {
         }
 
         public CompoundNBT serialize() {
-            CompoundNBT nbt = new CompoundNBT();
-            nbt.putString("id", getID());
-
-            return nbt;
+            return new CompoundNBT();
         }
 
         public abstract String getID();
+
+        @Override
+        public String toString() {
+            return getID();
+        }
+    }
+
+    public static void serializeStage(LootGame<?> game, CompoundNBT nbt) {
+        Stage<?> stage = game.getStage();
+        if (stage != null) {
+            CompoundNBT stageWrapper = new CompoundNBT();
+            stageWrapper.put("stage", stage.serialize());
+            stageWrapper.putString("id", stage.getID());
+            nbt.put("stage_wrapper", stageWrapper);
+        }
+    }
+
+    @Nullable
+    public static <T extends LootGame<T>> Stage<T> deserializeStage(LootGame<T> game, CompoundNBT nbt) {
+        if (nbt.contains("stage_wrapper")) {
+            CompoundNBT stageWrapper = nbt.getCompound("stage_wrapper");
+            return game.createStageFromNBT(stageWrapper.getString("id"), stageWrapper.getCompound("stage"));
+        } else {
+            return null;
+        }
     }
 }
