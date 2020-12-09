@@ -17,21 +17,22 @@ public class LGMiscRegistry {
 
     @SubscribeEvent
     public static void onInit(FMLCommonSetupEvent event) {
-        TaskRegistry.registerTaskFactory(TaskCreateExplosion.class, TaskCreateExplosion::new);
+        event.enqueueWork(() -> {
+            TaskRegistry.registerTaskFactory(TaskCreateExplosion.class, TaskCreateExplosion::new);
 
-        GamePacketRegistry.GamePacketManager manager = GamePacketRegistry.getManager(LootGames.MODID);
+            LootGamesAPI.getGameManager().registerGameGenerator(new GameMineSweeper.Factory());
+            LootGamesAPI.getGameManager().registerGameGenerator(new GamePipes.Factory());
 
-        LootGamesAPI.getGameManager().registerGameGenerator(new GameMineSweeper.Factory());
-        LootGamesAPI.getGameManager().registerGameGenerator(new GamePipes.Factory());
+            GamePacketRegistry.GamePacketManager manager = GamePacketRegistry.getManager(LootGames.MODID);
+            int id = -1;
+            manager.registerPacket(++id, SPChangeStage.class);
 
-        int id = -1;
-        manager.registerPacket(++id, SPChangeStage.class);
+            manager.registerPacket(++id, SPPipesGameChangeChunks.class);
 
-        manager.registerPacket(++id, SPPipesGameChangeChunks.class);
-
-        manager.registerPacket(++id, SPMSFieldChanged.class);
-        manager.registerPacket(++id, SPMSGenBoard.class);
-        manager.registerPacket(++id, SPMSResetFlags.class);
-        manager.registerPacket(++id, SPMSSpawnLevelBeatParticles.class);
+            manager.registerPacket(++id, SPMSFieldChanged.class);
+            manager.registerPacket(++id, SPMSGenBoard.class);
+            manager.registerPacket(++id, SPMSResetFlags.class);
+            manager.registerPacket(++id, SPMSSpawnLevelBeatParticles.class);
+        });
     }
 }

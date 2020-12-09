@@ -1,26 +1,27 @@
 package ru.timeconqueror.lootgames.registry;
 
-//import net.minecraft.util.registry.Registry;
-//import net.minecraft.world.biome.Biome;
-//import net.minecraft.world.gen.GenerationStage;
-//import net.minecraft.world.gen.feature.Feature;
-//import net.minecraft.world.gen.feature.IFeatureConfig;
-//import net.minecraft.world.gen.feature.NoFeatureConfig;
-//import net.minecraft.world.gen.feature.structure.IStructurePieceType;
-//import net.minecraft.world.gen.placement.IPlacementConfig;
-//import net.minecraft.world.gen.placement.Placement;
-//import net.minecraftforge.event.RegistryEvent;
-//import net.minecraftforge.eventbus.api.SubscribeEvent;
-//import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-//import net.minecraftforge.registries.ForgeRegistries;
-//import ru.timeconqueror.lootgames.LootGames;
-//import ru.timeconqueror.lootgames.common.world.gen.GameDungeonPieces;
-//import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
-//import ru.timeconqueror.timecore.api.registry.TimeAutoRegistrable;
+import net.minecraft.world.gen.feature.NoFeatureConfig;
+import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
+import ru.timeconqueror.timecore.registry.AutoRegistrable;
+import ru.timeconqueror.timecore.registry.newreg.StructureRegister;
+import ru.timeconqueror.timecore.registry.newreg.StructureRegister.StructureHolder;
 
 ////TODO move to TimeCore registry system
 //@TimeAutoRegistrable(target = TimeAutoRegistrable.Target.CLASS)
-//public class LGStructures {
+public class LGStructures {
+    @AutoRegistrable
+    private static final StructureRegister REGISTER = new StructureRegister(LootGames.MODID);
+
+    public static StructureHolder<NoFeatureConfig, GameDungeonStructure> GAME_DUNGEON =
+            REGISTER.register("game_dungeon",
+                    GameDungeonStructure::new,
+                    StructureRegister.TimeStructureSeparationSettings.create(10, 5),
+                    NoFeatureConfig.CODEC,
+                    NoFeatureConfig.INSTANCE
+            )
+                    .asHolder();
+
 //    public static final GameDungeonStructure GAME_DUNGEON = new GameDungeonStructure(NoFeatureConfig::deserialize);
 //
 //    public static IStructurePieceType GD_PIECE_MAIN_ROOM;
@@ -59,4 +60,4 @@ package ru.timeconqueror.lootgames.registry;
 //            biome.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Biome.createDecoratedFeature(GAME_DUNGEON, IFeatureConfig.NO_FEATURE_CONFIG, Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
 //        }
 //    }
-//}
+}

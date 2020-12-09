@@ -26,7 +26,6 @@ import ru.timeconqueror.lootgames.common.packet.game.SPMSSpawnLevelBeatParticles
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
-import ru.timeconqueror.timecore.util.ChatUtils;
 import ru.timeconqueror.timecore.util.DirectionTetra;
 import ru.timeconqueror.timecore.util.NetworkUtils;
 import ru.timeconqueror.timecore.util.RandHelper;
@@ -378,7 +377,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         private void revealAllNeighbours(ServerPlayerEntity player, Pos2i mainPos, boolean revealMarked) {
             if (!revealMarked) {
                 if (board.isHidden(mainPos)) {
-                    NetworkUtils.sendMessage(player, ChatUtils.format(new TranslationTextComponent("msg.lootgames.ms.reveal_on_hidden"), TextFormatting.YELLOW));
+                    NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.ms.reveal_on_hidden").withStyle(TextFormatting.YELLOW));
                     return;
                 }
 
@@ -396,7 +395,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
                 }
 
                 if (marked != bombsAround) {
-                    NetworkUtils.sendMessage(player, ChatUtils.format(new TranslationTextComponent("msg.lootgames.ms.reveal_invalid_mark_count"), TextFormatting.YELLOW));
+                    NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.ms.reveal_invalid_mark_count").withStyle(TextFormatting.YELLOW));
                     return;
                 }
             }

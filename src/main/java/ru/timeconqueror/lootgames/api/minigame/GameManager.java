@@ -44,8 +44,8 @@ public class GameManager {
     }
 
     public static class GenResult {
-        private boolean wasGenerated;
-        private String error;
+        private final boolean wasGenerated;
+        private final String error;
 
         public GenResult(boolean wasGenerated, String error) {
             this.wasGenerated = wasGenerated;
