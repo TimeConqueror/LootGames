@@ -1,21 +1,15 @@
 package ru.timeconqueror.lootgames.common.world.gen;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.Block;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.gen.feature.template.*;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.gen.feature.template.PlacementSettings;
+import net.minecraft.world.gen.feature.template.TemplateManager;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGStructurePieces;
-import ru.timeconqueror.lootgames.registry.LGStructureProcessorTypes;
-import ru.timeconqueror.timecore.mod.common.world.structure.TunedTemplateStructurePiece;
-import ru.timeconqueror.timecore.util.ExtraCodecs;
-import ru.timeconqueror.timecore.util.RandHelper;
+import ru.timeconqueror.timecore.common.world.structure.TunedTemplateStructurePiece;
+import ru.timeconqueror.timecore.common.world.structure.processor.RandomizeBlockProcessor;
 
 public class GameDungeonPieces {
     public static final ResourceLocation ROOM = LootGames.rl("room");
@@ -102,35 +96,4 @@ public class GameDungeonPieces {
 //            return true;
 //        }
 //
-    public static class RandomizeBlockProcessor extends StructureProcessor {
-        public static final Codec<RandomizeBlockProcessor> CODEC = RecordCodecBuilder.create(instance ->
-                instance
-                        .group(ExtraCodecs.BLOCK_CODEC.fieldOf("to_replace").forGetter(p -> p.toReplace),
-                                ExtraCodecs.BLOCK_CODEC.fieldOf("randomized").forGetter(p -> p.randomized))
-                        .apply(instance, RandomizeBlockProcessor::new)
-        );
-
-        private final Block toReplace;
-        private final Block randomized;
-
-        public RandomizeBlockProcessor(Block toReplace, Block randomized) {
-            this.toReplace = toReplace;
-            this.randomized = randomized;
-        }
-
-        @Nullable
-        @Override
-        public Template.BlockInfo process(IWorldReader world, BlockPos blockPos_, BlockPos blockPos1_, Template.BlockInfo blockInfo_, Template.BlockInfo blockInfo, PlacementSettings placementSettings_, @Nullable Template template) {
-            if (blockInfo.state.getBlock() == toReplace && RandHelper.chance(placementSettings_.getRandom(blockInfo.pos), 10)) {
-                return new Template.BlockInfo(blockInfo.pos, randomized.defaultBlockState(), blockInfo.nbt);
-            }
-
-            return blockInfo;
-        }
-
-        @Override
-        protected IStructureProcessorType<?> getType() {
-            return LGStructureProcessorTypes.RANDOMIZE_BLOCK_PROCESSOR;
-        }
-    }
 }
