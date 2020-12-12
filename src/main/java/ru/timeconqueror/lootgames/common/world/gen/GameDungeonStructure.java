@@ -51,6 +51,8 @@ public class GameDungeonStructure extends Structure<NoFeatureConfig> {
 //            Template template = templateManager.get(GameDungeonPieces.ROOM);
 //            template.getSize()
 
+            System.out.println(new BlockPos(x, yDungeonBottom, z));
+
             pieces.add(new GameDungeonPieces.Piece(templateManager, GameDungeonPieces.ROOM, new BlockPos(x, yDungeonBottom, z)));
             this.calculateBoundingBox();
         }

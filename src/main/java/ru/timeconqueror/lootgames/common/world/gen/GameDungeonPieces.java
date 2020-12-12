@@ -1,37 +1,23 @@
 package ru.timeconqueror.lootgames.common.world.gen;
 
-import net.minecraft.block.BlockState;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.feature.structure.StructurePiece;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.TemplateManager;
+import net.minecraft.world.IWorldReader;
+import net.minecraft.world.gen.feature.template.*;
+import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGStructurePieces;
+import ru.timeconqueror.lootgames.registry.LGStructureProcessorTypes;
 import ru.timeconqueror.timecore.mod.common.world.structure.TunedTemplateStructurePiece;
+import ru.timeconqueror.timecore.util.ExtraCodecs;
 import ru.timeconqueror.timecore.util.RandHelper;
 
-import java.util.Random;
-
 public class GameDungeonPieces {
-    private static final BlockState PUZZLE_MASTER = LGBlocks.PUZZLE_MASTER.defaultBlockState();
-    private static final BlockState DUNGEON_CEILING = LGBlocks.DUNGEON_CEILING.defaultBlockState();
-    private static final BlockState DUNGEON_CEILING_CRACKED = LGBlocks.CRACKED_DUNGEON_CEILING.defaultBlockState();
-    private static final BlockState DUNGEON_WALL = LGBlocks.DUNGEON_WALL.defaultBlockState();
-    private static final BlockState CRACKED_DUNGEON_WALL = LGBlocks.CRACKED_DUNGEON_WALL.defaultBlockState();
-    private static final BlockState DUNGEON_FLOOR = LGBlocks.DUNGEON_FLOOR.defaultBlockState();
-    private static final BlockState CRACKED_DUNGEON_FLOOR = LGBlocks.CRACKED_DUNGEON_FLOOR.defaultBlockState();
-    private static final BlockState SHIELDED_DUNGEON_FLOOR = LGBlocks.SHIELDED_DUNGEON_FLOOR.defaultBlockState();
-    private static final BlockState DUNGEON_LAMP = LGBlocks.DUNGEON_LAMP.defaultBlockState();
-    private static final BlockState BROKEN_DUNGEON_LAMP = LGBlocks.BROKEN_DUNGEON_LAMP.defaultBlockState();
-
-    private static final CorruptedBlockSelector FLOOR_SELECTOR = new CorruptedBlockSelector(DUNGEON_FLOOR, CRACKED_DUNGEON_FLOOR);
-    private static final CorruptedBlockSelector CEILING_SELECTOR = new CorruptedBlockSelector(DUNGEON_CEILING, DUNGEON_CEILING_CRACKED);
-    private static final CorruptedBlockSelector WALL_SELECTOR = new CorruptedBlockSelector(DUNGEON_WALL, CRACKED_DUNGEON_WALL, true);
-    private static final CorruptedBlockSelector LAMP_SELECTOR = new CorruptedBlockSelector(DUNGEON_LAMP, BROKEN_DUNGEON_LAMP, true);
-
     public static final ResourceLocation ROOM = LootGames.rl("room");
 
     public static class Piece extends TunedTemplateStructurePiece {
@@ -46,7 +32,11 @@ public class GameDungeonPieces {
 
         @Override
         protected PlacementSettings makePlacementSettings() {
-            return new PlacementSettings();
+            return new PlacementSettings()
+                    .addProcessor(new RandomizeBlockProcessor(LGBlocks.DUNGEON_FLOOR, LGBlocks.CRACKED_DUNGEON_FLOOR))
+                    .addProcessor(new RandomizeBlockProcessor(LGBlocks.DUNGEON_CEILING, LGBlocks.CRACKED_DUNGEON_CEILING))
+                    .addProcessor(new RandomizeBlockProcessor(LGBlocks.DUNGEON_WALL, LGBlocks.CRACKED_DUNGEON_WALL))
+                    .addProcessor(new RandomizeBlockProcessor(LGBlocks.DUNGEON_LAMP, LGBlocks.BROKEN_DUNGEON_LAMP));
         }
     }
 
@@ -112,26 +102,35 @@ public class GameDungeonPieces {
 //            return true;
 //        }
 //
-    public static class CorruptedBlockSelector extends StructurePiece.BlockSelector {
-        private final BlockState common;
-        private final BlockState corrupted;
-        private final boolean wallOnly;
+    public static class RandomizeBlockProcessor extends StructureProcessor {
+        public static final Codec<RandomizeBlockProcessor> CODEC = RecordCodecBuilder.create(instance ->
+                instance
+                        .group(ExtraCodecs.BLOCK_CODEC.fieldOf("to_replace").forGetter(p -> p.toReplace),
+                                ExtraCodecs.BLOCK_CODEC.fieldOf("randomized").forGetter(p -> p.randomized))
+                        .apply(instance, RandomizeBlockProcessor::new)
+        );
 
-        public CorruptedBlockSelector(BlockState common, BlockState corrupted) {
-            this(common, corrupted, false);
+        private final Block toReplace;
+        private final Block randomized;
+
+        public RandomizeBlockProcessor(Block toReplace, Block randomized) {
+            this.toReplace = toReplace;
+            this.randomized = randomized;
         }
 
-        public CorruptedBlockSelector(BlockState common, BlockState corrupted, boolean wallOnly) {
-            this.common = common;
-            this.corrupted = corrupted;
-            this.wallOnly = wallOnly;
+        @Nullable
+        @Override
+        public Template.BlockInfo process(IWorldReader world, BlockPos blockPos_, BlockPos blockPos1_, Template.BlockInfo blockInfo_, Template.BlockInfo blockInfo, PlacementSettings placementSettings_, @Nullable Template template) {
+            if (blockInfo.state.getBlock() == toReplace && RandHelper.chance(placementSettings_.getRandom(blockInfo.pos), 10)) {
+                return new Template.BlockInfo(blockInfo.pos, randomized.defaultBlockState(), blockInfo.nbt);
+            }
+
+            return blockInfo;
         }
 
         @Override
-        public void next(Random rand, int x, int y, int z, boolean wall) {
-            if (!wallOnly || wall) {
-                this.next = RandHelper.chance(rand, 90, common, corrupted);
-            }
+        protected IStructureProcessorType<?> getType() {
+            return LGStructureProcessorTypes.RANDOMIZE_BLOCK_PROCESSOR;
         }
     }
 }
