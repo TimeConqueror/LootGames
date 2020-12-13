@@ -48,12 +48,12 @@ public class GameDungeonStructure extends Structure<NoFeatureConfig> {
 
             int yDungeonBottom = surfaceY - DISTANCE_FROM_SURFACE - ROOM_HEIGHT;
 
-//            Template template = templateManager.get(GameDungeonPieces.ROOM);
-//            template.getSize()
+            BlockPos start = new BlockPos(x, yDungeonBottom, z);
 
-            System.out.println(new BlockPos(x, yDungeonBottom, z));
+            pieces.add(new GameDungeonPieces.Piece(templateManager, GameDungeonPieces.ROOM, start));
 
-            pieces.add(new GameDungeonPieces.Piece(templateManager, GameDungeonPieces.ROOM, new BlockPos(x, yDungeonBottom, z)));
+            pieces.add(GameDungeonPieces.createEntryPath(random, start.offset(ROOM_WIDTH / 2, 0, ROOM_WIDTH / 2), chunkGenerator));
+
             this.calculateBoundingBox();
         }
     }

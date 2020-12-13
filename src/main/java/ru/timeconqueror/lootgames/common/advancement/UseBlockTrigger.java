@@ -22,7 +22,7 @@ public class UseBlockTrigger extends AbstractCriterionTrigger<UseBlockTrigger.In
 
     @Override
     protected Instance createInstance(JsonObject json, EntityPredicate.AndPredicate playerPredicate, ConditionArrayParser conditionsParser) {
-        Block block = json.has("block") ? CodecUtils.decodeStrictly(ExtraCodecs.BLOCK_CODEC, CodecUtils.JSON_OPS, json.get("block")) : null;
+        Block block = json.has("block") ? CodecUtils.decodeStrictly(ExtraCodecs.BLOCK, CodecUtils.JSON_OPS, json.get("block")) : null;
         StatePropertiesPredicate statePredicate = StatePropertiesPredicate.fromJson(json.get("state"));
         if (block != null) {
             statePredicate.checkState(block.getStateDefinition(), (propertyIn) -> {
@@ -98,7 +98,7 @@ public class UseBlockTrigger extends AbstractCriterionTrigger<UseBlockTrigger.In
             JsonObject root = super.serializeToJson(conditions);
 
             if (this.block != null) {
-                root.add("block", CodecUtils.encodeStrictly(ExtraCodecs.BLOCK_CODEC, CodecUtils.JSON_OPS, this.block));
+                root.add("block", CodecUtils.encodeStrictly(ExtraCodecs.BLOCK, CodecUtils.JSON_OPS, this.block));
             }
 
             root.add("state", statePredicate.serializeToJson());

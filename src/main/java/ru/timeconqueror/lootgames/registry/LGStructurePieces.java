@@ -12,4 +12,5 @@ public class LGStructurePieces {
     private static final SimpleVanillaRegister<IStructurePieceType> REGISTER = new SimpleVanillaRegister<>(LootGames.MODID, Registry.STRUCTURE_PIECE);
 
     public static final IStructurePieceType GAME_DUNGEON_PIECE = REGISTER.register("gd/p", GameDungeonPieces.Piece::new);
+    public static final IStructurePieceType GAME_DUNGEON_ENTRY_PATH = REGISTER.register("gd/ep", GameDungeonPieces.EntryPath::new);
 }
