@@ -15,10 +15,12 @@ import net.minecraft.world.gen.feature.structure.StructurePiece;
 import net.minecraft.world.gen.feature.template.PlacementSettings;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGStructurePieces;
 import ru.timeconqueror.timecore.common.world.structure.TunedTemplateStructurePiece;
 import ru.timeconqueror.timecore.common.world.structure.processor.RandomizeBlockProcessor;
+import ru.timeconqueror.timecore.util.WorldUtils;
 
 import java.util.Random;
 
@@ -49,10 +51,12 @@ public class GameDungeonPieces {
         Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(rand);
         BlockPos pathStart = roomCenter.relative(direction, GameDungeonStructure.ROOM_WIDTH / 2 + 1);
 
-        BlockPos pathEnd = pathStart;
+        BlockPos.Mutable pathEnd = WorldUtils.toMutable(pathStart);
 
-        while (pathEnd.getY() < chunkGenerator.getFirstFreeHeight(pathEnd.getX(), pathEnd.getZ(), Heightmap.Type.WORLD_SURFACE_WG)) {
-            pathEnd = pathEnd.relative(direction, 1).above(1);
+        int i = 0;
+        while (i < LGConfigs.GENERAL.WORLD_GEN.getMaxEntryPathLength() && pathEnd.getY() < chunkGenerator.getFirstFreeHeight(pathEnd.getX(), pathEnd.getZ(), Heightmap.Type.WORLD_SURFACE_WG)) {
+            pathEnd.move(direction, 1).move(Direction.UP, 1);
+            i++;
         }
 
         return new EntryPath(direction, pathStart, pathEnd);
@@ -77,14 +81,14 @@ public class GameDungeonPieces {
 
         @Override
         public boolean postProcess(ISeedReader world, StructureManager structureManager_, ChunkGenerator chunkGenerator_, Random random_, MutableBoundingBox chunkBox, ChunkPos chunkPos_, BlockPos blockPos_) {
-            BlockPos pos = new BlockPos(0, 0, 0);
+            BlockPos.Mutable pos = new BlockPos.Mutable();
 
             while (boundingBox.isInside(new BlockPos(this.getWorldX(pos.getX(), pos.getZ()), this.getWorldY(pos.getY()), this.getWorldZ(pos.getX(), pos.getZ())))) {
                 for (int i = 0; i < 3; i++) {
                     placeBlock(world, Blocks.AIR.defaultBlockState(), pos.getX(), pos.getY() + i, pos.getZ(), chunkBox);
                 }
 
-                pos = pos.south(1).above(1); //south is the forward direction without rotations
+                pos.move(Direction.SOUTH, 1).move(Direction.UP, 1);//south is the forward direction without rotations
             }
 
             return true;

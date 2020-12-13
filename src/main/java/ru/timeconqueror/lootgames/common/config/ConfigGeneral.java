@@ -47,9 +47,12 @@ public class ConfigGeneral extends Config {
     }
 
     public static class WorldGenCategory extends ConfigSection {
-        public ForgeConfigSpec.BooleanValue DISABLE_DUNGEON_GEN;
-        private ForgeConfigSpec.ConfigValue<List<? extends String>> DIM_AND_RHOMB_LIST;
+        public ForgeConfigSpec.BooleanValue disableDungeonGen;
+        private ForgeConfigSpec.ConfigValue<List<? extends String>> dimAndRhombList;
         private HashMap<Integer, Integer> dimRhombs;
+
+        private ForgeConfigSpec.IntValue maxEntryPathLength;
+        private int qMaxEntryPathLength;
 
         public WorldGenCategory() {
             super("worldgen", "Regulates dungeon appearing in world.");
@@ -57,15 +60,20 @@ public class ConfigGeneral extends Config {
 
         @Override
         public void setup(ImprovedConfigBuilder builder) {
-            DISABLE_DUNGEON_GEN = builder.comment("If this is equal true, then dungeon generation will be disabled.")
+            disableDungeonGen = builder.comment("If this is equal true, then dungeon generation will be disabled.")
                     .define("disable_dungeon_gen", false);
 
-            DIM_AND_RHOMB_LIST = builder.comment("Whitelisted dimensions' ids that were allowed for dungeon generation and rhomb size.",
+            dimAndRhombList = builder.comment("Whitelisted dimensions' ids that were allowed for dungeon generation and rhomb size.",
                     "Rhomb size means the size of rhombs, which will imaginary cover the world. Dungeon will be generated in each rhomb.",
                     "So the larger the size, the less chance of generation.",
                     "Rhomb size must be between 5 and 100.",
                     "Example of array element: 0; 20 - this means that dungeons will be generated in rhombs with size equal to 20 in the overworld (ID = 0).")
                     .defineList("dim_and_rhomb_list", Lists.newArrayList("0; 20"), o -> true);//TODO someday nightconfig will fix validators...
+
+            maxEntryPathLength = builder.comment("Defines the maximum length of the entry path from ground to the structure.",
+                    "0 means, that there will be no path at all.",
+                    Integer.MAX_VALUE + " means, that there will be no limits for path length. Beware of setting to this value, because the paths may be too long, so it may produce lags.")
+                    .defineInRange("max_entry_path_length", 40, 0, Integer.MAX_VALUE);
         }
 
         public boolean isDimensionEnabledForWG(int worldID) {
@@ -76,15 +84,21 @@ public class ConfigGeneral extends Config {
             return dimRhombs.get(dimensionID);
         }
 
+        public int getMaxEntryPathLength() {
+            return qMaxEntryPathLength;
+        }
+
         @Override
         public void onEveryLoad(ModConfig.ModConfigEvent configEvent) {
+            qMaxEntryPathLength = maxEntryPathLength.get();
+
             parseDimAndRhombList();
         }
 
         private void parseDimAndRhombList() {
             dimRhombs = new HashMap<>();
 
-            List<? extends String> dimAndRhombList = DIM_AND_RHOMB_LIST.get();
+            List<? extends String> dimAndRhombList = this.dimAndRhombList.get();
 
             for (String entry : dimAndRhombList) {
                 if (entry.length() == 0)

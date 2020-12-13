@@ -51,7 +51,6 @@ public class GameDungeonStructure extends Structure<NoFeatureConfig> {
             BlockPos start = new BlockPos(x, yDungeonBottom, z);
 
             pieces.add(new GameDungeonPieces.Piece(templateManager, GameDungeonPieces.ROOM, start));
-
             pieces.add(GameDungeonPieces.createEntryPath(random, start.offset(ROOM_WIDTH / 2, 0, ROOM_WIDTH / 2), chunkGenerator));
 
             this.calculateBoundingBox();
