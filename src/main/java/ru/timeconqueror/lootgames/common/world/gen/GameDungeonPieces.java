@@ -1,6 +1,7 @@
 package ru.timeconqueror.lootgames.common.world.gen;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -82,16 +83,29 @@ public class GameDungeonPieces {
         @Override
         public boolean postProcess(ISeedReader world, StructureManager structureManager_, ChunkGenerator chunkGenerator_, Random random_, MutableBoundingBox chunkBox, ChunkPos chunkPos_, BlockPos blockPos_) {
             BlockPos.Mutable pos = new BlockPos.Mutable();
+            BlockPos.Mutable absPos = new BlockPos.Mutable();
 
-            while (boundingBox.isInside(new BlockPos(this.getWorldX(pos.getX(), pos.getZ()), this.getWorldY(pos.getY()), this.getWorldZ(pos.getX(), pos.getZ())))) {
+            updateAbsolute(absPos, pos);
+            while (boundingBox.isInside(absPos)) {
                 for (int i = 0; i < 3; i++) {
-                    placeBlock(world, Blocks.AIR.defaultBlockState(), pos.getX(), pos.getY() + i, pos.getZ(), chunkBox);
+                    if (shouldReplace(world, absPos)) {
+                        placeBlock(world, Blocks.AIR.defaultBlockState(), pos.getX(), pos.getY() + i, pos.getZ(), chunkBox);
+                    }
                 }
 
                 pos.move(Direction.SOUTH, 1).move(Direction.UP, 1);//south is the forward direction without rotations
+                updateAbsolute(absPos, pos);
             }
 
             return true;
+        }
+
+        private boolean shouldReplace(ISeedReader world, BlockPos pos) {
+            return !(world.getBlockState(pos).getBlock() instanceof FlowingFluidBlock);
+        }
+
+        private void updateAbsolute(BlockPos.Mutable absolute, BlockPos relative) {
+            absolute.set(this.getWorldX(relative.getX(), relative.getZ()), this.getWorldY(relative.getY()), this.getWorldZ(relative.getX(), relative.getZ()));
         }
     }
 }

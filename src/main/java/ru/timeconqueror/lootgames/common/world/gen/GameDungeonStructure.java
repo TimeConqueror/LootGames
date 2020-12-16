@@ -11,6 +11,7 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.feature.structure.StructureStart;
 import net.minecraft.world.gen.feature.template.TemplateManager;
+import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.timecore.util.GenHelper;
 
 public class GameDungeonStructure extends Structure<NoFeatureConfig> {
@@ -51,7 +52,10 @@ public class GameDungeonStructure extends Structure<NoFeatureConfig> {
             BlockPos start = new BlockPos(x, yDungeonBottom, z);
 
             pieces.add(new GameDungeonPieces.Piece(templateManager, GameDungeonPieces.ROOM, start));
-            pieces.add(GameDungeonPieces.createEntryPath(random, start.offset(ROOM_WIDTH / 2, 0, ROOM_WIDTH / 2), chunkGenerator));
+
+            if (LGConfigs.GENERAL.WORLD_GEN.getMaxEntryPathLength() > 0) {
+                pieces.add(GameDungeonPieces.createEntryPath(random, start.offset(ROOM_WIDTH / 2, 0, ROOM_WIDTH / 2), chunkGenerator));
+            }
 
             this.calculateBoundingBox();
         }
