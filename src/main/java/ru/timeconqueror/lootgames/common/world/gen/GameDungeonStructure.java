@@ -53,7 +53,7 @@ public class GameDungeonStructure extends Structure<NoFeatureConfig> {
 
             pieces.add(new GameDungeonPieces.Piece(templateManager, GameDungeonPieces.ROOM, start));
 
-            if (LGConfigs.GENERAL.WORLD_GEN.getMaxEntryPathLength() > 0) {
+            if (LGConfigs.GENERAL.worldGen.maxEntryPathLength.get() > 0) {
                 pieces.add(GameDungeonPieces.createEntryPath(random, start.offset(ROOM_WIDTH / 2, 0, ROOM_WIDTH / 2), chunkGenerator));
             }
 

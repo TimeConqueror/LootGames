@@ -18,6 +18,7 @@ import net.minecraft.world.server.ServerWorld;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.block.BlockGame;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityPuzzleMaster;
+import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.timecore.util.NetworkUtils;
 
 import javax.annotation.Nullable;
@@ -51,12 +52,11 @@ public class BlockPuzzleMaster extends BlockGame {
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!worldIn.isClientSide()) {
-
             try {
-//                if (!LootGamesConfig.areMinigamesEnabled) {
-//                    player.sendMessage(new TranslationTextComponent("msg.lootgames.puzzle_master.turned_off"));
-//                    return true;
-//                }//fixme uncomment
+                if (!LGConfigs.GENERAL.disableMinigames.get()) {
+                    NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.puzzle_master.turned_off"));
+                    return ActionResultType.SUCCESS;
+                }
                 //fixme uncomment
 //                BlockPos bottomPos = new BlockPos(pos.offset(-GameDungeonStructure.ROOM_WIDTH / 2 + 1, -GameDungeonStructure.MASTER_BLOCK_OFFSET, -GameDungeonStructure.ROOM_WIDTH / 2 + 1));
 //                BlockPos topPos = bottomPos.offset(GameDungeonStructure.ROOM_WIDTH, -GameDungeonStructure.ROOM_HEIGHT, GameDungeonStructure.ROOM_WIDTH);

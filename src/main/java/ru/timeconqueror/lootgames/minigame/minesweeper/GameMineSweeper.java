@@ -3,7 +3,6 @@ package ru.timeconqueror.lootgames.minigame.minesweeper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -26,6 +25,7 @@ import ru.timeconqueror.lootgames.common.packet.game.SPMSSpawnLevelBeatParticles
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
+import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.util.DirectionTetra;
 import ru.timeconqueror.timecore.util.NetworkUtils;
 import ru.timeconqueror.timecore.util.RandHelper;
@@ -96,9 +96,9 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         return getCentralGamePos();
     }
 
-    public void click(ServerPlayerEntity player, Pos2i clickedPos, Hand hand) {
+    public void click(ServerPlayerEntity player, Pos2i clickedPos, MouseClickType type) {
         if (stage instanceof StageWaiting) {
-            ((StageWaiting) stage).onClick(player, clickedPos, hand);
+            ((StageWaiting) stage).onClick(player, clickedPos, type);
         }
     }
 
@@ -314,7 +314,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         public StageWaiting() {
         }
 
-        public void onClick(ServerPlayerEntity player, Pos2i clickedPos, Hand hand) {
+        public void onClick(ServerPlayerEntity player, Pos2i clickedPos, MouseClickType type) {
             getWorld().playSound(null, convertToBlockPos(clickedPos), SoundEvents.NOTE_BLOCK_HAT, SoundCategory.MASTER, 0.6F, 0.8F);
 
             if (!board.isGenerated()) {
@@ -322,7 +322,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
             } else {
                 playRevealNeighboursSound = true;
 
-                if (hand == Hand.MAIN_HAND) {
+                if (type == MouseClickType.LEFT) {
                     if (board.getMark(clickedPos) == Mark.NO_MARK) {
                         revealField(player, clickedPos);
                     }

@@ -9,17 +9,15 @@ import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.api.common.config.Config;
 import ru.timeconqueror.timecore.api.common.config.ConfigSection;
 import ru.timeconqueror.timecore.api.common.config.ImprovedConfigBuilder;
+import ru.timeconqueror.timecore.api.common.config.QuickConfigValue;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class ConfigGeneral extends Config {
 
-    public ForgeConfigSpec.BooleanValue DISABLE_MINIGAMES;
-    public ForgeConfigSpec.BooleanValue ENABLE_DEBUG;
-    public ForgeConfigSpec.ConfigValue<String> DEBUG_LEVEL;
-
-    public WorldGenCategory WORLD_GEN;
+    public QuickConfigValue<Boolean> disableMinigames;
+    public WorldGenCategory worldGen;
 
     public ConfigGeneral(ModConfig.@NotNull Type type, @NotNull String key, @Nullable String comment) {
         super(type, key, comment);
@@ -27,18 +25,13 @@ public class ConfigGeneral extends Config {
 
     @Override
     public void setup(ImprovedConfigBuilder builder) {
-        DISABLE_MINIGAMES = builder.comment("If this is set to true, then puzzle master won't start any new game.")
-                .define("disable_minigames", false);
-        ENABLE_DEBUG = builder.comment("If this is equal true, then it will print additional info to log files.")
-                .define("enable_debug", false);
-        DEBUG_LEVEL = builder.comment("Level of debug, will be applied if it is enable_debug property is enabled.",
-                "Debug: additionally prints debug messages.",
-                "Trace: additionally prints debug and trace messages.",
-                "Available variants: debug, trace")
-                .defineInList("debug_level", "debug", Lists.newArrayList("debug", "trace"));//TODO someday nightconfig will fix validators... https://github.com/TheElectronWill/night-config/issues/79
+        disableMinigames = builder.optimizedVal(
+                builder.comment("If this is set to true, then puzzle master won't start any new game.")
+                        .define("disable_minigames", false)
+        );
 
-        WORLD_GEN = new WorldGenCategory();
-        builder.addAndSetupSection(WORLD_GEN);
+        worldGen = new WorldGenCategory();
+        builder.addAndSetupSection(worldGen);
     }
 
     @Override
@@ -47,12 +40,10 @@ public class ConfigGeneral extends Config {
     }
 
     public static class WorldGenCategory extends ConfigSection {
-        public ForgeConfigSpec.BooleanValue disableDungeonGen;
+        public QuickConfigValue<Boolean> disableDungeonGen;
+        public QuickConfigValue<Integer> maxEntryPathLength;
         private ForgeConfigSpec.ConfigValue<List<? extends String>> dimAndRhombList;
         private HashMap<Integer, Integer> dimRhombs;
-
-        private ForgeConfigSpec.IntValue maxEntryPathLength;
-        private int qMaxEntryPathLength;
 
         public WorldGenCategory() {
             super("worldgen", "Regulates dungeon appearing in world.");
@@ -60,8 +51,10 @@ public class ConfigGeneral extends Config {
 
         @Override
         public void setup(ImprovedConfigBuilder builder) {
-            disableDungeonGen = builder.comment("If this is equal true, then dungeon generation will be disabled.")
-                    .define("disable_dungeon_gen", false);
+            disableDungeonGen = builder.optimizedVal(
+                    builder.comment("If this is equal true, then dungeon generation will be disabled.")
+                            .define("disable_dungeon_gen", false)
+            );
 
             dimAndRhombList = builder.comment("Whitelisted dimensions' ids that were allowed for dungeon generation and rhomb size.",
                     "Rhomb size means the size of rhombs, which will imaginary cover the world. Dungeon will be generated in each rhomb.",
@@ -70,10 +63,12 @@ public class ConfigGeneral extends Config {
                     "Example of array element: 0; 20 - this means that dungeons will be generated in rhombs with size equal to 20 in the overworld (ID = 0).")
                     .defineList("dim_and_rhomb_list", Lists.newArrayList("0; 20"), o -> true);//TODO someday nightconfig will fix validators...
 
-            maxEntryPathLength = builder.comment("Defines the maximum length of the entry path from ground to the structure.",
-                    "0 means, that there will be no path at all.",
-                    Integer.MAX_VALUE + " means, that there will be no limits for path length. Beware of setting to this value, because the paths may be too long, so it may produce lags.")
-                    .defineInRange("max_entry_path_length", 40, 0, Integer.MAX_VALUE);
+            maxEntryPathLength = builder.optimizedVal(
+                    builder.comment("Defines the maximum length of the entry path from ground to the structure.",
+                            "0 means, that there will be no path at all.",
+                            Integer.MAX_VALUE + " means, that there will be no limits for path length. Beware of setting to this value, because the paths may be too long, so it may produce lags.")
+                            .defineInRange("max_entry_path_length", 40, 0, Integer.MAX_VALUE)
+            );
         }
 
         public boolean isDimensionEnabledForWG(int worldID) {
@@ -84,13 +79,8 @@ public class ConfigGeneral extends Config {
             return dimRhombs.get(dimensionID);
         }
 
-        public int getMaxEntryPathLength() {
-            return qMaxEntryPathLength;
-        }
-
         @Override
         public void onEveryLoad(ModConfig.ModConfigEvent configEvent) {
-            qMaxEntryPathLength = maxEntryPathLength.get();
 
             parseDimAndRhombList();
         }

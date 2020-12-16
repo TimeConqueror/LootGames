@@ -55,7 +55,7 @@ public class GameDungeonPieces {
         BlockPos.Mutable pathEnd = WorldUtils.toMutable(pathStart);
 
         int i = 0;
-        while (i < LGConfigs.GENERAL.WORLD_GEN.getMaxEntryPathLength() && pathEnd.getY() < chunkGenerator.getFirstFreeHeight(pathEnd.getX(), pathEnd.getZ(), Heightmap.Type.WORLD_SURFACE_WG)) {
+        while (i < LGConfigs.GENERAL.worldGen.maxEntryPathLength.get() && pathEnd.getY() < chunkGenerator.getFirstFreeHeight(pathEnd.getX(), pathEnd.getZ(), Heightmap.Type.WORLD_SURFACE_WG)) {
             pathEnd.move(direction, 1).move(Direction.UP, 1);
             i++;
         }
