@@ -6,6 +6,7 @@ import ru.timeconqueror.lootgames.api.LootGamesAPI;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Can be accessed via {@link LootGamesAPI#getGameManager()}.
@@ -29,35 +30,15 @@ public class GameManager {
      *
      * @param world           The world for the Generator
      * @param puzzleMasterPos The position of Puzzle Master Block
-     * @param bottomPos       The position with the lowest coordinates of the structure
-     * @param topPos          The position with the highest coordinates of the structure
+     * @return error message if provided
      */
-    public GenResult generateRandomGame(World world, BlockPos puzzleMasterPos, BlockPos bottomPos, BlockPos topPos) {
+    public Optional<String> generateRandomGame(World world, BlockPos puzzleMasterPos) {
         if (!isGameListEmpty()) {
-            GAME_GEN_LIST.get(world.random.nextInt(GAME_GEN_LIST.size())).genOnPuzzleMasterClick(world, puzzleMasterPos, bottomPos, topPos);
+            GAME_GEN_LIST.get(world.random.nextInt(GAME_GEN_LIST.size())).genOnPuzzleMasterClick(world, puzzleMasterPos);
         } else {
-            String error = "Can't generate any game on pos" + puzzleMasterPos + ", because game list is empty.";
-            return new GenResult(false, error);
+            return Optional.of("Can't generate any game on pos" + puzzleMasterPos + ", because game list is empty.");
         }
 
-        return new GenResult(true, "");
-    }
-
-    public static class GenResult {
-        private final boolean wasGenerated;
-        private final String error;
-
-        public GenResult(boolean wasGenerated, String error) {
-            this.wasGenerated = wasGenerated;
-            this.error = error;
-        }
-
-        public String getError() {
-            return error;
-        }
-
-        public boolean wasGenerated() {
-            return wasGenerated;
-        }
+        return Optional.empty();
     }
 }

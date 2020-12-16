@@ -20,7 +20,7 @@ public class LGSounds {
     public static final TimeSound MS_ON_EMPTY_REVEAL_NEIGHBOURS = promise();
     public static final TimeSound MS_BOMB_ACTIVATED = promise();
 
-    public static TimeSound PUZZLE_MASTER_STRANGE;
+    public static final TimeSound PUZZLE_MASTER_STRANGE = promise();
 
     private static class Init {
         @AutoRegistrable

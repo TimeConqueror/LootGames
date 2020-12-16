@@ -302,7 +302,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
 
     public static class Factory implements ILootGameFactory {
         @Override
-        public void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos, BlockPos bottomPos, BlockPos topPos) {
+        public void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos) {
             BlockPos floorCenterPos = puzzleMasterPos.offset(0, -3/*instead of GameDungeonStructure.MASTER_BLOCK_OFFSET*/ + 1, 0);
             world.setBlockAndUpdate(floorCenterPos, LGBlocks.MS_ACTIVATOR.defaultBlockState());
         }

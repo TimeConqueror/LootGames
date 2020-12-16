@@ -10,8 +10,6 @@ public interface ILootGameFactory {
      *
      * @param world           The world for the Generator
      * @param puzzleMasterPos The position of Puzzle Master Block
-     * @param bottomPos       The position with the lowest coordinates of the structure
-     * @param topPos          The position with the highest coordinates of the structure
      */
-    void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos, BlockPos bottomPos, BlockPos topPos);
+    void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos);
 }
