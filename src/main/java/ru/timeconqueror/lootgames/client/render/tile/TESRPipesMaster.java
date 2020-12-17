@@ -1,107 +1,89 @@
 package ru.timeconqueror.lootgames.client.render.tile;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.renderer.BufferBuilder;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Matrix4f;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityPipesMaster;
 import ru.timeconqueror.lootgames.minigame.pipes.GamePipes;
 import ru.timeconqueror.lootgames.minigame.pipes.board.PipeState;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
 public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
 
     private static final ResourceLocation BOARD = new ResourceLocation(LootGames.MODID, "textures/game/pipes.png");
+    private static final RenderType BOARD_RENDER_TYPE = LGRenderTypes.brightenedCutout(BOARD);
 
     public TESRPipesMaster(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
     }
 
-//    @Override
-//    public void render(TileEntityPipesMaster te, double x, double y, double z, float partialTicks, int destroyStage) {
-//        GamePipes game = te.getGame();
-//        int size = game.getBoardSize();
-//
-//        int anim = (int) (te.getAge() / 2 % 32);
-//
-//        bindTexture(BOARD);
-//        GlStateManager.pushMatrix();
-//
-//        setLightmapDisabled(true);
-//        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-//
-//        GlStateManager.disableFog();
-//        GlStateManager.disableBlend();
-//        GlStateManager.disableLighting();
-//        GlStateManager.enableTexture();
-//        GlStateManager.translated(x, y + 1.001, z);
-//
-//        Tessellator tessellator = Tessellator.getInstance();
-//        BufferBuilder buf = tessellator.getBuffer();
-//        buf.begin(7, DefaultVertexFormats.POSITION_TEX);
-//
-//        double height = 0.01;
-//
-//        for (int i = 0; i < size; i++) {
-//            for (int j = 0; j < size; j++) {
-//                buf.pos(i, 0, j).tex(0.0, 0.0).endVertex();
-//                buf.pos(i, 0, j + 1).tex(0.0, 0.25 / 32).endVertex();
-//                buf.pos(i + 1, 0, j + 1).tex(0.25, 0.25 / 32).endVertex();
-//                buf.pos(i + 1, 0, j).tex(0.25, 0.0).endVertex();
-//
-//                PipeState state = game.getBoard().getState(i, j);
-//                int type = state.getPipeType();
-//                int rotation = state.getRotation();
-//
-//                if (type != 0) {
-//
-//                    double tx = (double) (type % 4) / 4;
-//                    double ty = (double) (type / 4) / 4;
-//
-//                    textures(buf.pos(i, height, j), tx, ty, 0, rotation, anim).endVertex();
-//                    textures(buf.pos(i, height, j + 1), tx, ty, 1, rotation, anim).endVertex();
-//                    textures(buf.pos(i + 1, height, j + 1), tx, ty, 2, rotation, anim).endVertex();
-//                    textures(buf.pos(i + 1, height, j), tx, ty, 3, rotation, anim).endVertex();
-//                }
-//            }
-//        }
-//
-//        tessellator.draw();
-//
-//        setLightmapDisabled(false);
-//        GlStateManager.enableFog();
-//        GlStateManager.enableLighting();
-//        GlStateManager.popMatrix();
-//    }
-//
-//    private BufferBuilder textures(BufferBuilder buf, double tx, double ty, int i, int rotation, int animation) {
-//        double sy = animation;
-//
-//        int c = (i + rotation) % 4;
-//        switch (c) {
-//            case 0:
-//                return buf.tex(tx, (sy + ty) / 32);
-//            case 1:
-//                return buf.tex(tx, (sy + ty + 0.25) / 32);
-//            case 2:
-//                return buf.tex(tx + 0.25, (sy + ty + 0.25) / 32);
-//            default:
-//                return buf.tex(tx + 0.25, (sy + ty) / 32);
-//        }
-//    }
-//
-//    @Override
-//    public boolean isGlobalRenderer(TileEntityPipesMaster te) {
-//        return true;
-//    }
+    @Override
+    public void render(TileEntityPipesMaster te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        GamePipes game = te.getGame();
+        int size = game.getBoardSize();
+        int animation = (int) (te.getAge() / 2 % 32);
+
+        IVertexBuilder vb = bufferIn.getBuffer(BOARD_RENDER_TYPE);
+
+        matrixStack.pushPose();
+        matrixStack.translate(0, 1.005, 0);
+        Matrix4f matrix = matrixStack.last().pose();
+
+        float height = 0.005f;
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                vb.vertex(matrix, i, 0, j).uv(0.0f, 0.0f).endVertex();
+                vb.vertex(matrix, i, 0, j + 1).uv(0.0f, 0.25f / 32).endVertex();
+                vb.vertex(matrix, i + 1, 0, j + 1).uv(0.25f, 0.25f / 32).endVertex();
+                vb.vertex(matrix, i + 1, 0, j).uv(0.25f, 0.0f).endVertex();
+
+                PipeState state = game.getBoard().getState(i, j);
+                int type = state.getPipeType();
+                int rotation = state.getRotation();
+
+                if (type != 0) {
+                    float tx = (float) (type % 4) / 4;
+                    float ty = (float) (type / 4) / 4;
+
+                    withTexture(vb.vertex(matrix, i, height, j), tx, ty, 0, rotation, animation).endVertex();
+                    withTexture(vb.vertex(matrix, i, height, j + 1), tx, ty, 1, rotation, animation).endVertex();
+                    withTexture(vb.vertex(matrix, i + 1, height, j + 1), tx, ty, 2, rotation, animation).endVertex();
+                    withTexture(vb.vertex(matrix, i + 1, height, j), tx, ty, 3, rotation, animation).endVertex();
+                }
+            }
+        }
+
+        matrixStack.popPose();
+    }
+
+    private IVertexBuilder withTexture(IVertexBuilder buf, float tx, float ty, int i, int rotation, int animation) {
+        float sy = animation;
+
+        int c = (i + rotation) % 4;
+        switch (c) {
+            case 0:
+                return buf.uv(tx, (sy + ty) / 32);
+            case 1:
+                return buf.uv(tx, (sy + ty + 0.25f) / 32);
+            case 2:
+                return buf.uv(tx + 0.25f, (sy + ty + 0.25f) / 32);
+            default:
+                return buf.uv(tx + 0.25f, (sy + ty) / 32);
+        }
+    }
 
     @Override
-    public void render(TileEntityPipesMaster tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-
+    public boolean shouldRenderOffScreen(TileEntityPipesMaster te) {
+        return true;
     }
 }

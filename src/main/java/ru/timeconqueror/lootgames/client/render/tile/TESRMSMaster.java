@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
+import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
@@ -27,7 +28,7 @@ public class TESRMSMaster extends TileEntityRenderer<TileEntityMSMaster> {
     }
 
     @Override
-    public void render(TileEntityMSMaster te, float partialTicks, MatrixStack matrix, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(TileEntityMSMaster te, float partialTicks, MatrixStack matrix, @NotNull IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         GameMineSweeper game = te.getGame();
         int boardSize = game.getBoardSize();
         LootGame.Stage<GameMineSweeper> stage = game.getStage();

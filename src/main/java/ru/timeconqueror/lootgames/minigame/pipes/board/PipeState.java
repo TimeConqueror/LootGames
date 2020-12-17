@@ -14,6 +14,8 @@ public class PipeState {
         }
     }
 
+    public static final PipeState EMPTY = byId(0);
+
     public static PipeState byId(int id) {
         return states[id];
     }
@@ -48,11 +50,11 @@ public class PipeState {
     }
 
     public boolean isSource() {
-        return pipeType == 1;
+        return pipeType == Types.SOURCE;
     }
 
     public boolean isSink() {
-        return pipeType == 7 || pipeType == 13;
+        return pipeType == Types.SINK || pipeType == Types.SINK_POWERED;
     }
 
     public boolean isPowered() {
@@ -60,15 +62,15 @@ public class PipeState {
     }
 
     public boolean canBePowered() {
-        return pipeType > 1 && pipeType < 8;
+        return pipeType >= Types.DEAD_END && pipeType <= Types.SINK;
     }
 
     public boolean isPoweredNotSource() {
-        return pipeType > 7;
+        return pipeType >= Types.DEAD_END_POWERED;
     }
 
     public boolean isEmpty() {
-        return pipeType == 0;
+        return pipeType == Types.EMPTY;
     }
 
     public PipeState rotate(int delta) {
@@ -85,11 +87,14 @@ public class PipeState {
             case 0:
                 return !isEmpty();
             case 1:
-                return pipeType == 5 || pipeType == 6 || pipeType == 11 || pipeType == 12;
+                return pipeType == Types.FORK || pipeType == Types.CROSS
+                        || pipeType == Types.FORK_POWERED || pipeType == Types.CROSS_POWERED;
             case 2:
-                return pipeType == 3 || pipeType == 6 || pipeType == 9 || pipeType == 12;
+                return pipeType == Types.LINE || pipeType == Types.CROSS
+                        || pipeType == Types.LINE_POWERED || pipeType == Types.CROSS_POWERED;
             default:
-                return pipeType == 4 || pipeType == 5 || pipeType == 6 || pipeType == 10 || pipeType == 11 || pipeType == 12;
+                return pipeType == Types.TWIST || pipeType == Types.FORK || pipeType == Types.CROSS
+                        || pipeType == Types.TWIST_POWERED || pipeType == Types.FORK_POWERED || pipeType == Types.CROSS_POWERED;
         }
     }
 
@@ -104,5 +109,25 @@ public class PipeState {
 
     public int getId() {
         return id;
+    }
+
+    public static class Types {
+        public static final int EMPTY = 0;
+
+        public static final int SOURCE = 1;
+
+        public static final int DEAD_END = 2;
+        public static final int LINE = 3;
+        public static final int TWIST = 4;
+        public static final int FORK = 5;
+        public static final int CROSS = 6;
+        public static final int SINK = 7;
+
+        public static final int DEAD_END_POWERED = 8;
+        public static final int LINE_POWERED = 9;
+        public static final int TWIST_POWERED = 10;
+        public static final int FORK_POWERED = 11;
+        public static final int CROSS_POWERED = 12;
+        public static final int SINK_POWERED = 13;
     }
 }

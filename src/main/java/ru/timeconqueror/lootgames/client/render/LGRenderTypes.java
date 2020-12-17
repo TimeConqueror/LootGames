@@ -7,6 +7,8 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.timecore.util.client.GLDrawMode;
+import ru.timeconqueror.timecore.util.client.RenderHelper;
 
 public class LGRenderTypes extends RenderType {
     private LGRenderTypes(String nameIn, VertexFormat formatIn, int drawModeIn, int bufferSizeIn, boolean useDelegateIn, boolean needsSortingIn, Runnable setupTaskIn, Runnable clearTaskIn) {
@@ -37,5 +39,15 @@ public class LGRenderTypes extends RenderType {
                         .setAlphaState(RenderState.DEFAULT_ALPHA)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                         .createCompositeState(false));
+    }
+
+    public static RenderType brightenedCutout(ResourceLocation texture) {
+        return RenderHelper.rtTextured(
+                LootGames.rl("brightened_cutout"),
+                GLDrawMode.QUADS,
+                DefaultVertexFormats.POSITION_TEX,
+                texture,
+                state -> state.setAlphaState(MIDWAY_ALPHA)
+        );
     }
 }

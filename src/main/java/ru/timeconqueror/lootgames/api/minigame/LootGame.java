@@ -61,6 +61,7 @@ public abstract class LootGame<T extends LootGame<T>> {
         }
 
         if (justPlaced) {
+            justPlaced = false;
             onPlace();
         }
     }
@@ -265,6 +266,18 @@ public abstract class LootGame<T extends LootGame<T>> {
         justPlaced = false;
         stage = deserializeStage(this, compound);
         LOGGER.debug(DEBUG_MARKER, color("Deserialized stage: '{}'"), stage);
+    }
+
+    /**
+     * Only for usage from {@link #onPlace()}.
+     * Will be synced later.
+     *
+     * @param stage initial stage of game
+     */
+    public void setupInitialStage(Stage<T> stage) {
+        this.stage = stage;
+        LOGGER.debug(DEBUG_MARKER, color("Initializing stage '{}'"), stage);
+        stage.onStart(this);
     }
 
     public void switchStage(@Nullable Stage<T> stage) {
