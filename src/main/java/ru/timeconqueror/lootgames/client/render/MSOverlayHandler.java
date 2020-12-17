@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -27,7 +26,6 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class MSOverlayHandler {
-    private static final ResourceLocation OVERLAY = LootGames.rl("textures/gui/minesweeper/ms_overlay.png");
     private static final ArrayList<WeakReference<TileEntityMSMaster>> MS_MASTERS = new ArrayList<>(1);
 
     private static final TexturedRect FIRST_SLOT_START = new TexturedRect(3 * 1.5F, 16 * 1.5F, 15, 0, 3, 16);
@@ -38,7 +36,7 @@ public class MSOverlayHandler {
     private static final TexturedRect EXTRA_SLOT_REPEAT = new TexturedRect(26 * 1.5F, 10 * 1.5F, 18, 16, 26, 10);
     private static final TexturedRect EXTRA_SLOT_END = new TexturedRect(4 * 1.5F, 10 * 1.5F, 44, 16, 4, 10);
 
-    public static final RenderType TEX_QUAD_TYPE = RenderHelper.rtTexturedRectangles(OVERLAY);
+    public static final RenderType TEX_QUAD_TYPE = RenderHelper.rtTexturedRectangles(LootGames.rl("textures/gui/minesweeper/ms_overlay.png"));
 
     @SubscribeEvent
     public static void renderOverlay(RenderGameOverlayEvent.Post event) {

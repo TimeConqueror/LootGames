@@ -23,6 +23,7 @@ import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.packet.game.SPChangeStage;
 import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
+import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.timecore.util.ChatUtils;
 import ru.timeconqueror.timecore.util.NetworkUtils;
@@ -138,11 +139,11 @@ public abstract class LootGame<T extends LootGame<T>> {
     protected abstract BlockPos getCentralRoomPos();
 
     /**
-     * Returns default broadcast distance from dungeon central position.
+     * Returns default broadcast distance (radius) from dungeon central position.
      * You may use it, for example, for triggering advancements and sending text messages.
      */
     public int getBroadcastDistance() {
-        return 32 /*instead of GameDungeonStructure.ROOM_WIDTH FIXME*/ / 2 + 3;//3 - it is just extra block distance after passing dungeon wall. Not so much, not so little.
+        return GameDungeonStructure.ROOM_WIDTH / 2 + 3;//3 - it is just extra block distance after passing dungeon wall. Not so much, not so little.
     }
 
     public void sendForEachNearby(IFormattableTextComponent component) {
