@@ -12,9 +12,9 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.timeconqueror.lootgames.api.Markers;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.api.packet.SPacketGameUpdate;
@@ -33,7 +33,7 @@ import java.util.Objects;
 
 public abstract class LootGame<T extends LootGame<T>> {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final Marker DEBUG_MARKER = MarkerManager.getMarker("LOOTGAME");
+    public static final Marker DEBUG_MARKER = Markers.LOOTGAME.getMarker();
 
     protected TileEntityGameMaster<T> masterTileEntity;
     protected TETaskScheduler taskScheduler;
