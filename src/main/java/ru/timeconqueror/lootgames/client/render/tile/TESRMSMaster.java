@@ -10,6 +10,7 @@ import net.minecraft.util.math.vector.Vector3f;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
+import ru.timeconqueror.lootgames.client.render.MSOverlayHandler;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper.StageDetonating;
@@ -58,7 +59,7 @@ public class TESRMSMaster extends TileEntityRenderer<TileEntityMSMaster> {
 
                         float times = max / period;
 
-                        float extendedPeriod = period * (times + 1) / times; // is needed because we want that it will explode at red state that comes on half period.
+                        float extendedPeriod = period * (times + 1) / times; // is needed because we want for it to explode at red state that comes on half period.
                         double alphaFactor = stage instanceof StageExploding ? 1 : Math.abs(Math.sin(Math.toRadians(ticks / extendedPeriod * 180F)));
                         int alphaColor = DrawHelper.changeAlpha(0xFFFFFFFF, (int) (alphaFactor * 255));
 
@@ -102,7 +103,7 @@ public class TESRMSMaster extends TileEntityRenderer<TileEntityMSMaster> {
 
         matrix.popPose();
 
-//        MSOverlayHandler.addSupportedMaster(te);//FIXME restore
+        MSOverlayHandler.addSupportedMaster(te);
     }
 
     @Override

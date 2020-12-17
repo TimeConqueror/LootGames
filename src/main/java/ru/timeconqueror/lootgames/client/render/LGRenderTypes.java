@@ -13,27 +13,27 @@ public class LGRenderTypes extends RenderType {
         super(nameIn, formatIn, drawModeIn, bufferSizeIn, useDelegateIn, needsSortingIn, setupTaskIn, clearTaskIn);
     }
 
-    public static RenderType brightened(ResourceLocation location) {
+    public static RenderType brightened(ResourceLocation texture) {
         return RenderType.create(LootGames.MODID + ":brightened",
                 DefaultVertexFormats.POSITION_TEX,
                 GL11.GL_QUADS,
-                256,
+                -1,
                 false,
                 false,
                 RenderType.State.builder()
-                        .setTextureState(new TextureState(location, false/*blur*/, false/*mipmap*/))
+                        .setTextureState(new TextureState(texture, false/*blur*/, false/*mipmap*/))
                         .createCompositeState(false));
     }
 
-    public static RenderType brightenedTranslucent(ResourceLocation location) {
+    public static RenderType brightenedTranslucent(ResourceLocation texture) {
         return RenderType.create(LootGames.MODID + ":brightened_translucent",
                 DefaultVertexFormats.POSITION_COLOR_TEX,
                 GL11.GL_QUADS,
-                256,
+                -1,
                 false,
                 false,
                 RenderType.State.builder()
-                        .setTextureState(new TextureState(location, false/*blur*/, false/*mipmap*/))
+                        .setTextureState(new TextureState(texture, false/*blur*/, false/*mipmap*/))
                         .setAlphaState(RenderState.DEFAULT_ALPHA)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                         .createCompositeState(false));
