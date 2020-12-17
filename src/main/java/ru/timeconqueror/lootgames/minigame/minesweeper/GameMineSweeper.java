@@ -6,12 +6,12 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
+import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.api.util.RewardUtils;
@@ -27,7 +27,6 @@ import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.util.DirectionTetra;
-import ru.timeconqueror.timecore.util.NetworkUtils;
 import ru.timeconqueror.timecore.util.RandHelper;
 
 import java.util.List;
@@ -35,7 +34,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.timeconqueror.timecore.util.NetworkUtils.getPlayersNearby;
 
-//TODO add default colors to warn, fail, win, etc
 //TODo add check if tileentity is nearby or blocksmartsubordinate or masterplacer
 //TODO improve first click - it shouldn't be random.
 //TODO change generation random - depending on world is bad.
@@ -115,7 +113,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
 
             sendUpdatePacket(new SPMSSpawnLevelBeatParticles());
 
-            sendForEachNearby(new TranslationTextComponent("msg.lootgames.stage_complete"), TextFormatting.GREEN);
+            sendToNearby(new TranslationTextComponent("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
             getWorld().playSound(null, getCentralGamePos(), SoundEvents.PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
             masterTileEntity.destroyGameBlocks();
@@ -377,7 +375,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         private void revealAllNeighbours(ServerPlayerEntity player, Pos2i mainPos, boolean revealMarked) {
             if (!revealMarked) {
                 if (board.isHidden(mainPos)) {
-                    NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.ms.reveal_on_hidden").withStyle(TextFormatting.YELLOW));
+                    sendTo(player, new TranslationTextComponent("msg.lootgames.ms.reveal_on_hidden"), NotifyColor.WARN);
                     return;
                 }
 
@@ -395,7 +393,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
                 }
 
                 if (marked != bombsAround) {
-                    NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.ms.reveal_invalid_mark_count").withStyle(TextFormatting.YELLOW));
+                    sendTo(player, new TranslationTextComponent("msg.lootgames.ms.reveal_invalid_mark_count"), NotifyColor.WARN);
                     return;
                 }
             }
@@ -441,7 +439,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
                 }
             });
 
-            sendForEachNearby(new TranslationTextComponent("msg.lootgames.ms.bomb_touched"), TextFormatting.DARK_PURPLE);
+            sendToNearby(new TranslationTextComponent("msg.lootgames.ms.bomb_touched"), NotifyColor.FAIL);
 
             saveDataAndSendToClient();
 
@@ -522,8 +520,8 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
                 ticks--;
 
                 if (ticks <= 0) {
-                    sendForEachNearby(new TranslationTextComponent("msg.lootgames.ms.new_attempt"), TextFormatting.AQUA);
-                    sendForEachNearby(new TranslationTextComponent("msg.lootgames.attempt_left", LGConfigs.MINESWEEPER.ATTEMPT_COUNT.get() - attemptCount), TextFormatting.RED);
+                    sendToNearby(new TranslationTextComponent("msg.lootgames.ms.new_attempt"), NotifyColor.NOTIFY);
+                    sendToNearby(new TranslationTextComponent("msg.lootgames.attempt_left", LGConfigs.MINESWEEPER.ATTEMPT_COUNT.get() - attemptCount), NotifyColor.GRAVE_NOTIFY);
 
                     switchStage(new StageWaiting());
 

@@ -15,7 +15,7 @@ import ru.timeconqueror.lootgames.minigame.pipes.GamePipes;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class LGMiscRegistry {
 
-    @SubscribeEvent
+    @SubscribeEvent//TODO add per-game `disable` config value
     public static void onInit(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             TaskRegistry.registerTaskFactory(TaskCreateExplosion.class, TaskCreateExplosion::new);

@@ -1,5 +1,6 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.BlockPos;
@@ -146,12 +147,28 @@ public abstract class LootGame<T extends LootGame<T>> {
         return GameDungeonStructure.ROOM_WIDTH / 2 + 3;//3 - it is just extra block distance after passing dungeon wall. Not so much, not so little.
     }
 
-    public void sendForEachNearby(IFormattableTextComponent component) {
+    public void sendTo(PlayerEntity player, IFormattableTextComponent component) {
+        NetworkUtils.sendMessage(player, component);
+    }
+
+    public void sendTo(PlayerEntity player, IFormattableTextComponent component, TextFormatting format) {
+        sendTo(player, component.withStyle(format));
+    }
+
+    public void sendTo(PlayerEntity player, IFormattableTextComponent component, NotifyColor format) {
+        sendTo(player, component, format.getColor());
+    }
+
+    public void sendToNearby(IFormattableTextComponent component) {
         NetworkUtils.sendForEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(), component);
     }
 
-    public void sendForEachNearby(IFormattableTextComponent component, TextFormatting format) {
-        sendForEachNearby(component.withStyle(format));
+    public void sendToNearby(IFormattableTextComponent component, TextFormatting format) {
+        sendToNearby(component.withStyle(format));
+    }
+
+    public void sendToNearby(IFormattableTextComponent component, NotifyColor format) {
+        sendToNearby(component, format.getColor());
     }
 
     /**
