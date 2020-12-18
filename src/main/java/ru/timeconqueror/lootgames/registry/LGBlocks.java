@@ -2,7 +2,9 @@ package ru.timeconqueror.lootgames.registry;
 
 import net.minecraftforge.registries.ObjectHolder;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.api.block.BlockFieldBorder;
 import ru.timeconqueror.lootgames.api.block.BlockSmartSubordinate;
+import ru.timeconqueror.lootgames.client.resource.FieldBorderBlockResources;
 import ru.timeconqueror.lootgames.common.LGItemGroup;
 import ru.timeconqueror.lootgames.common.block.*;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
@@ -29,6 +31,7 @@ public class LGBlocks {
 
     public static final BlockPuzzleMaster PUZZLE_MASTER = promise();
     public static final BlockSmartSubordinate SMART_SUBORDINATE = promise();
+    public static final BlockFieldBorder FIELD_BORDER = promise();
 
     public static final BlockMSActivator MS_ACTIVATOR = promise();
     public static final BlockMSMaster MS_MASTER = promise();
@@ -53,7 +56,10 @@ public class LGBlocks {
             REGISTER.register("puzzle_master", BlockPuzzleMaster::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
 
             TextureLocation shieldedDungeonFloorText = new TextureLocation(REGISTER.getModId(), "block/shielded_dungeon_floor");
+
             REGISTER.register("smart_subordinate", BlockSmartSubordinate::new).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("field_border", BlockFieldBorder::new).apply(FieldBorderBlockResources::fillChain).regDefaultBlockItem(LGItemGroup.MAIN);
+
             REGISTER.register("ms_activator", BlockMSActivator::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("ms_master", BlockMSMaster::new).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("pipes_activator", BlockPipesActivator::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
