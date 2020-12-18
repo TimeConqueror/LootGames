@@ -28,6 +28,7 @@ public class LGMiscRegistry {
             manager.registerPacket(++id, SPChangeStage.class);
 
             manager.registerPacket(++id, SPPipesGameChangeChunks.class);
+            manager.registerPacket(++id, SPPipesGameSetBoard.class);
 
             manager.registerPacket(++id, SPMSFieldChanged.class);
             manager.registerPacket(++id, SPMSGenBoard.class);

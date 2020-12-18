@@ -83,13 +83,17 @@ public class GamePipes extends LootGame<GamePipes> {
 
     private void checkForDirtyBoard() {
         if (board.isDirty()) {
-            sendBoard();
+            masterTileEntity.setChanged();
+            sendUpdatePacket(board.exportDirtyChunks());
         }
     }
 
     private void sendBoard() {
-        masterTileEntity.setChanged();
-        sendUpdatePacket(board.exportDirtyChunks());
+        sendUpdatePacket(board.exportBoard());
+    }
+
+    public void setBoardData(int size, int[] chunks) {
+        board = new PipesBoard(size, chunks);
     }
 
     @Override
@@ -116,10 +120,17 @@ public class GamePipes extends LootGame<GamePipes> {
         @Override
         protected void onStart(LootGame<GamePipes> game) {
             if (game.isServerSide()) {
-                if (cycleId != 0) board = new PipesBoard(board.getSize() + 2);
+                if (cycleId != 0) {
+                    board = new PipesBoard(board.getSize() + 2);
+                    masterTileEntity.setChanged();
+                }
+
                 PipesBoardGenerator generator = new PipesBoardGenerator(board);
                 generator.fillBoard(cycleId + 1, board.getSize() * 2);
-                if (cycleId != 0) sendBoard();
+
+                if (cycleId != 0) {
+                    sendBoard();
+                }
             }
         }
 

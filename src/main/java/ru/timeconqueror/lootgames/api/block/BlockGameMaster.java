@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.timecore.util.WorldUtils;
 
-public abstract class BlockGameMaster extends BlockGame implements ILeftInteractible {
+public abstract class BlockGameMaster extends BlockGame implements ILeftInteractible, IGameField {
 
     @Override
     public boolean hasTileEntity(BlockState state) {

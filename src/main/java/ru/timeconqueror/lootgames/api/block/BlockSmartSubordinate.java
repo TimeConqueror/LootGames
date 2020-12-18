@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
  * Subordinate block for minigames. Will find master block and notify it. The master block must be at the north-west corner of the game
  * and its tileentity must extend {@link TileEntityGameMaster<>}!
  */
-public class BlockSmartSubordinate extends BlockGame implements ILeftInteractible {
+public class BlockSmartSubordinate extends BlockGame implements ILeftInteractible, IGameField {
     private static boolean underBreaking = false;
 
     @Override
@@ -81,39 +81,21 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
     }
 
     public static BlockPos getMasterPos(World world, BlockPos pos) {
-        BlockPos foundPos = pos;
-        BlockState state;
+        BlockPos.Mutable currentPos = pos.mutable();
+        int limit = 128;
 
-        while (true) {
-            foundPos = foundPos.west();
-
-            state = world.getBlockState(foundPos);
-
-            if (world.getBlockEntity(foundPos) instanceof TileEntityGameMaster<?>) {
-                break;
-            }
-
-            if (!(state.getBlock() instanceof BlockSmartSubordinate)) {
-                foundPos = foundPos.east();
-                break;
-            }
+        while (world.getBlockState(currentPos).getBlock() instanceof IGameField) {
+            currentPos.move(-1, 0, 0);
+            if (--limit == 0) break;
         }
+        currentPos.move(1, 0, 0);
 
-        while (true) {
-            foundPos = foundPos.north();
-
-            state = world.getBlockState(foundPos);
-
-            if (world.getBlockEntity(foundPos) instanceof TileEntityGameMaster<?>) {
-                break;
-            }
-
-            if (!(state.getBlock() instanceof BlockSmartSubordinate)) {
-                foundPos = foundPos.south();
-                break;
-            }
+        while (world.getBlockState(currentPos).getBlock() instanceof IGameField) {
+            currentPos.move(0, 0, -1);
+            if (--limit == 0) break;
         }
+        currentPos.move(0, 0, 1);
 
-        return foundPos;
+        return currentPos.immutable();
     }
 }

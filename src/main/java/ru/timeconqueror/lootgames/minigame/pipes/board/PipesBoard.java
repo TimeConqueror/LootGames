@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.minigame.pipes.board;
 
 import net.minecraft.nbt.CompoundNBT;
 import ru.timeconqueror.lootgames.common.packet.game.SPPipesGameChangeChunks;
+import ru.timeconqueror.lootgames.common.packet.game.SPPipesGameSetBoard;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,6 +36,11 @@ public class PipesBoard {
 
         this.chunks = new int[chunksCount];
         this.dirtyChunks = new boolean[chunksCount];
+    }
+
+    public PipesBoard(int size, int[] chunks) {
+        this(size);
+        System.arraycopy(chunks, 0, this.chunks, 0, chunks.length);
     }
 
     private int getStateId(int x, int y) {
@@ -130,6 +136,10 @@ public class PipesBoard {
         for (int i = 0; i < chunks.length; i++) {
             dirtyChunks[i] = false;
         }
+    }
+
+    public SPPipesGameSetBoard exportBoard() {
+        return new SPPipesGameSetBoard(size, chunks);
     }
 
     public SPPipesGameChangeChunks exportDirtyChunks() {
