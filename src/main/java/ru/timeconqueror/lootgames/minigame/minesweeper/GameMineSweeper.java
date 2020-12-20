@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static ru.timeconqueror.timecore.util.NetworkUtils.getPlayersNearby;
 
 //TODo add check if tileentity is nearby or blocksmartsubordinate or masterplacer
-//TODO improve first click - it shouldn't be random.
 //TODO change generation random - depending on world is bad.
 //TODO add leveling info in chat
 //todo add game rules in chat
@@ -337,10 +336,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         public void generateBoard(ServerPlayerEntity player, Pos2i clickedPos) {
             board.generate(clickedPos);
             sendUpdatePacket(new SPMSGenBoard(GameMineSweeper.this));
-
-            if (board.getType(clickedPos) == Type.EMPTY) {
-                revealAllNeighbours(player, clickedPos, true);
-            }
+            revealField(player, clickedPos);
 
             saveData();
         }
