@@ -11,7 +11,6 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.timecore.api.common.packet.ITimePacket;
 
 import java.io.IOException;
-import java.util.function.Supplier;
 
 public class SPacketGameUpdate implements ITimePacket {
     private IServerGamePacket gamePacket;
@@ -62,11 +61,10 @@ public class SPacketGameUpdate implements ITimePacket {
         }
 
         @Override
-        public void onPacketReceived(SPacketGameUpdate packet, Supplier<NetworkEvent.Context> supplier) {
-            NetworkEvent.Context ctx = supplier.get();//FIXME test disabled on server side? do only for client!
+        public void onPacketReceived(SPacketGameUpdate packet, NetworkEvent.Context ctx, World world) {
+            //FIXME test disabled on server side? do only for client!
 
             ctx.enqueueWork(() -> {
-                World world = packet.getWorld(ctx);
                 TileEntity te = world.getBlockEntity(packet.masterPos);
                 if (te instanceof TileEntityGameMaster<?>) {
                     TileEntityGameMaster<?> master = ((TileEntityGameMaster<?>) te);
