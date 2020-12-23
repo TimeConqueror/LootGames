@@ -65,19 +65,17 @@ public class SPacketGameUpdate implements ITimePacket {
         public void onPacketReceived(SPacketGameUpdate packet, Supplier<NetworkEvent.Context> supplier) {
             NetworkEvent.Context ctx = supplier.get();//FIXME test disabled on server side? do only for client!
 
-            if (packet.gamePacket != null) {//FIXME here shouldn't be null pointer
-                ctx.enqueueWork(() -> {
-                    World world = packet.getWorld(ctx);
-                    TileEntity te = world.getBlockEntity(packet.masterPos);
-                    if (te instanceof TileEntityGameMaster<?>) {
-                        TileEntityGameMaster<?> master = ((TileEntityGameMaster<?>) te);
-                        master.getGame().onUpdatePacket(packet.gamePacket);
-                    } else {
-                        throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos " + packet.masterPos + " for packet " + packet.gamePacket.getClass().getName());
-                        //FIXME test what if server will catch it?
-                    }
-                });
-            }
+            ctx.enqueueWork(() -> {
+                World world = packet.getWorld(ctx);
+                TileEntity te = world.getBlockEntity(packet.masterPos);
+                if (te instanceof TileEntityGameMaster<?>) {
+                    TileEntityGameMaster<?> master = ((TileEntityGameMaster<?>) te);
+                    master.getGame().onUpdatePacket(packet.gamePacket);
+                } else {
+                    throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos " + packet.masterPos + " for packet " + packet.gamePacket.getClass().getName());
+                    //FIXME test what if server will catch it?
+                }
+            });
         }
     }
 }
