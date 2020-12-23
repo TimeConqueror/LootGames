@@ -28,9 +28,9 @@ import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.util.DirectionTetra;
 import ru.timeconqueror.timecore.util.RandHelper;
+import ru.timeconqueror.timecore.util.Wrapper;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.timeconqueror.timecore.util.NetworkUtils.getPlayersNearby;
 
@@ -535,7 +535,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
          * Returns the longest detonating time, after which all bombs will explode
          */
         private int detonateBoard(int strength, Explosion.Mode explosionMode) {
-            AtomicInteger longestDetTime = new AtomicInteger();
+            Wrapper<Integer> longestDetTime = new Wrapper<>(0);
 
             board.forEach(pos2i -> {
                 if (board.getType(pos2i) == Type.BOMB) {

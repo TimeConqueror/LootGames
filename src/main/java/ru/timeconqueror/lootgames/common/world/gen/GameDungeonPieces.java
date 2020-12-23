@@ -31,11 +31,11 @@ public class GameDungeonPieces {
     public static class Piece extends TunedTemplateStructurePiece {
 
         public Piece(TemplateManager templateManager, ResourceLocation templateLocation, BlockPos pos) {
-            super(LGStructurePieces.GAME_DUNGEON_PIECE, templateManager, templateLocation, pos);
+            super(LGStructurePieces.GAME_DUNGEON_PIECE.get(), templateManager, templateLocation, pos);
         }
 
         public Piece(TemplateManager templateManager, CompoundNBT nbt) {
-            super(LGStructurePieces.GAME_DUNGEON_PIECE, templateManager, nbt);
+            super(LGStructurePieces.GAME_DUNGEON_PIECE.get(), templateManager, nbt);
         }
 
         @Override
@@ -65,7 +65,7 @@ public class GameDungeonPieces {
 
     public static class EntryPath extends StructurePiece {
         public EntryPath(Direction direction, BlockPos start, BlockPos end) {
-            super(LGStructurePieces.GAME_DUNGEON_ENTRY_PATH, 0);
+            super(LGStructurePieces.GAME_DUNGEON_ENTRY_PATH.get(), 0);
 
             setOrientation(direction);
 
@@ -73,7 +73,7 @@ public class GameDungeonPieces {
         }
 
         public EntryPath(TemplateManager templateManager, CompoundNBT nbt) {
-            super(LGStructurePieces.GAME_DUNGEON_ENTRY_PATH, nbt);
+            super(LGStructurePieces.GAME_DUNGEON_ENTRY_PATH.get(), nbt);
         }
 
         @Override

@@ -58,7 +58,7 @@ public class LGBlocks {
             TextureLocation shieldedDungeonFloorText = new TextureLocation(REGISTER.getModId(), "block/shielded_dungeon_floor");
 
             REGISTER.register("smart_subordinate", BlockSmartSubordinate::new).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("field_border", BlockFieldBorder::new).apply(FieldBorderBlockResources::fillChain).regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("field_border", BlockFieldBorder::new).also(FieldBorderBlockResources::fillChain).regDefaultBlockItem(LGItemGroup.MAIN);
 
             REGISTER.register("ms_activator", BlockMSActivator::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("ms_master", BlockMSMaster::new).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
