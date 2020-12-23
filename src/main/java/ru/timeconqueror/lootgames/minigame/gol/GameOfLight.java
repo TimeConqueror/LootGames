@@ -1,23 +1,19 @@
 package ru.timeconqueror.lootgames.minigame.gol;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
-import ru.timeconqueror.lootgames.api.minigame.LootGame;
+import ru.timeconqueror.lootgames.api.minigame.FloorLootGame;
 
-public class GameOfLight extends LootGame<GameOfLight> {
-    @Override
-    protected BlockPos getGameCenter() {
-        return null;
-    }
+public class GameOfLight extends FloorLootGame<GameOfLight> {
 
-    @Override
-    protected BlockPos getRoomFloorPos() {
-        return null;
-    }
 
     @Override
     public @Nullable Stage<GameOfLight> createStageFromNBT(String id, CompoundNBT stageNBT) {
         return null;
+    }
+
+    @Override
+    public int getBoardSize() {
+        return 3;
     }
 }

@@ -3,14 +3,20 @@ package ru.timeconqueror.lootgames.registry;
 import net.minecraftforge.registries.ObjectHolder;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.block.BlockFieldBorder;
+import ru.timeconqueror.lootgames.api.block.BlockGameMaster;
 import ru.timeconqueror.lootgames.api.block.BlockSmartSubordinate;
+import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.client.resource.FieldBorderBlockResources;
 import ru.timeconqueror.lootgames.common.LGItemGroup;
 import ru.timeconqueror.lootgames.common.block.*;
+import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
+import ru.timeconqueror.lootgames.common.block.tile.TileEntityPipesMaster;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 import ru.timeconqueror.timecore.registry.AutoRegistrable;
 import ru.timeconqueror.timecore.registry.BlockPropsFactory;
 import ru.timeconqueror.timecore.registry.newreg.BlockRegister;
+
+import java.util.function.Supplier;
 
 import static ru.timeconqueror.lootgames.common.block.BlockDungeon.BRICKS_PROPS_CREATOR;
 import static ru.timeconqueror.lootgames.common.block.BlockDungeon.LAMP_PROPS_CREATOR;
@@ -34,9 +40,9 @@ public class LGBlocks {
     public static final BlockFieldBorder FIELD_BORDER = promise();
 
     public static final BlockMSActivator MS_ACTIVATOR = promise();
-    public static final BlockMSMaster MS_MASTER = promise();
+    public static final BlockGameMaster MS_MASTER = promise();
     public static final BlockPipesActivator PIPES_ACTIVATOR = promise();
-    public static final BlockPipesMaster PIPES_MASTER = promise();
+    public static final BlockGameMaster PIPES_MASTER = promise();
 
     private static class Init {
         @AutoRegistrable
@@ -64,8 +70,15 @@ public class LGBlocks {
             REGISTER.register("pipes_activator", BlockPipesActivator::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("gol_activator", BlockGOLActivator::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
 
-            REGISTER.register("ms_master", BlockMSMaster::new).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("pipes_master", BlockPipesMaster::new).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("ms_master", gameMaster(TileEntityMSMaster::new)).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("pipes_master", gameMaster(TileEntityPipesMaster::new)).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
+        }
+
+        @SuppressWarnings("CodeBlock2Expr")
+        private static Supplier<BlockGameMaster> gameMaster(Supplier<TileEntityGameMaster<?>> tileEntityFactory) {
+            return () -> {
+                return new BlockGameMaster((blockState, world) -> tileEntityFactory.get());
+            };
         }
     }
 }
