@@ -5,12 +5,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundNBT;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.timecore.util.CodecUtils;
+import ru.timeconqueror.timecore.util.Wrapper;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class MSBoard {
     int cFlaggedFields;
@@ -129,8 +132,41 @@ public class MSBoard {
         return board[x][y];
     }
 
+    private List<Integer> getAvailableBombIndices(Pos2i start, int fieldSize) {
+        int emptyPlaces = size * size - bombCount;
+
+        if (emptyPlaces < 0)
+            throw new IllegalStateException("How is that possible, that board square is less or equal to bomb count? Square = " + (size * size) + ", bomb count = " + bombCount);
+
+        int safeDistance;
+        if (emptyPlaces >= 13) {
+            safeDistance = 2;
+        } else if (emptyPlaces >= 9) {
+            safeDistance = 1;
+        } else {
+            safeDistance = 0;
+        }
+
+        Wrapper<Integer> count = new Wrapper<>(0);
+
+        return IntStream.range(0, fieldSize).filter(index -> {
+            if (count.get() > emptyPlaces) {
+                return true;
+            }
+
+            Pos2i pos = toPos(index);//TODO optimize
+
+            if (start.manhattanDistanceTo(pos) <= safeDistance) {
+                count.set(count.get() + 1);
+                return false;
+            } else {
+                return true;
+            }
+        }).boxed().collect(Collectors.toList());
+    }
+
     public void generate(Pos2i startFieldPos) {
-        if (convertToFieldIndex(startFieldPos) > (size * size) - 1) {
+        if (toIndex(startFieldPos) > (size * size) - 1) {
             throw new IllegalArgumentException(String.format("Start Pos must be strictly less than Board size. Current values: start pos = %1$s, boardSize = %2$d", startFieldPos, size));
         }
 
@@ -138,14 +174,7 @@ public class MSBoard {
         int square = size * size;
 
         //adding bombs
-        ArrayList<Integer> fields = new ArrayList<>(square);
-        for (int i = 0; i < square; i++) {
-            if (i == convertToFieldIndex(startFieldPos)) {
-                continue;
-            }
-
-            fields.add(i);
-        }
+        List<Integer> fields = getAvailableBombIndices(startFieldPos, square);
 
         Collections.shuffle(fields);
 
@@ -167,14 +196,12 @@ public class MSBoard {
                 }
             }
         }
-
-        getField(startFieldPos).reveal();
     }
 
     /**
      * Converts field index to pos.
      */
-    private Pos2i convertToPos(int fieldIndex) {
+    public Pos2i toPos(int fieldIndex) {
         return new Pos2i(fieldIndex % size, fieldIndex / size);
     }
 
@@ -183,7 +210,7 @@ public class MSBoard {
      * <p>Example:
      * <p>Pos {x = 2; y = 4}, gridSize = 5 -> index 22 out of (gridSize * gridSize)
      */
-    private int convertToFieldIndex(Pos2i pos) {
+    public int toIndex(Pos2i pos) {
         return pos.getY() * size + pos.getX();
     }
 

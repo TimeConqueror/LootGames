@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import ru.timeconqueror.lootgames.api.minigame.FloorLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
@@ -28,19 +29,19 @@ import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.util.DirectionTetra;
 import ru.timeconqueror.timecore.util.RandHelper;
+import ru.timeconqueror.timecore.util.Wrapper;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.timeconqueror.timecore.util.NetworkUtils.getPlayersNearby;
 
+//TODO lang keys for advancements
 //TODo add check if tileentity is nearby or blocksmartsubordinate or masterplacer
-//TODO improve first click - it shouldn't be random.
 //TODO change generation random - depending on world is bad.
 //TODO add leveling info in chat
 //todo add game rules in chat
 //TODO remove break particle before left click interact
-public class GameMineSweeper extends LootGame<GameMineSweeper> {
+public class GameMineSweeper extends FloorLootGame<GameMineSweeper> {
     public static final String ADV_TYPE_BEAT_LEVEL4 = "ms_level4";
 
     public boolean cIsGenerated;
@@ -84,16 +85,6 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         stage = new StageWaiting();
     }
 
-    @Override
-    protected BlockPos getRoomFloorPos() {
-        return getMasterPos();
-    }
-
-    @Override
-    protected BlockPos getCentralRoomPos() {
-        return getCentralGamePos();
-    }
-
     public void click(ServerPlayerEntity player, Pos2i clickedPos, MouseClickType type) {
         if (stage instanceof StageWaiting) {
             ((StageWaiting) stage).onClick(player, clickedPos, type);
@@ -114,13 +105,13 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
             sendUpdatePacket(new SPMSSpawnLevelBeatParticles());
 
             sendToNearby(new TranslationTextComponent("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
-            getWorld().playSound(null, getCentralGamePos(), SoundEvents.PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
+            getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
             masterTileEntity.destroyGameBlocks();
-            generateGameStructure(getWorld(), getCentralGamePos(), currentLevel + 1);
+            generateGameStructure(getWorld(), getGameCenter(), currentLevel + 1);
 
             ConfigMS.StageConfig stageConfig = LGConfigs.MINESWEEPER.getStageByIndex(currentLevel + 1);
-            BlockPos startPos = getCentralGamePos().offset(-stageConfig.getBoardSize() / 2, 0, -stageConfig.getBoardSize() / 2);
+            BlockPos startPos = getGameCenter().offset(-stageConfig.getBoardSize() / 2, 0, -stageConfig.getBoardSize() / 2);
 
             masterTileEntity.clearRemoved();
             getWorld().setBlockEntity(startPos, masterTileEntity);
@@ -139,7 +130,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
     protected void triggerGameWin() {
         super.triggerGameWin();
 
-        List<ServerPlayerEntity> players = getPlayersNearby(getCentralGamePos(), getBroadcastDistance());
+        List<ServerPlayerEntity> players = getPlayersNearby(getGameCenter(), getBroadcastDistance());
 
         genLootChests(players);
     }
@@ -149,7 +140,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
             throw new RuntimeException("GenLootChests method was called in an appropriate time!");
         }
 
-        BlockPos central = getCentralGamePos();
+        BlockPos central = getGameCenter();
         BlockState state = LGBlocks.DUNGEON_LAMP.defaultBlockState();
         getWorld().setBlockAndUpdate(central.offset(1, 0, 1), state);
         getWorld().setBlockAndUpdate(central.offset(1, 0, -1), state);
@@ -176,14 +167,14 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
     private void spawnLootChest(DirectionTetra direction, int gameLevel) {
         ConfigMS.StageConfig stage = LGConfigs.MINESWEEPER.getStageByIndex(gameLevel);
         SpawnChestData chestData = new SpawnChestData(this, stage.getLootTable(getWorld().dimension().location()), stage.MIN_ITEMS.get(), stage.MAX_ITEMS.get());
-        RewardUtils.spawnLootChest(getWorld(), getCentralGamePos(), direction, chestData);
+        RewardUtils.spawnLootChest(getWorld(), getGameCenter(), direction, chestData);
     }
 
     @Override
     protected void triggerGameLose() {
         super.triggerGameLose();
 
-        BlockPos expPos = getCentralGamePos();
+        BlockPos expPos = getGameCenter();
         getWorld().explode(null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 9, Explosion.Mode.DESTROY);
     }
 
@@ -199,13 +190,6 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
 
     public BlockPos convertToBlockPos(Pos2i pos) {
         return convertToBlockPos(pos.getX(), pos.getY());
-    }
-
-    /**
-     * Returns the blockpos in the center of the board.
-     */
-    public BlockPos getCentralGamePos() {
-        return masterTileEntity.getBlockPos().offset(getBoardSize() / 2, 0, getBoardSize() / 2);
     }
 
     public MSBoard getBoard() {
@@ -337,10 +321,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
         public void generateBoard(ServerPlayerEntity player, Pos2i clickedPos) {
             board.generate(clickedPos);
             sendUpdatePacket(new SPMSGenBoard(GameMineSweeper.this));
-
-            if (board.getType(clickedPos) == Type.EMPTY) {
-                revealAllNeighbours(player, clickedPos, true);
-            }
+            revealField(player, clickedPos);
 
             saveData();
         }
@@ -539,7 +520,7 @@ public class GameMineSweeper extends LootGame<GameMineSweeper> {
          * Returns the longest detonating time, after which all bombs will explode
          */
         private int detonateBoard(int strength, Explosion.Mode explosionMode) {
-            AtomicInteger longestDetTime = new AtomicInteger();
+            Wrapper<Integer> longestDetTime = new Wrapper<>(0);
 
             board.forEach(pos2i -> {
                 if (board.getType(pos2i) == Type.BOMB) {

@@ -1,8 +1,8 @@
 package ru.timeconqueror.lootgames.api.util;
 
 public class Pos2i {
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
 
     public Pos2i(int x, int y) {
         this.x = x;
@@ -23,6 +23,10 @@ public class Pos2i {
 
     public int getY() {
         return y;
+    }
+
+    public int manhattanDistanceTo(Pos2i pos) {
+        return Math.abs(x - pos.x) + Math.abs(y - pos.y);
     }
 
     @Override
