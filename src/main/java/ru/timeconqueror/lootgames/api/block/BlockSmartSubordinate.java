@@ -41,6 +41,7 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
     private void destroyStructure(World worldIn, BlockPos pos) {
         BlockPos masterPos = getMasterPos(worldIn, pos);
         TileEntity te = worldIn.getBlockEntity(masterPos);
+        System.out.println(masterPos);
 
         if (te instanceof TileEntityGameMaster<?>) {
             ((TileEntityGameMaster<?>) te).destroyGameBlocks();
@@ -84,13 +85,13 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
         BlockPos.Mutable currentPos = pos.mutable();
         int limit = 128;
 
-        while (world.getBlockState(currentPos).getBlock() instanceof IGameField) {
+        while (currentPos.equals(pos) || world.getBlockState(currentPos).getBlock() instanceof IGameField) {
             currentPos.move(-1, 0, 0);
             if (--limit == 0) break;
         }
         currentPos.move(1, 0, 0);
 
-        while (world.getBlockState(currentPos).getBlock() instanceof IGameField) {
+        while (currentPos.equals(pos) || world.getBlockState(currentPos).getBlock() instanceof IGameField) {
             currentPos.move(0, 0, -1);
             if (--limit == 0) break;
         }

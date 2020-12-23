@@ -18,5 +18,6 @@
   "msg.lootgames.ms.bomb_touched": "Упс... Сейчас будет БУМ. Бегите!",
   "msg.lootgames.ms.new_attempt": "Структура успокоилась. Вы можете попытаться сыграть вновь.",
   "msg.lootgames.ms.reveal_on_hidden": "Вы не можете открыть соседей вокруг неоткрытого поля.",
-  "msg.lootgames.ms.reveal_invalid_mark_count": "Вы не можете открыть соседей поля, поскольку его число флажков вокруг отличается от цифры на поле."
+  "msg.lootgames.ms.reveal_invalid_mark_count": "Вы не можете открыть соседей поля, поскольку его число флажков вокруг отличается от цифры на поле.",
+  "msg.lootgames.field.not_enough_space": "Недостаточно места для установки поля: %dx%dx%d"
 }
