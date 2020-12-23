@@ -61,7 +61,7 @@ public class MSOverlayHandler {
             }
 
             GameMineSweeper game = master.getGame();
-            BlockPos gamePos = game.getCentralGamePos();
+            BlockPos gamePos = game.getGameCenter();
 
             if (MathUtils.distSqr(gamePos, player) > game.getBroadcastDistance() * game.getBroadcastDistance()) {
                 iterator.remove();
@@ -121,7 +121,7 @@ public class MSOverlayHandler {
     private static String getBombDisplayString(GameMineSweeper game, boolean extended) {
         int bombDisplay = game.getStage() instanceof GameMineSweeper.StageDetonating || game.getStage() instanceof GameMineSweeper.StageExploding ? game.getBoard().getBombCount() :
                 game.getBoard().getBombCount() - game.getBoard().cGetFlaggedField();
-        BlockPos gamePos = game.getCentralGamePos();
+        BlockPos gamePos = game.getGameCenter();
         return extended ? "x" + bombDisplay + " on "/*todo translate */ + gamePos.getX() + ", " + gamePos.getY() + ", " + gamePos.getZ() : "x" + bombDisplay;
     }
 

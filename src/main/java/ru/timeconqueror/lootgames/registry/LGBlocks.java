@@ -61,8 +61,10 @@ public class LGBlocks {
             REGISTER.register("field_border", BlockFieldBorder::new).also(FieldBorderBlockResources::fillChain).regDefaultBlockItem(LGItemGroup.MAIN);
 
             REGISTER.register("ms_activator", BlockMSActivator::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("ms_master", BlockMSMaster::new).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("pipes_activator", BlockPipesActivator::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("gol_activator", BlockGOLActivator::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
+
+            REGISTER.register("ms_master", BlockMSMaster::new).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("pipes_master", BlockPipesMaster::new).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
         }
     }

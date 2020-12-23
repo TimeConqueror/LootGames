@@ -6,6 +6,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import ru.timeconqueror.lootgames.api.minigame.FloorLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
@@ -14,8 +15,7 @@ import ru.timeconqueror.lootgames.minigame.pipes.board.PipesBoardGenerator;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 
-public class GamePipes extends LootGame<GamePipes> {
-
+public class GamePipes extends FloorLootGame<GamePipes> {
     private PipesBoard board;
     private final float difficulty;
 
@@ -25,20 +25,10 @@ public class GamePipes extends LootGame<GamePipes> {
     }
 
     @Override
-    protected BlockPos getCentralRoomPos() {
-        return masterTileEntity.getBlockPos().offset(getBoardSize() / 2, 0, getBoardSize() / 2);
-    }
-
-    @Override
     public void onPlace() {
         if (isServerSide()) {
             setupInitialStage(new GameStage(0));
         }
-    }
-
-    @Override
-    protected BlockPos getRoomFloorPos() {
-        return getMasterPos();
     }
 
     public float getDifficulty() {
@@ -161,7 +151,7 @@ public class GamePipes extends LootGame<GamePipes> {
         @Override
         protected void onStart(LootGame<GamePipes> game) {
             if (game.isServerSide()) {
-                getWorld().playSound(null, getCentralRoomPos(), SoundEvents.PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
+                getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
                 board.removeNonPoweredPipes();
             }
         }

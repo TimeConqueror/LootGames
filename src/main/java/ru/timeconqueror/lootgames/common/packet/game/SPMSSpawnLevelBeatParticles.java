@@ -23,7 +23,7 @@ public class SPMSSpawnLevelBeatParticles implements IServerGamePacket {
         for (int x = 0; x < ms.getBoardSize() + 1; x++) {
             for (int z = 0; z < ms.getBoardSize() + 1; z++) {
                 ms.getWorld().addParticle(ParticleTypes.HAPPY_VILLAGER, ms.getMasterPos().getX() + x,
-                        ms.getCentralGamePos().getY() + 1.1F,
+                        ms.getGameCenter().getY() + 1.1F,
                         ms.getMasterPos().getZ() + z, 0.0, 0.2, 0.0);
             }
         }

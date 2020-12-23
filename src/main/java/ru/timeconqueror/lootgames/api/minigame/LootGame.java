@@ -108,7 +108,7 @@ public abstract class LootGame<T extends LootGame<T>> {
     @OverridingMethodsMustInvokeSuper
     protected void triggerGameWin() {
         onGameEnd();
-        NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(),
+        NetworkUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
                 player -> {
                     LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_WIN);
                     player.sendMessage(ChatUtils.format(new TranslationTextComponent("msg.lootgames.win"), TextFormatting.GREEN), player.getUUID());
@@ -122,7 +122,7 @@ public abstract class LootGame<T extends LootGame<T>> {
     @OverridingMethodsMustInvokeSuper
     protected void triggerGameLose() {
         onGameEnd();
-        NetworkUtils.forEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(),
+        NetworkUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
                 player -> {
                     LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_LOSE);
                     player.sendMessage(ChatUtils.format(new TranslationTextComponent("msg.lootgames.lose"), TextFormatting.DARK_PURPLE), player.getUUID());
@@ -138,7 +138,7 @@ public abstract class LootGame<T extends LootGame<T>> {
         masterTileEntity.destroyGameBlocks();
     }
 
-    protected abstract BlockPos getCentralRoomPos();
+    protected abstract BlockPos getGameCenter();
 
     /**
      * Returns default broadcast distance (radius) from dungeon central position.
@@ -161,7 +161,7 @@ public abstract class LootGame<T extends LootGame<T>> {
     }
 
     public void sendToNearby(IFormattableTextComponent component) {
-        NetworkUtils.sendForEachPlayerNearby(getCentralRoomPos(), getBroadcastDistance(), component);
+        NetworkUtils.sendForEachPlayerNearby(getGameCenter(), getBroadcastDistance(), component);
     }
 
     public void sendToNearby(IFormattableTextComponent component, TextFormatting format) {
