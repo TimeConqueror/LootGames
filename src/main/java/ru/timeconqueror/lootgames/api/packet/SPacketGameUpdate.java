@@ -72,10 +72,9 @@ public class SPacketGameUpdate implements ITimePacket {
                     if (te instanceof TileEntityGameMaster<?>) {
                         TileEntityGameMaster<?> master = ((TileEntityGameMaster<?>) te);
                         master.getGame().onUpdatePacket(packet.gamePacket);
-
                     } else {
-                        throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos: " + packet.masterPos);
-                        //FIXME test if it only kicks from server or halt client? and what if server will catch it?
+                        throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos " + packet.masterPos + " for packet " + packet.gamePacket.getClass().getName());
+                        //FIXME test what if server will catch it?
                     }
                 });
             }

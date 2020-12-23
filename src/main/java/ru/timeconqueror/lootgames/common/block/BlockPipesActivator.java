@@ -32,6 +32,8 @@ public class BlockPipesActivator extends BlockGame {
                 worldIn.playSound(null, pos, LGSounds.MS_START_GAME, SoundCategory.BLOCKS, 0.6F, 1.0F);
                 return ActionResultType.SUCCESS;
             }
+        } else {
+            return ActionResultType.CONSUME;
         }
 
         return ActionResultType.FAIL;

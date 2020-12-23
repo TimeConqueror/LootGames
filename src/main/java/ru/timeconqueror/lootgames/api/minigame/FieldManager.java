@@ -14,9 +14,7 @@ import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.BlockUtils;
 import ru.timeconqueror.lootgames.utils.CollectionUtils;
-
-import java.util.UUID;
-
+import ru.timeconqueror.timecore.util.NetworkUtils;
 
 /**
  * Can be accessed via {@link LootGamesAPI#getFieldManager()}.
@@ -43,7 +41,7 @@ public class FieldManager {
         BlockPos.Mutable borderPos = cornerPos.mutable();
         if (!canReplaceAreaWithField(world, borderPos, xSize + 2, height + 1, zSize + 2, centerPos)) {
             if (player != null) {
-                player.sendMessage(new TranslationTextComponent("msg.lootgames.field.not_enough_space", xSize + 2, height + 1, zSize + 2), UUID.randomUUID());
+                NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.field.not_enough_space", xSize + 2, height + 1, zSize + 2));
                 world.playSound(player, centerPos, LGSounds.GOL_GAME_LOSE, SoundCategory.BLOCKS, 0.6F, 1.0F);
             }
             return false;
@@ -53,7 +51,7 @@ public class FieldManager {
         BlockPos fieldPos = centerPos.offset(-xSize / 2, 0, -zSize / 2);
         for (BlockPos pos : BlockUtils.iterateArea(fieldPos, xSize, 1, zSize)) {
             if (masterBlock != null && pos.equals(fieldPos)) {
-                world.setBlock(pos, masterBlock, 2);
+                world.setBlock(pos, masterBlock, 3);
             } else {
                 world.setBlock(pos, LGBlocks.SMART_SUBORDINATE.defaultBlockState(), 2);
             }

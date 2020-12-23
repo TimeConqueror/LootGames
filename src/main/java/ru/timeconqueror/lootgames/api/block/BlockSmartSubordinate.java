@@ -41,7 +41,6 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
     private void destroyStructure(World worldIn, BlockPos pos) {
         BlockPos masterPos = getMasterPos(worldIn, pos);
         TileEntity te = worldIn.getBlockEntity(masterPos);
-        System.out.println(masterPos);
 
         if (te instanceof TileEntityGameMaster<?>) {
             ((TileEntityGameMaster<?>) te).destroyGameBlocks();
