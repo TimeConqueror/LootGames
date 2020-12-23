@@ -21,7 +21,7 @@ public class BlockMSActivator extends BlockGame {
         if (!worldIn.isClientSide()) {
             LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayerEntity) player), new UseBlockTrigger.ExtraInfo(state, pos, player.getItemInHand(handIn)));
 
-            GameMineSweeper.generateGameStructure(worldIn, pos, 1);
+            GameMineSweeper.generateGameBoard(worldIn, pos, 1);
             worldIn.playSound(null, pos, LGSounds.MS_START_GAME, SoundCategory.BLOCKS, 0.6F, 1.0F);
         }
 

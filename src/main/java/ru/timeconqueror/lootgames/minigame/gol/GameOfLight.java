@@ -2,10 +2,10 @@ package ru.timeconqueror.lootgames.minigame.gol;
 
 import net.minecraft.nbt.CompoundNBT;
 import org.jetbrains.annotations.Nullable;
-import ru.timeconqueror.lootgames.api.minigame.FloorLootGame;
+import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 
-public class GameOfLight extends FloorLootGame<GameOfLight> {
-
+public class GameOfLight extends BoardLootGame<GameOfLight> {
+    public static final int BOARD_SIZE = 3;
 
     @Override
     public @Nullable Stage<GameOfLight> createStageFromNBT(String id, CompoundNBT stageNBT) {
@@ -14,6 +14,6 @@ public class GameOfLight extends FloorLootGame<GameOfLight> {
 
     @Override
     public int getBoardSize() {
-        return 3;
+        return BOARD_SIZE;
     }
 }

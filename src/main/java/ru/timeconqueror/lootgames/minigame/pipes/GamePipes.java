@@ -6,7 +6,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import ru.timeconqueror.lootgames.api.minigame.FloorLootGame;
+import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
@@ -15,7 +15,7 @@ import ru.timeconqueror.lootgames.minigame.pipes.board.PipesBoardGenerator;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 
-public class GamePipes extends FloorLootGame<GamePipes> {
+public class GamePipes extends BoardLootGame<GamePipes> {
     private PipesBoard board;
     private final float difficulty;
 
@@ -188,19 +188,10 @@ public class GamePipes extends FloorLootGame<GamePipes> {
         }
     }
 
-    public static void generateGameStructure(World world, BlockPos centerPos, int level) {
+    public static void generateGameBoard(World world, BlockPos centerPos, int level) {
         int size = 19;
         BlockPos startPos = centerPos.offset(-size / 2, 0, -size / 2);
 
-        for (int x = 0; x < size; x++) {
-            for (int z = 0; z < size; z++) {
-                BlockPos pos = startPos.offset(x, 0, z);
-                if (x == 0 && z == 0) {
-                    world.setBlockAndUpdate(pos, LGBlocks.PIPES_MASTER.defaultBlockState());
-                } else {
-                    world.setBlockAndUpdate(pos, LGBlocks.SMART_SUBORDINATE.defaultBlockState());
-                }
-            }
-        }
+        BoardLootGame.generateGameBoard(world, startPos, size, LGBlocks.PIPES_MASTER.defaultBlockState());
     }
 }

@@ -2,7 +2,6 @@ package ru.timeconqueror.lootgames.common.block;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
@@ -19,7 +18,7 @@ public class BlockPipesActivator extends BlockGame {
         if (!worldIn.isClientSide()) {
 //            LGAdvancementTriggers.ACTIVATE_BLOCK.trigger(((ServerPlayerEntity) player), new ActivateBlockTrigger.ExtraInfo(pos, player.getHeldItem(handIn)));
 
-            GamePipes.generateGameStructure(worldIn, pos, 1);
+            GamePipes.generateGameBoard(worldIn, pos, 1);
             worldIn.playSound(null, pos, LGSounds.MS_START_GAME, SoundCategory.BLOCKS, 0.6F, 1.0F);
         }
 

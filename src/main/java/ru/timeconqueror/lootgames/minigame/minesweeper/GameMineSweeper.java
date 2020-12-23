@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
-import ru.timeconqueror.lootgames.api.minigame.FloorLootGame;
+import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
@@ -41,7 +41,7 @@ import static ru.timeconqueror.timecore.util.NetworkUtils.getPlayersNearby;
 //TODO add leveling info in chat
 //todo add game rules in chat
 //TODO remove break particle before left click interact
-public class GameMineSweeper extends FloorLootGame<GameMineSweeper> {
+public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
     public static final String ADV_TYPE_BEAT_LEVEL4 = "ms_level4";
 
     public boolean cIsGenerated;
@@ -59,20 +59,11 @@ public class GameMineSweeper extends FloorLootGame<GameMineSweeper> {
         board = new MSBoard(startBoardSize, startBombCount);
     }
 
-    public static void generateGameStructure(World world, BlockPos centerPos, int level) {
+    public static void generateGameBoard(World world, BlockPos centerPos, int level) {
         int size = LGConfigs.MINESWEEPER.getStageByIndex(level).getBoardSize();
         BlockPos startPos = centerPos.offset(-size / 2, 0, -size / 2);
 
-        for (int x = 0; x < size; x++) {
-            for (int z = 0; z < size; z++) {
-                BlockPos pos = startPos.offset(x, 0, z);
-                if (x == 0 && z == 0) {
-                    world.setBlockAndUpdate(pos, LGBlocks.MS_MASTER.defaultBlockState());
-                } else {
-                    world.setBlockAndUpdate(pos, LGBlocks.SMART_SUBORDINATE.defaultBlockState());
-                }
-            }
-        }
+        BoardLootGame.generateGameBoard(world, startPos, size, LGBlocks.MS_MASTER.defaultBlockState());
     }
 
     public static Pos2i convertToGamePos(BlockPos masterPos, BlockPos subordinatePos) {
@@ -108,7 +99,7 @@ public class GameMineSweeper extends FloorLootGame<GameMineSweeper> {
             getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
             masterTileEntity.destroyGameBlocks();
-            generateGameStructure(getWorld(), getGameCenter(), currentLevel + 1);
+            generateGameBoard(getWorld(), getGameCenter(), currentLevel + 1);
 
             ConfigMS.StageConfig stageConfig = LGConfigs.MINESWEEPER.getStageByIndex(currentLevel + 1);
             BlockPos startPos = getGameCenter().offset(-stageConfig.getBoardSize() / 2, 0, -stageConfig.getBoardSize() / 2);
