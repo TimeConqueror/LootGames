@@ -42,6 +42,7 @@ import static ru.timeconqueror.timecore.util.NetworkUtils.getPlayersNearby;
 //TODO add leveling info in chat
 //todo add game rules in chat
 //TODO remove break particle before left click interact
+//TODO if all non-bomb fields are revealed, finish the game
 public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
     public static final String ADV_TYPE_BEAT_LEVEL4 = "ms_level4";
 

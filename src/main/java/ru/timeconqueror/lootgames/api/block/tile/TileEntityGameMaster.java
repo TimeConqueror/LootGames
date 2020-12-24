@@ -42,7 +42,8 @@ public abstract class TileEntityGameMaster<T extends LootGame<T>> extends TileEn
     }
 
     /**
-     * Called when TileEntityGameMaster or BlockSubordinate is broken.
+     * Called when TileEntityGameMaster or BlockSubordinate should be broken.
+     * Block with TileEntity still exists at this point.
      * This method implies destroying of all game blocks.
      */
     public void onDestroy() {

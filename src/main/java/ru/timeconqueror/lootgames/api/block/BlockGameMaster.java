@@ -4,7 +4,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -16,7 +15,7 @@ import ru.timeconqueror.timecore.util.WorldUtils;
 
 import java.util.function.BiFunction;
 
-public class BlockGameMaster extends BlockGame implements ILeftInteractible, ISubordinateProvider {
+public class BlockGameMaster extends BlockGame implements IGameField {
     private final BiFunction<BlockState, IBlockReader, TileEntityGameMaster<?>> tileEntityFactory;
 
     public BlockGameMaster(BiFunction<BlockState, IBlockReader, TileEntityGameMaster<?>> tileEntityFactory) {
@@ -45,28 +44,5 @@ public class BlockGameMaster extends BlockGame implements ILeftInteractible, ISu
     @NotNull
     public TileEntityGameMaster<?> createTileEntity(BlockState state, IBlockReader world) {
         return tileEntityFactory.apply(state, world);
-    }
-
-    @Override
-    public boolean onLeftClick(World world, PlayerEntity player, BlockPos pos, Direction face) {
-        if (shouldHandleLeftClick(player, face)) {
-            handleLeftClick(player, world, pos, pos, face);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public static boolean shouldHandleLeftClick(PlayerEntity player, Direction face) {
-        return face == Direction.UP && !player.isShiftKeyDown();
-    }
-
-    public static void handleLeftClick(PlayerEntity player, World world, BlockPos masterPos, BlockPos subordinatePos, Direction face) {
-        if (!world.isClientSide()) {
-            WorldUtils.forTypedTileWithWarn(world, masterPos, TileEntityGameMaster.class, master -> {
-                master.onBlockLeftClick((ServerPlayerEntity) player, subordinatePos);
-            });
-        }
     }
 }

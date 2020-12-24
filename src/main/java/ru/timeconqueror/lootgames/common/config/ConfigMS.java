@@ -82,9 +82,9 @@ public class ConfigMS extends Config {
     }
 
     public static class StageConfig extends ConfigSection {
-        public ForgeConfigSpec.IntValue bombCount;
         public ForgeConfigSpec.IntValue minItems;
         public ForgeConfigSpec.IntValue maxItems;
+        private ForgeConfigSpec.IntValue bombCount;
         private ForgeConfigSpec.IntValue boardRadius;
         private ForgeConfigSpec.ConfigValue<String> defLootTableCfg;
         private ForgeConfigSpec.ConfigValue<List<? extends String>> perDimCfg;
@@ -187,7 +187,7 @@ public class ConfigMS extends Config {
             return lootTableDim == null ? defaultLootTable : lootTableDim;
         }
 
-        //TODO make
+        //TODO now i don't use it, but i must to
         private static class DefaultData {
             private final int boardRadius;
             private final int bombCount;

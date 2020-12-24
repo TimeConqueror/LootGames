@@ -18,7 +18,7 @@ import ru.timeconqueror.timecore.util.WorldUtils;
 import java.util.function.BiConsumer;
 
 /**
- * Subordinate block for minigames. Will find master block and notify it. The master block must be at the north-west corner of the game
+ * Subordinate block for minigames. Will find master block and notify it. The master block must be at the north-west corner of the game border
  * and its tileentity must extend {@link TileEntityGameMaster<>}!
  */
 public class BlockSmartSubordinate extends BlockGame implements ILeftInteractible, ISubordinateProvider {
@@ -63,10 +63,13 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
     }
 
     @Override
+    @SuppressWarnings("CodeBlock2Expr")
     public boolean onLeftClick(World world, PlayerEntity player, BlockPos pos, Direction face) {
-        if (BlockGameMaster.shouldHandleLeftClick(player, face)) {
+        if (face == Direction.UP && !player.isShiftKeyDown()) {
             if (!world.isClientSide()) {
-                forMasterTile(world, pos, (tileEntityGameMaster, masterPos) -> BlockGameMaster.handleLeftClick(player, world, masterPos, pos, face));
+                forMasterTile(world, pos, (tileEntityGameMaster, masterPos) -> {
+                    WorldUtils.forTypedTileWithWarn(world, masterPos, TileEntityGameMaster.class, master -> master.onBlockLeftClick((ServerPlayerEntity) player, pos));
+                });
             }
 
             return true;
@@ -98,5 +101,17 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
 
         // moving to corner, because master is there
         return currentPos.move(-1, 0, -1).immutable();
+    }
+
+    public static boolean shouldHandleLeftClick(PlayerEntity player, Direction face) {
+        return face == Direction.UP && !player.isShiftKeyDown();
+    }
+
+    public static void handleLeftClick(PlayerEntity player, World world, BlockPos masterPos, BlockPos subordinatePos, Direction face) {
+        if (!world.isClientSide()) {
+            WorldUtils.forTypedTileWithWarn(world, masterPos, TileEntityGameMaster.class, master -> {
+                master.onBlockLeftClick((ServerPlayerEntity) player, subordinatePos);
+            });
+        }
     }
 }
