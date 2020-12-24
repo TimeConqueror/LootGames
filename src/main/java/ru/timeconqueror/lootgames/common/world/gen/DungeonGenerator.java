@@ -8,6 +8,7 @@ import ru.timeconqueror.lootgames.registry.LGBlocks;
 public class DungeonGenerator {
     private static final BlockState DUNGEON_FLOOR = LGBlocks.DUNGEON_FLOOR.defaultBlockState();
 
+    //TODO make it called only when in structure
     public static void resetUnbreakablePlayField(World world, BlockPos floorPos) {
         if (!resetUnbreakableFieldsStartingFrom(world, floorPos)) {
             resetUnbreakableFieldsStartingFrom(world, floorPos.north());

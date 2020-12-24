@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
  * Subordinate block for minigames. Will find master block and notify it. The master block must be at the north-west corner of the game
  * and its tileentity must extend {@link TileEntityGameMaster<>}!
  */
-public class BlockSmartSubordinate extends BlockGame implements ILeftInteractible, IGameField {
+public class BlockSmartSubordinate extends BlockGame implements ILeftInteractible, ISubordinateProvider {
     private static boolean underBreaking = false;
 
     @Override
@@ -43,7 +43,7 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
         TileEntity te = worldIn.getBlockEntity(masterPos);
 
         if (te instanceof TileEntityGameMaster<?>) {
-            ((TileEntityGameMaster<?>) te).destroyGameBlocks();
+            ((TileEntityGameMaster<?>) te).onDestroy();
         }
     }
 
@@ -53,7 +53,7 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
             BlockPos masterPos = getMasterPos(worldIn, pos);
             TileEntity te = worldIn.getBlockEntity(masterPos);
             if (te instanceof TileEntityGameMaster<?>) {
-                ((TileEntityGameMaster<?>) te).onBlockRightClicked(((ServerPlayerEntity) player), pos);
+                ((TileEntityGameMaster<?>) te).onBlockRightClick(((ServerPlayerEntity) player), pos);
             } else {
                 NetworkUtils.sendMessage(player, new StringTextComponent("The game doesn't seem to work. Please, send the issue to mod author."));
             }
@@ -84,18 +84,19 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
         BlockPos.Mutable currentPos = pos.mutable();
         int limit = 128;
 
-        while (currentPos.equals(pos) || world.getBlockState(currentPos).getBlock() instanceof IGameField) {
+        while (currentPos.equals(pos) || world.getBlockState(currentPos).getBlock() instanceof ISubordinateProvider) {
             currentPos.move(-1, 0, 0);
             if (--limit == 0) break;
         }
         currentPos.move(1, 0, 0);
 
-        while (currentPos.equals(pos) || world.getBlockState(currentPos).getBlock() instanceof IGameField) {
+        while (currentPos.equals(pos) || world.getBlockState(currentPos).getBlock() instanceof ISubordinateProvider) {
             currentPos.move(0, 0, -1);
             if (--limit == 0) break;
         }
         currentPos.move(0, 0, 1);
 
-        return currentPos.immutable();
+        // moving to corner, because master is there
+        return currentPos.move(-1, 0, -1).immutable();
     }
 }

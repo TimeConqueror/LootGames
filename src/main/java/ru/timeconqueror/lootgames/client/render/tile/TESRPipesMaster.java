@@ -29,7 +29,7 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
     @Override
     public void render(TileEntityPipesMaster te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         GamePipes game = te.getGame();
-        int size = game.getBoardSize();
+        int size = game.getCurrentBoardSize();
         int animation = (int) (te.getAge() / 2 % 32);
 
         IVertexBuilder vb = bufferIn.getBuffer(BOARD_RENDER_TYPE);

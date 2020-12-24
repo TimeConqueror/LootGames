@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.minigame.gol;
 import net.minecraft.nbt.CompoundNBT;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class GameOfLight extends BoardLootGame<GameOfLight> {
     public static final int BOARD_SIZE = 3;
@@ -13,7 +14,12 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     }
 
     @Override
-    public int getBoardSize() {
+    public int getCurrentBoardSize() {
         return BOARD_SIZE;
+    }
+
+    @Override
+    public int getAllocatedBoardSize() {
+        throw new NotImplementedException();
     }
 }

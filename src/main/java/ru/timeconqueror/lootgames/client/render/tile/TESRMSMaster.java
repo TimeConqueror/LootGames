@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3f;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.LootGames;
@@ -30,11 +31,16 @@ public class TESRMSMaster extends TileEntityRenderer<TileEntityMSMaster> {
     @Override
     public void render(TileEntityMSMaster te, float partialTicks, MatrixStack matrix, @NotNull IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         GameMineSweeper game = te.getGame();
-        int boardSize = game.getBoardSize();
+        int boardSize = game.getCurrentBoardSize();
         LootGame.Stage<GameMineSweeper> stage = game.getStage();
 
+        BlockPos boardOrigin = game.getBoardOrigin();
+        BlockPos offset = boardOrigin.subtract(te.getBlockPos());
+
+//        System.out.println(offset);
+
         matrix.pushPose();
-        matrix.translate(0, 1, 0);
+        matrix.translate((offset.getX() - 1) + 1, 1, (offset.getZ() - 1) + 1);
         matrix.mulPose(Vector3f.XP.rotationDegrees(90));
 
         if (!game.cIsGenerated) {

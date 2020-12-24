@@ -18,6 +18,7 @@ import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.api.util.RewardUtils;
 import ru.timeconqueror.lootgames.api.util.RewardUtils.SpawnChestData;
 import ru.timeconqueror.lootgames.common.config.ConfigMS;
+import ru.timeconqueror.lootgames.common.config.ConfigMS.Snapshot;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSFieldChanged;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSGenBoard;
@@ -55,15 +56,13 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
     private boolean playRevealNeighboursSound = true;
 
-    public GameMineSweeper(int startBoardSize, int startBombCount) {
-        board = new MSBoard(startBoardSize, startBombCount);
-    }
+    /**
+     * Server-side only
+     */
+    private Snapshot configSnapshot = null;
 
-    public static void generateGameBoard(World world, BlockPos centerPos, int level) {
-        int size = LGConfigs.MINESWEEPER.getStageByIndex(level).getBoardSize();
-        BlockPos startPos = centerPos.offset(-size / 2, 0, -size / 2);
-
-        BoardLootGame.generateGameBoard(world, startPos, size, LGBlocks.MS_MASTER.defaultBlockState());
+    public GameMineSweeper() {
+        board = new MSBoard(0, 0);
     }
 
     public static Pos2i convertToGamePos(BlockPos masterPos, BlockPos subordinatePos) {
@@ -71,12 +70,25 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         return new Pos2i(temp.getX(), temp.getZ());
     }
 
+    // server only
+    public void setConfigSnapshot(Snapshot configSnapshot) {
+        this.configSnapshot = configSnapshot;
+    }
+
     @Override
     public void onPlace() {
         stage = new StageWaiting();
+
+        if (isServerSide()) {
+            configSnapshot = LGConfigs.MINESWEEPER.snapshot();
+            board.setSize(configSnapshot.getStage1().getBoardSize());
+            board.setBombCount(configSnapshot.getStage1().getBombCount());
+        }
+
+        super.onPlace();
     }
 
-    public void click(ServerPlayerEntity player, Pos2i clickedPos, MouseClickType type) {
+    public void onClick(ServerPlayerEntity player, Pos2i clickedPos, MouseClickType type) {
         if (stage instanceof StageWaiting) {
             ((StageWaiting) stage).onClick(player, clickedPos, type);
         }
@@ -86,28 +98,25 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         return board.isGenerated();
     }
 
-    public int getBoardSize() {
+    public int getCurrentBoardSize() {
         return board.size();
+    }
+
+    @Override
+    public int getAllocatedBoardSize() {
+        return configSnapshot.getStage4().getBoardSize();
     }
 
     private void onLevelSuccessfullyFinished() {
         if (currentLevel < 4) {
-
             sendUpdatePacket(new SPMSSpawnLevelBeatParticles());
 
             sendToNearby(new TranslationTextComponent("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
             getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
 
-            masterTileEntity.destroyGameBlocks();
-            generateGameBoard(getWorld(), getGameCenter(), currentLevel + 1);
+            Snapshot.StageSnapshot stageSnapshot = configSnapshot.getStageByIndex(currentLevel + 1);
 
-            ConfigMS.StageConfig stageConfig = LGConfigs.MINESWEEPER.getStageByIndex(currentLevel + 1);
-            BlockPos startPos = getGameCenter().offset(-stageConfig.getBoardSize() / 2, 0, -stageConfig.getBoardSize() / 2);
-
-            masterTileEntity.clearRemoved();
-            getWorld().setBlockEntity(startPos, masterTileEntity);
-
-            board.resetBoard(stageConfig.getBoardSize(), stageConfig.BOMB_COUNT.get());
+            board.resetBoard(stageSnapshot.getBoardSize(), stageSnapshot.getBombCount());
             currentLevel++;
 
             saveDataAndSendToClient();
@@ -116,6 +125,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
             triggerGameWin();
         }
     }
+
 
     @Override
     protected void triggerGameWin() {
@@ -157,7 +167,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
     private void spawnLootChest(DirectionTetra direction, int gameLevel) {
         ConfigMS.StageConfig stage = LGConfigs.MINESWEEPER.getStageByIndex(gameLevel);
-        SpawnChestData chestData = new SpawnChestData(this, stage.getLootTable(getWorld().dimension().location()), stage.MIN_ITEMS.get(), stage.MAX_ITEMS.get());
+        SpawnChestData chestData = new SpawnChestData(this, stage.getLootTable(getWorld().dimension().location()), stage.minItems.get(), stage.maxItems.get());
         RewardUtils.spawnLootChest(getWorld(), getGameCenter(), direction, chestData);
     }
 
@@ -247,6 +257,8 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         compound.putInt("ticks", ticks);
 
         compound.putInt("current_level", currentLevel);
+
+        compound.put("config_snapshot", Snapshot.serialize(configSnapshot));
     }
 
     @Override
@@ -257,6 +269,8 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         board.setSize(compound.getInt("board_size"));
         ticks = compound.getInt("ticks");
         currentLevel = compound.getInt("current_level");
+
+        configSnapshot = Snapshot.deserialize(compound.get("config_snapshot"));
     }
 
     @Override

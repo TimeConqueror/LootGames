@@ -16,7 +16,7 @@ import ru.timeconqueror.timecore.util.WorldUtils;
 
 import java.util.function.BiFunction;
 
-public class BlockGameMaster extends BlockGame implements ILeftInteractible, IGameField {
+public class BlockGameMaster extends BlockGame implements ILeftInteractible, ISubordinateProvider {
     private final BiFunction<BlockState, IBlockReader, TileEntityGameMaster<?>> tileEntityFactory;
 
     public BlockGameMaster(BiFunction<BlockState, IBlockReader, TileEntityGameMaster<?>> tileEntityFactory) {
@@ -31,7 +31,7 @@ public class BlockGameMaster extends BlockGame implements ILeftInteractible, IGa
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!worldIn.isClientSide()) {
-            WorldUtils.forTypedTileWithWarn(worldIn, pos, TileEntityGameMaster.class, te -> te.onBlockRightClicked(((ServerPlayerEntity) player), pos));
+            WorldUtils.forTypedTileWithWarn(worldIn, pos, TileEntityGameMaster.class, te -> te.onBlockRightClick(((ServerPlayerEntity) player), pos));
         }
 
         return ActionResultType.SUCCESS;

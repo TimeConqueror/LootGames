@@ -14,6 +14,7 @@ import ru.timeconqueror.lootgames.minigame.pipes.board.PipesBoard;
 import ru.timeconqueror.lootgames.minigame.pipes.board.PipesBoardGenerator;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class GamePipes extends BoardLootGame<GamePipes> {
     private PipesBoard board;
@@ -35,8 +36,13 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         return difficulty;
     }
 
-    public int getBoardSize() {
+    public int getCurrentBoardSize() {
         return board.getSize();
+    }
+
+    @Override
+    public int getAllocatedBoardSize() {
+        throw new NotImplementedException();
     }
 
     public PipesBoard getBoard() {
@@ -46,7 +52,7 @@ public class GamePipes extends BoardLootGame<GamePipes> {
     @Override
     public void writeCommonNBT(CompoundNBT compound) {
         super.writeCommonNBT(compound);
-        compound.putInt("Size", getBoardSize());
+        compound.putInt("Size", getCurrentBoardSize());
         compound.put("Board", board.serializeNBT());
     }
 

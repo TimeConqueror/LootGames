@@ -1,15 +1,41 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import ru.timeconqueror.lootgames.api.LootGamesAPI;
+import ru.timeconqueror.lootgames.api.block.tile.TileBoardGameMaster;
+import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
+import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
+import ru.timeconqueror.lootgames.utils.MouseClickType;
+import ru.timeconqueror.timecore.util.EnvironmentUtils;
 import ru.timeconqueror.timecore.util.Requirements;
 
+/**
+ * Loot game that is flat.
+ */
 public abstract class BoardLootGame<T extends BoardLootGame<T>> extends LootGame<T> {
+    private static final Logger LOGGER = LogManager.getLogger();
+    public static boolean disableMasterCheckWarning;
+
+    @Override
+    public void setMasterTileEntity(TileEntityGameMaster<T> masterTileEntity) {
+        super.setMasterTileEntity(masterTileEntity);
+
+        if (EnvironmentUtils.isInDev() && !disableMasterCheckWarning && !(masterTileEntity instanceof TileBoardGameMaster<?>)) {
+            LOGGER.warn("You probably forgot that {} needs to extend {} to handle {} properly.", masterTileEntity.getClass().getSimpleName(), TileBoardGameMaster.class.getSimpleName(), BoardLootGame.class.getSimpleName());
+        }
+    }
+
     @Override
     public BlockPos getGameCenter() {
-        return masterTileEntity.getBlockPos().offset(getBoardSize() / 2, 0, getBoardSize() / 2);
+        int size = getCurrentBoardSize();
+        return getBoardOrigin().offset(size / 2, 0, size / 2);
     }
 
     @Override
@@ -17,7 +43,28 @@ public abstract class BoardLootGame<T extends BoardLootGame<T>> extends LootGame
         return getMasterPos();
     }
 
-    public abstract int getBoardSize();
+    public abstract int getCurrentBoardSize();
+
+    public abstract int getAllocatedBoardSize();
+
+    @Override
+    public void onDestroy() {
+        LootGamesAPI.getBoardGenerator().clearBoard(((ServerWorld) getWorld()), getMasterPos(), getAllocatedBoardSize(), getAllocatedBoardSize());
+    }
+
+    public Pos2i convertToGamePos(BlockPos subordinatePos) {
+        BlockPos result = subordinatePos.subtract(getBoardOrigin());
+        return new Pos2i(result.getX(), result.getZ());
+    }
+
+    public BlockPos getBoardOrigin() {
+        int offset = getAllocatedBoardSize() - getCurrentBoardSize();
+        return getMasterPos().mutable().move(1, 0, 1).move(offset / 2, 0, offset / 2).immutable();
+    }
+
+    public void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
+
+    }
 
     /**
      * Generates flat game board.

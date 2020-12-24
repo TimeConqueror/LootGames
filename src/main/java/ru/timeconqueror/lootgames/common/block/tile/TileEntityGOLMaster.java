@@ -8,9 +8,4 @@ public class TileEntityGOLMaster extends TileEntityGameMaster<GameOfLight> {
     public TileEntityGOLMaster() {
         super(LGTiles.GOL_MASTER, new GameOfLight());
     }
-
-    @Override
-    public void destroyGameBlocks() {
-
-    }
 }

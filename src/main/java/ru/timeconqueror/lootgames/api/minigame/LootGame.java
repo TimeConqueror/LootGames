@@ -67,7 +67,7 @@ public abstract class LootGame<T extends LootGame<T>> {
     }
 
     /**
-     * Called when tile entity is just placed in world and has never been read from nbt.
+     * Called when tile entity is just placed in world and has never been write to and read from nbt.
      */
     public void onPlace() {
     }
@@ -135,7 +135,7 @@ public abstract class LootGame<T extends LootGame<T>> {
      */
     protected void onGameEnd() {
         DungeonGenerator.resetUnbreakablePlayField(getWorld(), getRoomFloorPos());
-        masterTileEntity.destroyGameBlocks();
+        masterTileEntity.onDestroy();
     }
 
     protected abstract BlockPos getGameCenter();
@@ -306,6 +306,8 @@ public abstract class LootGame<T extends LootGame<T>> {
     public Stage<T> getStage() {
         return stage;
     }
+
+    public abstract void onDestroy();
 
     public abstract static class Stage<T extends LootGame<T>> {
         /**

@@ -45,7 +45,9 @@ public abstract class TileEntityGameMaster<T extends LootGame<T>> extends TileEn
      * Called when TileEntityGameMaster or BlockSubordinate is broken.
      * This method implies destroying of all game blocks.
      */
-    public abstract void destroyGameBlocks();
+    public void onDestroy() {
+        game.onDestroy();
+    }
 
     /**
      * For saving/sending data use {@link #writeNBTForSaving(CompoundNBT)}
@@ -180,7 +182,7 @@ public abstract class TileEntityGameMaster<T extends LootGame<T>> extends TileEn
      * @param player         player, who clicked the subordinate block.
      * @param subordinatePos pos of subordinate block.
      */
-    public void onBlockRightClicked(ServerPlayerEntity player, BlockPos subordinatePos) {
+    public void onBlockRightClick(ServerPlayerEntity player, BlockPos subordinatePos) {
     }
 
     /**

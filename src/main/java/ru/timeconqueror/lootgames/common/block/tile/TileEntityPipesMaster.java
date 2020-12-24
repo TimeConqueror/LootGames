@@ -20,7 +20,7 @@ public class TileEntityPipesMaster extends TileEntityGameMaster<GamePipes> {
     }
 
     @Override
-    public void onBlockRightClicked(ServerPlayerEntity player, BlockPos subordinatePos) {
+    public void onBlockRightClick(ServerPlayerEntity player, BlockPos subordinatePos) {
         Pos2i pos = GameMineSweeper.convertToGamePos(getBlockPos(), subordinatePos);
         game.clickField(player, pos, MouseClickType.RIGHT);
     }
@@ -32,9 +32,9 @@ public class TileEntityPipesMaster extends TileEntityGameMaster<GamePipes> {
     }
 
     @Override
-    public void destroyGameBlocks() {
-        for (int x = 0; x < game.getBoardSize(); x++) {
-            for (int z = 0; z < game.getBoardSize(); z++) {
+    public void onDestroy() {
+        for (int x = 0; x < game.getCurrentBoardSize(); x++) {
+            for (int z = 0; z < game.getCurrentBoardSize(); z++) {
                 getLevel().setBlock(getBlockPos().offset(x, 0, z), Blocks.AIR.defaultBlockState(), 2);
             }
         }

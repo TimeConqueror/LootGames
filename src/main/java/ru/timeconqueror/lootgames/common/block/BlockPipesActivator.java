@@ -21,12 +21,12 @@ public class BlockPipesActivator extends BlockGame {
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!worldIn.isClientSide()) {
-            boolean fieldPlaced = LootGamesAPI.getFieldManager().trySetupFlatField(
+            boolean fieldPlaced = LootGamesAPI.getBoardGenerator().trySetupBoard(
                     (ServerWorld) worldIn,
                     pos, 9, 2, 9,
                     LGBlocks.PIPES_MASTER.defaultBlockState(),
                     player
-            );
+            ).isSucceed();
 
             if (fieldPlaced) {
                 worldIn.playSound(null, pos, LGSounds.MS_START_GAME, SoundCategory.BLOCKS, 0.6F, 1.0F);

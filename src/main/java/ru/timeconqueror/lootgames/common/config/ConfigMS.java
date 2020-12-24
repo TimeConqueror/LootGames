@@ -1,14 +1,19 @@
 package ru.timeconqueror.lootgames.common.config;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.nbt.INBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.common.config.ConfigMS.Snapshot.StageSnapshot;
 import ru.timeconqueror.timecore.api.common.config.Config;
 import ru.timeconqueror.timecore.api.common.config.ConfigSection;
 import ru.timeconqueror.timecore.api.common.config.ImprovedConfigBuilder;
+import ru.timeconqueror.timecore.util.CodecUtils;
 import ru.timeconqueror.timecore.util.ParseUtils;
 
 import java.util.ArrayList;
@@ -19,10 +24,10 @@ public class ConfigMS extends Config {
     public ForgeConfigSpec.IntValue DETONATION_TIME;
     public ForgeConfigSpec.IntValue ATTEMPT_COUNT;
 
-    public StageConfig STAGE_1;
-    public StageConfig STAGE_2;
-    public StageConfig STAGE_3;
-    public StageConfig STAGE_4;
+    public StageConfig stage1;
+    public StageConfig stage2;
+    public StageConfig stage3;
+    public StageConfig stage4;
 
     public ConfigMS(ModConfig.@NotNull Type type, @NotNull String key, @Nullable String comment) {
         super(type, key, comment);
@@ -37,14 +42,14 @@ public class ConfigMS extends Config {
 
         String sorryMsg = "\nIgnore stage prefix, it is here because of new forge config system knows nothing about property ordering. Waiting for fix... :c";
 
-        STAGE_1 = new StageConfig("y_stage_1", new StageConfig.DefaultData(6, 20, "minecraft:chests/simple_dungeon", 15, 15));
-        builder.addAndSetupSection(STAGE_1, "stage", "Regulates characteristics of stage 1." + sorryMsg);
-        STAGE_2 = new StageConfig("y_stage_2", new StageConfig.DefaultData(7, 30, "minecraft:chests/desert_pyramid", -1, -1));
-        builder.addAndSetupSection(STAGE_2, "stage", "Regulates characteristics of stage 2." + sorryMsg);
-        STAGE_3 = new StageConfig("z_stage_3", new StageConfig.DefaultData(8, 42, "minecraft:chests/nether_bridge", -1, -1));
-        builder.addAndSetupSection(STAGE_3, "stage", "Regulates characteristics of stage 3." + sorryMsg);
-        STAGE_4 = new StageConfig("q_stage_4", new StageConfig.DefaultData(9, 68, "minecraft:chests/end_city_treasure", -1, -1));
-        builder.addAndSetupSection(STAGE_4, "stage", "Regulates characteristics of stage 4." + sorryMsg);
+        stage1 = new StageConfig("y_stage_1", new StageConfig.DefaultData(6, 20, "minecraft:chests/simple_dungeon", 15, 15));
+        builder.addAndSetupSection(stage1, "stage", "Regulates characteristics of stage 1." + sorryMsg);
+        stage2 = new StageConfig("y_stage_2", new StageConfig.DefaultData(7, 30, "minecraft:chests/desert_pyramid", -1, -1));
+        builder.addAndSetupSection(stage2, "stage", "Regulates characteristics of stage 2." + sorryMsg);
+        stage3 = new StageConfig("z_stage_3", new StageConfig.DefaultData(8, 42, "minecraft:chests/nether_bridge", -1, -1));
+        builder.addAndSetupSection(stage3, "stage", "Regulates characteristics of stage 3." + sorryMsg);
+        stage4 = new StageConfig("q_stage_4", new StageConfig.DefaultData(9, 68, "minecraft:chests/end_city_treasure", -1, -1));
+        builder.addAndSetupSection(stage4, "stage", "Regulates characteristics of stage 4." + sorryMsg);
     }
 
     /**
@@ -55,13 +60,13 @@ public class ConfigMS extends Config {
     public StageConfig getStageByIndex(int index) {
         switch (index) {
             case 1:
-                return STAGE_1;
+                return stage1;
             case 2:
-                return STAGE_2;
+                return stage2;
             case 3:
-                return STAGE_3;
+                return stage3;
             case 4:
-                return STAGE_4;
+                return stage4;
             default:
                 throw new RuntimeException("Provided unknown stage config index " + index + ", please contact with mod author.");
         }
@@ -72,13 +77,17 @@ public class ConfigMS extends Config {
         return LGConfigs.resolve("games/minesweeper.toml");
     }
 
+    public Snapshot snapshot() {
+        return new Snapshot(stage1.snapshot(), stage2.snapshot(), stage3.snapshot(), stage4.snapshot());
+    }
+
     public static class StageConfig extends ConfigSection {
-        public ForgeConfigSpec.IntValue BOMB_COUNT;
-        public ForgeConfigSpec.IntValue MIN_ITEMS;
-        public ForgeConfigSpec.IntValue MAX_ITEMS;
-        private ForgeConfigSpec.IntValue BOARD_RADIUS_CFG;
-        private ForgeConfigSpec.ConfigValue<String> DEF_LOOT_TABLE_CFG;
-        private ForgeConfigSpec.ConfigValue<List<? extends String>> PER_DIM_CFG;
+        public ForgeConfigSpec.IntValue bombCount;
+        public ForgeConfigSpec.IntValue minItems;
+        public ForgeConfigSpec.IntValue maxItems;
+        private ForgeConfigSpec.IntValue boardRadius;
+        private ForgeConfigSpec.ConfigValue<String> defLootTableCfg;
+        private ForgeConfigSpec.ConfigValue<List<? extends String>> perDimCfg;
 
         private final DefaultData defData;
         private ResourceLocation defaultLootTable;
@@ -89,20 +98,24 @@ public class ConfigMS extends Config {
             this.defData = defData;
         }
 
+        public StageSnapshot snapshot() {
+            return new StageSnapshot(bombCount.get(), getBoardSize());
+        }
+
         @Override
         public void setup(ImprovedConfigBuilder builder) {
-            BOARD_RADIUS_CFG = builder.comment("The radius of Minesweeper board.")
+            boardRadius = builder.comment("The radius of Minesweeper board.")
                     .defineInRange("board_radius", defData.boardRadius, 2, 9);
-            BOMB_COUNT = builder.comment("The amount of bombs on the board.")
+            bombCount = builder.comment("The amount of bombs on the board.")
                     .defineInRange("bomb_count", defData.bombCount, 1, Integer.MAX_VALUE);
-            DEF_LOOT_TABLE_CFG = builder.comment("Name of the loottable, items from which will be generated in the chest of this stage. This can be adjusted per-Dimension in S:DimensionalConfig.")
+            defLootTableCfg = builder.comment("Name of the loottable, items from which will be generated in the chest of this stage. This can be adjusted per-Dimension in S:DimensionalConfig.")
                     .define("loot_table", defData.lootTable);
-            MIN_ITEMS = builder.comment("Minimum amount of item stacks to be generated in chest. Won't be applied, if count of items in bound loot table are less than it. If min and max are set to -1, the limits will be disabled.")
+            minItems = builder.comment("Minimum amount of item stacks to be generated in chest. Won't be applied, if count of items in bound loot table are less than it. If min and max are set to -1, the limits will be disabled.")
                     .defineInRange("min_items", defData.minItems, -1, 256);
-            MAX_ITEMS = builder.comment("Maximum amount of item stacks to be generated in chest. If this is set to -1, max limit will be disabled.")
+            maxItems = builder.comment("Maximum amount of item stacks to be generated in chest. If this is set to -1, max limit will be disabled.")
                     .defineInRange("max_items", defData.maxItems, -1, 256);
 
-            PER_DIM_CFG = builder.comment("Here you can add different loottables to each dimension. If dimension isn't in this list, then game will take default loottable for this stage.",
+            perDimCfg = builder.comment("Here you can add different loottables to each dimension. If dimension isn't in this list, then game will take default loottable for this stage.",
                     "Syntax: <dimension_id>; <loottable_name>",
                     "<loottable_name> - The loottable name for the chest in this stage.",
                     "General Example: [ \"0; minecraft:chests/simple_dungeon\" ]")
@@ -113,29 +126,29 @@ public class ConfigMS extends Config {
         public void onEveryLoad(ModConfig.ModConfigEvent configEvent) {
             super.onEveryLoad(configEvent);
 
-            int bombCount = BOMB_COUNT.get();
+            int bombCount = this.bombCount.get();
             int boardSize = getBoardSize();
 
             if (bombCount > boardSize * boardSize - 1) {
                 LootGames.LOGGER.warn("Bomb count must be strictly less than amount of game fields. " +
                         "Current values: bomb count = {}, field count: {} (board size = {}, board radius = {})\n " +
-                        "Bomb count was switched to {}.", bombCount, boardSize * boardSize, boardSize, boardSize * boardSize - 2, BOARD_RADIUS_CFG.get());
-                BOMB_COUNT.set(boardSize * boardSize - 2); // at least 1 field with no bomb
+                        "Bomb count was switched to {}.", bombCount, boardSize * boardSize, boardSize, boardSize * boardSize - 2, boardRadius.get());
+                this.bombCount.set(boardSize * boardSize - 2); // at least 1 field with no bomb
             }
 
-            defaultLootTable = new ResourceLocation(DEF_LOOT_TABLE_CFG.get());
+            defaultLootTable = new ResourceLocation(defLootTableCfg.get());
 
             parseDimConfigs();
         }
 
         public int getBoardSize() {
-            return BOARD_RADIUS_CFG.get() * 2 + 1;
+            return boardRadius.get() * 2 + 1;
         }
 
         private void parseDimConfigs() {
             dimensionsConfigsMap = new HashMap<>();
 
-            for (String entry : PER_DIM_CFG.get()) {
+            for (String entry : perDimCfg.get()) {
                 String[] config = entry.split(";");
                 for (int i = 0; i < config.length; i++) {
                     config[i] = config[i].trim();
@@ -174,6 +187,7 @@ public class ConfigMS extends Config {
             return lootTableDim == null ? defaultLootTable : lootTableDim;
         }
 
+        //TODO make
         private static class DefaultData {
             private final int boardRadius;
             private final int bombCount;
@@ -187,6 +201,97 @@ public class ConfigMS extends Config {
                 this.lootTable = lootTable;
                 this.minItems = minItems;
                 this.maxItems = maxItems;
+            }
+        }
+    }
+
+    public static class Snapshot {
+        public static final Codec<Snapshot> CODEC = RecordCodecBuilder.create(instance ->
+                instance.group(
+                        StageSnapshot.CODEC.fieldOf("stage_1").forGetter(o -> o.stage1),
+                        StageSnapshot.CODEC.fieldOf("stage_2").forGetter(o -> o.stage2),
+                        StageSnapshot.CODEC.fieldOf("stage_3").forGetter(o -> o.stage3),
+                        StageSnapshot.CODEC.fieldOf("stage_4").forGetter(o -> o.stage4)
+                ).apply(instance, Snapshot::new));
+
+
+        private final StageSnapshot stage1;
+        private final StageSnapshot stage2;
+        private final StageSnapshot stage3;
+        private final StageSnapshot stage4;
+
+        public Snapshot(StageSnapshot stage1, StageSnapshot stage2, StageSnapshot stage3, StageSnapshot stage4) {
+            this.stage1 = stage1;
+            this.stage2 = stage2;
+            this.stage3 = stage3;
+            this.stage4 = stage4;
+        }
+
+        public static INBT serialize(Snapshot snapshot) {
+            return CodecUtils.encodeStrictly(CODEC, CodecUtils.NBT_OPS, snapshot);
+        }
+
+        public static Snapshot deserialize(INBT serialized) {
+            return CodecUtils.decodeStrictly(CODEC, CodecUtils.NBT_OPS, serialized);
+        }
+
+        public StageSnapshot getStage1() {
+            return stage1;
+        }
+
+        public StageSnapshot getStage2() {
+            return stage2;
+        }
+
+        public StageSnapshot getStage3() {
+            return stage3;
+        }
+
+        public StageSnapshot getStage4() {
+            return stage4;
+        }
+
+        public static class StageSnapshot {
+            public static final Codec<StageSnapshot> CODEC = RecordCodecBuilder.create(instance ->
+                    instance.group(
+                            Codec.INT.fieldOf("bomb_count").forGetter(stageSnapshot -> stageSnapshot.bombCount),
+                            Codec.INT.fieldOf("board_size").forGetter(stageSnapshot -> stageSnapshot.boardSize)
+                    ).apply(instance, StageSnapshot::new));
+
+            private final int bombCount;
+            private final int boardSize;
+
+            public StageSnapshot(int bombCount, int boardSize) {
+                this.bombCount = bombCount;
+                this.boardSize = boardSize;
+            }
+
+            public int getBoardSize() {
+                return boardSize;
+            }
+
+            public int getBombCount() {
+                return bombCount;
+            }
+        }
+
+        /**
+         * @param index - 1-4 (inclusive)
+         *              Can return true, if index will be out of bounds.
+         * @throws RuntimeException if stage config was not found for provided index.
+         */
+        public StageSnapshot getStageByIndex(int index) {
+            switch (index) {
+                case 1:
+                    return stage1;
+                case 2:
+                    return stage2;
+                case 3:
+                    return stage3;
+                case 4:
+                    return stage4;
+                default:
+                    throw new RuntimeException("Provided unknown stage snapshot index " + index + ", please contact with mod author.");
             }
         }
     }

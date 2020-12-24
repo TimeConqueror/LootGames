@@ -8,7 +8,7 @@ import net.minecraft.util.IStringSerializable;
 
 import java.util.Locale;
 
-public class BlockFieldBorder extends BlockGame {
+public class BlockFieldBorder extends BlockGame implements IGameField {
 
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 
