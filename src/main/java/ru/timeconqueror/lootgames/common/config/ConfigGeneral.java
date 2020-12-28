@@ -36,7 +36,7 @@ public class ConfigGeneral extends Config {
 
     @Override
     public @NotNull String getRelativePath() {
-        return LGConfigs.resolve("general.toml");
+        return LGConfigs.resolve(getKey() + ".toml");
     }
 
     public static class WorldGenCategory extends ConfigSection {

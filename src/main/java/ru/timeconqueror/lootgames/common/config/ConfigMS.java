@@ -3,7 +3,6 @@ package ru.timeconqueror.lootgames.common.config;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.INBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import org.jetbrains.annotations.NotNull;
@@ -14,11 +13,6 @@ import ru.timeconqueror.timecore.api.common.config.Config;
 import ru.timeconqueror.timecore.api.common.config.ConfigSection;
 import ru.timeconqueror.timecore.api.common.config.ImprovedConfigBuilder;
 import ru.timeconqueror.timecore.api.util.CodecUtils;
-import ru.timeconqueror.timecore.api.util.ParseUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class ConfigMS extends Config {
     public ForgeConfigSpec.IntValue DETONATION_TIME;
@@ -42,13 +36,13 @@ public class ConfigMS extends Config {
 
         String sorryMsg = "\nIgnore stage prefix, it is here because of new forge config system knows nothing about property ordering. Waiting for fix... :c";
 
-        stage1 = new StageConfig("y_stage_1", new StageConfig.DefaultData(6, 20, "minecraft:chests/simple_dungeon", 15, 15));
+        stage1 = new StageConfig("stage_1", new StageConfig.DefaultData(6, 20));
         builder.addAndSetupSection(stage1, "stage", "Regulates characteristics of stage 1." + sorryMsg);
-        stage2 = new StageConfig("y_stage_2", new StageConfig.DefaultData(7, 30, "minecraft:chests/desert_pyramid", -1, -1));
+        stage2 = new StageConfig("stage_2", new StageConfig.DefaultData(7, 30));
         builder.addAndSetupSection(stage2, "stage", "Regulates characteristics of stage 2." + sorryMsg);
-        stage3 = new StageConfig("z_stage_3", new StageConfig.DefaultData(8, 42, "minecraft:chests/nether_bridge", -1, -1));
+        stage3 = new StageConfig("stage_3", new StageConfig.DefaultData(8, 42));
         builder.addAndSetupSection(stage3, "stage", "Regulates characteristics of stage 3." + sorryMsg);
-        stage4 = new StageConfig("q_stage_4", new StageConfig.DefaultData(9, 68, "minecraft:chests/end_city_treasure", -1, -1));
+        stage4 = new StageConfig("stage_4", new StageConfig.DefaultData(9, 68));
         builder.addAndSetupSection(stage4, "stage", "Regulates characteristics of stage 4." + sorryMsg);
     }
 
@@ -82,16 +76,10 @@ public class ConfigMS extends Config {
     }
 
     public static class StageConfig extends ConfigSection {
-        public ForgeConfigSpec.IntValue minItems;
-        public ForgeConfigSpec.IntValue maxItems;
         private ForgeConfigSpec.IntValue bombCount;
         private ForgeConfigSpec.IntValue boardRadius;
-        private ForgeConfigSpec.ConfigValue<String> defLootTableCfg;
-        private ForgeConfigSpec.ConfigValue<List<? extends String>> perDimCfg;
 
         private final DefaultData defData;
-        private ResourceLocation defaultLootTable;
-        private HashMap<Integer, ResourceLocation> dimensionsConfigsMap;
 
         public StageConfig(String key, DefaultData defData) {
             super(key, null);
@@ -108,18 +96,6 @@ public class ConfigMS extends Config {
                     .defineInRange("board_radius", defData.boardRadius, 2, 9);
             bombCount = builder.comment("The amount of bombs on the board.")
                     .defineInRange("bomb_count", defData.bombCount, 1, Integer.MAX_VALUE);
-            defLootTableCfg = builder.comment("Name of the loottable, items from which will be generated in the chest of this stage. This can be adjusted per-Dimension in S:DimensionalConfig.")
-                    .define("loot_table", defData.lootTable);
-            minItems = builder.comment("Minimum amount of item stacks to be generated in chest. Won't be applied, if count of items in bound loot table are less than it. If min and max are set to -1, the limits will be disabled.")
-                    .defineInRange("min_items", defData.minItems, -1, 256);
-            maxItems = builder.comment("Maximum amount of item stacks to be generated in chest. If this is set to -1, max limit will be disabled.")
-                    .defineInRange("max_items", defData.maxItems, -1, 256);
-
-            perDimCfg = builder.comment("Here you can add different loottables to each dimension. If dimension isn't in this list, then game will take default loottable for this stage.",
-                    "Syntax: <dimension_id>; <loottable_name>",
-                    "<loottable_name> - The loottable name for the chest in this stage.",
-                    "General Example: [ \"0; minecraft:chests/simple_dungeon\" ]")
-                    .defineList("per_dim_configs", new ArrayList<>(), o -> true);//TODO someday nightconfig will fix validators...
         }
 
         @Override
@@ -135,72 +111,19 @@ public class ConfigMS extends Config {
                         "Bomb count was switched to {}.", bombCount, boardSize * boardSize, boardSize, boardSize * boardSize - 2, boardRadius.get());
                 this.bombCount.set(boardSize * boardSize - 2); // at least 1 field with no bomb
             }
-
-            defaultLootTable = new ResourceLocation(defLootTableCfg.get());
-
-            parseDimConfigs();
         }
 
         public int getBoardSize() {
             return boardRadius.get() * 2 + 1;
         }
 
-        private void parseDimConfigs() {
-            dimensionsConfigsMap = new HashMap<>();
-
-            for (String entry : perDimCfg.get()) {
-                String[] config = entry.split(";");
-                for (int i = 0; i < config.length; i++) {
-                    config[i] = config[i].trim();
-                }
-
-                if (config.length == 2) {
-                    if (ParseUtils.isInt(config[0])) {
-                        int dim = Integer.parseInt(config[0]);
-
-                        if (dimensionsConfigsMap.containsKey(dim)) {
-                            LootGames.LOGGER.error("Invalid dimension configs entry found: {}. Dimension ID is already defined. Skipping entry...", entry);
-                            continue;
-                        }
-
-                        String lootTableDim;
-                        if (!config[1].isEmpty()) {
-                            lootTableDim = config[1];
-                        } else {
-                            LootGames.LOGGER.error("Invalid dimension configs entry found: {}. LootTable ResourceLocation must not be an empty string. Skipping entry...", entry);
-                            continue;
-                        }
-
-                        dimensionsConfigsMap.put(dim, new ResourceLocation(lootTableDim));
-                    } else {
-                        LootGames.LOGGER.error("Invalid dimension configs entry found: {}. Dimension ID must be an Integer.  Skipping entry...", entry);
-                    }
-                } else {
-                    LootGames.LOGGER.error("Invalid dimension configs entry found: {}. Syntax is <dimension_id>; <loottable_resourcelocation>.  Skipping entry...", entry);
-                }
-            }
-        }
-
-        public ResourceLocation getLootTable(ResourceLocation dimensionId) {
-            ResourceLocation lootTableDim = dimensionsConfigsMap.get(dimensionId);
-
-            return lootTableDim == null ? defaultLootTable : lootTableDim;
-        }
-
-        //TODO now i don't use it, but i must to
         private static class DefaultData {
             private final int boardRadius;
             private final int bombCount;
-            private final String lootTable;
-            private final int minItems;
-            private final int maxItems;
 
-            public DefaultData(int boardRadius, int bombCount, String lootTable, int minItems, int maxItems) {
+            public DefaultData(int boardRadius, int bombCount) {
                 this.boardRadius = boardRadius;
                 this.bombCount = bombCount;
-                this.lootTable = lootTable;
-                this.minItems = minItems;
-                this.maxItems = maxItems;
             }
         }
     }

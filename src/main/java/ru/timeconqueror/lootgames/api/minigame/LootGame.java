@@ -317,6 +317,9 @@ public abstract class LootGame<T extends LootGame<T>> {
 
         }
 
+        /**
+         * Called on every tick for both logical sides.
+         */
         protected void onTick(LootGame<T> game) {
 
         }

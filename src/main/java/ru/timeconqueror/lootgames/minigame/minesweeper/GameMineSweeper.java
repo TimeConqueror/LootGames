@@ -1,6 +1,5 @@
 package ru.timeconqueror.lootgames.minigame.minesweeper;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.SoundCategory;
@@ -9,6 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
@@ -16,8 +16,6 @@ import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.api.util.RewardUtils;
-import ru.timeconqueror.lootgames.api.util.RewardUtils.SpawnChestData;
-import ru.timeconqueror.lootgames.common.config.ConfigMS;
 import ru.timeconqueror.lootgames.common.config.ConfigMS.Snapshot;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSFieldChanged;
@@ -28,7 +26,6 @@ import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
-import ru.timeconqueror.timecore.api.util.DirectionTetra;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 import ru.timeconqueror.timecore.api.util.Wrapper;
 
@@ -143,33 +140,12 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
 
         BlockPos central = getGameCenter();
-        BlockState state = LGBlocks.DUNGEON_LAMP.defaultBlockState();
-        getWorld().setBlockAndUpdate(central.offset(1, 0, 1), state);
-        getWorld().setBlockAndUpdate(central.offset(1, 0, -1), state);
-        getWorld().setBlockAndUpdate(central.offset(-1, 0, 1), state);
-        getWorld().setBlockAndUpdate(central.offset(-1, 0, -1), state);
 
-        spawnLootChest(DirectionTetra.NORTH, 1);
-
-        if (currentLevel > 2) {
-
-            spawnLootChest(DirectionTetra.EAST, 2);
-        }
-
-        if (currentLevel > 3) {
-            spawnLootChest(DirectionTetra.SOUTH, 3);
-        }
-
-        if (currentLevel > 4) {
+        if (currentLevel > 4) { // end of the game
             players.forEach(player -> LGAdvancementTriggers.END_GAME.trigger(player, ADV_TYPE_BEAT_LEVEL4));
-            spawnLootChest(DirectionTetra.WEST, 4);
         }
-    }
 
-    private void spawnLootChest(DirectionTetra direction, int gameLevel) {
-        ConfigMS.StageConfig stage = LGConfigs.MINESWEEPER.getStageByIndex(gameLevel);
-        SpawnChestData chestData = new SpawnChestData(this, stage.getLootTable(getWorld().dimension().location()), stage.minItems.get(), stage.maxItems.get());
-        RewardUtils.spawnLootChest(getWorld(), getGameCenter(), direction, chestData);
+        RewardUtils.spawnFourStagedReward(((ServerWorld) getWorld()), this, central, currentLevel - 1, LGConfigs.REWARDS.minesweeper);
     }
 
     @Override
@@ -537,7 +513,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
                         longestDetTime.set(detTime);
                     }
 
-                    taskScheduler.addTask(new TaskCreateExplosion(convertToBlockPos(pos2i), strength, explosionMode), detTime);
+                    taskScheduler.addTask(new TaskCreateExplosion(convertToBlockPos(pos2i), strength, explosionMode), detTime);//TODO fix
                 }
             });
 

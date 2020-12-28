@@ -57,6 +57,10 @@ public abstract class BoardLootGame<T extends BoardLootGame<T>> extends LootGame
         return new Pos2i(result.getX(), result.getZ());
     }
 
+    public BlockPos convertToBlockPos(Pos2i pos) {
+        return getMasterPos().offset(1 + pos.getX(), 0, 1 + pos.getY());
+    }
+
     public BlockPos getBoardOrigin() {
         int offset = getAllocatedBoardSize() - getCurrentBoardSize();
         return getMasterPos().mutable().move(1, 0, 1).move(offset / 2, 0, offset / 2).immutable();
