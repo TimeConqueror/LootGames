@@ -162,14 +162,6 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         ticks = 0;
     }
 
-    public BlockPos convertToBlockPos(int x, int y) {
-        return masterTileEntity.getBlockPos().offset(x, 0, y);
-    }
-
-    public BlockPos convertToBlockPos(Pos2i pos) {
-        return convertToBlockPos(pos.getX(), pos.getY());
-    }
-
     public MSBoard getBoard() {
         return board;
     }
@@ -513,7 +505,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
                         longestDetTime.set(detTime);
                     }
 
-                    taskScheduler.addTask(new TaskCreateExplosion(convertToBlockPos(pos2i), strength, explosionMode), detTime);//TODO fix
+                    taskScheduler.addTask(new TaskCreateExplosion(convertToBlockPos(pos2i), strength, explosionMode), detTime);
                 }
             });
 
