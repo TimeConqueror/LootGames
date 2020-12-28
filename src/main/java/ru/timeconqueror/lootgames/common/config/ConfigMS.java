@@ -15,13 +15,13 @@ import ru.timeconqueror.timecore.api.common.config.ImprovedConfigBuilder;
 import ru.timeconqueror.timecore.api.util.CodecUtils;
 
 public class ConfigMS extends Config {
-    public ForgeConfigSpec.IntValue DETONATION_TIME;
-    public ForgeConfigSpec.IntValue ATTEMPT_COUNT;
+    public ForgeConfigSpec.IntValue detonationTime;
+    public ForgeConfigSpec.IntValue attemptCount;
 
-    public StageConfig stage1;
-    public StageConfig stage2;
-    public StageConfig stage3;
-    public StageConfig stage4;
+    public final StageConfig stage1 = new StageConfig("stage_1", new DefaultData(6, 20));
+    public final StageConfig stage2 = new StageConfig("stage_2", new DefaultData(7, 30));
+    public final StageConfig stage3 = new StageConfig("stage_3", new DefaultData(8, 42));
+    public final StageConfig stage4 = new StageConfig("stage_4", new DefaultData(9, 68));
 
     public ConfigMS(ModConfig.@NotNull Type type, @NotNull String key, @Nullable String comment) {
         super(type, key, comment);
@@ -29,21 +29,15 @@ public class ConfigMS extends Config {
 
     @Override
     public void setup(ImprovedConfigBuilder builder) {
-        DETONATION_TIME = builder.comment("The time until bombs start to explode. Represented in ticks.")
+        detonationTime = builder.comment("The time until bombs start to explode. Represented in ticks.")
                 .defineInRange("detonation_time", 3 * 20, 0, 600);
-        ATTEMPT_COUNT = builder.comment("It represents the number of attempts the player has to beat the game successfully.")
+        attemptCount = builder.comment("It represents the number of attempts the player has to beat the game successfully.")
                 .defineInRange("attempt_count", 3, 1, Integer.MAX_VALUE);
 
-        String sorryMsg = "\nIgnore stage prefix, it is here because of new forge config system knows nothing about property ordering. Waiting for fix... :c";
-
-        stage1 = new StageConfig("stage_1", new StageConfig.DefaultData(6, 20));
-        builder.addAndSetupSection(stage1, "stage", "Regulates characteristics of stage 1." + sorryMsg);
-        stage2 = new StageConfig("stage_2", new StageConfig.DefaultData(7, 30));
-        builder.addAndSetupSection(stage2, "stage", "Regulates characteristics of stage 2." + sorryMsg);
-        stage3 = new StageConfig("stage_3", new StageConfig.DefaultData(8, 42));
-        builder.addAndSetupSection(stage3, "stage", "Regulates characteristics of stage 3." + sorryMsg);
-        stage4 = new StageConfig("stage_4", new StageConfig.DefaultData(9, 68));
-        builder.addAndSetupSection(stage4, "stage", "Regulates characteristics of stage 4." + sorryMsg);
+        builder.addAndSetupSection(stage1, "stage", "Regulates characteristics of stage 1.");
+        builder.addAndSetupSection(stage2, "stage", "Regulates characteristics of stage 2.");
+        builder.addAndSetupSection(stage3, "stage", "Regulates characteristics of stage 3.");
+        builder.addAndSetupSection(stage4, "stage", "Regulates characteristics of stage 4.");
     }
 
     /**
@@ -68,7 +62,7 @@ public class ConfigMS extends Config {
 
     @Override
     public @NotNull String getRelativePath() {
-        return LGConfigs.resolve("games/minesweeper.toml");
+        return LGConfigs.resolve("games/" + getKey() + ".toml");
     }
 
     public Snapshot snapshot() {
@@ -116,15 +110,15 @@ public class ConfigMS extends Config {
         public int getBoardSize() {
             return boardRadius.get() * 2 + 1;
         }
+    }
 
-        private static class DefaultData {
-            private final int boardRadius;
-            private final int bombCount;
+    private static class DefaultData {
+        private final int boardRadius;
+        private final int bombCount;
 
-            public DefaultData(int boardRadius, int bombCount) {
-                this.boardRadius = boardRadius;
-                this.bombCount = bombCount;
-            }
+        public DefaultData(int boardRadius, int bombCount) {
+            this.boardRadius = boardRadius;
+            this.bombCount = bombCount;
         }
     }
 

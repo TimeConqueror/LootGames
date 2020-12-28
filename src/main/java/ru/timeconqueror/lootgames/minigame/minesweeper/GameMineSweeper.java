@@ -412,7 +412,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         private final int detonationTicks;
 
         public StageDetonating() {
-            this(LGConfigs.MINESWEEPER.DETONATION_TIME.get());
+            this(LGConfigs.MINESWEEPER.detonationTime.get());
         }
 
         public StageDetonating(int detonationTicks) {
@@ -423,7 +423,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         public void onTick(LootGame<GameMineSweeper> game) {
             if (isServerSide()) {
                 if (ticks >= detonationTicks) {
-                    if (attemptCount < LGConfigs.MINESWEEPER.ATTEMPT_COUNT.get()) {
+                    if (attemptCount < LGConfigs.MINESWEEPER.attemptCount.get()) {
                         switchStage(new StageExploding());
                     } else {
                         if (currentLevel > 1) {
@@ -476,7 +476,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
                 if (ticks <= 0) {
                     sendToNearby(new TranslationTextComponent("msg.lootgames.ms.new_attempt"), NotifyColor.NOTIFY);
-                    sendToNearby(new TranslationTextComponent("msg.lootgames.attempt_left", LGConfigs.MINESWEEPER.ATTEMPT_COUNT.get() - attemptCount), NotifyColor.GRAVE_NOTIFY);
+                    sendToNearby(new TranslationTextComponent("msg.lootgames.attempt_left", LGConfigs.MINESWEEPER.attemptCount.get() - attemptCount), NotifyColor.GRAVE_NOTIFY);
 
                     switchStage(new StageWaiting());
 

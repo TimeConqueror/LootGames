@@ -28,9 +28,9 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
     @Override
     public void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
-        if (stage instanceof StageNotConstructed) {
-            ((StageNotConstructed) stage).generateSubordinates(player, pos);
-        } /*else if(stage instanceof Stage)*/
+//        if (stage instanceof StageNotConstructed) {
+//            ((StageNotConstructed) stage).generateSubordinates(player, pos);
+//        } else if(stage instanceof Stage)
     }
 
     @Override

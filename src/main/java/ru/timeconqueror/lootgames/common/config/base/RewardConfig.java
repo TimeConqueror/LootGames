@@ -44,7 +44,7 @@ public class RewardConfig extends ConfigSection {
                         .defineInRange("max_items", defaults.maxItems, -1, 256)
         );
         defaultLootTable = builder.optimized(
-                builder.comment("Name of the loot table, items from which will be generated in the chest of this stage. This can be adjusted per-Dimension in S:DimensionalConfig.")
+                builder.comment("Name of the loot table, items from which will be generated in the chest of this stage. This can be adjusted per dimension in \"per_dim_configs\".")
                         .define("loot_table", defaults.lootTable.toString(), ConfigValidators.resourceLocation()),
                 ResourceLocation::new, ResourceLocation::toString
         );

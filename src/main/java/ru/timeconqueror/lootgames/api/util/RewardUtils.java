@@ -64,7 +64,6 @@ public class RewardUtils {
      * @param chestData           data which contains the rules of setting chest content
      */
     public static void spawnLootChest(ServerWorld world, BlockPos centralPos, HorizontalDirection horizontalDirection, SpawnChestData chestData) {
-        System.out.println("Spawning... " + chestData.lootTableRL);
         Direction direction = horizontalDirection.get();
 
         BlockState chest = Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, direction.getOpposite());
@@ -89,7 +88,7 @@ public class RewardUtils {
         if (notEmptyIndexes.size() == 0) {
             ItemStack stack = new ItemStack(Blocks.STONE);
             try {
-                stack.setTag(JsonToNBT.parseTag(String.format("{display:{Name:\"{\\\"text\\\":\\\"The Sorry Stone\\\", \\\"color\\\":\\\"blue\\\", \\\"bold\\\": \\\"true\\\"}\", Lore: [\"{\\\"text\\\":\\\"Modpack creator failed to configure the LootTables properly.\\\\nPlease report that Loot Table [%s] for %s stage is broken, thank you!\\\"}\"]}}", chestData.getLootTableKey(), chestData.getGameName())));//TODO when copying back to 1.12.2 - this tag don't work, only old one
+                stack.setTag(JsonToNBT.parseTag(String.format("{display:{Name:\"{\\\"text\\\":\\\"The Sorry Stone\\\", \\\"color\\\":\\\"blue\\\", \\\"bold\\\": \\\"true\\\"}\", Lore: [\"{\\\"text\\\":\\\"Modpack creator failed to configure the LootTables properly.\\\\nPlease report that Loot Table [%s] for %s stage is broken, thank you!\\\"}\"]}}", chestData.getLootTableKey(), chestData.getGameName())));
             } catch (CommandSyntaxException e) {
                 e.printStackTrace();
             }
