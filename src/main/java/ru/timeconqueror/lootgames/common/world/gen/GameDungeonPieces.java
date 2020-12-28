@@ -19,9 +19,9 @@ import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGStructurePieces;
-import ru.timeconqueror.timecore.common.world.structure.TunedTemplateStructurePiece;
-import ru.timeconqueror.timecore.common.world.structure.processor.RandomizeBlockProcessor;
-import ru.timeconqueror.timecore.util.WorldUtils;
+import ru.timeconqueror.timecore.api.common.world.structure.TunedTemplateStructurePiece;
+import ru.timeconqueror.timecore.api.common.world.structure.processor.RandomizeBlockProcessor;
+import ru.timeconqueror.timecore.api.util.WorldUtils;
 
 import java.util.Random;
 

@@ -26,8 +26,8 @@ import ru.timeconqueror.lootgames.common.packet.game.SPChangeStage;
 import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
 import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
-import ru.timeconqueror.timecore.util.ChatUtils;
-import ru.timeconqueror.timecore.util.NetworkUtils;
+import ru.timeconqueror.timecore.api.util.ChatUtils;
+import ru.timeconqueror.timecore.api.util.NetworkUtils;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.Objects;

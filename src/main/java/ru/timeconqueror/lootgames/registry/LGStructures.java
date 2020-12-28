@@ -3,9 +3,9 @@ package ru.timeconqueror.lootgames.registry;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
-import ru.timeconqueror.timecore.registry.AutoRegistrable;
-import ru.timeconqueror.timecore.registry.newreg.StructureRegister;
-import ru.timeconqueror.timecore.registry.newreg.StructureRegister.StructureHolder;
+import ru.timeconqueror.timecore.api.registry.StructureRegister;
+import ru.timeconqueror.timecore.api.registry.StructureRegister.StructureHolder;
+import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 
 ////TODO move to TimeCore registry system
 //@TimeAutoRegistrable(target = TimeAutoRegistrable.Target.CLASS)

@@ -13,15 +13,15 @@ import ru.timeconqueror.lootgames.common.block.tile.TileEntityGOLMaster;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityPipesMaster;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
-import ru.timeconqueror.timecore.registry.AutoRegistrable;
-import ru.timeconqueror.timecore.registry.BlockPropsFactory;
-import ru.timeconqueror.timecore.registry.newreg.BlockRegister;
+import ru.timeconqueror.timecore.api.registry.BlockRegister;
+import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
+import ru.timeconqueror.timecore.api.registry.util.BlockPropsFactory;
 
 import java.util.function.Supplier;
 
 import static ru.timeconqueror.lootgames.common.block.BlockDungeon.BRICKS_PROPS_CREATOR;
 import static ru.timeconqueror.lootgames.common.block.BlockDungeon.LAMP_PROPS_CREATOR;
-import static ru.timeconqueror.timecore.util.Hacks.promise;
+import static ru.timeconqueror.timecore.api.util.Hacks.promise;
 
 @ObjectHolder(LootGames.MODID)
 public class LGBlocks {

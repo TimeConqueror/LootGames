@@ -8,7 +8,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import org.jetbrains.annotations.Nullable;
-import ru.timeconqueror.timecore.registry.BlockPropsFactory;
+import ru.timeconqueror.timecore.api.registry.util.BlockPropsFactory;
 
 public abstract class BlockGame extends Block {
     public static final BlockPropsFactory DEF_PROPS = new BlockPropsFactory(() ->

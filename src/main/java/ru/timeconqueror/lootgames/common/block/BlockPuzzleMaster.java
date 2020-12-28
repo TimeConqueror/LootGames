@@ -21,7 +21,7 @@ import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger.ExtraInfo;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityPuzzleMaster;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
-import ru.timeconqueror.timecore.util.NetworkUtils;
+import ru.timeconqueror.timecore.api.util.NetworkUtils;
 
 import javax.annotation.Nullable;
 import java.util.Optional;

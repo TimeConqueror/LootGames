@@ -5,8 +5,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.timeconqueror.timecore.util.NetworkUtils;
-import ru.timeconqueror.timecore.util.Pair;
+import ru.timeconqueror.timecore.api.util.NetworkUtils;
+import ru.timeconqueror.timecore.api.util.Pair;
 
 import java.util.Arrays;
 

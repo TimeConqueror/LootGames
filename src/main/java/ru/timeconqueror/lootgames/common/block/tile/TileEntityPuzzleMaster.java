@@ -5,7 +5,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.registry.LGTiles;
-import ru.timeconqueror.timecore.util.RandHelper;
+import ru.timeconqueror.timecore.api.util.RandHelper;
 
 public class TileEntityPuzzleMaster extends TileEntity implements ITickableTileEntity {
     private long lastSoundTick = 0L;

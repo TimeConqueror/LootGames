@@ -12,7 +12,7 @@ import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.feature.structure.StructureStart;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
-import ru.timeconqueror.timecore.util.GenHelper;
+import ru.timeconqueror.timecore.api.util.GenHelper;
 
 public class GameDungeonStructure extends Structure<NoFeatureConfig> {
     public static final int ROOM_WIDTH = 21;

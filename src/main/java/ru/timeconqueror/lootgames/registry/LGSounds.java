@@ -3,10 +3,10 @@ package ru.timeconqueror.lootgames.registry;
 import net.minecraftforge.registries.ObjectHolder;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.api.common.sound.TimeSound;
-import ru.timeconqueror.timecore.registry.AutoRegistrable;
-import ru.timeconqueror.timecore.registry.newreg.SoundRegister;
+import ru.timeconqueror.timecore.api.registry.SoundRegister;
+import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 
-import static ru.timeconqueror.timecore.util.Hacks.promise;
+import static ru.timeconqueror.timecore.api.util.Hacks.promise;
 
 @ObjectHolder(LootGames.MODID)
 public class LGSounds {

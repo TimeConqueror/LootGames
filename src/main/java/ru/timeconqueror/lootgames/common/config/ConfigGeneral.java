@@ -8,15 +8,15 @@ import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.api.common.config.Config;
 import ru.timeconqueror.timecore.api.common.config.ConfigSection;
+import ru.timeconqueror.timecore.api.common.config.IQuickConfigValue;
 import ru.timeconqueror.timecore.api.common.config.ImprovedConfigBuilder;
-import ru.timeconqueror.timecore.api.common.config.QuickConfigValue;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class ConfigGeneral extends Config {
 
-    public QuickConfigValue<Boolean> disableMinigames;
+    public IQuickConfigValue<Boolean> disableMinigames;
     public WorldGenCategory worldGen;
 
     public ConfigGeneral(ModConfig.@NotNull Type type, @NotNull String key, @Nullable String comment) {
@@ -25,7 +25,7 @@ public class ConfigGeneral extends Config {
 
     @Override
     public void setup(ImprovedConfigBuilder builder) {
-        disableMinigames = builder.optimizedVal(
+        disableMinigames = builder.optimized(
                 builder.comment("If this is set to true, then puzzle master won't start any new game.")
                         .define("disable_minigames", false)
         );
@@ -40,8 +40,8 @@ public class ConfigGeneral extends Config {
     }
 
     public static class WorldGenCategory extends ConfigSection {
-        public QuickConfigValue<Boolean> disableDungeonGen;
-        public QuickConfigValue<Integer> maxEntryPathLength;
+        public IQuickConfigValue<Boolean> disableDungeonGen;
+        public IQuickConfigValue<Integer> maxEntryPathLength;
         private ForgeConfigSpec.ConfigValue<List<? extends String>> dimAndRhombList;
         private HashMap<Integer, Integer> dimRhombs;
 
@@ -51,7 +51,7 @@ public class ConfigGeneral extends Config {
 
         @Override
         public void setup(ImprovedConfigBuilder builder) {
-            disableDungeonGen = builder.optimizedVal(
+            disableDungeonGen = builder.optimized(
                     builder.comment("If this is equal true, then dungeon generation will be disabled.")
                             .define("disable_dungeon_gen", false)
             );
@@ -63,7 +63,7 @@ public class ConfigGeneral extends Config {
                     "Example of array element: 0; 20 - this means that dungeons will be generated in rhombs with size equal to 20 in the overworld (ID = 0).")
                     .defineList("dim_and_rhomb_list", Lists.newArrayList("0; 20"), o -> true);//TODO someday nightconfig will fix validators...
 
-            maxEntryPathLength = builder.optimizedVal(
+            maxEntryPathLength = builder.optimized(
                     builder.comment("Defines the maximum length of the entry path from ground to the structure.",
                             "0 means, that there will be no path at all.",
                             Integer.MAX_VALUE + " means, that there will be no limits for path length. Beware of setting to this value, because the paths may be too long, so it may produce lags.")

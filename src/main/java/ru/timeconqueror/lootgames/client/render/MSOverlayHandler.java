@@ -13,10 +13,10 @@ import net.minecraftforge.fml.common.Mod;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
-import ru.timeconqueror.timecore.util.MathUtils;
-import ru.timeconqueror.timecore.util.client.DrawHelper;
-import ru.timeconqueror.timecore.util.client.DrawHelper.TexturedRect;
-import ru.timeconqueror.timecore.util.client.RenderHelper;
+import ru.timeconqueror.timecore.api.util.MathUtils;
+import ru.timeconqueror.timecore.api.util.client.DrawHelper;
+import ru.timeconqueror.timecore.api.util.client.DrawHelper.TexturedRect;
+import ru.timeconqueror.timecore.api.util.client.RenderHelper;
 
 import java.awt.*;
 import java.lang.ref.WeakReference;

@@ -14,8 +14,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.timecore.util.CodecUtils;
-import ru.timeconqueror.timecore.util.ExtraCodecs;
+import ru.timeconqueror.timecore.api.util.CodecUtils;
+import ru.timeconqueror.timecore.api.util.ExtraCodecs;
 
 public class UseBlockTrigger extends AbstractCriterionTrigger<UseBlockTrigger.Instance> {
     private static final ResourceLocation ID = LootGames.rl("use_block");

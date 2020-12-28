@@ -4,7 +4,7 @@ import net.minecraft.loot.ItemLootEntry;
 import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.loot.conditions.RandomChance;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
-import ru.timeconqueror.timecore.devtools.gen.loottable.BlockLootTableSet;
+import ru.timeconqueror.timecore.api.devtools.gen.loottable.BlockLootTableSet;
 
 public class LGBlockLootTableSet extends BlockLootTableSet {
     private final ILootCondition.IBuilder FLIP_COIN_CHANCE = RandomChance.randomChance(0.5F);

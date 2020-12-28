@@ -11,7 +11,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
-import ru.timeconqueror.timecore.util.WorldUtils;
+import ru.timeconqueror.timecore.api.util.WorldUtils;
 
 import java.util.function.BiFunction;
 

@@ -3,8 +3,8 @@ package ru.timeconqueror.lootgames.common.packet;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.packet.SPacketGameUpdate;
-import ru.timeconqueror.timecore.registry.AutoRegistrable;
-import ru.timeconqueror.timecore.registry.newreg.PacketRegister;
+import ru.timeconqueror.timecore.api.registry.PacketRegister;
+import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 
 public class LGNetwork {
     @AutoRegistrable

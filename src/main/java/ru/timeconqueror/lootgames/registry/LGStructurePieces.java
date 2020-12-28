@@ -4,9 +4,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.feature.structure.IStructurePieceType;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.common.world.gen.GameDungeonPieces;
-import ru.timeconqueror.timecore.registry.AutoRegistrable;
-import ru.timeconqueror.timecore.registry.Promised;
-import ru.timeconqueror.timecore.registry.newreg.SimpleVanillaRegister;
+import ru.timeconqueror.timecore.api.registry.SimpleVanillaRegister;
+import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
+import ru.timeconqueror.timecore.api.registry.util.Promised;
 
 public class LGStructurePieces {
     @AutoRegistrable

@@ -13,8 +13,8 @@ import ru.timeconqueror.lootgames.common.config.ConfigMS.Snapshot.StageSnapshot;
 import ru.timeconqueror.timecore.api.common.config.Config;
 import ru.timeconqueror.timecore.api.common.config.ConfigSection;
 import ru.timeconqueror.timecore.api.common.config.ImprovedConfigBuilder;
-import ru.timeconqueror.timecore.util.CodecUtils;
-import ru.timeconqueror.timecore.util.ParseUtils;
+import ru.timeconqueror.timecore.api.util.CodecUtils;
+import ru.timeconqueror.timecore.api.util.ParseUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;

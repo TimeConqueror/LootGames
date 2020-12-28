@@ -12,11 +12,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import org.jetbrains.annotations.Nullable;
-import ru.timeconqueror.timecore.registry.BlockPropsFactory;
+import ru.timeconqueror.timecore.api.registry.util.BlockPropsFactory;
 
 import java.util.List;
 

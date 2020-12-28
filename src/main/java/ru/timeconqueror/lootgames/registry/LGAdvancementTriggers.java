@@ -3,8 +3,8 @@ package ru.timeconqueror.lootgames.registry;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
 import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger;
-import ru.timeconqueror.timecore.registry.AutoRegistrable;
-import ru.timeconqueror.timecore.registry.newreg.AdvancementCriterionRegister;
+import ru.timeconqueror.timecore.api.registry.AdvancementCriterionRegister;
+import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 
 public class LGAdvancementTriggers {
     @AutoRegistrable

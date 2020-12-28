@@ -28,13 +28,13 @@ import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
-import ru.timeconqueror.timecore.util.DirectionTetra;
-import ru.timeconqueror.timecore.util.RandHelper;
-import ru.timeconqueror.timecore.util.Wrapper;
+import ru.timeconqueror.timecore.api.util.DirectionTetra;
+import ru.timeconqueror.timecore.api.util.RandHelper;
+import ru.timeconqueror.timecore.api.util.Wrapper;
 
 import java.util.List;
 
-import static ru.timeconqueror.timecore.util.NetworkUtils.getPlayersNearby;
+import static ru.timeconqueror.timecore.api.util.NetworkUtils.getPlayersNearby;
 
 //TODO lang keys for advancements
 //TODo add check if tileentity is nearby or blocksmartsubordinate or masterplacer

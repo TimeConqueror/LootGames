@@ -3,8 +3,7 @@ package ru.timeconqueror.lootgames.api.packet;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.jetbrains.annotations.NotNull;
-import ru.timeconqueror.timecore.registry.AutoRegistrable;
-import ru.timeconqueror.timecore.registry.newreg.TimeRegister;
+import ru.timeconqueror.timecore.api.registry.TimeRegister;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -51,7 +50,7 @@ public abstract class GamePacketRegistry extends TimeRegister {
     }
 
     public static class GamePacketManager {
-        private String modID;
+        private final String modID;
 
         private GamePacketManager(String modID) {
             this.modID = modID;
@@ -67,8 +66,8 @@ public abstract class GamePacketRegistry extends TimeRegister {
     }
 
     public static class PacketInfo {
-        private String modID;
-        private int packetID;
+        private final String modID;
+        private final int packetID;
 
         public PacketInfo(String modID, int packetID) {
             this.modID = modID;

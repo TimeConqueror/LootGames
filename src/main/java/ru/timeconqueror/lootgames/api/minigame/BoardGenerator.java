@@ -17,8 +17,8 @@ import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.BlockUtils;
 import ru.timeconqueror.lootgames.utils.CollectionUtils;
-import ru.timeconqueror.timecore.util.NetworkUtils;
-import ru.timeconqueror.timecore.util.WorldUtils;
+import ru.timeconqueror.timecore.api.util.NetworkUtils;
+import ru.timeconqueror.timecore.api.util.WorldUtils;
 
 import java.util.function.Consumer;
 

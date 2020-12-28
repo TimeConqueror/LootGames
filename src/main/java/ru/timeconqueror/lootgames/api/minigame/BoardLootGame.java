@@ -13,8 +13,8 @@ import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
-import ru.timeconqueror.timecore.util.EnvironmentUtils;
-import ru.timeconqueror.timecore.util.Requirements;
+import ru.timeconqueror.timecore.api.util.EnvironmentUtils;
+import ru.timeconqueror.timecore.api.util.Requirements;
 
 /**
  * Loot game that is flat.

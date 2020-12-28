@@ -7,8 +7,8 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.timecore.util.client.GLDrawMode;
-import ru.timeconqueror.timecore.util.client.RenderHelper;
+import ru.timeconqueror.timecore.api.util.client.GLDrawMode;
+import ru.timeconqueror.timecore.api.util.client.RenderHelper;
 
 public class LGRenderTypes extends RenderType {
     private LGRenderTypes(String nameIn, VertexFormat formatIn, int drawModeIn, int bufferSizeIn, boolean useDelegateIn, boolean needsSortingIn, Runnable setupTaskIn, Runnable clearTaskIn) {

@@ -4,8 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundNBT;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
-import ru.timeconqueror.timecore.util.CodecUtils;
-import ru.timeconqueror.timecore.util.Wrapper;
+import ru.timeconqueror.timecore.api.util.CodecUtils;
+import ru.timeconqueror.timecore.api.util.Wrapper;
 
 import java.util.Collections;
 import java.util.List;

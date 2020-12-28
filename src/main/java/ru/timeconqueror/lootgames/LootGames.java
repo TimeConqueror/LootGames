@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.timeconqueror.lootgames.api.Markers;
 import ru.timeconqueror.timecore.api.TimeMod;
-import ru.timeconqueror.timecore.util.EnvironmentUtils;
+import ru.timeconqueror.timecore.api.util.EnvironmentUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;

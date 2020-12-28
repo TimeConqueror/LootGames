@@ -10,8 +10,8 @@ import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
 import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
-import ru.timeconqueror.timecore.devtools.gen.advancement.IAdvancementSet;
-import ru.timeconqueror.timecore.devtools.gen.advancement.ISaveFunction;
+import ru.timeconqueror.timecore.api.devtools.gen.advancement.IAdvancementSet;
+import ru.timeconqueror.timecore.api.devtools.gen.advancement.ISaveFunction;
 
 import static net.minecraft.advancements.criterion.EntityPredicate.AndPredicate;
 

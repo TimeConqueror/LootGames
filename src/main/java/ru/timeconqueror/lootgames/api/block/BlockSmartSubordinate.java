@@ -12,8 +12,8 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
-import ru.timeconqueror.timecore.util.NetworkUtils;
-import ru.timeconqueror.timecore.util.WorldUtils;
+import ru.timeconqueror.timecore.api.util.NetworkUtils;
+import ru.timeconqueror.timecore.api.util.WorldUtils;
 
 import java.util.function.BiConsumer;
 

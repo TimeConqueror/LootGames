@@ -2,8 +2,8 @@ package ru.timeconqueror.lootgames.common.config;
 
 import net.minecraftforge.fml.config.ModConfig;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.timecore.registry.AutoRegistrable;
-import ru.timeconqueror.timecore.registry.newreg.ConfigRegister;
+import ru.timeconqueror.timecore.api.registry.ConfigRegister;
+import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 
 public class LGConfigs {
     public static final ConfigGeneral GENERAL = new ConfigGeneral(ModConfig.Type.COMMON, "general",  "General Settings");

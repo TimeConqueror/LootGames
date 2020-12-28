@@ -6,7 +6,7 @@ import ru.timeconqueror.timecore.api.client.resource.BlockModels;
 import ru.timeconqueror.timecore.api.client.resource.BlockStateResource;
 import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
-import ru.timeconqueror.timecore.registry.newreg.BlockRegister;
+import ru.timeconqueror.timecore.api.registry.BlockRegister;
 
 import static ru.timeconqueror.timecore.api.client.resource.JSONTimeResource.*;
 

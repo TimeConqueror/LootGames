@@ -9,10 +9,10 @@ import ru.timeconqueror.lootgames.common.block.tile.TileEntityGOLMaster;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityPipesMaster;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityPuzzleMaster;
-import ru.timeconqueror.timecore.registry.AutoRegistrable;
-import ru.timeconqueror.timecore.registry.newreg.TileEntityRegister;
+import ru.timeconqueror.timecore.api.registry.TileEntityRegister;
+import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 
-import static ru.timeconqueror.timecore.util.Hacks.promise;
+import static ru.timeconqueror.timecore.api.util.Hacks.promise;
 
 @ObjectHolder(LootGames.MODID)
 public class LGTiles {
