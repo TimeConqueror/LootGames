@@ -4,15 +4,10 @@ package eu.usrv.lootgames;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.registry.GameRegistry;
 import eu.usrv.lootgames.achievements.LootGameAchievement;
-import eu.usrv.lootgames.auxiliary.CheaterHandler;
-import eu.usrv.lootgames.auxiliary.GameManager;
-import eu.usrv.lootgames.auxiliary.ProfilingStorage;
+import eu.usrv.lootgames.auxiliary.*;
 import eu.usrv.lootgames.blocks.DungeonBrick;
 import eu.usrv.lootgames.blocks.DungeonLightSource;
 import eu.usrv.lootgames.blocks.LootGamesMasterBlock;
@@ -25,14 +20,11 @@ import eu.usrv.lootgames.network.NetDispatcher;
 import eu.usrv.lootgames.tiles.TELootGamesMasterBlock;
 import eu.usrv.lootgames.worldgen.LootGamesWorldGen;
 import eu.usrv.yamcore.YAMCore;
-import eu.usrv.yamcore.auxiliary.DonorController;
 import eu.usrv.yamcore.auxiliary.LogHelper;
 import eu.usrv.yamcore.creativetabs.ModCreativeTab;
 import net.minecraft.init.Items;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Random;
 
 
@@ -52,7 +44,7 @@ public class LootGames {
     public static ProfilingStorage Profiler;
     public static LootGamesMasterBlock MasterBlock;
 
-    public static DonorController Donors = null;
+    public static final LGDonorController DONOR_CONTROLLER = new LGDonorController("https://pastebin.com/raw/x1K80mwb");
 
     public static DungeonBrick DungeonWallBlock;
     public static DungeonLightSource DungeonLightBlock;
@@ -73,13 +65,7 @@ public class LootGames {
         if (!ModConfig.LoadConfig())
             mLog.error(String.format("%s could not load its config file. Things are going to be weird!", MODID));
 
-        URL donorListSource = null;
-        try {
-            donorListSource = new URL("https://pastebin.com/raw/x1K80mwb");
-            Donors = new DonorController(donorListSource);
-        } catch (MalformedURLException e) {
-            mLog.error("Unable to access the DonorList. No special features will be available");
-        }
+        DONOR_CONTROLLER.loadDonors();
 
         Profiler = new ProfilingStorage();
         CheatHandler = new CheaterHandler();
@@ -111,6 +97,11 @@ public class LootGames {
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         LootGameAchievement.registerAchievementPage();
+    }
+
+    @EventHandler
+    public void onComplete(FMLLoadCompleteEvent event) {
+        DONOR_CONTROLLER.fetchDonors();
     }
 
     @EventHandler

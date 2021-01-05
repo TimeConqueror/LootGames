@@ -124,7 +124,7 @@ public class BlockLightGameBlock extends Block implements ITileEntityProvider {
                 TELightGameBlock tileEntity = (TELightGameBlock) pWorld.getTileEntity(pX, pY, pZ);
 
                 ItemStack inhandStack = null;
-                if (LootGames.Donors != null && LootGames.Donors.isDonor(pPlayer))
+                if (LootGames.DONOR_CONTROLLER != null && LootGames.DONOR_CONTROLLER.isDonor(pPlayer))
                     inhandStack = pPlayer.getCurrentEquippedItem();
 
                 if (inhandStack != null && inhandStack.getItem() == Items.diamond)
