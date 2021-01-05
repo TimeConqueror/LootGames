@@ -1,4 +1,2 @@
 # README #
-
-Namikon:
-"A mod I've created for the GT:NH Modpack. Recent decisions made me retire from active programming, hence converting closed projects to open source. Consider this Mod as MIT-Licensed."
+Continuation of Namikon's 'GameOfLight'/ 'LootGames' mod. Source code in the old Namikon's repository was licensed under MIT.
