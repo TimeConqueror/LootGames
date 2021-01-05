@@ -28,9 +28,11 @@ public final class LGDonorController {
     }
 
     public void loadDonors() {
-        Thread thread = new Thread(this::loadDonorsInternally);
-        thread.setDaemon(true);
-        thread.start();
+        if(LootGames.ModConfig.isDonorListEnabled()) {
+            Thread thread = new Thread(this::loadDonorsInternally);
+            thread.setDaemon(true);
+            thread.start();
+        }
     }
 
     private void loadDonorsInternally() {
@@ -61,14 +63,16 @@ public final class LGDonorController {
     }
 
     public void fetchDonors() {
-        try {
-            donorList = donorListFuture.get(7, TimeUnit.SECONDS);
-        } catch (Throwable e) {
-            String error = String.format("Unable to connect to %s. DonorController will not do anything!", donorSourceURL);
-            if (!YAMCore.isDebug()) {
-                LootGames.mLog.warn(error);
-            } else {
-                LootGames.mLog.warn(error, e);
+        if(LootGames.ModConfig.isDonorListEnabled()) {
+            try {
+                donorList = donorListFuture.get(7, TimeUnit.SECONDS);
+            } catch (Throwable e) {
+                String error = String.format("Unable to connect to %s. DonorController will not do anything!", donorSourceURL);
+                if (!YAMCore.isDebug()) {
+                    LootGames.mLog.warn(error);
+                } else {
+                    LootGames.mLog.warn(error, e);
+                }
             }
         }
     }

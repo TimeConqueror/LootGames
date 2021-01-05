@@ -22,12 +22,18 @@ public class LootGamesConfig extends ConfigManager {
     public GOLConfig GolConfig;
     private HashMap<Integer, Integer> DimensionWhitelist = new HashMap<>();
 
+    private boolean disableDonorListDownloading;
+
     public LootGamesConfig(File pConfigBaseDirectory, String pModCollectionDirectory, String pModID) {
         super(pConfigBaseDirectory, pModCollectionDirectory, pModID);
     }
 
     public boolean isDimensionEnabledForWG(int pDimensionID) {
         return DimensionWhitelist.containsKey(pDimensionID);
+    }
+
+    public boolean isDonorListEnabled() {
+        return !disableDonorListDownloading;
     }
 
     public int getWorldGenRhombusSize(int pDimensionID) {
@@ -86,6 +92,8 @@ public class LootGamesConfig extends ConfigManager {
         parseDimensionConfig(tDimConfig);
 
         DungeonLoggerLogLevel = _mainConfig.getString("DungeonLoggerLogLevel", "debug", DungeonLoggerLogLevel, "LogLevel for the separate DungeonGenerator Logger. Valid options: info, debug, trace", new String[]{"INFO", "DEBUG", "TRACE"});
+
+        initNewConfigs();
     }
 
     private List<Integer> parseStringListToIntList(String[] pSource) {
@@ -108,6 +116,12 @@ public class LootGamesConfig extends ConfigManager {
         parseDimensionConfig(tDimConfig);
 
         DungeonLoggerLogLevel = _mainConfig.getString("DungeonLoggerLogLevel", "debug", DungeonLoggerLogLevel, "LogLevel for the separate DungeonGenerator Logger. Valid options: info, debug, trace", new String[]{"INFO", "DEBUG", "TRACE"});
+
+        initNewConfigs();
+    }
+
+    private void initNewConfigs() {
+        disableDonorListDownloading = _mainConfig.getBoolean("disableDonorListDownloading", "main", false, "Disables downloading of donors list. It will speed-up mod loading, when you don't have an access to the Pastebin or play offline.");
     }
 
     protected void PostInit() {
