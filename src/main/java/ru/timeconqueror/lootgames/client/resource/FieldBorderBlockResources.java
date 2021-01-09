@@ -14,13 +14,14 @@ public class FieldBorderBlockResources {
 
     public static void fillChain(BlockRegister.BlockRegisterChain<BlockFieldBorder> chain) {
         TextureLocation sideTexture = new TextureLocation(LootGames.MODID, "block/field_border_side");
-        TextureLocation cornerTexture = new TextureLocation(LootGames.MODID, "block/field_border_corner");
+        TextureLocation cornerTextureTop = new TextureLocation(LootGames.MODID, "block/field_border_corner_top");
+        TextureLocation cornerTextureBottom = new TextureLocation(LootGames.MODID, "block/field_border_corner_bottom");
 
         BlockModelLocation borderModel = new BlockModelLocation(LootGames.MODID, "field_border");
         BlockModelLocation cornerBorderModel = new BlockModelLocation(LootGames.MODID, "field_border_corner");
 
         chain.genModel(borderModel, BlockModels.cubeAllModel(sideTexture));
-        chain.genModel(cornerBorderModel, BlockModels.cubeColumnModel(cornerTexture, sideTexture));
+        chain.genModel(cornerBorderModel, BlockModels.cubeBottomTopModel(cornerTextureTop, sideTexture, cornerTextureBottom));
 
         chain.genState(BlockStateResource.fromJson(
                 object(null, listOf(

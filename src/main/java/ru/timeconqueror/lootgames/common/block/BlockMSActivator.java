@@ -12,7 +12,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.BlockGame;
-import ru.timeconqueror.lootgames.api.minigame.BoardGenerator;
 import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
 import ru.timeconqueror.lootgames.common.config.ConfigMS;
@@ -30,10 +29,10 @@ public class BlockMSActivator extends BlockGame {
             ConfigMS.Snapshot snapshot = LGConfigs.MINESWEEPER.snapshot();
             int allocatedSize = snapshot.getStage4().getBoardSize();
 
-            BoardGenerator boardManager = LootGamesAPI.getBoardGenerator();
-            boolean succeed = boardManager
-                    .trySetupBoard(((ServerWorld) worldIn), pos, allocatedSize, 3, allocatedSize, LGBlocks.MS_MASTER.defaultBlockState(), player)
-                    .forTileIfSucceed(TileEntityMSMaster.class, master -> master.init(snapshot)).isSucceed();
+            boolean succeed = LootGamesAPI.getFieldManager()
+                    .trySetupBoard(((ServerWorld) worldIn), pos, allocatedSize, 2, allocatedSize, LGBlocks.MS_MASTER.defaultBlockState(), player)
+                    .forTileIfSucceed(TileEntityMSMaster.class, master -> master.init(snapshot))
+                    .isSucceed();
 
             if (succeed) {
                 worldIn.playSound(null, pos, LGSounds.MS_START_GAME, SoundCategory.BLOCKS, 0.6F, 1.0F);

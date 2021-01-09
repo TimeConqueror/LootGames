@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
+import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 import ru.timeconqueror.timecore.api.util.WorldUtils;
@@ -22,29 +23,14 @@ import java.util.function.BiConsumer;
  * and its tileentity must extend {@link TileEntityGameMaster<>}!
  */
 public class BlockSmartSubordinate extends BlockGame implements ILeftInteractible, ISubordinateProvider {
-    private static boolean underBreaking = false;
 
     @Override
     public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!worldIn.isClientSide() && !underBreaking) {
-            underBreaking = true;
-            destroyStructure(worldIn, pos);
-            underBreaking = false;
+        if (!worldIn.isClientSide()) {
+            LootGamesAPI.getFieldManager().onFieldBlockBroken(worldIn, () -> getMasterPos(worldIn, pos));
         }
 
         super.onRemove(state, worldIn, pos, newState, isMoving);
-    }
-
-    /**
-     * Destroys the full structure, which this block belongs to.
-     */
-    private void destroyStructure(World worldIn, BlockPos pos) {
-        BlockPos masterPos = getMasterPos(worldIn, pos);
-        TileEntity te = worldIn.getBlockEntity(masterPos);
-
-        if (te instanceof TileEntityGameMaster<?>) {
-            ((TileEntityGameMaster<?>) te).onDestroy();
-        }
     }
 
     @Override

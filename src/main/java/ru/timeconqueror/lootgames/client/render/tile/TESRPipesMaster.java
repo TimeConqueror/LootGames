@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Matrix4f;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
@@ -34,8 +35,11 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
 
         IVertexBuilder vb = bufferIn.getBuffer(BOARD_RENDER_TYPE);
 
+        BlockPos boardOrigin = game.getBoardOrigin();
+        BlockPos offset = boardOrigin.subtract(te.getBlockPos());
+
         matrixStack.pushPose();
-        matrixStack.translate(0, 1.005, 0);
+        matrixStack.translate(offset.getX(), 1.005, offset.getZ());
         Matrix4f matrix = matrixStack.last().pose();
 
         float height = 0.005f;
@@ -66,19 +70,19 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
         matrixStack.popPose();
     }
 
-    private IVertexBuilder withTexture(IVertexBuilder buf, float tx, float ty, int i, int rotation, int animation) {
-        float sy = animation;
+    private IVertexBuilder withTexture(IVertexBuilder buf, float textureX, float textureY, int vertexId, int rotation, int animation) {
+        float startY = textureY + animation;
 
-        int c = (i + rotation) % 4;
-        switch (c) {
+        int corner = (rotation + vertexId) % 4;
+        switch (corner) {
             case 0:
-                return buf.uv(tx, (sy + ty) / 32);
+                return buf.uv(textureX, startY / 32);
             case 1:
-                return buf.uv(tx, (sy + ty + 0.25f) / 32);
+                return buf.uv(textureX, (startY + 0.25f) / 32);
             case 2:
-                return buf.uv(tx + 0.25f, (sy + ty + 0.25f) / 32);
+                return buf.uv(textureX + 0.25f, (startY + 0.25f) / 32);
             default:
-                return buf.uv(tx + 0.25f, (sy + ty) / 32);
+                return buf.uv(textureX + 0.25f, startY / 32);
         }
     }
 

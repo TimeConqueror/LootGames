@@ -49,7 +49,7 @@ public abstract class BoardLootGame<T extends BoardLootGame<T>> extends LootGame
 
     @Override
     public void onDestroy() {
-        LootGamesAPI.getBoardGenerator().clearBoard(((ServerWorld) getWorld()), getMasterPos(), getAllocatedBoardSize(), getAllocatedBoardSize());
+        LootGamesAPI.getFieldManager().clearBoard(((ServerWorld) getWorld()), getMasterPos(), getAllocatedBoardSize(), getAllocatedBoardSize());
     }
 
     public Pos2i convertToGamePos(BlockPos subordinatePos) {

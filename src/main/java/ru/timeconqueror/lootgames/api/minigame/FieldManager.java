@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.api.minigame;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -21,13 +22,43 @@ import ru.timeconqueror.timecore.api.util.NetworkUtils;
 import ru.timeconqueror.timecore.api.util.WorldUtils;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
- * Can be accessed via {@link LootGamesAPI#getBoardGenerator()}.
+ * Can be accessed via {@link LootGamesAPI#getFieldManager()}.
  * <p>
  * Manager that can be used to handle generation and clearing flat board from {@link BoardLootGame}
  */
-public class BoardGenerator {
+public class FieldManager {
+
+    private boolean fieldUnderBreaking = false;
+
+    /**
+     * Destroys the full structure, which this block belongs to.
+     */
+    public void onFieldBlockBroken(World worldIn, Supplier<BlockPos> masterPosGetter) {
+        if (tryStartFieldBreaking()) {
+            BlockPos masterPos = masterPosGetter.get();
+            TileEntity tileEntity = worldIn.getBlockEntity(masterPos);
+
+            if (tileEntity instanceof TileEntityGameMaster<?>) {
+                ((TileEntityGameMaster<?>) tileEntity).onDestroy();
+            }
+            stopFieldBreaking();
+        }
+    }
+
+    public boolean tryStartFieldBreaking() {
+        if (!fieldUnderBreaking) {
+            fieldUnderBreaking = true;
+            return true;
+        }
+        return false;
+    }
+
+    public void stopFieldBreaking() {
+        fieldUnderBreaking = false;
+    }
 
     public boolean canReplaceAreaWithBoard(World world, BlockPos cornerPos, int xSize, int ySize, int zSize, @Nullable BlockPos except) {
         return CollectionUtils.allMatch(BlockUtils.between(cornerPos, xSize, ySize, zSize), (pos) ->
@@ -68,8 +99,8 @@ public class BoardGenerator {
             }
         }
 
-        // Filling border corners
-        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockFieldBorder.TYPE, BlockFieldBorder.Type.TOP_LEFT), 2);
+        // Filling border corners and master block
+        world.setBlock(cornerPos, masterBlock, 3);
         borderPos.move(xSize + 1, 0, 0);
         world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockFieldBorder.TYPE, BlockFieldBorder.Type.TOP_RIGHT), 2);
         borderPos.move(0, 0, zSize + 1);
@@ -94,8 +125,6 @@ public class BoardGenerator {
             world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockFieldBorder.TYPE, BlockFieldBorder.Type.VERTICAL), 2);
             borderPos.move(-xSize - 1, 0, 0);
         }
-
-        world.setBlock(cornerPos, masterBlock, 3);
 
         return new GenerationChain(world, cornerPos, true);
     }

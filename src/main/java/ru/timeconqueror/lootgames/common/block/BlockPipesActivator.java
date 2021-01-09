@@ -21,9 +21,9 @@ public class BlockPipesActivator extends BlockGame {
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!worldIn.isClientSide()) {
-            boolean fieldPlaced = LootGamesAPI.getBoardGenerator().trySetupBoard(
+            boolean fieldPlaced = LootGamesAPI.getFieldManager().trySetupBoard(
                     (ServerWorld) worldIn,
-                    pos, 9, 2, 9,
+                    pos, 15, 2, 15,
                     LGBlocks.PIPES_MASTER.defaultBlockState(),
                     player
             ).isSucceed();

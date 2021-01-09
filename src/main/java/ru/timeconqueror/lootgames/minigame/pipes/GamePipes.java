@@ -14,15 +14,16 @@ import ru.timeconqueror.lootgames.minigame.pipes.board.PipesBoard;
 import ru.timeconqueror.lootgames.minigame.pipes.board.PipesBoardGenerator;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class GamePipes extends BoardLootGame<GamePipes> {
     private PipesBoard board;
-    private final float difficulty;
 
-    public GamePipes(int size, float difficulty) {
+    public GamePipes(int size) {
         this.board = new PipesBoard(size);
-        this.difficulty = difficulty;
+    }
+
+    public GamePipes() {
+        this(5);
     }
 
     @Override
@@ -32,17 +33,13 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         }
     }
 
-    public float getDifficulty() {
-        return difficulty;
-    }
-
     public int getCurrentBoardSize() {
         return board.getSize();
     }
 
     @Override
     public int getAllocatedBoardSize() {
-        throw new NotImplementedException();
+        return 15;
     }
 
     public PipesBoard getBoard() {
@@ -66,13 +63,15 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         board.deserializeNBT(compound.getCompound("Board"));
     }
 
-    public void clickField(ServerPlayerEntity player, Pos2i pos, MouseClickType mouseType) {
+    @Override
+    public void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
         if (stage instanceof GameStage) {
+            board.rotateAt(pos.getX(), pos.getY(), type == MouseClickType.LEFT ? -1 : 1);
 
-            board.rotateAt(pos.getX(), pos.getY(), mouseType == MouseClickType.LEFT ? -1 : 1);
             if (board.isCompleted()) {
                 switchStage(new WinningStage(((GameStage) stage).cycleId, 0));
             }
+
             checkForDirtyBoard();
         }
     }
@@ -192,12 +191,5 @@ public class GamePipes extends BoardLootGame<GamePipes> {
             BlockPos floorCenterPos = puzzleMasterPos.offset(0, -3/*instead of GameDungeonStructure.MASTER_BLOCK_OFFSET*/ + 1, 0);
             world.setBlockAndUpdate(floorCenterPos, LGBlocks.PIPES_ACTIVATOR.defaultBlockState());
         }
-    }
-
-    public static void generateGameBoard(World world, BlockPos centerPos, int level) {
-        int size = 19;
-        BlockPos startPos = centerPos.offset(-size / 2, 0, -size / 2);
-
-        BoardLootGame.generateGameBoard(world, startPos, size, LGBlocks.PIPES_MASTER.defaultBlockState());
     }
 }
