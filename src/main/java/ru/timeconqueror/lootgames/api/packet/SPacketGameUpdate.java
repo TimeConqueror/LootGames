@@ -16,7 +16,7 @@ public class SPacketGameUpdate implements ITimePacket {
     private IServerGamePacket gamePacket;
     private BlockPos masterPos;
 
-    public <T extends LootGame<T>> SPacketGameUpdate(LootGame<T> game, IServerGamePacket gamePacket) {
+    public <T extends LootGame<?, T>> SPacketGameUpdate(LootGame<?, T> game, IServerGamePacket gamePacket) {
         this.masterPos = game.getMasterPos();
         this.gamePacket = gamePacket;
     }
@@ -52,7 +52,7 @@ public class SPacketGameUpdate implements ITimePacket {
                 packet.gamePacket = packetClass.newInstance();
                 packet.gamePacket.decode(buffer);
             } catch (InstantiationException e) {//FIXME test if it only kicks from server or halt client? and what if server will catch it?
-                throw new RuntimeException("Can't decodeStrictly received game packet, due to lack of public nullary constructor in " + packetClass, e);
+                throw new RuntimeException("Can't decode received game packet, due to lack of public nullary constructor in " + packetClass, e);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }

@@ -8,7 +8,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
-import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.minigame.pipes.board.PipesBoard;
 import ru.timeconqueror.lootgames.minigame.pipes.board.PipesBoardGenerator;
@@ -65,11 +64,11 @@ public class GamePipes extends BoardLootGame<GamePipes> {
 
     @Override
     public void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
-        if (stage instanceof GameStage) {
+        if (getStage() instanceof GameStage) {
             board.rotateAt(pos.getX(), pos.getY(), type == MouseClickType.LEFT ? -1 : 1);
 
             if (board.isCompleted()) {
-                switchStage(new WinningStage(((GameStage) stage).cycleId, 0));
+                switchStage(new WinningStage(((GameStage) getStage()).cycleId, 0));
             }
 
             checkForDirtyBoard();
@@ -92,7 +91,7 @@ public class GamePipes extends BoardLootGame<GamePipes> {
     }
 
     @Override
-    public Stage<GamePipes> createStageFromNBT(String id, CompoundNBT stageNBT) {
+    public BoardStage createStageFromNBT(String id, CompoundNBT stageNBT) {
         switch (id) {
             case GameStage.ID:
                 return new GameStage(stageNBT.getInt("CycleId"));
@@ -103,7 +102,7 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         }
     }
 
-    private class GameStage extends Stage<GamePipes> {
+    private class GameStage extends BoardStage {
         public static final String ID = "game";
 
         private final int cycleId;
@@ -113,8 +112,8 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         }
 
         @Override
-        protected void onStart(LootGame<GamePipes> game) {
-            if (game.isServerSide()) {
+        protected void onStart() {
+            if (isServerSide()) {
                 if (cycleId != 0) {
                     board = new PipesBoard(board.getSize() + 2);
                     masterTileEntity.setChanged();
@@ -142,7 +141,7 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         }
     }
 
-    private class WinningStage extends Stage<GamePipes> {
+    private class WinningStage extends BoardStage {
         public static final String ID = "winning";
 
         private final int prevCycleId;
@@ -154,15 +153,15 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         }
 
         @Override
-        protected void onStart(LootGame<GamePipes> game) {
-            if (game.isServerSide()) {
+        protected void onStart() {
+            if (isServerSide()) {
                 getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
                 board.removeNonPoweredPipes();
             }
         }
 
         @Override
-        protected void onTick(LootGame<GamePipes> game) {
+        protected void onTick() {
             if (isServerSide()) {
                 ticksPassed++;
                 if (ticksPassed >= 60) {

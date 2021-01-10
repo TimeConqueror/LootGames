@@ -19,7 +19,7 @@ public class SPMSSpawnLevelBeatParticles implements IServerGamePacket {
     }
 
     @Override
-    public <T extends LootGame<T>> void runOnClient(LootGame<T> game) {
+    public <S extends LootGame.Stage, T extends LootGame<S, T>> void runOnClient(LootGame<S, T> game) {
         GameMineSweeper ms = (GameMineSweeper) game;
         BlockPos boardOrigin = ms.getBoardOrigin();
         for (int x = 0; x < ms.getCurrentBoardSize() + 1; x++) {

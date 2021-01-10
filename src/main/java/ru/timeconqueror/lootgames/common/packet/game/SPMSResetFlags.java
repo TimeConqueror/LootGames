@@ -17,7 +17,7 @@ public class SPMSResetFlags implements IServerGamePacket {
     }
 
     @Override
-    public <T extends LootGame<T>> void runOnClient(LootGame<T> game) {
+    public <S extends LootGame.Stage, T extends LootGame<S, T>> void runOnClient(LootGame<S, T> game) {
         ((GameMineSweeper) game).getBoard().cSetFlaggedFields(0);
     }
 }

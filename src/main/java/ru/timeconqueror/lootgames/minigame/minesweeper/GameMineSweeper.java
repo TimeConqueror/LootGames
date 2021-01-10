@@ -11,7 +11,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
-import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
@@ -75,7 +74,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
     @Override
     public void onPlace() {
-        stage = new StageWaiting();
+        setupInitialStage(new StageWaiting());
 
         if (isServerSide()) {
             configSnapshot = LGConfigs.MINESWEEPER.snapshot();
@@ -87,8 +86,8 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
     }
 
     public void onClick(ServerPlayerEntity player, Pos2i clickedPos, MouseClickType type) {
-        if (stage instanceof StageWaiting) {
-            ((StageWaiting) stage).onClick(player, clickedPos, type);
+        if (getStage() instanceof StageWaiting) {
+            ((StageWaiting) getStage()).onClick(player, clickedPos, type);
         }
     }
 
@@ -157,7 +156,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
     }
 
     @Override
-    protected void onStageUpdate(Stage<GameMineSweeper> oldStage, Stage<GameMineSweeper> newStage) {
+    protected void onStageUpdate(BoardStage oldStage, BoardStage newStage) {
         super.onStageUpdate(oldStage, newStage);
         ticks = 0;
     }
@@ -243,7 +242,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
     }
 
     @Override
-    public Stage<GameMineSweeper> createStageFromNBT(String id, CompoundNBT stageNBT) {
+    public BoardStage createStageFromNBT(String id, CompoundNBT stageNBT) {
         switch (id) {
             case StageWaiting.ID:
                 return new StageWaiting();
@@ -264,7 +263,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
     }
 
-    public class StageWaiting extends Stage<GameMineSweeper> {
+    public class StageWaiting extends BoardStage {
         private static final String ID = "waiting";
 
         public StageWaiting() {
@@ -407,7 +406,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
     }
 
-    public class StageDetonating extends Stage<GameMineSweeper> {
+    public class StageDetonating extends BoardStage {
         private static final String ID = "detonating";
         private final int detonationTicks;
 
@@ -420,7 +419,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
 
         @Override
-        public void onTick(LootGame<GameMineSweeper> game) {
+        public void onTick() {
             if (isServerSide()) {
                 if (ticks >= detonationTicks) {
                     if (attemptCount < LGConfigs.MINESWEEPER.attemptCount.get()) {
@@ -455,23 +454,23 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
     }
 
-    public class StageExploding extends Stage<GameMineSweeper> {
+    public class StageExploding extends BoardStage {
         private static final String ID = "exploding";
 
         public StageExploding() {
         }
 
         @Override
-        protected void onStart(LootGame<GameMineSweeper> game) {
-            if (game.isServerSide()) {
+        protected void onStart() {
+            if (isServerSide()) {
                 int longestDetTime = detonateBoard(currentLevel + 3, Explosion.Mode.BREAK);
                 ticks = longestDetTime + 2 * 20; //number represents some pause after detonating
             }
         }
 
         @Override
-        public void onTick(LootGame<GameMineSweeper> game) {
-            if (game.isServerSide()) {
+        public void onTick() {
+            if (isServerSide()) {
                 ticks--;
 
                 if (ticks <= 0) {

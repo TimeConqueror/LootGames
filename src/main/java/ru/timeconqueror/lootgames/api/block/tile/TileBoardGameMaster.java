@@ -1,8 +1,13 @@
 package ru.timeconqueror.lootgames.api.block.tile;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Vector3i;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
@@ -32,5 +37,14 @@ public class TileBoardGameMaster<T extends BoardLootGame<T>> extends TileEntityG
                 && pos.getY() >= 0 && pos.getY() < size) {
             game.onClick(player, pos, type);
         }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void prepareMatrix(MatrixStack matrixStack, TileBoardGameMaster<?> master) {
+        BlockPos boardOrigin = master.getGame().getBoardOrigin();
+        Vector3i originOffset = boardOrigin.subtract(master.getBlockPos()).offset(0, 1, 0);
+
+        matrixStack.translate(originOffset.getX(), originOffset.getY(), originOffset.getZ());
+        matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
     }
 }

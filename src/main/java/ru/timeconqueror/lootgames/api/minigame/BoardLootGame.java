@@ -7,6 +7,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.tile.TileBoardGameMaster;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
@@ -16,15 +17,19 @@ import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.util.EnvironmentUtils;
 import ru.timeconqueror.timecore.api.util.Requirements;
 
+import static ru.timeconqueror.lootgames.api.minigame.BoardLootGame.BoardStage;
+
 /**
  * Loot game that is flat.
  */
-public abstract class BoardLootGame<T extends BoardLootGame<T>> extends LootGame<T> {
+public abstract class BoardLootGame<G extends BoardLootGame<G>> extends LootGame<BoardStage, G> {
     private static final Logger LOGGER = LogManager.getLogger();
     public static boolean disableMasterCheckWarning;
+    @Nullable
+    private BoardStage stage;
 
     @Override
-    public void setMasterTileEntity(TileEntityGameMaster<T> masterTileEntity) {
+    public void setMasterTileEntity(TileEntityGameMaster<G> masterTileEntity) {
         super.setMasterTileEntity(masterTileEntity);
 
         if (EnvironmentUtils.isInDev() && !disableMasterCheckWarning && !(masterTileEntity instanceof TileBoardGameMaster<?>)) {
@@ -67,7 +72,9 @@ public abstract class BoardLootGame<T extends BoardLootGame<T>> extends LootGame
     }
 
     public void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
-
+        if (getStage() != null) {
+            getStage().onClick(player, pos, type);
+        }
     }
 
     /**
@@ -91,5 +98,10 @@ public abstract class BoardLootGame<T extends BoardLootGame<T>> extends LootGame
                         world.setBlockAndUpdate(pos, LGBlocks.SMART_SUBORDINATE.defaultBlockState());
                     }
                 });
+    }
+
+    public abstract static class BoardStage extends LootGame.Stage {
+        protected void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
+        }
     }
 }

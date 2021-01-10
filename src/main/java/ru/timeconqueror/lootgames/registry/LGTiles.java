@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.registry;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.client.render.tile.TESRGOLMaster;
 import ru.timeconqueror.lootgames.client.render.tile.TESRMSMaster;
 import ru.timeconqueror.lootgames.client.render.tile.TESRPipesMaster;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityGOLMaster;
@@ -31,7 +32,7 @@ public class LGTiles {
             REGISTER.registerSingleBound("puzzle_master", TileEntityPuzzleMaster::new, () -> LGBlocks.PUZZLE_MASTER);
             REGISTER.registerSingleBound("ms_master", TileEntityMSMaster::new, () -> LGBlocks.MS_MASTER).regCustomRenderer(() -> TESRMSMaster::new);
             REGISTER.registerSingleBound("pipes_master", TileEntityPipesMaster::new, () -> LGBlocks.PIPES_MASTER).regCustomRenderer(() -> TESRPipesMaster::new);
-            REGISTER.registerSingleBound("gol_master", TileEntityGOLMaster::new, () -> LGBlocks.GOL_MASTER);
+            REGISTER.registerSingleBound("gol_master", TileEntityGOLMaster::new, () -> LGBlocks.GOL_MASTER).regCustomRenderer(() -> TESRGOLMaster::new);
         }
     }
 }

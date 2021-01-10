@@ -76,7 +76,7 @@ public class ConfigGOL extends Config {
     }
 
     public static class StageConfig extends ConfigSection {
-        public IQuickConfigValue<Integer> minRoundsRequiredToPass;
+        public IQuickConfigValue<Integer> rounds;
         public IQuickConfigValue<Boolean> randomizeSequence;
         public IQuickConfigValue<Integer> displayTime;
 
@@ -89,9 +89,9 @@ public class ConfigGOL extends Config {
 
         @Override
         public void setup(ImprovedConfigBuilder builder) {
-            minRoundsRequiredToPass = builder.optimized(
-                    builder.comment("Minimum correct rounds required to complete this stage and unlock leveled reward.")
-                            .defineInRange("min_rounds_required_to_pass", defData.minRoundsRequiredToPass, 1, 256)
+            rounds = builder.optimized(
+                    builder.comment("Round count required to complete this stage and unlock leveled reward.")
+                            .defineInRange("round_count", defData.rounds, 1, 256)
             );
             randomizeSequence = builder.optimized(
                     builder.comment("If true, the pattern will randomize on each round in this stage.")
@@ -105,12 +105,12 @@ public class ConfigGOL extends Config {
     }
 
     private static class DefaultData {
-        private final int minRoundsRequiredToPass;
+        private final int rounds;
         private final boolean randomizeSequence;
         private final int displayTime;
 
-        public DefaultData(int minRoundsRequiredToPass, boolean randomizeSequence, int displayTime) {
-            this.minRoundsRequiredToPass = minRoundsRequiredToPass;
+        public DefaultData(int rounds, boolean randomizeSequence, int displayTime) {
+            this.rounds = rounds;
             this.randomizeSequence = randomizeSequence;
             this.displayTime = displayTime;
         }

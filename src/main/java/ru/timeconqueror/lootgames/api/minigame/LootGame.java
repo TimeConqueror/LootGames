@@ -32,21 +32,21 @@ import ru.timeconqueror.timecore.api.util.NetworkUtils;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.Objects;
 
-public abstract class LootGame<T extends LootGame<T>> {
+public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<STAGE, G>> {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final Marker DEBUG_MARKER = Markers.LOOTGAME.getMarker();
 
-    protected TileEntityGameMaster<T> masterTileEntity;
+    protected TileEntityGameMaster<G> masterTileEntity;
     protected TETaskScheduler taskScheduler;
-    @Nullable
-    protected Stage<T> stage;
+
     private boolean firstTickPassed;
     /**
      * Determines if tile entity is placed, but was never read from nbt.
      */
     private boolean justPlaced = true;
+    private STAGE stage;
 
-    public void setMasterTileEntity(TileEntityGameMaster<T> masterTileEntity) {
+    public void setMasterTileEntity(TileEntityGameMaster<G> masterTileEntity) {
         this.masterTileEntity = masterTileEntity;
     }
 
@@ -83,8 +83,8 @@ public abstract class LootGame<T extends LootGame<T>> {
             taskScheduler.onUpdate();
         }
 
-        if (stage != null) {
-            stage.onTick(this);
+        if (getStage() != null) {
+            getStage().onTick();
         }
     }
 
@@ -255,7 +255,7 @@ public abstract class LootGame<T extends LootGame<T>> {
     @OverridingMethodsMustInvokeSuper
     public void writeCommonNBT(CompoundNBT compound) {
         serializeStage(this, compound);
-        LOGGER.debug(DEBUG_MARKER, color("Serialized stage: '{}'"), stage);
+        LOGGER.debug(DEBUG_MARKER, color("Serialized stage: '{}'"), getStage());
     }
 
     /**
@@ -264,8 +264,8 @@ public abstract class LootGame<T extends LootGame<T>> {
     @OverridingMethodsMustInvokeSuper
     public void readCommonNBT(CompoundNBT compound) {
         justPlaced = false;
-        stage = deserializeStage(this, compound);
-        LOGGER.debug(DEBUG_MARKER, color("Deserialized stage: '{}'"), stage);
+        setStage(deserializeStage(this, compound));
+        LOGGER.debug(DEBUG_MARKER, color("Deserialized stage: '{}'"), getStage());
     }
 
     /**
@@ -274,25 +274,25 @@ public abstract class LootGame<T extends LootGame<T>> {
      *
      * @param stage initial stage of game
      */
-    public void setupInitialStage(Stage<T> stage) {
-        this.stage = stage;
+    public void setupInitialStage(STAGE stage) {
+        setStage(stage);
         LOGGER.debug(DEBUG_MARKER, color("Initializing stage '{}'"), stage);
-        stage.onStart(this);
+        stage.onStart();
     }
 
-    public void switchStage(@Nullable Stage<T> stage) {
-        Stage<T> old = this.stage;
-        if (old != null) old.onEnd(this);
+    public void switchStage(@Nullable STAGE stage) {
+        STAGE old = this.getStage();
+        if (old != null) old.onEnd();
 
-        this.stage = stage;
+        setStage(stage);
 
         LOGGER.debug(DEBUG_MARKER, color("Switching from stage '{}' to '{}'"), old, stage);
         onStageUpdate(old, stage);
 
-        if (this.stage != null) this.stage.onStart(this);
+        if (this.getStage() != null) this.getStage().onStart();
     }
 
-    protected void onStageUpdate(Stage<T> oldStage, Stage<T> newStage) {
+    protected void onStageUpdate(STAGE oldStage, STAGE newStage) {
         if (isServerSide()) {
             saveData();
             sendUpdatePacket(new SPChangeStage(this));
@@ -300,34 +300,40 @@ public abstract class LootGame<T extends LootGame<T>> {
     }
 
     @Nullable
-    public abstract Stage<T> createStageFromNBT(String id, CompoundNBT stageNBT);
+    public abstract STAGE createStageFromNBT(String id, CompoundNBT stageNBT);
 
     @Nullable
-    public Stage<T> getStage() {
+    public STAGE getStage() {
         return stage;
+    }
+
+    private void setStage(@Nullable STAGE stage) {
+        this.stage = stage;
     }
 
     public abstract void onDestroy();
 
-    public abstract static class Stage<T extends LootGame<T>> {
+    public abstract static class Stage {
         /**
-         * Called when the game was switched to this stage.
+         * Called for both logical sides when the game was switched to this stage.
+         * For server: called only when you manually change stage on server side via {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)}
+         * For client: called every time server sends new state, including deserializing from saved nbt.
          */
-        protected void onStart(LootGame<T> game) {
+        protected void onStart() {
 
         }
 
         /**
          * Called on every tick for both logical sides.
          */
-        protected void onTick(LootGame<T> game) {
+        protected void onTick() {
 
         }
 
         /**
-         * Called when the game was switched from this stage to another one.
+         * Called for both logical sides when the game was switched from this stage to another one.
          */
-        protected void onEnd(LootGame<T> game) {
+        protected void onEnd() {
 
         }
 
@@ -343,8 +349,8 @@ public abstract class LootGame<T extends LootGame<T>> {
         }
     }
 
-    public static void serializeStage(LootGame<?> game, CompoundNBT nbt) {
-        Stage<?> stage = game.getStage();
+    public static <STAGE extends Stage> void serializeStage(LootGame<STAGE, ?> game, CompoundNBT nbt) {
+        Stage stage = game.getStage();
         if (stage != null) {
             CompoundNBT stageWrapper = new CompoundNBT();
             stageWrapper.put("stage", stage.serialize());
@@ -354,7 +360,7 @@ public abstract class LootGame<T extends LootGame<T>> {
     }
 
     @Nullable
-    public static <T extends LootGame<T>> Stage<T> deserializeStage(LootGame<T> game, CompoundNBT nbt) {
+    public static <S extends Stage, T extends LootGame<S, T>> S deserializeStage(LootGame<S, T> game, CompoundNBT nbt) {
         if (nbt.contains("stage_wrapper")) {
             CompoundNBT stageWrapper = nbt.getCompound("stage_wrapper");
             return game.createStageFromNBT(stageWrapper.getString("id"), stageWrapper.getCompound("stage"));

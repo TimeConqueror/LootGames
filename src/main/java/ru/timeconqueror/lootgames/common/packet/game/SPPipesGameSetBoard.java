@@ -34,7 +34,7 @@ public class SPPipesGameSetBoard implements IServerGamePacket {
     }
 
     @Override
-    public <T extends LootGame<T>> void runOnClient(LootGame<T> game) {
+    public <S extends LootGame.Stage, T extends LootGame<S, T>> void runOnClient(LootGame<S, T> game) {
         ((GamePipes) game).setBoardData(size, chunks);
     }
 }

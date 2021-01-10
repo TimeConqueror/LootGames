@@ -10,5 +10,5 @@ public interface IServerGamePacket {
 
     void decode(PacketBuffer bufferFrom) throws IOException;
 
-    <T extends LootGame<T>> void runOnClient(LootGame<T> game);
+    <S extends LootGame.Stage, T extends LootGame<S, T>> void runOnClient(LootGame<S, T> game);
 }

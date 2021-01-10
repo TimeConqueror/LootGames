@@ -4,10 +4,8 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
-import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.registry.LGSounds;
@@ -28,13 +26,16 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
     @Override
     public void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
+        if (getStage() instanceof StageNotConstructed) {//todo move to stage.onClick?
+            ((StageNotConstructed) getStage()).onClick(player, pos);
+        }
 //        if (stage instanceof StageNotConstructed) {
 //            ((StageNotConstructed) stage).generateSubordinates(player, pos);
 //        } else if(stage instanceof Stage)
     }
 
     @Override
-    public @Nullable Stage<GameOfLight> createStageFromNBT(String id, CompoundNBT stageNBT) {
+    public @Nullable BoardStage createStageFromNBT(String id, CompoundNBT stageNBT) {
         switch (id) {
             case StageNotConstructed.ID:
                 return new StageNotConstructed();
@@ -43,7 +44,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
     }
 
-    public class StageNotConstructed extends Stage<GameOfLight> {
+    public class StageNotConstructed extends BoardStage {
         private static final String ID = "not_constructed";
 
         @Override
@@ -51,9 +52,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             return ID;
         }
 
-        private void generateSubordinates(ServerPlayerEntity player, Pos2i pos) {
-            World world = getWorld();
-            world.playSound(null, convertToBlockPos(pos), LGSounds.GOL_START_GAME, SoundCategory.MASTER, 0.75F, 1.0F);
+        private void onClick(ServerPlayerEntity player, Pos2i pos) {
+            getWorld().playSound(null, convertToBlockPos(pos), LGSounds.GOL_START_GAME, SoundCategory.MASTER, 0.75F, 1.0F);
 
             sendTo(player, new TranslationTextComponent("msg.lootgames.gol_master.start"), NotifyColor.NOTIFY);
 
@@ -61,7 +61,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
     }
 
-    public class StageUnderExpanding extends Stage<GameOfLight> {
+    public class StageUnderExpanding extends BoardStage {
         private static final String ID = "under_expanding";
         public static final int MAX_TICKS_EXPANDING = 20;
         private int ticks;
@@ -72,10 +72,10 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
 
         @Override
-        protected void onTick(LootGame<GameOfLight> game) {
+        protected void onTick() {
             if (ticks > MAX_TICKS_EXPANDING) {
-                if (game.isServerSide()) {
-//                    switchStage(GameStage.WAITING_FOR_START);
+                if (isServerSide()) {
+                    switchStage(new StageWaitingStart());
                 }
             } else {
                 ticks++;
@@ -83,7 +83,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
     }
 
-    public class StageWaitingStart extends Stage<GameOfLight> {
+    public class StageWaitingStart extends BoardStage {
         private static final String ID = "waiting_start";
 
         @Override
