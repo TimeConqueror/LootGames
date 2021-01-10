@@ -85,12 +85,6 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         super.onPlace();
     }
 
-    public void onClick(ServerPlayerEntity player, Pos2i clickedPos, MouseClickType type) {
-        if (getStage() instanceof StageWaiting) {
-            ((StageWaiting) getStage()).onClick(player, clickedPos, type);
-        }
-    }
-
     public boolean isBoardGenerated() {
         return board.isGenerated();
     }
@@ -269,6 +263,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         public StageWaiting() {
         }
 
+        @Override
         public void onClick(ServerPlayerEntity player, Pos2i clickedPos, MouseClickType type) {
             getWorld().playSound(null, convertToBlockPos(clickedPos), SoundEvents.NOTE_BLOCK_HAT, SoundCategory.MASTER, 0.6F, 0.8F);
 

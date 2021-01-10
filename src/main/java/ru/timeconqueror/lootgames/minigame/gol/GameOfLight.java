@@ -25,16 +25,6 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     }
 
     @Override
-    public void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
-        if (getStage() instanceof StageNotConstructed) {//todo move to stage.onClick?
-            ((StageNotConstructed) getStage()).onClick(player, pos);
-        }
-//        if (stage instanceof StageNotConstructed) {
-//            ((StageNotConstructed) stage).generateSubordinates(player, pos);
-//        } else if(stage instanceof Stage)
-    }
-
-    @Override
     public @Nullable BoardStage createStageFromNBT(String id, CompoundNBT stageNBT) {
         switch (id) {
             case StageNotConstructed.ID:
@@ -52,7 +42,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             return ID;
         }
 
-        private void onClick(ServerPlayerEntity player, Pos2i pos) {
+        @Override
+        protected void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
             getWorld().playSound(null, convertToBlockPos(pos), LGSounds.GOL_START_GAME, SoundCategory.MASTER, 0.75F, 1.0F);
 
             sendTo(player, new TranslationTextComponent("msg.lootgames.gol_master.start"), NotifyColor.NOTIFY);

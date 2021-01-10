@@ -62,19 +62,6 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         board.deserializeNBT(compound.getCompound("Board"));
     }
 
-    @Override
-    public void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
-        if (getStage() instanceof GameStage) {
-            board.rotateAt(pos.getX(), pos.getY(), type == MouseClickType.LEFT ? -1 : 1);
-
-            if (board.isCompleted()) {
-                switchStage(new WinningStage(((GameStage) getStage()).cycleId, 0));
-            }
-
-            checkForDirtyBoard();
-        }
-    }
-
     private void checkForDirtyBoard() {
         if (board.isDirty()) {
             masterTileEntity.setChanged();
@@ -109,6 +96,17 @@ public class GamePipes extends BoardLootGame<GamePipes> {
 
         public GameStage(int cycleId) {
             this.cycleId = cycleId;
+        }
+
+        @Override
+        protected void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
+            board.rotateAt(pos.getX(), pos.getY(), type == MouseClickType.LEFT ? -1 : 1);
+
+            if (board.isCompleted()) {
+                switchStage(new WinningStage(cycleId, 0));
+            }
+
+            checkForDirtyBoard();
         }
 
         @Override
