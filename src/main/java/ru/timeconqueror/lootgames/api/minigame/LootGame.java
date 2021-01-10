@@ -39,7 +39,6 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     protected TileEntityGameMaster<G> masterTileEntity;
     protected TETaskScheduler taskScheduler;
 
-    private boolean firstTickPassed;
     /**
      * Determines if tile entity is placed, but was never read from nbt.
      */
@@ -51,8 +50,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     /**
-     * Method where you need to init anything, that requires world and {@link #masterTileEntity} to be not null.
-     * Will be called on the first tick.
+     * Method where you can init anything, that requires world and {@link #masterTileEntity} to be not null.
      */
     @OverridingMethodsMustInvokeSuper
     public void onLoad() {
@@ -74,11 +72,6 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
 
     @OverridingMethodsMustInvokeSuper
     public void onTick() {
-        if (!firstTickPassed) {
-            onLoad();
-            firstTickPassed = true;
-        }
-
         if (isServerSide()) {
             taskScheduler.onUpdate();
         }
