@@ -29,6 +29,10 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         switch (id) {
             case StageNotConstructed.ID:
                 return new StageNotConstructed();
+            case StageUnderExpanding.ID:
+                return new StageUnderExpanding(stageNBT.getInt("ticks"));
+            case StageWaitingStart.ID:
+                return new StageWaitingStart();
             default:
                 throw new IllegalArgumentException("Unknown state with id: " + id + "!");
         }
@@ -57,6 +61,14 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         public static final int MAX_TICKS_EXPANDING = 20;
         private int ticks;
 
+        public StageUnderExpanding() {
+            this(0);
+        }
+
+        public StageUnderExpanding(int ticks) {
+            this.ticks = ticks;
+        }
+
         @Override
         public String getID() {
             return ID;
@@ -71,6 +83,17 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             } else {
                 ticks++;
             }
+        }
+
+        public int getTicks() {
+            return ticks;
+        }
+
+        @Override
+        public CompoundNBT serialize() {
+            CompoundNBT nbt = super.serialize();
+            nbt.putInt("ticks", ticks);
+            return nbt;
         }
     }
 
