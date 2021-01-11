@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
-import ru.timeconqueror.lootgames.api.block.BlockFieldBorder;
+import ru.timeconqueror.lootgames.api.block.BlockBoardBorder;
 import ru.timeconqueror.lootgames.api.block.IGameField;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
@@ -61,8 +61,10 @@ public class FieldManager {
     }
 
     public boolean canReplaceAreaWithBoard(World world, BlockPos cornerPos, int xSize, int ySize, int zSize, @Nullable BlockPos except) {
-        return CollectionUtils.allMatch(BlockUtils.between(cornerPos, xSize, ySize, zSize), (pos) ->
-                world.getBlockState(pos).getMaterial().isReplaceable() || pos.equals(except)
+        return CollectionUtils.allMatch(BlockUtils.between(cornerPos, xSize, ySize, zSize), (pos) -> {
+                    BlockState state = world.getBlockState(pos);
+                    return state.getBlock() == LGBlocks.SHIELDED_DUNGEON_FLOOR || state.getMaterial().isReplaceable() || pos.equals(except);
+                }
         );
     }
 
@@ -102,27 +104,27 @@ public class FieldManager {
         // Filling border corners and master block
         world.setBlock(cornerPos, masterBlock, 3);
         borderPos.move(xSize + 1, 0, 0);
-        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockFieldBorder.TYPE, BlockFieldBorder.Type.TOP_RIGHT), 2);
+        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.TOP_RIGHT), 2);
         borderPos.move(0, 0, zSize + 1);
-        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockFieldBorder.TYPE, BlockFieldBorder.Type.BOTTOM_RIGHT), 2);
+        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.BOTTOM_RIGHT), 2);
         borderPos.move(-xSize - 1, 0, 0);
-        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockFieldBorder.TYPE, BlockFieldBorder.Type.BOTTOM_LEFT), 2);
+        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.BOTTOM_LEFT), 2);
 
         // Filling border edges
         borderPos.set(cornerPos);
         for (int i = 0; i < xSize; i++) {
             borderPos.move(1, 0, 0);
-            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockFieldBorder.TYPE, BlockFieldBorder.Type.HORIZONTAL), 2);
+            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.HORIZONTAL), 2);
             borderPos.move(0, 0, zSize + 1);
-            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockFieldBorder.TYPE, BlockFieldBorder.Type.HORIZONTAL), 2);
+            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.HORIZONTAL), 2);
             borderPos.move(0, 0, -zSize - 1);
         }
         borderPos.set(cornerPos);
         for (int i = 0; i < xSize; i++) {
             borderPos.move(0, 0, 1);
-            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockFieldBorder.TYPE, BlockFieldBorder.Type.VERTICAL), 2);
+            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.VERTICAL), 2);
             borderPos.move(xSize + 1, 0, 0);
-            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockFieldBorder.TYPE, BlockFieldBorder.Type.VERTICAL), 2);
+            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.VERTICAL), 2);
             borderPos.move(-xSize - 1, 0, 0);
         }
 

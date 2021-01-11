@@ -7,12 +7,18 @@ import net.minecraft.util.text.TranslationTextComponent;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
-import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.registry.LGSounds;
-import ru.timeconqueror.lootgames.utils.MouseClickType;
 
 public class GameOfLight extends BoardLootGame<GameOfLight> {
     public static final int BOARD_SIZE = 3;
+
+    @Override
+    public void onPlace() {
+        if (isServerSide()) {
+            setupInitialStage(new StageUnderExpanding());
+            getWorld().playSound(null, getGameCenter(), LGSounds.GOL_START_GAME, SoundCategory.MASTER, 0.75F, 1.0F);
+        }
+    }
 
     @Override
     public int getCurrentBoardSize() {
@@ -27,32 +33,12 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     @Override
     public @Nullable BoardStage createStageFromNBT(String id, CompoundNBT stageNBT) {
         switch (id) {
-            case StageNotConstructed.ID:
-                return new StageNotConstructed();
             case StageUnderExpanding.ID:
                 return new StageUnderExpanding(stageNBT.getInt("ticks"));
             case StageWaitingStart.ID:
                 return new StageWaitingStart();
             default:
                 throw new IllegalArgumentException("Unknown state with id: " + id + "!");
-        }
-    }
-
-    public class StageNotConstructed extends BoardStage {
-        private static final String ID = "not_constructed";
-
-        @Override
-        public String getID() {
-            return ID;
-        }
-
-        @Override
-        protected void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
-            getWorld().playSound(null, convertToBlockPos(pos), LGSounds.GOL_START_GAME, SoundCategory.MASTER, 0.75F, 1.0F);
-
-            sendTo(player, new TranslationTextComponent("msg.lootgames.gol_master.start"), NotifyColor.NOTIFY);
-
-            switchStage(new StageUnderExpanding());
         }
     }
 

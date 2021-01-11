@@ -25,11 +25,7 @@ public class LootGames implements TimeMod {
     public LootGames() {
         INSTANCE = this;
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModConstructed);
-    }
-
-    private void onModConstructed(FMLConstructModEvent event) {
-        handleMarkers(event);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::handleMarkers);
     }
 
     private void handleMarkers(FMLConstructModEvent event) {

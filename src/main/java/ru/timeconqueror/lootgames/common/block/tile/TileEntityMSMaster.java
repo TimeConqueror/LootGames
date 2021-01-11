@@ -1,8 +1,5 @@
 package ru.timeconqueror.lootgames.common.block.tile;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.api.block.tile.TileBoardGameMaster;
 import ru.timeconqueror.lootgames.common.config.ConfigMS;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
@@ -15,11 +12,5 @@ public class TileEntityMSMaster extends TileBoardGameMaster<GameMineSweeper> {
 
     public void init(ConfigMS.Snapshot configSnapshot) {
         game.setConfigSnapshot(configSnapshot);
-    }
-
-    @NotNull
-    @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return TileEntity.INFINITE_EXTENT_AABB;
     }
 }

@@ -65,7 +65,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     /**
-     * Called when tile entity is just placed in world and has never been write to and read from nbt.
+     * Called for both sides when tile entity is just placed in world and has never been write to and read from nbt.
      */
     public void onPlace() {
     }
@@ -248,7 +248,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     @OverridingMethodsMustInvokeSuper
     public void writeCommonNBT(CompoundNBT compound) {
         serializeStage(this, compound);
-        LOGGER.debug(DEBUG_MARKER, color("Serialized stage: '{}'"), getStage());
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("serialized stage: '{}'"), getStage());
     }
 
     /**
@@ -258,7 +258,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     public void readCommonNBT(CompoundNBT compound) {
         justPlaced = false;
         setStage(deserializeStage(this, compound));
-        LOGGER.debug(DEBUG_MARKER, color("Deserialized stage: '{}'"), getStage());
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("deserialized stage: '{}'"), getStage());
     }
 
     /**
@@ -269,7 +269,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      */
     public void setupInitialStage(STAGE stage) {
         setStage(stage);
-        LOGGER.debug(DEBUG_MARKER, color("Initializing stage '{}'"), stage);
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("set up initial stage '{}'"), stage);
         stage.onStart();
     }
 
@@ -279,7 +279,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
 
         setStage(stage);
 
-        LOGGER.debug(DEBUG_MARKER, color("Switching from stage '{}' to '{}'"), old, stage);
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("switching from stage '{}' to '{}'"), old, stage);
         onStageUpdate(old, stage);
 
         if (this.getStage() != null) this.getStage().onStart();
@@ -362,7 +362,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         }
     }
 
-    private static String color(String str) {
-        return TextFormatting.DARK_BLUE + str;
+    private String prepareLogMsg(String str) {
+        return getClass().getSimpleName() + ": " + TextFormatting.DARK_BLUE + str;
     }
 }

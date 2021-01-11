@@ -2,11 +2,11 @@ package ru.timeconqueror.lootgames.registry;
 
 import net.minecraftforge.registries.ObjectHolder;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.api.block.BlockFieldBorder;
+import ru.timeconqueror.lootgames.api.block.BlockBoardBorder;
 import ru.timeconqueror.lootgames.api.block.BlockGameMaster;
 import ru.timeconqueror.lootgames.api.block.BlockSmartSubordinate;
 import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
-import ru.timeconqueror.lootgames.client.resource.FieldBorderBlockResources;
+import ru.timeconqueror.lootgames.client.resource.BoardBorderBlockResources;
 import ru.timeconqueror.lootgames.common.LGItemGroup;
 import ru.timeconqueror.lootgames.common.block.*;
 import ru.timeconqueror.lootgames.common.block.tile.TileEntityGOLMaster;
@@ -38,7 +38,7 @@ public class LGBlocks {
 
     public static final BlockPuzzleMaster PUZZLE_MASTER = promise();
     public static final BlockSmartSubordinate SMART_SUBORDINATE = promise();
-    public static final BlockFieldBorder FIELD_BORDER = promise();
+    public static final BlockBoardBorder FIELD_BORDER = promise();
 
     public static final BlockMSActivator MS_ACTIVATOR = promise();
     public static final BlockPipesActivator PIPES_ACTIVATOR = promise();
@@ -67,15 +67,15 @@ public class LGBlocks {
             TextureLocation shieldedDungeonFloorText = new TextureLocation(REGISTER.getModId(), "block/shielded_dungeon_floor");
 
             REGISTER.register("smart_subordinate", BlockSmartSubordinate::new).genDefaultStateAndModel(shieldedDungeonFloorText);
-            REGISTER.register("field_border", BlockFieldBorder::new).also(FieldBorderBlockResources::fillChain).regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("board_border", BlockBoardBorder::new).also(BoardBorderBlockResources::fillChain);
 
             REGISTER.register("ms_activator", BlockMSActivator::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("pipes_activator", BlockPipesActivator::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
             REGISTER.register("gol_activator", BlockGOLActivator::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
 
-            REGISTER.register("ms_master", gameMaster(TileEntityMSMaster::new)).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("pipes_master", gameMaster(TileEntityPipesMaster::new)).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("gol_master", gameMaster(TileEntityGOLMaster::new)).genDefaultStateAndModel(shieldedDungeonFloorText).regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("ms_master", gameMaster(TileEntityMSMaster::new)).genDefaultStateAndModel(shieldedDungeonFloorText);
+            REGISTER.register("pipes_master", gameMaster(TileEntityPipesMaster::new)).genDefaultStateAndModel(shieldedDungeonFloorText);
+            REGISTER.register("gol_master", gameMaster(TileEntityGOLMaster::new)).genDefaultStateAndModel(shieldedDungeonFloorText);
         }
 
         @SuppressWarnings("CodeBlock2Expr")
