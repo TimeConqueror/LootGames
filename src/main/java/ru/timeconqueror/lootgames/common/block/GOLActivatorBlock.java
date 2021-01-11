@@ -7,14 +7,18 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.GameBlock;
+import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
+import ru.timeconqueror.timecore.api.util.ChatUtils;
+import ru.timeconqueror.timecore.api.util.NetworkUtils;
 
 public class GOLActivatorBlock extends GameBlock {
     @Override
@@ -22,8 +26,12 @@ public class GOLActivatorBlock extends GameBlock {
         if (!worldIn.isClientSide()) {
             LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayerEntity) player), new UseBlockTrigger.ExtraInfo(state, pos, player.getItemInHand(handIn)));
 
-            LootGamesAPI.getFieldManager()
-                    .trySetupBoard(((ServerWorld) worldIn), pos, GameOfLight.BOARD_SIZE, 2, GameOfLight.BOARD_SIZE, LGBlocks.GOL_MASTER.defaultBlockState(), player);
+            boolean succeed = LootGamesAPI.getFieldManager()
+                    .trySetupBoard(((ServerWorld) worldIn), pos, GameOfLight.BOARD_SIZE, 2, GameOfLight.BOARD_SIZE, LGBlocks.GOL_MASTER.defaultBlockState(), player).isSucceed();
+
+            if (succeed) {
+                NetworkUtils.sendMessage(player, ChatUtils.format(new TranslationTextComponent("msg.lootgames.gol_master.start"), NotifyColor.NOTIFY.getColor()));
+            }
         }
 
         return ActionResultType.SUCCESS;

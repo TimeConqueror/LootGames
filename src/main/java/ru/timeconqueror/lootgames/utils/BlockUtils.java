@@ -3,7 +3,7 @@ package ru.timeconqueror.lootgames.utils;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Iterator;
-
+//TODO to TimeCore
 public class BlockUtils {
 
     /**

@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.utils;
 
 import java.util.function.Predicate;
-
+//TODO to TimeCore
 public class CollectionUtils {
 
     public static <T> boolean allMatch(Iterable<T> iterable, Predicate<T> predicate) {

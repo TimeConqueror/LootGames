@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.common.config;
 import net.minecraftforge.fml.config.ModConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 import ru.timeconqueror.timecore.api.common.config.Config;
 import ru.timeconqueror.timecore.api.common.config.ConfigSection;
 import ru.timeconqueror.timecore.api.common.config.IQuickConfigValue;
@@ -73,6 +74,22 @@ public class ConfigGOL extends Config {
     @Override
     public @NotNull String getRelativePath() {
         return LGConfigs.resolve("games/" + getKey() + ".toml");
+    }
+
+    /**
+     * @param index - 0-3 (inclusive)
+     * @throws RuntimeException if stage config was not found for provided index.
+     */
+    public StageConfig getStageByIndex(@Range(from = 0, to = 3) int index) {
+        if (index == 0) {
+            return stage1;
+        } else if (index == 1) {
+            return stage2;
+        } else if (index == 2) {
+            return stage3;
+        } else {
+            return stage4;
+        }
     }
 
     public static class StageConfig extends ConfigSection {

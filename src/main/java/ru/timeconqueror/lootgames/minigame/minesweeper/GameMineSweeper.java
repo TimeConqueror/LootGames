@@ -12,6 +12,7 @@ import net.minecraft.world.server.ServerWorld;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
+import ru.timeconqueror.lootgames.api.minigame.StageSerializationType;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.api.util.RewardUtils;
@@ -175,15 +176,15 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
     }
 
     @Override
-    public void readNBTFromSave(CompoundNBT compound) {
-        super.readNBTFromSave(compound);
+    public void readNBTFromSave(CompoundNBT nbt) {
+        super.readNBTFromSave(nbt);
 
-        if (compound.contains("board")) {
-            CompoundNBT boardTag = compound.getCompound("board");
+        if (nbt.contains("board")) {
+            CompoundNBT boardTag = nbt.getCompound("board");
             board.readNBTFromSave(boardTag);
         }
 
-        attemptCount = compound.getInt("attempt_count");
+        attemptCount = nbt.getInt("attempt_count");
     }
 
     @Override
@@ -198,44 +199,44 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
     }
 
     @Override
-    public void readNBTAtClient(CompoundNBT compound) {
-        cIsGenerated = compound.getBoolean("is_generated");
+    public void readNBTAtClient(CompoundNBT nbt) {
+        cIsGenerated = nbt.getBoolean("is_generated");
 
-        super.readNBTAtClient(compound);
+        super.readNBTAtClient(nbt);
 
-        if (compound.contains("board")) {
-            CompoundNBT boardTag = compound.getCompound("board");
+        if (nbt.contains("board")) {
+            CompoundNBT boardTag = nbt.getCompound("board");
             board.readNBTFromClient(boardTag);
         }
     }
 
     @Override
-    public void writeCommonNBT(CompoundNBT compound) {
-        super.writeCommonNBT(compound);
-        compound.putInt("bomb_count", board.getBombCount());
-        compound.putInt("board_size", board.size());
+    public void writeCommonNBT(CompoundNBT nbt) {
+        super.writeCommonNBT(nbt);
+        nbt.putInt("bomb_count", board.getBombCount());
+        nbt.putInt("board_size", board.size());
 
-        compound.putInt("ticks", ticks);
+        nbt.putInt("ticks", ticks);
 
-        compound.putInt("current_level", currentLevel);
+        nbt.putInt("current_level", currentLevel);
 
-        compound.put("config_snapshot", Snapshot.serialize(configSnapshot));
+        nbt.put("config_snapshot", Snapshot.serialize(configSnapshot));
     }
 
     @Override
-    public void readCommonNBT(CompoundNBT compound) {
-        super.readCommonNBT(compound);
+    public void readCommonNBT(CompoundNBT nbt) {
+        super.readCommonNBT(nbt);
 
-        board.setBombCount(compound.getInt("bomb_count"));
-        board.setSize(compound.getInt("board_size"));
-        ticks = compound.getInt("ticks");
-        currentLevel = compound.getInt("current_level");
+        board.setBombCount(nbt.getInt("bomb_count"));
+        board.setSize(nbt.getInt("board_size"));
+        ticks = nbt.getInt("ticks");
+        currentLevel = nbt.getInt("current_level");
 
-        configSnapshot = Snapshot.deserialize(compound.get("config_snapshot"));
+        configSnapshot = Snapshot.deserialize(nbt.get("config_snapshot"));
     }
 
     @Override
-    public BoardStage createStageFromNBT(String id, CompoundNBT stageNBT) {
+    public BoardStage createStageFromNBT(String id, CompoundNBT stageNBT, StageSerializationType serializationType) {
         switch (id) {
             case StageWaiting.ID:
                 return new StageWaiting();
@@ -441,8 +442,8 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
 
         @Override
-        public CompoundNBT serialize() {
-            CompoundNBT nbt = super.serialize();
+        public CompoundNBT serialize(StageSerializationType serializationType) {
+            CompoundNBT nbt = super.serialize(serializationType);
             nbt.putInt("detonation_time", detonationTicks);
             return nbt;
         }

@@ -15,6 +15,8 @@ import ru.timeconqueror.timecore.api.common.config.ImprovedConfigBuilder;
 import ru.timeconqueror.timecore.api.util.CodecUtils;
 
 public class ConfigMS extends Config {
+    private static final String NO_CHANGE_FOR_GENERATED = "Won't be changed for already generated Minesweeper boards!";
+
     public ForgeConfigSpec.IntValue detonationTime;
     public ForgeConfigSpec.IntValue attemptCount;
 
@@ -86,9 +88,9 @@ public class ConfigMS extends Config {
 
         @Override
         public void setup(ImprovedConfigBuilder builder) {
-            boardRadius = builder.comment("The radius of Minesweeper board.")
+            boardRadius = builder.comment("The radius of Minesweeper board.", NO_CHANGE_FOR_GENERATED)
                     .defineInRange("board_radius", defData.boardRadius, 2, 9);
-            bombCount = builder.comment("The amount of bombs on the board.")
+            bombCount = builder.comment("The amount of bombs on the board.", NO_CHANGE_FOR_GENERATED)
                     .defineInRange("bomb_count", defData.bombCount, 1, Integer.MAX_VALUE);
         }
 

@@ -175,14 +175,18 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      * Saves current data to the disk and sends update to client.
      */
     public void saveDataAndSendToClient() {
-        masterTileEntity.setBlockToUpdateAndSave();
+        if (isServerSide()) {
+            masterTileEntity.setBlockToUpdateAndSave();
+        }
     }
 
     /**
      * Saves current data to the disk without sending update to client.
      */
     public void saveData() {
-        masterTileEntity.setChanged();
+        if (isServerSide()) {
+            masterTileEntity.setChanged();
+        }
     }
 
     /**
@@ -193,6 +197,9 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     public void writeNBTForSaving(CompoundNBT nbt) {
         writeCommonNBT(nbt);
         nbt.put("task_scheduler", taskScheduler.serializeNBT());
+
+        serializeStage(this, nbt, StageSerializationType.SAVE);
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("serialized stage '{}' for saving."), getStage());
     }
 
     /**
@@ -200,13 +207,16 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      * Overriding is fine.
      */
     @OverridingMethodsMustInvokeSuper
-    public void readNBTFromSave(CompoundNBT compound) {
-        readCommonNBT(compound);
+    public void readNBTFromSave(CompoundNBT nbt) {
+        readCommonNBT(nbt);
 
-        ListNBT schedulerTag = (ListNBT) compound.get("task_scheduler");
+        ListNBT schedulerTag = (ListNBT) nbt.get("task_scheduler");
 
         taskScheduler = new TETaskScheduler(masterTileEntity);
         taskScheduler.deserializeNBT(Objects.requireNonNull(schedulerTag));
+
+        setStage(deserializeStage(this, nbt, StageSerializationType.SAVE));
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("deserialized stage '{}' from saved data."), getStage());
     }
 
     /**
@@ -231,6 +241,9 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     @OverridingMethodsMustInvokeSuper
     public void writeNBTForClient(CompoundNBT nbt) {
         writeCommonNBT(nbt);
+
+        serializeStage(this, nbt, StageSerializationType.SYNC);
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("serialized stage '{}' for syncing."), getStage());
     }
 
     /**
@@ -238,27 +251,27 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      * Overriding is fine.
      */
     @OverridingMethodsMustInvokeSuper
-    public void readNBTAtClient(CompoundNBT compound) {
-        readCommonNBT(compound);
+    public void readNBTAtClient(CompoundNBT nbt) {
+        readCommonNBT(nbt);
+
+        setStage(deserializeStage(this, nbt, StageSerializationType.SYNC));
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("deserialized stage '{}' on client."), getStage());
     }
 
     /**
      * Writes data to be used both server->client syncing and world saving
      */
     @OverridingMethodsMustInvokeSuper
-    public void writeCommonNBT(CompoundNBT compound) {
-        serializeStage(this, compound);
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("serialized stage: '{}'"), getStage());
+    public void writeCommonNBT(CompoundNBT nbt) {
+
     }
 
     /**
      * Reads data that comes from both server->client syncing and world restoring from save
      */
     @OverridingMethodsMustInvokeSuper
-    public void readCommonNBT(CompoundNBT compound) {
+    public void readCommonNBT(CompoundNBT nbt) {
         justPlaced = false;
-        setStage(deserializeStage(this, compound));
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("deserialized stage: '{}'"), getStage());
     }
 
     /**
@@ -287,13 +300,14 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
 
     protected void onStageUpdate(STAGE oldStage, STAGE newStage) {
         if (isServerSide()) {
+            newStage.init();
             saveData();
             sendUpdatePacket(new SPChangeStage(this));
         }
     }
 
     @Nullable
-    public abstract STAGE createStageFromNBT(String id, CompoundNBT stageNBT);
+    public abstract STAGE createStageFromNBT(String id, CompoundNBT stageNBT, StageSerializationType serializationType);
 
     @Nullable
     public STAGE getStage() {
@@ -330,7 +344,13 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
 
         }
 
-        public CompoundNBT serialize() {
+        /**
+         * Serializes stage according to the provided serialization type.
+         * If you have some sensitive data you can check here for type before adding it to nbt or not.
+         *
+         * @param serializationType defines for which purpose stage is serializing.
+         */
+        public CompoundNBT serialize(StageSerializationType serializationType) {
             return new CompoundNBT();
         }
 
@@ -340,23 +360,30 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         public String toString() {
             return getID();
         }
+
+        /**
+         * Will be called only on server side right after stage was created, but before it will be saved and synced.
+         */
+        public void init() {
+
+        }
     }
 
-    public static <STAGE extends Stage> void serializeStage(LootGame<STAGE, ?> game, CompoundNBT nbt) {
+    public static <STAGE extends Stage> void serializeStage(LootGame<STAGE, ?> game, CompoundNBT nbt, StageSerializationType serializationType) {
         Stage stage = game.getStage();
         if (stage != null) {
             CompoundNBT stageWrapper = new CompoundNBT();
-            stageWrapper.put("stage", stage.serialize());
+            stageWrapper.put("stage", stage.serialize(serializationType));
             stageWrapper.putString("id", stage.getID());
             nbt.put("stage_wrapper", stageWrapper);
         }
     }
 
     @Nullable
-    public static <S extends Stage, T extends LootGame<S, T>> S deserializeStage(LootGame<S, T> game, CompoundNBT nbt) {
+    public static <S extends Stage, T extends LootGame<S, T>> S deserializeStage(LootGame<S, T> game, CompoundNBT nbt, StageSerializationType serializationType) {
         if (nbt.contains("stage_wrapper")) {
             CompoundNBT stageWrapper = nbt.getCompound("stage_wrapper");
-            return game.createStageFromNBT(stageWrapper.getString("id"), stageWrapper.getCompound("stage"));
+            return game.createStageFromNBT(stageWrapper.getString("id"), stageWrapper.getCompound("stage"), serializationType);
         } else {
             return null;
         }

@@ -166,7 +166,7 @@ dependencies {
 
     implementation 'org.jetbrains:annotations:18.0.0'
 
-    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.4-3.1.0.2.build100:dev", true))
+    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.4-3.1.0.2.build101:dev", true))
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"

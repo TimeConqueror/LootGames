@@ -9,7 +9,7 @@ import ru.timeconqueror.timecore.api.util.NetworkUtils;
 import ru.timeconqueror.timecore.api.util.Pair;
 
 import java.util.Arrays;
-
+//TODO to TimeCore
 public class ChatUtils {
     private static final Logger LOGGER = LogManager.getLogger();
 
