@@ -7,10 +7,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.api.block.tile.TileBoardGameMaster;
+import ru.timeconqueror.lootgames.api.block.tile.BoardGameMasterTile;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
-import ru.timeconqueror.lootgames.common.block.tile.TileEntityGOLMaster;
+import ru.timeconqueror.lootgames.common.block.tile.GOLMasterTile;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
 import ru.timeconqueror.timecore.animation.Ease;
 import ru.timeconqueror.timecore.api.util.MathUtils;
@@ -18,18 +18,18 @@ import ru.timeconqueror.timecore.api.util.client.DrawHelper;
 
 import static ru.timeconqueror.lootgames.minigame.gol.GameOfLight.StageUnderExpanding.MAX_TICKS_EXPANDING;
 
-public class TESRGOLMaster extends TileEntityRenderer<TileEntityGOLMaster> {
+public class GOLMasterRenderer extends TileEntityRenderer<GOLMasterTile> {
     private static final RenderType RT_BOARD = LGRenderTypes.brightened(LootGames.rl("textures/game/gol_board.png"));
     private static final RenderType RT_BOARD_ACTIVE = LGRenderTypes.brightened(LootGames.rl("textures/game/gol_board_active.png"));
 
-    public TESRGOLMaster(TileEntityRendererDispatcher rendererDispatcherIn) {
+    public GOLMasterRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
     }
 
     @Override
-    public void render(TileEntityGOLMaster tileEntityIn, float partialTicks, MatrixStack matrix, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(GOLMasterTile tileEntityIn, float partialTicks, MatrixStack matrix, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         matrix.pushPose();
-        TileBoardGameMaster.prepareMatrix(matrix, tileEntityIn);
+        BoardGameMasterTile.prepareMatrix(matrix, tileEntityIn);
 
         GameOfLight game = tileEntityIn.getGame();
         BoardLootGame.BoardStage stage = game.getStage();
@@ -61,7 +61,7 @@ public class TESRGOLMaster extends TileEntityRenderer<TileEntityGOLMaster> {
     }
 
     @Override
-    public boolean shouldRenderOffScreen(TileEntityGOLMaster te) {
+    public boolean shouldRenderOffScreen(GOLMasterTile te) {
         return true;
     }
 }

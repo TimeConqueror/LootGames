@@ -10,19 +10,19 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
-import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
+import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.timecore.api.util.WorldUtils;
 
 import java.util.function.BiFunction;
 
-public class BlockGameMaster extends BlockGame implements IGameField {
-    private final BiFunction<BlockState, IBlockReader, TileEntityGameMaster<?>> tileEntityFactory;
+public class GameMasterBlock extends GameBlock implements IGameField {
+    private final BiFunction<BlockState, IBlockReader, GameMasterTile<?>> tileEntityFactory;
 
-    public BlockGameMaster(BiFunction<BlockState, IBlockReader, TileEntityGameMaster<?>> tileEntityFactory) {
+    public GameMasterBlock(BiFunction<BlockState, IBlockReader, GameMasterTile<?>> tileEntityFactory) {
         this.tileEntityFactory = tileEntityFactory;
     }
 
-    public BlockGameMaster(Properties props, BiFunction<BlockState, IBlockReader, TileEntityGameMaster<?>> tileEntityFactory) {
+    public GameMasterBlock(Properties props, BiFunction<BlockState, IBlockReader, GameMasterTile<?>> tileEntityFactory) {
         super(props);
         this.tileEntityFactory = tileEntityFactory;
     }
@@ -30,7 +30,7 @@ public class BlockGameMaster extends BlockGame implements IGameField {
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!worldIn.isClientSide()) {
-            WorldUtils.forTypedTileWithWarn(worldIn, pos, TileEntityGameMaster.class, te -> te.onBlockRightClick(((ServerPlayerEntity) player), pos));
+            WorldUtils.forTypedTileWithWarn(worldIn, pos, GameMasterTile.class, te -> te.onBlockRightClick(((ServerPlayerEntity) player), pos));
         }
 
         return ActionResultType.SUCCESS;
@@ -42,7 +42,7 @@ public class BlockGameMaster extends BlockGame implements IGameField {
     }
 
     @NotNull
-    public TileEntityGameMaster<?> createTileEntity(BlockState state, IBlockReader world) {
+    public GameMasterTile<?> createTileEntity(BlockState state, IBlockReader world) {
         return tileEntityFactory.apply(state, world);
     }
 }

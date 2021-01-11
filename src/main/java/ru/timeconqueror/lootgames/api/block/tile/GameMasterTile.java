@@ -16,11 +16,11 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public abstract class TileEntityGameMaster<T extends LootGame<?, T>> extends TileEntity implements ITickableTileEntity {
+public abstract class GameMasterTile<T extends LootGame<?, T>> extends TileEntity implements ITickableTileEntity {
     protected T game;
     private long age;
 
-    public TileEntityGameMaster(TileEntityType<? extends TileEntityGameMaster<T>> tileEntityTypeIn, T game) {
+    public GameMasterTile(TileEntityType<? extends GameMasterTile<T>> tileEntityTypeIn, T game) {
         super(tileEntityTypeIn);
         this.game = game;
         game.setMasterTileEntity(this);

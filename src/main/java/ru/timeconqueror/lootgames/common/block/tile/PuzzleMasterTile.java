@@ -7,10 +7,10 @@ import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.registry.LGTiles;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 
-public class TileEntityPuzzleMaster extends TileEntity implements ITickableTileEntity {
+public class PuzzleMasterTile extends TileEntity implements ITickableTileEntity {
     private long lastSoundTick = 0L;
 
-    public TileEntityPuzzleMaster() {
+    public PuzzleMasterTile() {
         super(LGTiles.PUZZLE_MASTER);
     }
 

@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
-import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
+import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.timecore.api.common.packet.ITimePacket;
 
@@ -66,8 +66,8 @@ public class SPacketGameUpdate implements ITimePacket {
 
             ctx.enqueueWork(() -> {
                 TileEntity te = world.getBlockEntity(packet.masterPos);
-                if (te instanceof TileEntityGameMaster<?>) {
-                    TileEntityGameMaster<?> master = ((TileEntityGameMaster<?>) te);
+                if (te instanceof GameMasterTile<?>) {
+                    GameMasterTile<?> master = ((GameMasterTile<?>) te);
                     master.getGame().onUpdatePacket(packet.gamePacket);
                 } else {
                     throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos " + packet.masterPos + " for packet " + packet.gamePacket.getClass().getName());

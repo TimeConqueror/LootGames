@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.client.resource;
 
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.api.block.BlockBoardBorder;
+import ru.timeconqueror.lootgames.api.block.BoardBorderBlock;
 import ru.timeconqueror.timecore.api.client.resource.BlockModels;
 import ru.timeconqueror.timecore.api.client.resource.BlockStateResource;
 import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation;
@@ -12,7 +12,7 @@ import static ru.timeconqueror.timecore.api.client.resource.JSONTimeResource.*;
 
 public class BoardBorderBlockResources {
 
-    public static void fillChain(BlockRegister.BlockRegisterChain<BlockBoardBorder> chain) {
+    public static void fillChain(BlockRegister.BlockRegisterChain<BoardBorderBlock> chain) {
         TextureLocation sideTexture = new TextureLocation(LootGames.MODID, "block/field_border_side");
         TextureLocation cornerTextureTop = new TextureLocation(LootGames.MODID, "block/field_border_corner_top");
         TextureLocation cornerTextureBottom = new TextureLocation(LootGames.MODID, "block/field_border_corner_bottom");

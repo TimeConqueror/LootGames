@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Marker;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.Markers;
-import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
+import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.api.packet.SPacketGameUpdate;
 import ru.timeconqueror.lootgames.api.task.TETaskScheduler;
@@ -36,7 +36,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     private static final Logger LOGGER = LogManager.getLogger();
     public static final Marker DEBUG_MARKER = Markers.LOOTGAME.getMarker();
 
-    protected TileEntityGameMaster<G> masterTileEntity;
+    protected GameMasterTile<G> masterTileEntity;
     protected TETaskScheduler taskScheduler;
 
     /**
@@ -45,7 +45,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     private boolean justPlaced = true;
     private STAGE stage;
 
-    public void setMasterTileEntity(TileEntityGameMaster<G> masterTileEntity) {
+    public void setMasterTileEntity(GameMasterTile<G> masterTileEntity) {
         this.masterTileEntity = masterTileEntity;
     }
 

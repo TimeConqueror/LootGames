@@ -10,17 +10,17 @@ import net.minecraft.world.IBlockReader;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.timecore.api.registry.util.BlockPropsFactory;
 
-public abstract class BlockGame extends Block {
+public abstract class GameBlock extends Block {
     public static final BlockPropsFactory DEF_PROPS = new BlockPropsFactory(() ->
             BlockPropsFactory.unbreakable(Properties.of(Material.BARRIER)
                     .lightLevel(value -> 1))
     );
 
-    public BlockGame() {
+    public GameBlock() {
         super(DEF_PROPS.create());
     }
 
-    public BlockGame(Properties props) {
+    public GameBlock(Properties props) {
         super(props);
     }
 

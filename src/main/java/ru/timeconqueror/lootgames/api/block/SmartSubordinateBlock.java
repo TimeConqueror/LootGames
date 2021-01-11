@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
-import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
+import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 import ru.timeconqueror.timecore.api.util.WorldUtils;
 
@@ -20,9 +20,9 @@ import java.util.function.BiConsumer;
 
 /**
  * Subordinate block for minigames. Will find master block and notify it. The master block must be at the north-west corner of the game border
- * and its tileentity must extend {@link TileEntityGameMaster<>}!
+ * and its tileentity must extend {@link GameMasterTile <>}!
  */
-public class BlockSmartSubordinate extends BlockGame implements ILeftInteractible, ISubordinateProvider {
+public class SmartSubordinateBlock extends GameBlock implements ILeftInteractible, ISubordinateProvider {
 
     @Override
     public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
@@ -38,8 +38,8 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
         if (!worldIn.isClientSide()) {
             BlockPos masterPos = getMasterPos(worldIn, pos);
             TileEntity te = worldIn.getBlockEntity(masterPos);
-            if (te instanceof TileEntityGameMaster<?>) {
-                ((TileEntityGameMaster<?>) te).onBlockRightClick(((ServerPlayerEntity) player), pos);
+            if (te instanceof GameMasterTile<?>) {
+                ((GameMasterTile<?>) te).onBlockRightClick(((ServerPlayerEntity) player), pos);
             } else {
                 NetworkUtils.sendMessage(player, new StringTextComponent("The game doesn't seem to work. Please, send the issue to mod author."));
             }
@@ -54,7 +54,7 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
         if (face == Direction.UP && !player.isShiftKeyDown()) {
             if (!world.isClientSide()) {
                 forMasterTile(world, pos, (tileEntityGameMaster, masterPos) -> {
-                    WorldUtils.forTypedTileWithWarn(world, masterPos, TileEntityGameMaster.class, master -> master.onBlockLeftClick((ServerPlayerEntity) player, pos));
+                    WorldUtils.forTypedTileWithWarn(world, masterPos, GameMasterTile.class, master -> master.onBlockLeftClick((ServerPlayerEntity) player, pos));
                 });
             }
 
@@ -64,9 +64,9 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
         return false;
     }
 
-    private void forMasterTile(World world, BlockPos pos, BiConsumer<TileEntityGameMaster<?>, BlockPos> action) {
+    private void forMasterTile(World world, BlockPos pos, BiConsumer<GameMasterTile<?>, BlockPos> action) {
         BlockPos masterPos = getMasterPos(world, pos);
-        WorldUtils.forTypedTileWithWarn(world, masterPos, TileEntityGameMaster.class, tileEntityGameMaster -> action.accept(tileEntityGameMaster, masterPos));
+        WorldUtils.forTypedTileWithWarn(world, masterPos, GameMasterTile.class, tileEntityGameMaster -> action.accept(tileEntityGameMaster, masterPos));
     }
 
     public static BlockPos getMasterPos(World world, BlockPos pos) {
@@ -95,7 +95,7 @@ public class BlockSmartSubordinate extends BlockGame implements ILeftInteractibl
 
     public static void handleLeftClick(PlayerEntity player, World world, BlockPos masterPos, BlockPos subordinatePos, Direction face) {
         if (!world.isClientSide()) {
-            WorldUtils.forTypedTileWithWarn(world, masterPos, TileEntityGameMaster.class, master -> {
+            WorldUtils.forTypedTileWithWarn(world, masterPos, GameMasterTile.class, master -> {
                 master.onBlockLeftClick((ServerPlayerEntity) player, subordinatePos);
             });
         }

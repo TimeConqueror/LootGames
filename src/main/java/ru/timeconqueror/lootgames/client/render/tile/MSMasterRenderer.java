@@ -9,11 +9,11 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.api.block.tile.TileBoardGameMaster;
+import ru.timeconqueror.lootgames.api.block.tile.BoardGameMasterTile;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
 import ru.timeconqueror.lootgames.client.render.MSOverlayHandler;
-import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
+import ru.timeconqueror.lootgames.common.block.tile.MSMasterTile;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper.StageDetonating;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper.StageExploding;
@@ -21,23 +21,23 @@ import ru.timeconqueror.lootgames.minigame.minesweeper.Mark;
 import ru.timeconqueror.lootgames.minigame.minesweeper.Type;
 import ru.timeconqueror.timecore.api.util.client.DrawHelper;
 
-public class TESRMSMaster extends TileEntityRenderer<TileEntityMSMaster> {
+public class MSMasterRenderer extends TileEntityRenderer<MSMasterTile> {
     private static final ResourceLocation MS_BOARD = LootGames.rl("textures/game/ms_board.png");
     private static final RenderType RT_BRIGHTENED_BOARD = LGRenderTypes.brightened(MS_BOARD);
     private static final RenderType RT_BRIGHTENED_TRANSLUCENT_BOARD = LGRenderTypes.brightenedTranslucent(MS_BOARD);
 
-    public TESRMSMaster(TileEntityRendererDispatcher rendererDispatcherIn) {
+    public MSMasterRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
     }
 
     @Override
-    public void render(TileEntityMSMaster te, float partialTicks, MatrixStack matrix, @NotNull IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(MSMasterTile te, float partialTicks, MatrixStack matrix, @NotNull IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         GameMineSweeper game = te.getGame();
         int boardSize = game.getCurrentBoardSize();
         LootGame.Stage stage = game.getStage();
 
         matrix.pushPose();
-        TileBoardGameMaster.prepareMatrix(matrix, te);
+        BoardGameMasterTile.prepareMatrix(matrix, te);
 
         if (!game.cIsGenerated) {
             IVertexBuilder brightenedBuilder = bufferIn.getBuffer(RT_BRIGHTENED_BOARD);
@@ -110,7 +110,7 @@ public class TESRMSMaster extends TileEntityRenderer<TileEntityMSMaster> {
     }
 
     @Override
-    public boolean shouldRenderOffScreen(TileEntityMSMaster te) {
+    public boolean shouldRenderOffScreen(MSMasterTile te) {
         return true;
     }
 }

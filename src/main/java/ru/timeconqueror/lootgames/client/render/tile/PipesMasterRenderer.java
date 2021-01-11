@@ -11,24 +11,24 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Matrix4f;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
-import ru.timeconqueror.lootgames.common.block.tile.TileEntityPipesMaster;
+import ru.timeconqueror.lootgames.common.block.tile.PipesMasterTile;
 import ru.timeconqueror.lootgames.minigame.pipes.GamePipes;
 import ru.timeconqueror.lootgames.minigame.pipes.board.PipeState;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
+public class PipesMasterRenderer extends TileEntityRenderer<PipesMasterTile> {
 
     private static final ResourceLocation BOARD = new ResourceLocation(LootGames.MODID, "textures/game/pipes.png");
     private static final RenderType BOARD_RENDER_TYPE = LGRenderTypes.brightenedCutout(BOARD);
 
-    public TESRPipesMaster(TileEntityRendererDispatcher rendererDispatcherIn) {
+    public PipesMasterRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
     }
 
     @Override
-    public void render(TileEntityPipesMaster te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(PipesMasterTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         GamePipes game = te.getGame();
         int size = game.getCurrentBoardSize();
         int animation = (int) (te.getAge() / 2 % 32);
@@ -87,7 +87,7 @@ public class TESRPipesMaster extends TileEntityRenderer<TileEntityPipesMaster> {
     }
 
     @Override
-    public boolean shouldRenderOffScreen(TileEntityPipesMaster te) {
+    public boolean shouldRenderOffScreen(PipesMasterTile te) {
         return true;
     }
 }

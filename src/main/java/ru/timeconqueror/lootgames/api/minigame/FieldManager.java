@@ -11,9 +11,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
-import ru.timeconqueror.lootgames.api.block.BlockBoardBorder;
+import ru.timeconqueror.lootgames.api.block.BoardBorderBlock;
 import ru.timeconqueror.lootgames.api.block.IGameField;
-import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
+import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.BlockUtils;
@@ -41,8 +41,8 @@ public class FieldManager {
             BlockPos masterPos = masterPosGetter.get();
             TileEntity tileEntity = worldIn.getBlockEntity(masterPos);
 
-            if (tileEntity instanceof TileEntityGameMaster<?>) {
-                ((TileEntityGameMaster<?>) tileEntity).onDestroy();
+            if (tileEntity instanceof GameMasterTile<?>) {
+                ((GameMasterTile<?>) tileEntity).onDestroy();
             }
             stopFieldBreaking();
         }
@@ -104,27 +104,27 @@ public class FieldManager {
         // Filling border corners and master block
         world.setBlock(cornerPos, masterBlock, 3);
         borderPos.move(xSize + 1, 0, 0);
-        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.TOP_RIGHT), 2);
+        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.TOP_RIGHT), 2);
         borderPos.move(0, 0, zSize + 1);
-        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.BOTTOM_RIGHT), 2);
+        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.BOTTOM_RIGHT), 2);
         borderPos.move(-xSize - 1, 0, 0);
-        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.BOTTOM_LEFT), 2);
+        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.BOTTOM_LEFT), 2);
 
         // Filling border edges
         borderPos.set(cornerPos);
         for (int i = 0; i < xSize; i++) {
             borderPos.move(1, 0, 0);
-            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.HORIZONTAL), 2);
+            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.HORIZONTAL), 2);
             borderPos.move(0, 0, zSize + 1);
-            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.HORIZONTAL), 2);
+            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.HORIZONTAL), 2);
             borderPos.move(0, 0, -zSize - 1);
         }
         borderPos.set(cornerPos);
         for (int i = 0; i < xSize; i++) {
             borderPos.move(0, 0, 1);
-            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.VERTICAL), 2);
+            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.VERTICAL), 2);
             borderPos.move(xSize + 1, 0, 0);
-            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BlockBoardBorder.TYPE, BlockBoardBorder.Type.VERTICAL), 2);
+            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.VERTICAL), 2);
             borderPos.move(-xSize - 1, 0, 0);
         }
 
@@ -152,7 +152,7 @@ public class FieldManager {
             this.pos = masterPos;
         }
 
-        public <T extends TileEntityGameMaster<?>> GenerationChain forTileIfSucceed(Class<T> tileClass, Consumer<T> action) {
+        public <T extends GameMasterTile<?>> GenerationChain forTileIfSucceed(Class<T> tileClass, Consumer<T> action) {
             if (succeed) {
                 WorldUtils.forTileWithReqt(world, pos, tileClass, action);
             }

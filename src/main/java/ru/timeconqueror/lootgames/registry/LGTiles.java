@@ -3,13 +3,13 @@ package ru.timeconqueror.lootgames.registry;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.client.render.tile.TESRGOLMaster;
-import ru.timeconqueror.lootgames.client.render.tile.TESRMSMaster;
-import ru.timeconqueror.lootgames.client.render.tile.TESRPipesMaster;
-import ru.timeconqueror.lootgames.common.block.tile.TileEntityGOLMaster;
-import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
-import ru.timeconqueror.lootgames.common.block.tile.TileEntityPipesMaster;
-import ru.timeconqueror.lootgames.common.block.tile.TileEntityPuzzleMaster;
+import ru.timeconqueror.lootgames.client.render.tile.GOLMasterRenderer;
+import ru.timeconqueror.lootgames.client.render.tile.MSMasterRenderer;
+import ru.timeconqueror.lootgames.client.render.tile.PipesMasterRenderer;
+import ru.timeconqueror.lootgames.common.block.tile.GOLMasterTile;
+import ru.timeconqueror.lootgames.common.block.tile.MSMasterTile;
+import ru.timeconqueror.lootgames.common.block.tile.PipesMasterTile;
+import ru.timeconqueror.lootgames.common.block.tile.PuzzleMasterTile;
 import ru.timeconqueror.timecore.api.registry.TileEntityRegister;
 import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 
@@ -18,10 +18,10 @@ import static ru.timeconqueror.timecore.api.util.Hacks.promise;
 @ObjectHolder(LootGames.MODID)
 public class LGTiles {
 
-    public static final TileEntityType<TileEntityPuzzleMaster> PUZZLE_MASTER = promise();
-    public static final TileEntityType<TileEntityMSMaster> MS_MASTER = promise();
-    public static final TileEntityType<TileEntityPipesMaster> PIPES_MASTER = promise();
-    public static final TileEntityType<TileEntityGOLMaster> GOL_MASTER = promise();
+    public static final TileEntityType<PuzzleMasterTile> PUZZLE_MASTER = promise();
+    public static final TileEntityType<MSMasterTile> MS_MASTER = promise();
+    public static final TileEntityType<PipesMasterTile> PIPES_MASTER = promise();
+    public static final TileEntityType<GOLMasterTile> GOL_MASTER = promise();
 
     private static class Init {
         @AutoRegistrable
@@ -29,10 +29,10 @@ public class LGTiles {
 
         @AutoRegistrable.InitMethod
         private static void register() {
-            REGISTER.registerSingleBound("puzzle_master", TileEntityPuzzleMaster::new, () -> LGBlocks.PUZZLE_MASTER);
-            REGISTER.registerSingleBound("ms_master", TileEntityMSMaster::new, () -> LGBlocks.MS_MASTER).regCustomRenderer(() -> TESRMSMaster::new);
-            REGISTER.registerSingleBound("pipes_master", TileEntityPipesMaster::new, () -> LGBlocks.PIPES_MASTER).regCustomRenderer(() -> TESRPipesMaster::new);
-            REGISTER.registerSingleBound("gol_master", TileEntityGOLMaster::new, () -> LGBlocks.GOL_MASTER).regCustomRenderer(() -> TESRGOLMaster::new);
+            REGISTER.registerSingleBound("puzzle_master", PuzzleMasterTile::new, () -> LGBlocks.PUZZLE_MASTER);
+            REGISTER.registerSingleBound("ms_master", MSMasterTile::new, () -> LGBlocks.MS_MASTER).regCustomRenderer(() -> MSMasterRenderer::new);
+            REGISTER.registerSingleBound("pipes_master", PipesMasterTile::new, () -> LGBlocks.PIPES_MASTER).regCustomRenderer(() -> PipesMasterRenderer::new);
+            REGISTER.registerSingleBound("gol_master", GOLMasterTile::new, () -> LGBlocks.GOL_MASTER).regCustomRenderer(() -> GOLMasterRenderer::new);
         }
     }
 }

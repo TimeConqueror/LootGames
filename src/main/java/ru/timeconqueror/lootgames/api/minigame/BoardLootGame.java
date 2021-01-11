@@ -7,8 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
-import ru.timeconqueror.lootgames.api.block.tile.TileBoardGameMaster;
-import ru.timeconqueror.lootgames.api.block.tile.TileEntityGameMaster;
+import ru.timeconqueror.lootgames.api.block.tile.BoardGameMasterTile;
+import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.util.EnvironmentUtils;
@@ -25,11 +25,11 @@ public abstract class BoardLootGame<G extends BoardLootGame<G>> extends LootGame
     private BoardStage stage;
 
     @Override
-    public void setMasterTileEntity(TileEntityGameMaster<G> masterTileEntity) {
+    public void setMasterTileEntity(GameMasterTile<G> masterTileEntity) {
         super.setMasterTileEntity(masterTileEntity);
 
-        if (EnvironmentUtils.isInDev() && !disableMasterCheckWarning && !(masterTileEntity instanceof TileBoardGameMaster<?>)) {
-            LOGGER.warn("You probably forgot that {} needs to extend {} to handle {} properly.", masterTileEntity.getClass().getSimpleName(), TileBoardGameMaster.class.getSimpleName(), BoardLootGame.class.getSimpleName());
+        if (EnvironmentUtils.isInDev() && !disableMasterCheckWarning && !(masterTileEntity instanceof BoardGameMasterTile<?>)) {
+            LOGGER.warn("You probably forgot that {} needs to extend {} to handle {} properly.", masterTileEntity.getClass().getSimpleName(), BoardGameMasterTile.class.getSimpleName(), BoardLootGame.class.getSimpleName());
         }
     }
 

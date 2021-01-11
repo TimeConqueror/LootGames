@@ -16,9 +16,9 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
-import ru.timeconqueror.lootgames.api.block.BlockGame;
+import ru.timeconqueror.lootgames.api.block.GameBlock;
 import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger.ExtraInfo;
-import ru.timeconqueror.lootgames.common.block.tile.TileEntityPuzzleMaster;
+import ru.timeconqueror.lootgames.common.block.tile.PuzzleMasterTile;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
@@ -27,10 +27,10 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.Random;
 
-public class BlockPuzzleMaster extends BlockGame {
+public class PuzzleMasterBlock extends GameBlock {
 
-    public BlockPuzzleMaster() {
-        super(BlockGame.DEF_PROPS.create().lightLevel(value -> 15));
+    public PuzzleMasterBlock() {
+        super(GameBlock.DEF_PROPS.create().lightLevel(value -> 15));
     }
 
     @Override
@@ -82,6 +82,6 @@ public class BlockPuzzleMaster extends BlockGame {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new TileEntityPuzzleMaster();
+        return new PuzzleMasterTile();
     }
 }

@@ -18,7 +18,7 @@ import ru.timeconqueror.timecore.api.registry.util.BlockPropsFactory;
 
 import java.util.List;
 
-public class BlockDungeon extends Block {
+public class DungeonBlock extends Block {
     public static final BlockPropsFactory BRICKS_PROPS_CREATOR = new BlockPropsFactory(() -> Properties.of(Material.STONE)
             .strength(10.0F, 6.0F)
             .sound(SoundType.STONE));
@@ -28,7 +28,7 @@ public class BlockDungeon extends Block {
             .sound(SoundType.GLASS)
             .lightLevel(value -> 15));
 
-    public BlockDungeon(Properties props) {
+    public DungeonBlock(Properties props) {
         super(props);
     }
 

@@ -11,7 +11,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.common.block.tile.TileEntityMSMaster;
+import ru.timeconqueror.lootgames.common.block.tile.MSMasterTile;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.timecore.api.util.MathUtils;
 import ru.timeconqueror.timecore.api.util.client.DrawHelper;
@@ -26,7 +26,7 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class MSOverlayHandler {
-    private static final ArrayList<WeakReference<TileEntityMSMaster>> MS_MASTERS = new ArrayList<>(1);
+    private static final ArrayList<WeakReference<MSMasterTile>> MS_MASTERS = new ArrayList<>(1);
 
     private static final TexturedRect FIRST_SLOT_START = new TexturedRect(3 * 1.5F, 16 * 1.5F, 15, 0, 3, 16);
     private static final TexturedRect FIRST_SLOT_REPEAT = new TexturedRect(26 * 1.5F, 16 * 1.5F, 18, 0, 26, 16);
@@ -50,10 +50,10 @@ public class MSOverlayHandler {
         PlayerEntity player = Minecraft.getInstance().player;
         FontRenderer fontRenderer = Minecraft.getInstance().font;
 
-        List<TileEntityMSMaster> masters = new ArrayList<>(1);
-        Iterator<WeakReference<TileEntityMSMaster>> iterator = MS_MASTERS.iterator();
+        List<MSMasterTile> masters = new ArrayList<>(1);
+        Iterator<WeakReference<MSMasterTile>> iterator = MS_MASTERS.iterator();
         while (iterator.hasNext()) {
-            TileEntityMSMaster master = iterator.next().get();
+            MSMasterTile master = iterator.next().get();
 
             if (master == null) {
                 iterator.remove();
@@ -77,7 +77,7 @@ public class MSOverlayHandler {
         if (masters.size() > 1) extendedInfo = true;
 
         float maxRectWidth = 0;
-        for (TileEntityMSMaster msMaster : masters) {
+        for (MSMasterTile msMaster : masters) {
             GameMineSweeper game = msMaster.getGame();
             String toDisplay = getBombDisplayString(game, extendedInfo);
 
@@ -89,7 +89,7 @@ public class MSOverlayHandler {
         RenderHelper.RenderPipeline renderPipeline = RenderHelper.guiRenderPipeline();
 
         for (int i = 0; i < masters.size(); i++) {
-            TileEntityMSMaster msMaster = masters.get(i);
+            MSMasterTile msMaster = masters.get(i);
             GameMineSweeper game = msMaster.getGame();
 
             Color color = game.getStage() instanceof GameMineSweeper.StageDetonating || game.getStage() instanceof GameMineSweeper.StageExploding ? Color.RED : Color.WHITE;
@@ -125,7 +125,7 @@ public class MSOverlayHandler {
         return extended ? "x" + bombDisplay + " on "/*todo translate */ + gamePos.getX() + ", " + gamePos.getY() + ", " + gamePos.getZ() : "x" + bombDisplay;
     }
 
-    public static void addSupportedMaster(TileEntityMSMaster master) {
+    public static void addSupportedMaster(MSMasterTile master) {
         if (!Minecraft.getInstance().options.hideGui || Minecraft.getInstance().screen != null) {
             MS_MASTERS.add(new WeakReference<>(master));
         }

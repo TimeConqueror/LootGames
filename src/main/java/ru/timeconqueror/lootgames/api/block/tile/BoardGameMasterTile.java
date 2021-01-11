@@ -15,8 +15,8 @@ import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 
-public class TileBoardGameMaster<T extends BoardLootGame<T>> extends TileEntityGameMaster<T> {
-    public TileBoardGameMaster(TileEntityType<? extends TileEntityGameMaster<T>> type, T game) {
+public class BoardGameMasterTile<T extends BoardLootGame<T>> extends GameMasterTile<T> {
+    public BoardGameMasterTile(TileEntityType<? extends GameMasterTile<T>> type, T game) {
         super(type, game);
     }
 
@@ -43,7 +43,7 @@ public class TileBoardGameMaster<T extends BoardLootGame<T>> extends TileEntityG
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static void prepareMatrix(MatrixStack matrixStack, TileBoardGameMaster<?> master) {
+    public static void prepareMatrix(MatrixStack matrixStack, BoardGameMasterTile<?> master) {
         BlockPos boardOrigin = master.getGame().getBoardOrigin();
         Vector3i originOffset = boardOrigin.subtract(master.getBlockPos()).offset(0, 1, 0);
 

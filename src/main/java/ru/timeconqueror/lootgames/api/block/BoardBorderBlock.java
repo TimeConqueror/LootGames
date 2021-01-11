@@ -13,11 +13,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Locale;
 
 @ParametersAreNonnullByDefault
-public class BlockBoardBorder extends BlockGame implements IGameField {
+public class BoardBorderBlock extends GameBlock implements IGameField {
 
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 
-    public BlockBoardBorder() {
+    public BoardBorderBlock() {
         super();
         this.registerDefaultState(this.defaultBlockState().setValue(TYPE, Type.HORIZONTAL));
     }
@@ -32,7 +32,7 @@ public class BlockBoardBorder extends BlockGame implements IGameField {
         int limit = 128;
 
         while (--limit >= 0) {
-            if (!(currentState.getBlock() instanceof BlockBoardBorder)) {
+            if (!(currentState.getBlock() instanceof BoardBorderBlock)) {
                 break;
             }
 
