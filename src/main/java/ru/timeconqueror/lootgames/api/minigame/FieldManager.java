@@ -104,27 +104,27 @@ public class FieldManager {
         // Filling border corners and master block
         world.setBlock(cornerPos, masterBlock, 3);
         borderPos.move(xSize + 1, 0, 0);
-        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.TOP_RIGHT), 2);
+        world.setBlock(borderPos, LGBlocks.BOARD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.TOP_RIGHT), 2);
         borderPos.move(0, 0, zSize + 1);
-        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.BOTTOM_RIGHT), 2);
+        world.setBlock(borderPos, LGBlocks.BOARD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.BOTTOM_RIGHT), 2);
         borderPos.move(-xSize - 1, 0, 0);
-        world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.BOTTOM_LEFT), 2);
+        world.setBlock(borderPos, LGBlocks.BOARD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.BOTTOM_LEFT), 2);
 
         // Filling border edges
         borderPos.set(cornerPos);
         for (int i = 0; i < xSize; i++) {
             borderPos.move(1, 0, 0);
-            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.HORIZONTAL), 2);
+            world.setBlock(borderPos, LGBlocks.BOARD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.HORIZONTAL), 2);
             borderPos.move(0, 0, zSize + 1);
-            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.HORIZONTAL), 2);
+            world.setBlock(borderPos, LGBlocks.BOARD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.HORIZONTAL), 2);
             borderPos.move(0, 0, -zSize - 1);
         }
         borderPos.set(cornerPos);
         for (int i = 0; i < xSize; i++) {
             borderPos.move(0, 0, 1);
-            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.VERTICAL), 2);
+            world.setBlock(borderPos, LGBlocks.BOARD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.VERTICAL), 2);
             borderPos.move(xSize + 1, 0, 0);
-            world.setBlock(borderPos, LGBlocks.FIELD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.VERTICAL), 2);
+            world.setBlock(borderPos, LGBlocks.BOARD_BORDER.defaultBlockState().setValue(BoardBorderBlock.TYPE, BoardBorderBlock.Type.VERTICAL), 2);
             borderPos.move(-xSize - 1, 0, 0);
         }
 

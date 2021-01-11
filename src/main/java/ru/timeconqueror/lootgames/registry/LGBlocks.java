@@ -38,7 +38,7 @@ public class LGBlocks {
 
     public static final PuzzleMasterBlock PUZZLE_MASTER = promise();
     public static final SmartSubordinateBlock SMART_SUBORDINATE = promise();
-    public static final BoardBorderBlock FIELD_BORDER = promise();
+    public static final BoardBorderBlock BOARD_BORDER = promise();
 
     public static final MSActivatorBlock MS_ACTIVATOR = promise();
     public static final PipesActivatorBlock PIPES_ACTIVATOR = promise();

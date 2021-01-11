@@ -33,7 +33,6 @@ import java.util.List;
 import static ru.timeconqueror.timecore.api.util.NetworkUtils.getPlayersNearby;
 
 //TODO lang keys for advancements
-//TODo add check if tileentity is nearby or blocksmartsubordinate or masterplacer
 //TODO change generation random - depending on world is bad.
 //TODO add leveling info in chat
 //todo add game rules in chat

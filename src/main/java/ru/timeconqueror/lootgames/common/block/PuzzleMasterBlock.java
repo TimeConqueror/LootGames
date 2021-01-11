@@ -26,7 +26,7 @@ import ru.timeconqueror.timecore.api.util.NetworkUtils;
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.Random;
-
+//TODO check surface before placing game block
 public class PuzzleMasterBlock extends GameBlock {
 
     public PuzzleMasterBlock() {
