@@ -1,6 +1,7 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.BlockPos;
@@ -17,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.Markers;
 import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
+import ru.timeconqueror.lootgames.api.packet.CPacketGameUpdate;
+import ru.timeconqueror.lootgames.api.packet.IClientGamePacket;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.api.packet.SPacketGameUpdate;
 import ru.timeconqueror.lootgames.api.task.TETaskScheduler;
@@ -199,7 +202,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         nbt.put("task_scheduler", taskScheduler.serializeNBT());
 
         serializeStage(this, nbt, StageSerializationType.SAVE);
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("serialized stage '{}' for saving."), getStage());
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("stage '{}' was serialized for saving."), getStage());
     }
 
     /**
@@ -216,15 +219,21 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         taskScheduler.deserializeNBT(Objects.requireNonNull(schedulerTag));
 
         setStage(deserializeStage(this, nbt, StageSerializationType.SAVE));
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("deserialized stage '{}' from saved data."), getStage());
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg(" stage '{}' was deserialized from saved data."), getStage());
     }
 
     /**
      * Sends update packet to the client with given {@link CompoundNBT} to all players, tracking the game.
      */
     public void sendUpdatePacket(IServerGamePacket packet) {
-        Chunk chunk = getWorld().getChunkAt(masterTileEntity.getBlockPos());
+        if (!isServerSide()) {
+            return;
+        }
+
+        Chunk chunk = getWorld().getChunkAt(getMasterPos());
         LGNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new SPacketGameUpdate(this, packet));
+
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("update packet '{}' was sent."), packet.getClass().getSimpleName());
     }
 
     /**
@@ -232,6 +241,25 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      */
     public void onUpdatePacket(IServerGamePacket packet) {
         packet.runOnClient(this);
+    }
+
+    /**
+     * Sends update packet to the server with given {@link CompoundNBT}.
+     */
+    public void sendFeedbackPacket(IClientGamePacket packet) {
+        if (isServerSide()) {
+            return;
+        }
+
+        LGNetwork.INSTANCE.sendToServer(new CPacketGameUpdate(this, packet));
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("feedback packet '{}' was sent."), packet.getClass().getSimpleName());
+    }
+
+    /**
+     * Fired on server when {@link IClientGamePacket} comes from client.
+     */
+    public void onFeedbackPacket(ServerPlayerEntity sender, IClientGamePacket packet) {
+        packet.runOnServer(sender, this);
     }
 
     /**
@@ -243,7 +271,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         writeCommonNBT(nbt);
 
         serializeStage(this, nbt, StageSerializationType.SYNC);
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("serialized stage '{}' for syncing."), getStage());
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("stage '{}' was serialized for syncing."), getStage());
     }
 
     /**
@@ -255,7 +283,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         readCommonNBT(nbt);
 
         setStage(deserializeStage(this, nbt, StageSerializationType.SYNC));
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("deserialized stage '{}' on client."), getStage());
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("stage '{}' was deserialized on client."), getStage());
     }
 
     /**
@@ -282,7 +310,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      */
     public void setupInitialStage(STAGE stage) {
         setStage(stage);
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("set up initial stage '{}'"), stage);
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("initial stage '{}' was set up"), stage);
         stage.onStart();
     }
 
