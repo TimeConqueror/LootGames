@@ -1,8 +1,10 @@
-package ru.timeconqueror.lootgames.api.packet;
+package ru.timeconqueror.lootgames.common.packet;
 
 import net.minecraftforge.fml.LogicalSide;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
+import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry;
+import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 
 public class SPacketGameUpdate extends PacketGameUpdate<IServerGamePacket> {
     public <G extends LootGame<?, G>> SPacketGameUpdate(LootGame<?, G> game, IServerGamePacket gamePacket) {

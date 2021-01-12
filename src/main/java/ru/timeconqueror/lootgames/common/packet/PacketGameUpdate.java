@@ -1,4 +1,4 @@
-package ru.timeconqueror.lootgames.api.packet;
+package ru.timeconqueror.lootgames.common.packet;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -10,6 +10,7 @@ import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry.Key;
 import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry.Storage;
+import ru.timeconqueror.lootgames.api.packet.IGamePacket;
 import ru.timeconqueror.timecore.api.common.packet.ITimePacket;
 
 import java.io.IOException;
