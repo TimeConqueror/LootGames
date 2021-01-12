@@ -56,7 +56,7 @@ repositories {
         url = 'https://repo.spongepowered.org/maven'
     }
     maven {
-        name = "TimeConqueror's Maven"
+        name = ".TimeConqueror's Maven" // dot to make it first priority
         url = "https://repo.repsy.io/mvn/timeconqueror/mc/"
     }
     mavenCentral()
@@ -166,7 +166,7 @@ dependencies {
 
     implementation 'org.jetbrains:annotations:18.0.0'
 
-    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.4-3.1.0.2.build101:dev", true))
+    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.4-3.1.0.2.build104:dev", true))
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"

@@ -83,10 +83,8 @@ public abstract class PacketGameUpdate<T extends IGamePacket> implements ITimePa
             try {
                 gamePacket = packetClass.newInstance();
                 gamePacket.decode(buffer);
-            } catch (InstantiationException e) {//FIXME test if it only kicks from server or halt client? and what if server will catch it?
+            } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException("Can't decode received game packet, due to lack of public nullary constructor in " + packetClass, e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
             }
 
             packet.setMasterPos(masterPos);
@@ -96,8 +94,6 @@ public abstract class PacketGameUpdate<T extends IGamePacket> implements ITimePa
         }
 
         public void onPacketReceived(P packet, NetworkEvent.Context ctx, World world) {
-            //FIXME test disabled on server side? do only for client!
-
             ctx.enqueueWork(() -> {
                 TileEntity te = world.getBlockEntity(packet.getMasterPos());
                 if (te instanceof GameMasterTile<?>) {
@@ -105,7 +101,6 @@ public abstract class PacketGameUpdate<T extends IGamePacket> implements ITimePa
                     gameUpdater.accept(ctx, master.getGame(), packet.getGamePacket());
                 } else {
                     throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos " + packet.getMasterPos() + " for packet " + packet.getGamePacketClass().getName());
-                    //FIXME test what if server will catch it?
                 }
             });
         }

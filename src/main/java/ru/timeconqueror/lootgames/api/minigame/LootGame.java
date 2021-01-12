@@ -85,7 +85,11 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     public boolean isServerSide() {
-        return !getWorld().isClientSide();
+        return !isClientSide();
+    }
+
+    public boolean isClientSide() {
+        return getWorld().isClientSide();
     }
 
     @NotNull
