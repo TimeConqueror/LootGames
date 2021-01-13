@@ -16,8 +16,8 @@ import ru.timeconqueror.lootgames.api.block.IGameField;
 import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
-import ru.timeconqueror.lootgames.utils.BlockUtils;
-import ru.timeconqueror.lootgames.utils.CollectionUtils;
+import ru.timeconqueror.timecore.api.util.BlockUtils;
+import ru.timeconqueror.timecore.api.util.CollectionUtils;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 import ru.timeconqueror.timecore.api.util.WorldUtils;
 
