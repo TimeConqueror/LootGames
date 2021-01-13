@@ -16,6 +16,7 @@ import ru.timeconqueror.lootgames.api.minigame.StageSerializationType;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.common.config.ConfigGOL;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
+import ru.timeconqueror.lootgames.common.packet.game.CPGOLSymbolsShown;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.util.EnumLookup;
@@ -72,7 +73,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                 break;
         }
 
-        getWorld().playSound(null, convertToBlockPos(symbol.getPos()), SoundEvents.NOTE_BLOCK_HARP, SoundCategory.BLOCKS, 3.0F, getPitchForNote(note, octave));
+        getWorld().playSound(null, convertToBlockPos(symbol.getPos()), SoundEvents.NOTE_BLOCK_HARP, SoundCategory.MASTER, 3.0F, getPitchForNote(note, octave));
     }
 
     private float getPitchForNote(NoteBlockEvent.Note note, NoteBlockEvent.Octave octave) {
@@ -252,7 +253,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                     ticks++;
                 }
             } else {
-                if (!isServerSide()) {
+                if (isClientSide()) {
                     // if it's a last symbol we don't need to wait for pause.
                     if ((symbolIndex == sequence.size() - 1 && ticks > displayTime) || (ticks > displayTime + TICKS_PAUSE_BETWEEN_SYMBOLS)) {
                         ticks = 0;
@@ -271,9 +272,12 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                         spawnFeedbackParticles(ParticleTypes.INSTANT_EFFECT, pos);
                         particleSent = true;
                     }
+
+                    sendFeedbackPacket(new CPGOLSymbolsShown());
                 } else {
                     if (feedbackPacketReceived) {
                         feedbackPacketReceived = false;
+                        System.out.println("Feedback received!");
 //                        switchStage(GameStage.WAITING_FOR_PLAYER_SEQUENCE);
                     }
                 }

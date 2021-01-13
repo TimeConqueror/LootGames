@@ -37,7 +37,7 @@ public abstract class GamePacketRegistry extends TimeRegister {
         public Key getKey(Class<? extends T> packetClass) {
             Key info = packets.inverse().get(packetClass);
             if (info == null) {
-                throw new NullPointerException("The key for packet " + packetClass + " doesn't exist.");
+                throw new NullPointerException(String.format("The packet %s wasn't registered.", packetClass));
             }
 
             return info;
