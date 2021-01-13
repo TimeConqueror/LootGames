@@ -1,5 +1,7 @@
 package ru.timeconqueror.lootgames.minigame.gol;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.IParticleData;
@@ -20,6 +22,7 @@ import ru.timeconqueror.lootgames.common.packet.game.CPGOLSymbolsShown;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.util.EnumLookup;
+import ru.timeconqueror.timecore.api.util.Hacks;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 
 import java.util.ArrayList;
@@ -73,7 +76,9 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                 break;
         }
 
-        getWorld().playSound(null, convertToBlockPos(symbol.getPos()), SoundEvents.NOTE_BLOCK_HARP, SoundCategory.MASTER, 3.0F, getPitchForNote(note, octave));
+        ClientPlayerEntity player = Hacks.bypassClassChecking(Minecraft.getInstance().player);
+
+        getWorld().playSound(player, convertToBlockPos(symbol.getPos()), SoundEvents.NOTE_BLOCK_HARP, SoundCategory.MASTER, 3.0F, getPitchForNote(note, octave));
     }
 
     private float getPitchForNote(NoteBlockEvent.Note note, NoteBlockEvent.Octave octave) {
@@ -99,7 +104,11 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             case StageWaitingStart.ID:
                 return new StageWaitingStart();
             case StageShowSequence.ID:
-                return new StageShowSequence(stageNBT);
+                return serializationType != StageSerializationType.SAVE
+                        ? new StageShowSequence(stageNBT)
+                        : new StageWaitingStart(); /*resetting if world was reloaded while game was in show mode*/
+            case StageWaitingForSequence.ID:
+                return new StageWaitingForSequence();
             default:
                 throw new IllegalArgumentException("Unknown state with id: " + id + "!");
         }
@@ -213,20 +222,22 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         private static final int TICKS_PAUSE_BETWEEN_SYMBOLS = 12;
         private static final int TICKS_PAUSE_BETWEEN_ROUNDS = 25;
         private static final String ID = "show_sequence";
-        private final List<Integer> sequence;
+        private final List<Symbol> sequence;
         private final int displayTime;
 
         private boolean pauseBeforeShowing = true;
         private int symbolIndex = 0;
         private boolean particleSent = false;
+
         private boolean feedbackPacketReceived = false;
+        private boolean cFeedbackPacketSent = false;
 
         public StageShowSequence(CompoundNBT nbt) {
-            sequence = Arrays.stream(nbt.getIntArray("sequence")).boxed().collect(Collectors.toList());
+            sequence = Arrays.stream(nbt.getIntArray("sequence")).mapToObj(Symbol::byIndex).collect(Collectors.toList());
             displayTime = nbt.getInt("display_time");
         }
 
-        public StageShowSequence(int stageIndex, boolean isNewStage, List<Integer> prevSequence) {
+        public StageShowSequence(int stageIndex, boolean isNewStage, List<Symbol> prevSequence) {
             ConfigGOL.StageConfig stage = LGConfigs.GOL.getStageByIndex(stageIndex);
             if (isNewStage) {
                 if (stageIndex == 0) {
@@ -264,19 +275,21 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                     }
 
                     if (isShowingSymbols() && !particleSent) {
-                        Symbol symbol = Symbol.byIndex(symbolIndex);
+                        Symbol symbol = sequence.get(symbolIndex);
                         playFeedbackSound(symbol);
 
                         BlockPos pos = convertToBlockPos(symbol.getPos());
-
                         spawnFeedbackParticles(ParticleTypes.INSTANT_EFFECT, pos);
                         particleSent = true;
                     }
 
-                    sendFeedbackPacket(new CPGOLSymbolsShown());
+                    if (!isShowingSymbols() && !cFeedbackPacketSent) {
+                        sendFeedbackPacket(new CPGOLSymbolsShown());
+                        cFeedbackPacketSent = true;
+                    }
                 } else {
                     if (feedbackPacketReceived) {
-                        feedbackPacketReceived = false;
+//                        feedbackPacketReceived = false;
                         System.out.println("Feedback received!");
 //                        switchStage(GameStage.WAITING_FOR_PLAYER_SEQUENCE);
                     }
@@ -284,8 +297,21 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             }
         }
 
+        public void onSequenceShown() {
+            this.feedbackPacketReceived = true;
+        }
+
         private boolean isShowingSymbols() {
-            return symbolIndex < sequence.size();
+            return !pauseBeforeShowing && symbolIndex < sequence.size();
+        }
+
+        public boolean shouldRenderSymbol() {
+            return ticks < displayTime && isShowingSymbols();
+        }
+
+        @Nullable
+        public Symbol getSymbolForRender() {
+            return shouldRenderSymbol() ? sequence.get(symbolIndex) : null;
         }
 
         private void spawnFeedbackParticles(IParticleData particle, BlockPos pos) {
@@ -294,8 +320,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             }
         }
 
-        private List<Integer> generateSequence(int stage, int size) {
-            List<Integer> sequence = new ArrayList<>();
+        private List<Symbol> generateSequence(int stage, int size) {
+            List<Symbol> sequence = new ArrayList<>();
             for (int i = 0; i < size; i++) {
                 withNewSymbol(stage, sequence);
             }
@@ -303,11 +329,11 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             return sequence;
         }
 
-        private List<Integer> withNewSymbol(int stage, List<Integer> sequence) {
+        private List<Symbol> withNewSymbol(int stage, List<Symbol> sequence) {
             if (stage >= LGConfigs.GOL.expandFieldAtStage.get() - 1) {
-                sequence.add(RandHelper.RAND.nextInt(8));
+                sequence.add(RandHelper.chooseEqually(Symbol.values()));
             } else {
-                sequence.add(RandHelper.RAND.nextInt(4) * 2);
+                sequence.add(RandHelper.chooseEqually(Symbol.NWES_SYMBOLS));
             }
 
             return sequence;
@@ -321,13 +347,23 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         @Override
         public CompoundNBT serialize(StageSerializationType serializationType) {
             CompoundNBT nbt = super.serialize(serializationType);
-            nbt.putIntArray("sequence", sequence);
+            nbt.putIntArray("sequence", sequence.stream().mapToInt(Symbol::getIndex).toArray());
             nbt.putInt("display_time", displayTime);
+
             return nbt;
         }
     }
 
-    private enum Symbol {
+    public static class StageWaitingForSequence extends BoardStage {
+        private static final String ID = "waiting_for_sequence";
+
+        @Override
+        public String getID() {
+            return ID;
+        }
+    }
+
+    public enum Symbol {
         NORTH_WEST(0, new Pos2i(0, 0)),
         NORTH(1, new Pos2i(1, 0)),
         NORTH_EAST(2, new Pos2i(2, 0)),
@@ -338,6 +374,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         SOUTH_EAST(7, new Pos2i(2, 2));
 
         private static final EnumLookup<Symbol, Integer> LOOKUP = EnumLookup.make(Symbol.class, Symbol::getIndex);
+        public static final Symbol[] NWES_SYMBOLS = new Symbol[]{NORTH, WEST, EAST, SOUTH};
 
         private final int index;
         private final Pos2i pos;
