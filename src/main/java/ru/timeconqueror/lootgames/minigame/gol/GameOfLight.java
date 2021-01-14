@@ -14,13 +14,13 @@ import net.minecraftforge.event.world.NoteBlockEvent;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
-import ru.timeconqueror.lootgames.api.minigame.StageSerializationType;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.common.config.ConfigGOL;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.common.packet.game.CPGOLSymbolsShown;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
+import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.util.EnumLookup;
 import ru.timeconqueror.timecore.api.util.Hacks;
 import ru.timeconqueror.timecore.api.util.RandHelper;
@@ -97,14 +97,14 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     }
 
     @Override
-    public @Nullable BoardStage createStageFromNBT(String id, CompoundNBT stageNBT, StageSerializationType serializationType) {
+    public @Nullable BoardStage createStageFromNBT(String id, CompoundNBT stageNBT, SerializationType serializationType) {
         switch (id) {
             case StageUnderExpanding.ID:
                 return new StageUnderExpanding(stageNBT.getInt("ticks"));
             case StageWaitingStart.ID:
                 return new StageWaitingStart();
             case StageShowSequence.ID:
-                return serializationType != StageSerializationType.SAVE
+                return serializationType != SerializationType.SAVE
                         ? new StageShowSequence(stageNBT)
                         : new StageWaitingStart(); /*resetting if world was reloaded while game was in show mode*/
             case StageWaitingForSequence.ID:
@@ -115,30 +115,26 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     }
 
     @Override
-    public void writeNBTForSaving(CompoundNBT nbt) {
-        super.writeNBTForSaving(nbt);
+    public void writeNBT(CompoundNBT nbt, SerializationType type) {
+        super.writeNBT(nbt, type);
 
-        nbt.putInt("round", round);
-        nbt.putInt("level", stage);
-    }
+        if (type == SerializationType.SAVE) {
+            nbt.putInt("round", round);
+            nbt.putInt("level", stage);
+        }
 
-    @Override
-    public void readNBTFromSave(CompoundNBT nbt) {
-        super.readNBTFromSave(nbt);
-
-        round = nbt.getInt("round");
-        stage = nbt.getInt("level");
-    }
-
-    @Override
-    public void writeCommonNBT(CompoundNBT nbt) {
-        super.writeCommonNBT(nbt);
         nbt.putInt("ticks", ticks);
     }
 
     @Override
-    public void readCommonNBT(CompoundNBT nbt) {
-        super.readCommonNBT(nbt);
+    public void readNBT(CompoundNBT nbt, SerializationType type) {
+        super.readNBT(nbt, type);
+
+        if (type == SerializationType.SAVE) {
+            round = nbt.getInt("round");
+            stage = nbt.getInt("level");
+        }
+
         ticks = nbt.getInt("ticks");
     }
 
@@ -186,7 +182,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
 
         @Override
-        public CompoundNBT serialize(StageSerializationType serializationType) {
+        public CompoundNBT serialize(SerializationType serializationType) {
             CompoundNBT nbt = super.serialize(serializationType);
             nbt.putInt("ticks", ticks);
             return nbt;
@@ -345,7 +341,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
 
         @Override
-        public CompoundNBT serialize(StageSerializationType serializationType) {
+        public CompoundNBT serialize(SerializationType serializationType) {
             CompoundNBT nbt = super.serialize(serializationType);
             nbt.putIntArray("sequence", sequence.stream().mapToInt(Symbol::getIndex).toArray());
             nbt.putInt("display_time", displayTime);

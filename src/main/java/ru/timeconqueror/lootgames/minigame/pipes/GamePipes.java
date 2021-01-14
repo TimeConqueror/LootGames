@@ -8,13 +8,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
-import ru.timeconqueror.lootgames.api.minigame.StageSerializationType;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.minigame.pipes.board.PipesBoard;
 import ru.timeconqueror.lootgames.minigame.pipes.board.PipesBoardGenerator;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
+import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 
+//FIXME secure nbt sync!!!
 public class GamePipes extends BoardLootGame<GamePipes> {
     private PipesBoard board;
 
@@ -47,15 +48,17 @@ public class GamePipes extends BoardLootGame<GamePipes> {
     }
 
     @Override
-    public void writeCommonNBT(CompoundNBT nbt) {
-        super.writeCommonNBT(nbt);
+    public void writeNBT(CompoundNBT nbt, SerializationType type) {
+        super.writeNBT(nbt, type);
+
         nbt.putInt("Size", getCurrentBoardSize());
         nbt.put("Board", board.serializeNBT());
     }
 
     @Override
-    public void readCommonNBT(CompoundNBT nbt) {
-        super.readCommonNBT(nbt);
+    public void readNBT(CompoundNBT nbt, SerializationType type) {
+        super.readNBT(nbt, type);
+
         int size = nbt.getInt("Size");
         if (board == null || size != board.getSize()) {
             board = new PipesBoard(size);
@@ -79,7 +82,7 @@ public class GamePipes extends BoardLootGame<GamePipes> {
     }
 
     @Override
-    public BoardStage createStageFromNBT(String id, CompoundNBT stageNBT, StageSerializationType serializationType) {
+    public BoardStage createStageFromNBT(String id, CompoundNBT stageNBT, SerializationType serializationType) {
         switch (id) {
             case GameStage.ID:
                 return new GameStage(stageNBT.getInt("CycleId"));
@@ -128,7 +131,7 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         }
 
         @Override
-        public CompoundNBT serialize(StageSerializationType serializationType) {
+        public CompoundNBT serialize(SerializationType serializationType) {
             CompoundNBT nbt = super.serialize(serializationType);
             nbt.putInt("CycleId", cycleId);
             return nbt;
@@ -170,7 +173,7 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         }
 
         @Override
-        public CompoundNBT serialize(StageSerializationType serializationType) {
+        public CompoundNBT serialize(SerializationType serializationType) {
             CompoundNBT nbt = super.serialize(serializationType);
             nbt.putInt("PrevCycleId", prevCycleId);
             nbt.putInt("TicksPassed", ticksPassed);

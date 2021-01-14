@@ -12,7 +12,6 @@ import net.minecraft.world.server.ServerWorld;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
-import ru.timeconqueror.lootgames.api.minigame.StageSerializationType;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.api.util.RewardUtils;
@@ -26,6 +25,7 @@ import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
+import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 import ru.timeconqueror.timecore.api.util.Wrapper;
 
@@ -110,7 +110,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
             board.resetBoard(stageSnapshot.getBoardSize(), stageSnapshot.getBombCount());
             currentLevel++;
 
-            saveDataAndSendToClient();
+            saveAndSync();
         } else {
             currentLevel++;
             triggerGameWin();
@@ -164,79 +164,60 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
     }
 
     @Override
-    public void writeNBTForSaving(CompoundNBT nbt) {
-        super.writeNBTForSaving(nbt);
+    public void writeNBT(CompoundNBT nbt, SerializationType type) {
+        super.writeNBT(nbt, type);
 
-        if (isBoardGenerated()) {
-            CompoundNBT boardTag = board.writeNBTForSaving();
-            nbt.put("board", boardTag);
+        if (type == SerializationType.SAVE) {
+            if (isBoardGenerated()) {
+                CompoundNBT boardTag = board.writeNBTForSaving();
+                nbt.put("board", boardTag);
+            }
+
+            nbt.putInt("attempt_count", attemptCount);
+        } else {
+            nbt.putBoolean("is_generated", isBoardGenerated());
+            if (isBoardGenerated()) {
+                CompoundNBT boardTag = board.writeNBTForClient();
+                nbt.put("board", boardTag);
+            }
         }
 
-        nbt.putInt("attempt_count", attemptCount);
-    }
-
-    @Override
-    public void readNBTFromSave(CompoundNBT nbt) {
-        super.readNBTFromSave(nbt);
-
-        if (nbt.contains("board")) {
-            CompoundNBT boardTag = nbt.getCompound("board");
-            board.readNBTFromSave(boardTag);
-        }
-
-        attemptCount = nbt.getInt("attempt_count");
-    }
-
-    @Override
-    public void writeNBTForClient(CompoundNBT nbt) {
-        super.writeNBTForClient(nbt);
-
-        nbt.putBoolean("is_generated", isBoardGenerated());
-        if (isBoardGenerated()) {
-            CompoundNBT boardTag = board.writeNBTForClient();
-            nbt.put("board", boardTag);
-        }
-    }
-
-    @Override
-    public void readNBTAtClient(CompoundNBT nbt) {
-        cIsGenerated = nbt.getBoolean("is_generated");
-
-        super.readNBTAtClient(nbt);
-
-        if (nbt.contains("board")) {
-            CompoundNBT boardTag = nbt.getCompound("board");
-            board.readNBTFromClient(boardTag);
-        }
-    }
-
-    @Override
-    public void writeCommonNBT(CompoundNBT nbt) {
-        super.writeCommonNBT(nbt);
         nbt.putInt("bomb_count", board.getBombCount());
         nbt.putInt("board_size", board.size());
-
         nbt.putInt("ticks", ticks);
-
         nbt.putInt("current_level", currentLevel);
-
         nbt.put("config_snapshot", Snapshot.serialize(configSnapshot));
     }
 
     @Override
-    public void readCommonNBT(CompoundNBT nbt) {
-        super.readCommonNBT(nbt);
+    public void readNBT(CompoundNBT nbt, SerializationType type) {
+        super.readNBT(nbt, type);
+
+        if (type == SerializationType.SAVE) {
+            if (nbt.contains("board")) {
+                CompoundNBT boardTag = nbt.getCompound("board");
+                board.readNBTFromSave(boardTag);
+            }
+
+            attemptCount = nbt.getInt("attempt_count");
+        } else {
+            cIsGenerated = nbt.getBoolean("is_generated");
+
+            if (nbt.contains("board")) {
+                CompoundNBT boardTag = nbt.getCompound("board");
+                board.readNBTFromClient(boardTag);
+            }
+        }
 
         board.setBombCount(nbt.getInt("bomb_count"));
         board.setSize(nbt.getInt("board_size"));
         ticks = nbt.getInt("ticks");
         currentLevel = nbt.getInt("current_level");
-
         configSnapshot = Snapshot.deserialize(nbt.get("config_snapshot"));
     }
 
     @Override
-    public BoardStage createStageFromNBT(String id, CompoundNBT stageNBT, StageSerializationType serializationType) {
+    public BoardStage createStageFromNBT(String id, CompoundNBT stageNBT, SerializationType serializationType) {
         switch (id) {
             case StageWaiting.ID:
                 return new StageWaiting();
@@ -291,7 +272,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
             sendUpdatePacket(new SPMSGenBoard(GameMineSweeper.this));
             revealField(player, clickedPos);
 
-            saveData();
+            save();
         }
 
         public void revealField(ServerPlayerEntity player, Pos2i pos) {
@@ -313,7 +294,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
                     triggerBombs(pos);
                 }
 
-                saveData();
+                save();
 
                 if (board.checkWin()) {
                     onLevelSuccessfullyFinished();
@@ -368,7 +349,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
                 board.swapMark(pos);
 
                 sendUpdatePacket(new SPMSFieldChanged(pos, board.getField(pos)));
-                saveData();
+                save();
             }
 
             if (board.checkWin()) {
@@ -390,7 +371,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
             sendToNearby(new TranslationTextComponent("msg.lootgames.ms.bomb_touched"), NotifyColor.FAIL);
 
-            saveDataAndSendToClient();
+            saveAndSync();
 
             attemptCount++;
         }
@@ -442,7 +423,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
 
         @Override
-        public CompoundNBT serialize(StageSerializationType serializationType) {
+        public CompoundNBT serialize(SerializationType serializationType) {
             CompoundNBT nbt = super.serialize(serializationType);
             nbt.putInt("detonation_time", detonationTicks);
             return nbt;
@@ -478,7 +459,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
                     sendUpdatePacket(new SPMSResetFlags());
 
-                    saveDataAndSendToClient();
+                    saveAndSync();
                 }
             }
         }

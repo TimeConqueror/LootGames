@@ -4,7 +4,9 @@ import net.minecraft.nbt.CompoundNBT;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.NBTGamePacket;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
+import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 
+//TODO why I every have this class, if I can just call tile sync?
 public class SPMSGenBoard extends NBTGamePacket {
 
     /**
@@ -16,7 +18,7 @@ public class SPMSGenBoard extends NBTGamePacket {
     public SPMSGenBoard(GameMineSweeper game) {
         super(() -> {
             CompoundNBT nbt = new CompoundNBT();
-            game.writeNBTForClient(nbt);
+            game.writeNBT(nbt, SerializationType.SYNC);
 
             return nbt;
         });
@@ -24,6 +26,6 @@ public class SPMSGenBoard extends NBTGamePacket {
 
     @Override
     public <S extends LootGame.Stage, T extends LootGame<S, T>> void runOnClient(LootGame<S, T> game) {
-        game.readNBTAtClient(getCompound());
+        game.readNBT(getCompound(), SerializationType.SYNC);
     }
 }
