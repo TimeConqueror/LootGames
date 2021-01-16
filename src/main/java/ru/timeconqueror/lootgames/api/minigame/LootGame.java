@@ -217,7 +217,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         }
 
         setStage(deserializeStage(this, nbt, type));
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg(" stage '{}' was deserialized {}."), getStage(), type == SerializationType.SAVE ? "from saved file" : " n client");
+        LOGGER.debug(DEBUG_MARKER, prepareLogMsg(" stage '{}' was deserialized {}."), getStage(), type == SerializationType.SAVE ? "from saved file" : "on client");
 
         justPlaced = false;
     }

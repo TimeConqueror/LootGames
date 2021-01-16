@@ -16,6 +16,7 @@ import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 
 //FIXME secure nbt sync!!!
+//TODO custom sounds of open
 public class GamePipes extends BoardLootGame<GamePipes> {
     private PipesBoard board;
 

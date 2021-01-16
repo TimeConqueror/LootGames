@@ -24,13 +24,13 @@ public class GOLActivatorBlock extends GameBlock {
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!worldIn.isClientSide()) {
-            LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayerEntity) player), new UseBlockTrigger.ExtraInfo(state, pos, player.getItemInHand(handIn)));
 
             boolean succeed = LootGamesAPI.getFieldManager()
                     .trySetupBoard(((ServerWorld) worldIn), pos, GameOfLight.BOARD_SIZE, 2, GameOfLight.BOARD_SIZE, LGBlocks.GOL_MASTER.defaultBlockState(), player).isSucceed();
 
             if (succeed) {
                 NetworkUtils.sendMessage(player, ChatUtils.format(new TranslationTextComponent("msg.lootgames.gol_master.start"), NotifyColor.NOTIFY.getColor()));
+                LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayerEntity) player), new UseBlockTrigger.ExtraInfo(state, pos, player.getItemInHand(handIn)));
             }
         }
 

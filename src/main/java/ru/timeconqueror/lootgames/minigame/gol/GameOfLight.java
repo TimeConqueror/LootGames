@@ -11,6 +11,7 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.event.world.NoteBlockEvent;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
@@ -21,12 +22,12 @@ import ru.timeconqueror.lootgames.common.packet.game.CPGOLSymbolsShown;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
-import ru.timeconqueror.timecore.api.util.EnumLookup;
 import ru.timeconqueror.timecore.api.util.Hacks;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,12 +38,43 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     private int stage = 0;
     private int ticks = 0;
 
+    private Timer resetTimer;
+    private boolean timerPaused;
+
+    public GameOfLight() {
+        resetTimer = new Timer(0);
+        resetTimer();
+    }
+
     @Override
     public void onPlace() {
         if (isServerSide()) {
             setupInitialStage(new StageUnderExpanding());
             getWorld().playSound(null, getGameCenter(), LGSounds.GOL_START_GAME, SoundCategory.MASTER, 0.75F, 1.0F);
         }
+    }
+
+    private void resetTimer() {
+        resetTimer.reset(LGConfigs.GOL.timeout.get() * 20);
+    }
+
+    @Override
+    public void onTick() {
+        super.onTick();
+
+        if (isServerSide()) {
+            if (!timerPaused && resetTimer.ended()) {
+//                failGame();
+            }
+
+            if (!timerPaused) {
+                resetTimer.update();
+            }
+        }
+    }
+
+    private void failGame() {
+        throw new NotImplementedException("");
     }
 
     private void playFeedbackSound(Symbol symbol) {
@@ -108,7 +140,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                         ? new StageShowSequence(stageNBT)
                         : new StageWaitingStart(); /*resetting if world was reloaded while game was in show mode*/
             case StageWaitingForSequence.ID:
-                return new StageWaitingForSequence();
+                return serializationType == SerializationType.SAVE ? new StageWaitingForSequence(stageNBT) : new StageWaitingForSequence(Collections.emptyList());
             default:
                 throw new IllegalArgumentException("Unknown state with id: " + id + "!");
         }
@@ -121,6 +153,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         if (type == SerializationType.SAVE) {
             nbt.putInt("round", round);
             nbt.putInt("level", stage);
+
+            nbt.put("reset_timer", Timer.toNBT(resetTimer));
         }
 
         nbt.putInt("ticks", ticks);
@@ -133,6 +167,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         if (type == SerializationType.SAVE) {
             round = nbt.getInt("round");
             stage = nbt.getInt("level");
+            resetTimer = Timer.fromNBT(nbt.get("reset_timer"));
         }
 
         ticks = nbt.getInt("ticks");
@@ -145,6 +180,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     @Override
     protected void onStageUpdate(BoardStage oldStage, BoardStage newStage) {
         ticks = 0;
+        timerPaused = false;
         super.onStageUpdate(oldStage, newStage);
     }
 
@@ -207,9 +243,11 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         @Override
         protected void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
             if (isCenter(pos)) {
-                sendTo(player, new TranslationTextComponent("msg.lootgames.gol_master.rules"), NotifyColor.NOTIFY);
+                sendTo(player, new TranslationTextComponent("msg.lootgames.gol.rules"), NotifyColor.NOTIFY);
 
                 switchStage(new StageShowSequence(stage, true, new ArrayList<>()));
+            } else {
+                sendTo(player, new TranslationTextComponent("msg.lootgames.gol.click_center"), NotifyColor.WARN);
             }
         }
     }
@@ -229,7 +267,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         private boolean cFeedbackPacketSent = false;
 
         public StageShowSequence(CompoundNBT nbt) {
-            sequence = Arrays.stream(nbt.getIntArray("sequence")).mapToObj(Symbol::byIndex).collect(Collectors.toList());
+            sequence = deserializeSequence(nbt.getIntArray("sequence"));
             displayTime = nbt.getInt("display_time");
         }
 
@@ -252,6 +290,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
         @Override
         protected void onTick() {
+            timerPaused = true;
+
             if (pauseBeforeShowing) {
                 if (ticks > TICKS_PAUSE_BETWEEN_ROUNDS) {
                     ticks = 0;
@@ -285,9 +325,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                     }
                 } else {
                     if (feedbackPacketReceived) {
-//                        feedbackPacketReceived = false;
-                        System.out.println("Feedback received!");
-//                        switchStage(GameStage.WAITING_FOR_PLAYER_SEQUENCE);
+                        switchStage(new StageWaitingForSequence(sequence));
                     }
                 }
             }
@@ -295,6 +333,11 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
         public void onSequenceShown() {
             this.feedbackPacketReceived = true;
+        }
+
+        @Override
+        protected void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
+            sendTo(player, new TranslationTextComponent("msg.lootgames.gol_master.not_ready"), NotifyColor.WARN);
         }
 
         private boolean isShowingSymbols() {
@@ -343,53 +386,78 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         @Override
         public CompoundNBT serialize(SerializationType serializationType) {
             CompoundNBT nbt = super.serialize(serializationType);
-            nbt.putIntArray("sequence", sequence.stream().mapToInt(Symbol::getIndex).toArray());
+            nbt.putIntArray("sequence", serializeSequence(sequence));
             nbt.putInt("display_time", displayTime);
 
             return nbt;
         }
     }
 
-    public static class StageWaitingForSequence extends BoardStage {
+    public class StageWaitingForSequence extends BoardStage {
         private static final String ID = "waiting_for_sequence";
+
+        private final List<Symbol> sequence;
+        private int currentSymbol;
+
+        public StageWaitingForSequence(List<Symbol> sequence) {
+            this.sequence = sequence;
+        }
+
+        public StageWaitingForSequence(CompoundNBT nbt) {
+            this.sequence = deserializeSequence(nbt.getIntArray("sequence"));
+            this.currentSymbol = nbt.getInt("symbol_index");
+        }
+
+        @Override
+        protected void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
+            if (!isCenter(pos)) {
+                Symbol chosen = Symbol.byPos(pos);
+                Symbol correct = sequence.get(currentSymbol);
+                if (chosen != correct) {
+                    failGame();
+                    System.out.println("fail");
+                }
+
+                if (currentSymbol == sequence.size() - 1) {
+                    System.out.println("success");
+                    onSuccessSequence(player);
+                } else {
+                    currentSymbol++;
+                    System.out.println("increase symbol");
+                }
+            } else {
+                sendTo(player, new TranslationTextComponent("msg.lootgames.gol_master.rules"), NotifyColor.WARN);
+            }
+        }
+
+        private void onSuccessSequence(ServerPlayerEntity player) {
+
+        }
+
+        @Override
+        public CompoundNBT serialize(SerializationType serializationType) {
+            CompoundNBT nbt = super.serialize(serializationType);
+
+            if (serializationType == SerializationType.SAVE) {
+                nbt.putIntArray("sequence", serializeSequence(sequence));
+                nbt.putInt("symbol_index", currentSymbol);
+            }
+
+            return nbt;
+        }
 
         @Override
         public String getID() {
             return ID;
         }
+
     }
 
-    public enum Symbol {
-        NORTH_WEST(0, new Pos2i(0, 0)),
-        NORTH(1, new Pos2i(1, 0)),
-        NORTH_EAST(2, new Pos2i(2, 0)),
-        WEST(3, new Pos2i(0, 1)),
-        EAST(4, new Pos2i(2, 1)),
-        SOUTH_WEST(5, new Pos2i(0, 2)),
-        SOUTH(6, new Pos2i(1, 2)),
-        SOUTH_EAST(7, new Pos2i(2, 2));
+    private static List<Symbol> deserializeSequence(int[] data) {
+        return Arrays.stream(data).mapToObj(Symbol::byIndex).collect(Collectors.toList());
+    }
 
-        private static final EnumLookup<Symbol, Integer> LOOKUP = EnumLookup.make(Symbol.class, Symbol::getIndex);
-        public static final Symbol[] NWES_SYMBOLS = new Symbol[]{NORTH, WEST, EAST, SOUTH};
-
-        private final int index;
-        private final Pos2i pos;
-
-        Symbol(int index, Pos2i pos) {
-            this.index = index;
-            this.pos = pos;
-        }
-
-        public Pos2i getPos() {
-            return pos;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public static Symbol byIndex(int index) {
-            return LOOKUP.get(index);
-        }
+    private static int[] serializeSequence(List<Symbol> sequence) {
+        return sequence.stream().mapToInt(Symbol::getIndex).toArray();
     }
 }

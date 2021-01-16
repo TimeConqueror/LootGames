@@ -1,5 +1,7 @@
 package ru.timeconqueror.lootgames.api.util;
 
+import java.util.Objects;
+
 public class Pos2i {
     private final int x;
     private final int y;
@@ -30,17 +32,16 @@ public class Pos2i {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            return true;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Pos2i)) return false;
+        Pos2i pos2i = (Pos2i) o;
+        return x == pos2i.x && y == pos2i.y;
+    }
 
-        if (obj instanceof Pos2i) {
-            Pos2i pos = ((Pos2i) obj);
-            return this.x == pos.x && this.y == pos.y;
-        }
-
-        return false;
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 
     @Override

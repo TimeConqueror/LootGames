@@ -24,8 +24,6 @@ public class MSActivatorBlock extends GameBlock {
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!worldIn.isClientSide()) {
-            LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayerEntity) player), new UseBlockTrigger.ExtraInfo(state, pos, player.getItemInHand(handIn)));
-
             ConfigMS.Snapshot snapshot = LGConfigs.MINESWEEPER.snapshot();
             int allocatedSize = snapshot.getStage4().getBoardSize();
 
@@ -36,6 +34,7 @@ public class MSActivatorBlock extends GameBlock {
 
             if (succeed) {
                 worldIn.playSound(null, pos, LGSounds.MS_START_GAME, SoundCategory.BLOCKS, 0.6F, 1.0F);
+                LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayerEntity) player), new UseBlockTrigger.ExtraInfo(state, pos, player.getItemInHand(handIn)));
             }
         }
 

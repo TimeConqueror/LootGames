@@ -15,7 +15,7 @@ import ru.timeconqueror.lootgames.common.block.tile.GOLMasterTile;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight.StageShowSequence;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight.StageUnderExpanding;
-import ru.timeconqueror.lootgames.minigame.gol.GameOfLight.Symbol;
+import ru.timeconqueror.lootgames.minigame.gol.Symbol;
 import ru.timeconqueror.timecore.animation.Ease;
 import ru.timeconqueror.timecore.api.util.MathUtils;
 import ru.timeconqueror.timecore.api.util.client.DrawHelper;

@@ -62,7 +62,7 @@ public class ConfigGOL extends Config {
         timeout = builder.optimized(
                 builder.comment("How long does it take to timeout a game? Value is in seconds.",
                         "If player has been inactive for given time, the game will go to sleep. The next player can start the game from the beginning.")
-                        .defineInRange("timeout", 60, 60, Integer.MAX_VALUE)
+                        .defineInRange("timeout", 30, 10, Integer.MAX_VALUE)
         );
 
         builder.addAndSetupSection(stage1, "stage", "Regulates characteristics of stage 1.");
