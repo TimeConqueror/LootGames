@@ -3,7 +3,6 @@ package ru.timeconqueror.lootgames.common.packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.util.ThreeConsumer;
 import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
@@ -93,9 +92,10 @@ public abstract class PacketGameUpdate<T extends IGamePacket> implements ITimePa
             return packet;
         }
 
-        public void onPacketReceived(P packet, NetworkEvent.Context ctx, World world) {
+        @Override
+        public boolean handle(P packet, NetworkEvent.Context ctx) {
             ctx.enqueueWork(() -> {
-                TileEntity te = world.getBlockEntity(packet.getMasterPos());
+                TileEntity te = getWorld(ctx).getBlockEntity(packet.getMasterPos());
                 if (te instanceof GameMasterTile<?>) {
                     GameMasterTile<?> master = ((GameMasterTile<?>) te);
                     gameUpdater.accept(ctx, master.getGame(), packet.getGamePacket());
@@ -103,6 +103,7 @@ public abstract class PacketGameUpdate<T extends IGamePacket> implements ITimePa
                     throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos " + packet.getMasterPos() + " for packet " + packet.getGamePacketClass().getName());
                 }
             });
+            return true;
         }
     }
 }

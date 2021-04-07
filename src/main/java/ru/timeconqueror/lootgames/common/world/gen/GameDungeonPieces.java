@@ -21,7 +21,6 @@ import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGStructurePieces;
 import ru.timeconqueror.timecore.api.common.world.structure.TunedTemplateStructurePiece;
 import ru.timeconqueror.timecore.api.common.world.structure.processor.RandomizeBlockProcessor;
-import ru.timeconqueror.timecore.api.util.WorldUtils;
 
 import java.util.Random;
 
@@ -52,7 +51,7 @@ public class GameDungeonPieces {
         Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(rand);
         BlockPos pathStart = roomCenter.relative(direction, GameDungeonStructure.ROOM_WIDTH / 2 + 1);
 
-        BlockPos.Mutable pathEnd = WorldUtils.toMutable(pathStart);
+        BlockPos.Mutable pathEnd = pathStart.mutable();
 
         int i = 0;
         while (i < LGConfigs.GENERAL.worldGen.maxEntryPathLength.get() && pathEnd.getY() < chunkGenerator.getFirstFreeHeight(pathEnd.getX(), pathEnd.getZ(), Heightmap.Type.WORLD_SURFACE_WG)) {

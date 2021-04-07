@@ -73,7 +73,7 @@ public class GOLMasterRenderer extends TileEntityRenderer<GOLMasterTile> {
         if (game.getStage() instanceof StageUnderExpanding) {
             float progress = Ease.inOutQuart((float) MathUtils.coerceInRange(ticks, 0, MAX_TICKS_EXPANDING) / MAX_TICKS_EXPANDING);
 
-            length = MathUtils.interpolate(progress, 1, 3);
+            length = MathUtils.lerp(progress, 1, 3);
             textureStart = 16F - 16F * progress;
             textureLength = 32F + 16F * progress - textureStart;
         }

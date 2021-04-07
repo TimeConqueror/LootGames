@@ -1,7 +1,5 @@
 package ru.timeconqueror.lootgames.common.packet;
 
-import net.minecraftforge.fml.LogicalSide;
-import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry;
 import ru.timeconqueror.lootgames.api.packet.IClientGamePacket;
@@ -17,11 +15,6 @@ public class CPacketGameUpdate extends PacketGameUpdate<IClientGamePacket> {
     @Override
     public GamePacketRegistry.Storage<IClientGamePacket> getStorage() {
         return GamePacketRegistry.clientStorage();
-    }
-
-    @Override
-    public @NotNull LogicalSide getReceptionSide() {
-        return LogicalSide.SERVER;
     }
 
     public static Handler<IClientGamePacket, CPacketGameUpdate> makeHandler() {

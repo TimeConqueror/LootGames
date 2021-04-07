@@ -16,7 +16,7 @@ import ru.timeconqueror.lootgames.api.block.IGameField;
 import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
-import ru.timeconqueror.timecore.api.util.BlockUtils;
+import ru.timeconqueror.timecore.api.util.BlockPosUtils;
 import ru.timeconqueror.timecore.api.util.CollectionUtils;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 import ru.timeconqueror.timecore.api.util.WorldUtils;
@@ -61,7 +61,7 @@ public class FieldManager {
     }
 
     public boolean canReplaceAreaWithBoard(World world, BlockPos cornerPos, int xSize, int ySize, int zSize, @Nullable BlockPos except) {
-        return CollectionUtils.allMatch(BlockUtils.between(cornerPos, xSize, ySize, zSize), (pos) -> {
+        return CollectionUtils.allMatch(BlockPosUtils.between(cornerPos, xSize, ySize, zSize), (pos) -> {
                     BlockState state = world.getBlockState(pos);
                     return state.getBlock() == LGBlocks.SHIELDED_DUNGEON_FLOOR || state.getMaterial().isReplaceable() || pos.equals(except);
                 }
@@ -83,20 +83,20 @@ public class FieldManager {
         if (!canReplaceAreaWithBoard(world, borderPos, xSize + 2, height + 1, zSize + 2, centerPos)) {
             if (player != null) {
                 NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.field.not_enough_space", xSize + 2, height + 1, zSize + 2));
-                world.playSound(player, centerPos, LGSounds.GOL_GAME_LOSE, SoundCategory.BLOCKS, 0.6F, 1.0F);//TODO change sound?
+                world.playSound(null, centerPos, LGSounds.GOL_GAME_LOSE, SoundCategory.BLOCKS, 0.6F, 1.0F);//TODO change sound
             }
             return new GenerationChain(null, null, false);
         }
 
         // Filling field with subordinate blocks
-        for (BlockPos pos : BlockUtils.between(cornerPos.offset(1, 0, 1), xSize, 1, zSize)) {
+        for (BlockPos pos : BlockPosUtils.between(cornerPos.offset(1, 0, 1), xSize, 1, zSize)) {
             world.setBlock(pos, LGBlocks.SMART_SUBORDINATE.defaultBlockState(), 2);
         }
 
         // Filling area above field with air
         if (height > 0) {
             BlockPos abovePos = borderPos.offset(0, 1, 0);
-            for (BlockPos pos : BlockUtils.between(abovePos, xSize + 2, height, zSize + 2)) {
+            for (BlockPos pos : BlockPosUtils.between(abovePos, xSize + 2, height, zSize + 2)) {
                 world.removeBlock(pos, false);
             }
         }

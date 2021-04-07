@@ -20,10 +20,10 @@ public class BoardBorderBlockResources {
         BlockModelLocation borderModel = new BlockModelLocation(LootGames.MODID, "field_border");
         BlockModelLocation cornerBorderModel = new BlockModelLocation(LootGames.MODID, "field_border_corner");
 
-        chain.genModel(borderModel, BlockModels.cubeAllModel(sideTexture));
-        chain.genModel(cornerBorderModel, BlockModels.cubeBottomTopModel(cornerTextureTop, sideTexture, cornerTextureBottom));
+        chain.model(borderModel, BlockModels.cubeAllModel(sideTexture));
+        chain.model(cornerBorderModel, BlockModels.cubeBottomTopModel(cornerTextureTop, sideTexture, cornerTextureBottom));
 
-        chain.genState(BlockStateResource.fromJson(
+        chain.state(BlockStateResource.fromJson(
                 object(null, listOf(
                         object("variants", listOf(
                                 object("type=horizontal", listOf(
