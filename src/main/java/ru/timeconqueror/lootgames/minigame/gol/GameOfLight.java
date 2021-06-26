@@ -333,8 +333,6 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                 }
 
                 if (isClientSide()) {
-                    System.out.println("isShowingSymbols() = " + isShowingSymbols());
-                    System.out.println("showParticles = " + showParticles);
                     if (isShowingSymbols() && showParticles) {
                         Symbol symbol = sequence.get(symbolIndex);
                         playFeedbackSound(ClientProxy.player(), symbol);

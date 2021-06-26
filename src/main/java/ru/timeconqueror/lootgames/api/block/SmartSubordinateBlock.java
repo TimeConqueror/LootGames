@@ -2,17 +2,14 @@ package ru.timeconqueror.lootgames.api.block;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
-import ru.timeconqueror.timecore.api.util.NetworkUtils;
 import ru.timeconqueror.timecore.api.util.WorldUtils;
 
 import java.util.function.BiConsumer;
@@ -34,34 +31,24 @@ public class SmartSubordinateBlock extends GameBlock implements ILeftInteractibl
 
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        BlockPos masterPos = getMasterPos(worldIn, pos);
-        TileEntity te = worldIn.getBlockEntity(masterPos);
-        if (te instanceof GameMasterTile<?>) {
-            ((GameMasterTile<?>) te).onBlockRightClick(player, pos);
-        } else {
-            NetworkUtils.sendMessage(player, new StringTextComponent(String.format("The game doesn't seem to work on %s. Please, send the issue to mod author.", worldIn.isClientSide() ? "client" : "server")));
-        }
+        forMasterTile(player, worldIn, pos, (master, blockPos) -> master.onBlockRightClick(player, pos));
 
         return ActionResultType.SUCCESS;
     }
 
     @Override
-    @SuppressWarnings("CodeBlock2Expr")
     public boolean onLeftClick(World world, PlayerEntity player, BlockPos pos, Direction face) {
         if (face == Direction.UP && !player.isShiftKeyDown()) {
-            forMasterTile(world, pos, (tileEntityGameMaster, masterPos) -> {
-                WorldUtils.forTypedTileWithWarn(world, masterPos, GameMasterTile.class, master -> master.onBlockLeftClick(player, pos));
-            });
-
+            forMasterTile(player, world, pos, (master, masterPos) -> master.onBlockLeftClick(player, pos));
             return true;
         }
 
         return false;
     }
 
-    private void forMasterTile(World world, BlockPos pos, BiConsumer<GameMasterTile<?>, BlockPos> action) {
+    private void forMasterTile(PlayerEntity player, World world, BlockPos pos, BiConsumer<GameMasterTile<?>, BlockPos> action) {
         BlockPos masterPos = getMasterPos(world, pos);
-        WorldUtils.forTypedTileWithWarn(world, masterPos, GameMasterTile.class, tileEntityGameMaster -> action.accept(tileEntityGameMaster, masterPos));
+        WorldUtils.forTypedTileWithWarn(player, world, pos, GameMasterTile.class, master -> action.accept(master, masterPos));
     }
 
     public static BlockPos getMasterPos(World world, BlockPos pos) {
