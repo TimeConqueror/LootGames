@@ -1,9 +1,7 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
+        maven { url = 'https://maven.minecraftforge.net/' }
         mavenCentral()
-        mavenLocal()
         maven {
             name = 'sponge'
             url = 'https://repo.spongepowered.org/maven'
@@ -15,7 +13,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.3-patched'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.7-patched'
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
@@ -46,6 +44,12 @@ repositories {
     flatDir {
         dirs 'runtimeMods'
     }
+    mavenCentral()
+    mavenLocal()
+    maven {
+        name = "TimeConqueror's Maven" // dot to make it first priority
+        url = "https://repo.repsy.io/mvn/timeconqueror/mc/"
+    }
     maven {
         // location of the maven that hosts JEI files
         name = "Progwml6 maven"
@@ -55,12 +59,6 @@ repositories {
         name = 'sponge'
         url = 'https://repo.spongepowered.org/maven'
     }
-    maven {
-        name = ".TimeConqueror's Maven" // dot to make it first priority
-        url = "https://repo.repsy.io/mvn/timeconqueror/mc/"
-    }
-    mavenCentral()
-    mavenLocal()
 }
 
 minecraft {
@@ -69,9 +67,9 @@ minecraft {
     // Otherwise, we use official mappings in a build script version
     def officialVersion = System.getenv("OFFICIAL_MAPPINGS")
     if (officialVersion == null) {
-        mappings channel: 'snapshot', version: buildProps.snapshot_mappings
+        mappings channel: 'snapshot', version: buildProps["snapshot_mappings"]
     } else {
-        mappings channel: 'official', version: buildProps.mc_version
+        mappings channel: 'official', version: buildProps["minecraft.version"]
     }
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
@@ -166,7 +164,7 @@ dependencies {
 
     implementation 'org.jetbrains:annotations:18.0.0'
 
-    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.5-3.1.3.0:dev", true))
+    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.5-3.2.0.0.build9:dev", true))
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
