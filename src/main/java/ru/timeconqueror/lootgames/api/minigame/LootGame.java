@@ -10,10 +10,12 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.message.Message;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.Markers;
@@ -21,6 +23,7 @@ import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.lootgames.api.packet.IClientGamePacket;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.api.task.TETaskScheduler;
+import ru.timeconqueror.lootgames.api.util.Auxiliary;
 import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
 import ru.timeconqueror.lootgames.common.packet.CPacketGameUpdate;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
@@ -204,7 +207,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         }
 
         serializeStage(this, nbt, type);
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("stage '{}' was serialized for {}."), getStage(), type == SerializationType.SAVE ? "saving" : "syncing");
+        LOGGER.debug(DEBUG_MARKER, formatLogMessage("stage '{}' was serialized for {}."), getStage(), type == SerializationType.SAVE ? "saving" : "syncing");
     }
 
     @OverridingMethodsMustInvokeSuper
@@ -217,7 +220,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         }
 
         setStage(deserializeStage(this, nbt, type));
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg(" stage '{}' was deserialized {}."), getStage(), type == SerializationType.SAVE ? "from saved file" : "on client");
+        LOGGER.debug(DEBUG_MARKER, formatLogMessage("stage '{}' was deserialized {}."), getStage(), type == SerializationType.SAVE ? "from saved file" : "on client");
 
         justPlaced = false;
     }
@@ -225,7 +228,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     /**
      * Sends update packet to the client with given {@link CompoundNBT} to all players, tracking the game.
      */
-    public void sendUpdatePacket(IServerGamePacket packet) {
+    public void sendUpdatePacketToNearby(IServerGamePacket packet) {
         if (!isServerSide()) {
             return;
         }
@@ -233,7 +236,20 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         Chunk chunk = getWorld().getChunkAt(getMasterPos());
         LGNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new SPacketGameUpdate(this, packet));
 
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("update packet '{}' was sent."), packet.getClass().getSimpleName());
+        LOGGER.debug(DEBUG_MARKER, () -> logMessage("update packet '{}' was sent.", packet.getClass().getSimpleName()));
+    }
+
+    public void sendUpdatePacketToNearbyExcept(ServerPlayerEntity excepting, IServerGamePacket packet) {
+        if (!isServerSide()) {
+            return;
+        }
+
+        Chunk chunk = getWorld().getChunkAt(getMasterPos());
+        ((ServerChunkProvider) chunk.getLevel().getChunkSource()).chunkMap.getPlayers(chunk.getPos(), false) // copied line from PacketDistributor#trackingChunk
+                .filter(player -> !player.getUUID().equals(excepting.getUUID()))
+                .forEach(player -> LGNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new SPacketGameUpdate(this, packet)));
+
+        LOGGER.debug(DEBUG_MARKER, () -> logMessage("update packet '{}' to all tracking except {} was sent.", packet.getClass().getSimpleName(), excepting.getName()));
     }
 
     /**
@@ -252,7 +268,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         }
 
         LGNetwork.INSTANCE.sendToServer(new CPacketGameUpdate(this, packet));
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("feedback packet '{}' was sent."), packet.getClass().getSimpleName());
+        LOGGER.debug(DEBUG_MARKER, () -> logMessage("feedback packet '{}' was sent.", packet.getClass().getSimpleName()));
     }
 
     /**
@@ -270,7 +286,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      */
     public void setupInitialStage(STAGE stage) {
         setStage(stage);
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("initial stage '{}' was set up"), stage);
+        LOGGER.debug(DEBUG_MARKER, formatLogMessage("initial stage '{}' was set up."), stage);
         stage.onStart();
     }
 
@@ -280,7 +296,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
 
         setStage(stage);
 
-        LOGGER.debug(DEBUG_MARKER, prepareLogMsg("switching from stage '{}' to '{}'"), old, stage);
+        LOGGER.debug(DEBUG_MARKER, formatLogMessage("switching from stage '{}' to '{}'."), old, stage);
         onStageUpdate(old, stage);
 
         if (this.getStage() != null) this.getStage().onStart();
@@ -290,7 +306,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         if (isServerSide()) {
             newStage.init();
             save();
-            sendUpdatePacket(new SPChangeStage(this));
+            sendUpdatePacketToNearby(new SPChangeStage(this));
         }
     }
 
@@ -377,7 +393,11 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         }
     }
 
-    private String prepareLogMsg(String str) {
-        return getClass().getSimpleName() + ": " + TextFormatting.DARK_BLUE + str;
+    private Message logMessage(String message, Object... arguments) {
+        return Auxiliary.makeLogMessage(formatLogMessage(message), arguments);
+    }
+
+    private String formatLogMessage(String message) {
+        return TextFormatting.DARK_BLUE + getClass().getSimpleName() + ": " + message;
     }
 }

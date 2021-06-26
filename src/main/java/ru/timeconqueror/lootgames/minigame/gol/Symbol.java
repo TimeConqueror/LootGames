@@ -45,4 +45,14 @@ public enum Symbol {
 
         throw new IllegalArgumentException("There's no symbol on pos " + pos);
     }
+
+    public static boolean exists(Pos2i pos) {
+        for (Symbol symbol : values()) {
+            if (symbol.pos.equals(pos)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

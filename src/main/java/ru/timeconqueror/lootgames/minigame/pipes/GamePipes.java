@@ -70,12 +70,12 @@ public class GamePipes extends BoardLootGame<GamePipes> {
     private void checkForDirtyBoard() {
         if (board.isDirty()) {
             masterTileEntity.setChanged();
-            sendUpdatePacket(board.exportDirtyChunks());
+            sendUpdatePacketToNearby(board.exportDirtyChunks());
         }
     }
 
     private void sendBoard() {
-        sendUpdatePacket(board.exportBoard());
+        sendUpdatePacketToNearby(board.exportBoard());
     }
 
     public void setBoardData(int size, int[] chunks) {
@@ -104,7 +104,7 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         }
 
         @Override
-        protected void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
+        protected void onServerClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
             board.rotateAt(pos.getX(), pos.getY(), type == MouseClickType.LEFT ? -1 : 1);
 
             if (board.isCompleted()) {

@@ -53,29 +53,29 @@ public class LGBlocks {
 
         @AutoRegistrable.InitMethod
         private static void register() {
-            REGISTER.register("dungeon_ceiling", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("cracked_dungeon_ceiling", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("dungeon_wall", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("cracked_dungeon_wall", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("dungeon_floor", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("cracked_dungeon_floor", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("shielded_dungeon_floor", () -> new DungeonBlock(BlockPropsFactory.unbreakable(BRICKS_PROPS_CREATOR.create()))).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create())).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("broken_dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create().lightLevel(value -> 0))).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("puzzle_master", PuzzleMasterBlock::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("dungeon_ceiling", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("cracked_dungeon_ceiling", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("dungeon_wall", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("cracked_dungeon_wall", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("dungeon_floor", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("cracked_dungeon_floor", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("shielded_dungeon_floor", () -> new DungeonBlock(BlockPropsFactory.unbreakable(BRICKS_PROPS_CREATOR.create()))).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("broken_dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create().lightLevel(value -> 0))).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("puzzle_master", PuzzleMasterBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
 
             TextureLocation shieldedDungeonFloorText = new TextureLocation(REGISTER.getModId(), "block/shielded_dungeon_floor");
 
-            REGISTER.register("smart_subordinate", SmartSubordinateBlock::new).genDefaultStateAndModel(shieldedDungeonFloorText);
+            REGISTER.register("smart_subordinate", SmartSubordinateBlock::new).oneVarStateAndCubeAllModel(shieldedDungeonFloorText);
             REGISTER.register("board_border", BoardBorderBlock::new).also(BoardBorderBlockResources::fillChain);
 
-            REGISTER.register("ms_activator", MSActivatorBlock::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("pipes_activator", PipesActivatorBlock::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("gol_activator", GOLActivatorBlock::new).genDefaultStateAndModel().regDefaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("ms_activator", MSActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("pipes_activator", PipesActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("gol_activator", GOLActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
 
-            REGISTER.register("ms_master", gameMaster(MSMasterTile::new)).genDefaultStateAndModel(shieldedDungeonFloorText);
-            REGISTER.register("pipes_master", gameMaster(PipesMasterTile::new)).genDefaultStateAndModel(shieldedDungeonFloorText);
-            REGISTER.register("gol_master", gameMaster(GOLMasterTile::new)).genDefaultStateAndModel(shieldedDungeonFloorText);
+            REGISTER.register("ms_master", gameMaster(MSMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText);
+            REGISTER.register("pipes_master", gameMaster(PipesMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText);
+            REGISTER.register("gol_master", gameMaster(GOLMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText);
         }
 
         @SuppressWarnings("CodeBlock2Expr")

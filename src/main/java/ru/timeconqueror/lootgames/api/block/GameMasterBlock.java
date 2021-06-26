@@ -2,7 +2,6 @@ package ru.timeconqueror.lootgames.api.block;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -29,9 +28,7 @@ public class GameMasterBlock extends GameBlock implements IGameField {
 
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (!worldIn.isClientSide()) {
-            WorldUtils.forTypedTileWithWarn(worldIn, pos, GameMasterTile.class, te -> te.onBlockRightClick(((ServerPlayerEntity) player), pos));
-        }
+        WorldUtils.forTypedTileWithWarn(worldIn, pos, GameMasterTile.class, te -> te.onBlockRightClick(player, pos));
 
         return ActionResultType.SUCCESS;
     }

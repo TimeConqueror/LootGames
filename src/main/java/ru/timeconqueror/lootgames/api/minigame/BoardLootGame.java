@@ -1,5 +1,6 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
@@ -67,14 +68,24 @@ public abstract class BoardLootGame<G extends BoardLootGame<G>> extends LootGame
         return getMasterPos().mutable().move(1, 0, 1).move(offset / 2, 0, offset / 2).immutable();
     }
 
-    public void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
+    public void onClick(PlayerEntity player, Pos2i pos, MouseClickType type) {
         if (getStage() != null) {
             getStage().onClick(player, pos, type);
         }
     }
 
     public abstract static class BoardStage extends LootGame.Stage {
-        protected void onClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
+        /**
+         * Called for both sides when player clicks on board block.
+         */
+        protected void onClick(PlayerEntity player, Pos2i pos, MouseClickType type) {
+            if (!player.level.isClientSide()) {
+                onServerClick((ServerPlayerEntity) player, pos, type);
+            }
+        }
+
+        @Deprecated // todo remove, use #onClick instead
+        protected void onServerClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
         }
     }
 }

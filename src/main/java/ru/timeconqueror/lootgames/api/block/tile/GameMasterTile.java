@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.api.block.tile;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -66,7 +66,7 @@ public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableT
      * @param player         player, who clicked the subordinate block.
      * @param subordinatePos pos of subordinate block.
      */
-    public void onBlockRightClick(ServerPlayerEntity player, BlockPos subordinatePos) {
+    public void onBlockRightClick(PlayerEntity player, BlockPos subordinatePos) {
     }
 
     /**
@@ -75,7 +75,7 @@ public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableT
      * @param player         player, who clicked the subordinate block.
      * @param subordinatePos pos of subordinate block.
      */
-    public void onBlockLeftClick(ServerPlayerEntity player, BlockPos subordinatePos) {
+    public void onBlockLeftClick(PlayerEntity player, BlockPos subordinatePos) {
 
     }
 

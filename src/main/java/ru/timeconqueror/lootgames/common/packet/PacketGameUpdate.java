@@ -10,12 +10,12 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry.Key;
 import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry.Storage;
 import ru.timeconqueror.lootgames.api.packet.IGamePacket;
-import ru.timeconqueror.timecore.api.common.packet.ITimePacket;
+import ru.timeconqueror.timecore.api.common.packet.ITimePacketHandler;
 
 import java.io.IOException;
 import java.util.function.Supplier;
 
-public abstract class PacketGameUpdate<T extends IGamePacket> implements ITimePacket {
+public abstract class PacketGameUpdate<T extends IGamePacket> {
     private T gamePacket;
     private BlockPos masterPos;
 

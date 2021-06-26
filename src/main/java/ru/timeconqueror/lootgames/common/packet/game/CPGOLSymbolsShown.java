@@ -11,12 +11,10 @@ import java.io.IOException;
 public class CPGOLSymbolsShown implements IClientGamePacket {
     @Override
     public void encode(PacketBuffer bufferTo) throws IOException {
-
     }
 
     @Override
     public void decode(PacketBuffer bufferFrom) throws IOException {
-
     }
 
     @Override

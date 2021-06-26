@@ -12,6 +12,7 @@ import ru.timeconqueror.lootgames.api.minigame.BoardLootGame.BoardStage;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
 import ru.timeconqueror.lootgames.common.block.tile.GOLMasterTile;
+import ru.timeconqueror.lootgames.minigame.gol.DisplayedSymbol;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight.StageShowSequence;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight.StageUnderExpanding;
@@ -47,6 +48,10 @@ public class GOLMasterRenderer extends TileEntityRenderer<GOLMasterTile> {
             if (symbol != null) {
                 drawSymbol(matrix, bufferIn, symbol);
             }
+        }
+
+        for (DisplayedSymbol symbol : game.getDisplayedSymbols()) {
+            drawSymbol(matrix, bufferIn, symbol.getSymbol());
         }
 
         matrix.popPose();

@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.api.block.tile;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -21,18 +21,18 @@ public class BoardGameMasterTile<T extends BoardLootGame<T>> extends GameMasterT
     }
 
     @Override
-    public void onBlockLeftClick(ServerPlayerEntity player, BlockPos subordinatePos) {
+    public void onBlockLeftClick(PlayerEntity player, BlockPos subordinatePos) {
         super.onBlockLeftClick(player, subordinatePos);
         onClick(player, subordinatePos, MouseClickType.LEFT);
     }
 
     @Override
-    public void onBlockRightClick(ServerPlayerEntity player, BlockPos subordinatePos) {
+    public void onBlockRightClick(PlayerEntity player, BlockPos subordinatePos) {
         super.onBlockRightClick(player, subordinatePos);
         onClick(player, subordinatePos, MouseClickType.RIGHT);
     }
 
-    private void onClick(ServerPlayerEntity player, BlockPos subordinatePos, MouseClickType type) {
+    private void onClick(PlayerEntity player, BlockPos subordinatePos, MouseClickType type) {
         Pos2i pos = game.convertToGamePos(subordinatePos);
 
         int size = game.getCurrentBoardSize();

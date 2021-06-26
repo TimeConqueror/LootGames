@@ -2,7 +2,6 @@ package ru.timeconqueror.lootgames.api.block;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -35,14 +34,12 @@ public class SmartSubordinateBlock extends GameBlock implements ILeftInteractibl
 
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (!worldIn.isClientSide()) {
-            BlockPos masterPos = getMasterPos(worldIn, pos);
-            TileEntity te = worldIn.getBlockEntity(masterPos);
-            if (te instanceof GameMasterTile<?>) {
-                ((GameMasterTile<?>) te).onBlockRightClick(((ServerPlayerEntity) player), pos);
-            } else {
-                NetworkUtils.sendMessage(player, new StringTextComponent("The game doesn't seem to work. Please, send the issue to mod author."));
-            }
+        BlockPos masterPos = getMasterPos(worldIn, pos);
+        TileEntity te = worldIn.getBlockEntity(masterPos);
+        if (te instanceof GameMasterTile<?>) {
+            ((GameMasterTile<?>) te).onBlockRightClick(player, pos);
+        } else {
+            NetworkUtils.sendMessage(player, new StringTextComponent(String.format("The game doesn't seem to work on %s. Please, send the issue to mod author.", worldIn.isClientSide() ? "client" : "server")));
         }
 
         return ActionResultType.SUCCESS;
@@ -52,11 +49,9 @@ public class SmartSubordinateBlock extends GameBlock implements ILeftInteractibl
     @SuppressWarnings("CodeBlock2Expr")
     public boolean onLeftClick(World world, PlayerEntity player, BlockPos pos, Direction face) {
         if (face == Direction.UP && !player.isShiftKeyDown()) {
-            if (!world.isClientSide()) {
-                forMasterTile(world, pos, (tileEntityGameMaster, masterPos) -> {
-                    WorldUtils.forTypedTileWithWarn(world, masterPos, GameMasterTile.class, master -> master.onBlockLeftClick((ServerPlayerEntity) player, pos));
-                });
-            }
+            forMasterTile(world, pos, (tileEntityGameMaster, masterPos) -> {
+                WorldUtils.forTypedTileWithWarn(world, masterPos, GameMasterTile.class, master -> master.onBlockLeftClick(player, pos));
+            });
 
             return true;
         }
@@ -87,17 +82,5 @@ public class SmartSubordinateBlock extends GameBlock implements ILeftInteractibl
 
         // moving to corner, because master is there
         return currentPos.move(-1, 0, -1).immutable();
-    }
-
-    public static boolean shouldHandleLeftClick(PlayerEntity player, Direction face) {
-        return face == Direction.UP && !player.isShiftKeyDown();
-    }
-
-    public static void handleLeftClick(PlayerEntity player, World world, BlockPos masterPos, BlockPos subordinatePos, Direction face) {
-        if (!world.isClientSide()) {
-            WorldUtils.forTypedTileWithWarn(world, masterPos, GameMasterTile.class, master -> {
-                master.onBlockLeftClick((ServerPlayerEntity) player, subordinatePos);
-            });
-        }
     }
 }

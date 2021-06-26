@@ -100,7 +100,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
     private void onLevelSuccessfullyFinished() {
         if (currentLevel < 4) {
-            sendUpdatePacket(new SPMSSpawnLevelBeatParticles());
+            sendUpdatePacketToNearby(new SPMSSpawnLevelBeatParticles());
 
             sendToNearby(new TranslationTextComponent("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
             getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
@@ -245,7 +245,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
 
         @Override
-        public void onClick(ServerPlayerEntity player, Pos2i clickedPos, MouseClickType type) {
+        public void onServerClick(ServerPlayerEntity player, Pos2i clickedPos, MouseClickType type) {
             getWorld().playSound(null, convertToBlockPos(clickedPos), SoundEvents.NOTE_BLOCK_HAT, SoundCategory.MASTER, 0.6F, 0.8F);
 
             if (!board.isGenerated()) {
@@ -269,7 +269,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
         public void generateBoard(ServerPlayerEntity player, Pos2i clickedPos) {
             board.generate(clickedPos);
-            sendUpdatePacket(new SPMSGenBoard(GameMineSweeper.this));
+            sendUpdatePacketToNearby(new SPMSGenBoard(GameMineSweeper.this));
             revealField(player, clickedPos);
 
             save();
@@ -281,7 +281,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
                 Type type = board.getType(pos);
 
-                sendUpdatePacket(new SPMSFieldChanged(pos, board.getField(pos)));
+                sendUpdatePacketToNearby(new SPMSFieldChanged(pos, board.getField(pos)));
 
                 if (type == Type.EMPTY) {
                     if (playRevealNeighboursSound) {
@@ -348,7 +348,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
             if (board.isHidden(pos)) {
                 board.swapMark(pos);
 
-                sendUpdatePacket(new SPMSFieldChanged(pos, board.getField(pos)));
+                sendUpdatePacketToNearby(new SPMSFieldChanged(pos, board.getField(pos)));
                 save();
             }
 
@@ -457,7 +457,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
                     board.resetBoard();
 
-                    sendUpdatePacket(new SPMSResetFlags());
+                    sendUpdatePacketToNearby(new SPMSResetFlags());
 
                     saveAndSync();
                 }
