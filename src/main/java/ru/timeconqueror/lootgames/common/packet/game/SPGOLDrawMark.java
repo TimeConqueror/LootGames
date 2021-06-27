@@ -4,36 +4,38 @@ import net.minecraft.network.PacketBuffer;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
-import ru.timeconqueror.lootgames.minigame.gol.Symbol;
+import ru.timeconqueror.lootgames.minigame.gol.QMarkAppearance.State;
 
 import java.io.IOException;
 
-public class SPGOLSendDisplayedSymbol implements IServerGamePacket {
-    private Symbol symbol;
+public class SPGOLDrawMark implements IServerGamePacket {
+    private State state;
 
-    public SPGOLSendDisplayedSymbol(Symbol symbol) {
-        this.symbol = symbol;
+    public SPGOLDrawMark(State state) {
+        this.state = state;
     }
 
     /**
      * Only for using via reflection
      */
     @Deprecated
-    public SPGOLSendDisplayedSymbol() {
+    public SPGOLDrawMark() {
     }
 
     @Override
     public void encode(PacketBuffer bufferTo) throws IOException {
-        bufferTo.writeInt(symbol.getIndex());
+        bufferTo.writeVarInt(State.LOOKUP.from(state));
     }
 
     @Override
     public void decode(PacketBuffer bufferFrom) throws IOException {
-        symbol = Symbol.byIndex(bufferFrom.readInt());
+        this.state = State.LOOKUP.by(bufferFrom.readVarInt());
     }
 
     @Override
     public <S extends LootGame.Stage, T extends LootGame<S, T>> void runOnClient(LootGame<S, T> game) {
-        ((GameOfLight) game).addDisplayedSymbol(symbol);
+        if (game instanceof GameOfLight) {
+            ((GameOfLight) game).addMarkAppearance(this.state);
+        }
     }
 }

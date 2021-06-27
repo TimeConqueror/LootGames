@@ -18,6 +18,7 @@ import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.common.config.ConfigGOL;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.common.packet.game.CPGOLSymbolsShown;
+import ru.timeconqueror.lootgames.common.packet.game.SPGOLDrawMark;
 import ru.timeconqueror.lootgames.common.packet.game.SPGOLSendDisplayedSymbol;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
@@ -42,6 +43,9 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     private boolean tickTimer;
 
     private final List<DisplayedSymbol> displayedSymbols = new ArrayList<>();
+
+    @Nullable
+    private QMarkAppearance specialMarkAppearance = null;
 
     public GameOfLight() {
         resetTimer = new Timer(0);
@@ -77,6 +81,10 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             }
         } else {
             displayedSymbols.removeIf((symbol) -> System.currentTimeMillis() - symbol.getClickedTime() > 600);
+
+            if (specialMarkAppearance != null && specialMarkAppearance.isFinished()) {
+                specialMarkAppearance = null;
+            }
         }
     }
 
@@ -347,14 +355,14 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                     }
                 } else {
                     if (feedbackPacketReceived) {
-                        System.out.println("Feedback packet received: Switching to waiting seq");
+                        // at least one watched the full sequence, switching...
                         switchStage(new StageWaitingForSequence(sequence));
                         return;
                     }
 
                     if (!isShowingSymbols()) {
+                        //hard switch to waiting-for-sequence stage if no one want to send a reply
                         if (feedbackWaitTimer.ended()) {
-                            System.out.println("Hard switch to waiting stage");
                             switchStage(new StageWaitingForSequence(sequence));
                             return;
                         }
@@ -477,7 +485,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
 
         private void onSuccessSequence(ServerPlayerEntity player) {
-            System.out.println("yap, you win the sequence");
+            getWorld().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_COMPLETE, SoundCategory.MASTER, 0.75F, 1.0F);
+            sendUpdatePacketToNearby(new SPGOLDrawMark(QMarkAppearance.State.ACCEPTED));
         }
 
         @Override
@@ -505,8 +514,18 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
     }
 
+    public void addMarkAppearance(QMarkAppearance.State state) {
+        if (isClientSide() && QMarkAppearance.canBeHandled(state)) {
+            specialMarkAppearance = new QMarkAppearance(state, getWorld().getGameTime());
+        }
+    }
+
     public List<DisplayedSymbol> getDisplayedSymbols() {
         return displayedSymbols;
+    }
+
+    public QMarkAppearance.State getMarkState() {
+        return specialMarkAppearance != null ? specialMarkAppearance.getState() : getStage() instanceof StageShowSequence ? QMarkAppearance.State.SHOWING : QMarkAppearance.State.NONE;
     }
 
     private static List<Symbol> deserializeSequence(int[] data) {

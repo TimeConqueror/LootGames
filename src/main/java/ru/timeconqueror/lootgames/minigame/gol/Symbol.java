@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.minigame.gol;
 
 import ru.timeconqueror.lootgames.api.util.Pos2i;
-import ru.timeconqueror.timecore.api.util.EnumLookup;
+import ru.timeconqueror.timecore.api.util.lookups.EnumLookup;
 
 public enum Symbol {
     NORTH_WEST(0, new Pos2i(0, 0)),
@@ -33,7 +33,7 @@ public enum Symbol {
     }
 
     public static Symbol byIndex(int index) {
-        return LOOKUP.get(index);
+        return LOOKUP.by(index);
     }
 
     public static Symbol byPos(Pos2i pos) {

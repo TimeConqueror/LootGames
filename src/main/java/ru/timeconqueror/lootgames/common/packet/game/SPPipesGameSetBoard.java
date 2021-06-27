@@ -18,6 +18,7 @@ public class SPPipesGameSetBoard implements IServerGamePacket {
     /**
      * Only for using via reflection
      */
+    @Deprecated
     public SPPipesGameSetBoard() {
     }
 

@@ -9,6 +9,7 @@ public class SPChangeStage extends NBTGamePacket {
     /**
      * Only for using via reflection
      */
+    @Deprecated
     public SPChangeStage() {
     }
 

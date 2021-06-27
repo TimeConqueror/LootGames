@@ -18,6 +18,7 @@ public class SPPipesGameChangeChunks implements IServerGamePacket {
     /**
      * Only for using via reflection
      */
+    @Deprecated
     public SPPipesGameChangeChunks() {
     }
 

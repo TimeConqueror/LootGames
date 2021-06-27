@@ -12,6 +12,7 @@ public class SPMSGenBoard extends NBTGamePacket {
     /**
      * Only for using via reflection
      */
+    @Deprecated
     public SPMSGenBoard() {
     }
 

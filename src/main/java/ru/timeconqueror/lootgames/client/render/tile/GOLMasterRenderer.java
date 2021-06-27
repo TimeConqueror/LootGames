@@ -16,6 +16,7 @@ import ru.timeconqueror.lootgames.minigame.gol.DisplayedSymbol;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight.StageShowSequence;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight.StageUnderExpanding;
+import ru.timeconqueror.lootgames.minigame.gol.QMarkAppearance.State;
 import ru.timeconqueror.lootgames.minigame.gol.Symbol;
 import ru.timeconqueror.timecore.animation.Ease;
 import ru.timeconqueror.timecore.api.util.MathUtils;
@@ -27,6 +28,7 @@ import static ru.timeconqueror.lootgames.minigame.gol.GameOfLight.StageUnderExpa
 public class GOLMasterRenderer extends TileEntityRenderer<GOLMasterTile> {
     private static final RenderType RT_BOARD = LGRenderTypes.brightened(LootGames.rl("textures/game/gol_board.png"));
     private static final RenderType RT_BOARD_ACTIVE = LGRenderTypes.brightened(LootGames.rl("textures/game/gol_board_active.png"));
+    private static final RenderType RT_MARKS = LGRenderTypes.brightenedTranslucent(LootGames.rl("textures/game/gol_marks.png"));
 
     public GOLMasterRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
@@ -54,21 +56,41 @@ public class GOLMasterRenderer extends TileEntityRenderer<GOLMasterTile> {
             drawSymbol(matrix, bufferIn, symbol.getSymbol());
         }
 
+        State questionMark = game.getMarkState();
+        if (questionMark != State.NONE) {
+            drawMark(matrix, bufferIn, questionMark);
+        }
+
         matrix.popPose();
     }
 
-    public void drawSymbol(MatrixStack matrix, IRenderTypeBuffer bufferIn, Symbol symbol) {
+    private void drawSymbol(MatrixStack matrix, IRenderTypeBuffer bufferIn, Symbol symbol) {
         IVertexBuilder buffer = bufferIn.getBuffer(RT_BOARD_ACTIVE);
 
         Pos2i pos = symbol.getPos();
 
-        float textureX = 16 * pos.getX();
-        float textureY = 16 * pos.getY();
-
-        DrawHelper.drawTexturedRectByParts(buffer, matrix, pos.getX(), pos.getY(), 1, 1, -0.006F, textureX, textureY, 16, 16, 48);
+        DrawHelper.drawTexturedRectByParts(buffer, matrix, pos.getX(), pos.getY(), 1, 1, -0.006F, pos.getX(), pos.getY(), 1, 1, 3);
     }
 
-    public void drawBoard(GameOfLight game, MatrixStack matrix, IRenderTypeBuffer bufferIn, int ticks, float partialTicks) {
+    private void drawMark(MatrixStack matrix, IRenderTypeBuffer bufferIn, State state) {
+        IVertexBuilder buffer = bufferIn.getBuffer(RT_MARKS);
+
+        int textureX = 0;
+        int textureY = 0;
+        switch (state) {
+            case ACCEPTED:
+                textureX = 1;
+                break;
+            case DENIED:
+                textureX = 0;
+                textureY = 1;
+                break;
+        }
+
+        DrawHelper.drawTexturedRectByParts(buffer, matrix, 1, 1, 1, 1, -0.006F, textureX, textureY, 1, 1, 2);
+    }
+
+    private void drawBoard(GameOfLight game, MatrixStack matrix, IRenderTypeBuffer bufferIn, int ticks, float partialTicks) {
         IVertexBuilder buffer = bufferIn.getBuffer(RT_BOARD);
 
         float length = 3;

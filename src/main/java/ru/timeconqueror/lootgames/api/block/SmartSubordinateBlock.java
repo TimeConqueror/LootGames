@@ -48,7 +48,7 @@ public class SmartSubordinateBlock extends GameBlock implements ILeftInteractibl
 
     private void forMasterTile(PlayerEntity player, World world, BlockPos pos, BiConsumer<GameMasterTile<?>, BlockPos> action) {
         BlockPos masterPos = getMasterPos(world, pos);
-        WorldUtils.forTypedTileWithWarn(player, world, pos, GameMasterTile.class, master -> action.accept(master, masterPos));
+        WorldUtils.forTypedTileWithWarn(player, world, masterPos, GameMasterTile.class, master -> action.accept(master, masterPos));
     }
 
     public static BlockPos getMasterPos(World world, BlockPos pos) {
