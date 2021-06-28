@@ -10,7 +10,6 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.event.world.NoteBlockEvent;
-import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
@@ -31,7 +30,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
+//TODO add question mark flicker on WaitingStartStage
 public class GameOfLight extends BoardLootGame<GameOfLight> {
     public static final int BOARD_SIZE = 3;
 
@@ -89,7 +88,13 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     }
 
     private void failGame() {
-        throw new NotImplementedException("");
+        getWorld().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_WRONG, SoundCategory.MASTER, 0.75F, 1.0F);
+        getWorld().playSound(null, getGameCenter(), LGSounds.GOL_START_GAME, SoundCategory.MASTER, 0.75F, 1.0F);
+        sendToNearby(new TranslationTextComponent("msg.lootgames.gol.wrong_block"), NotifyColor.FAIL);
+        sendUpdatePacketToNearby(SPGOLDrawMark.denied());
+
+        switchStage(new StageWaitingStart());
+
     }
 
     private void playFeedbackSound(PlayerEntity player, Symbol symbol) {
@@ -382,7 +387,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             super.onClick(player, pos, type);
 
             if (isServerSide()) {
-                sendTo(player, new TranslationTextComponent("msg.lootgames.gol_master.not_ready"), NotifyColor.WARN);
+                sendTo(player, new TranslationTextComponent("msg.lootgames.gol.not_ready"), NotifyColor.WARN);
             }
         }
 
@@ -473,6 +478,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                     Symbol correct = sequence.get(currentSymbol);
                     if (chosen != correct) {
                         failGame();
+                        return;
                     }
 
                     if (currentSymbol == sequence.size() - 1) {
@@ -486,7 +492,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
         private void onSuccessSequence(ServerPlayerEntity player) {
             getWorld().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_COMPLETE, SoundCategory.MASTER, 0.75F, 1.0F);
-            sendUpdatePacketToNearby(new SPGOLDrawMark(QMarkAppearance.State.ACCEPTED));
+            sendUpdatePacketToNearby(SPGOLDrawMark.accepted());
         }
 
         @Override

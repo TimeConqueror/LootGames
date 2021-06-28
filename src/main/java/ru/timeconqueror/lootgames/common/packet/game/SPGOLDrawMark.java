@@ -11,8 +11,16 @@ import java.io.IOException;
 public class SPGOLDrawMark implements IServerGamePacket {
     private State state;
 
-    public SPGOLDrawMark(State state) {
+    private SPGOLDrawMark(State state) {
         this.state = state;
+    }
+
+    public static SPGOLDrawMark accepted() {
+        return new SPGOLDrawMark(State.ACCEPTED);
+    }
+
+    public static SPGOLDrawMark denied() {
+        return new SPGOLDrawMark(State.DENIED);
     }
 
     /**

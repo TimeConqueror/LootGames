@@ -29,7 +29,7 @@ public class GOLActivatorBlock extends GameBlock {
                     .trySetupBoard(((ServerWorld) worldIn), pos, GameOfLight.BOARD_SIZE, 2, GameOfLight.BOARD_SIZE, LGBlocks.GOL_MASTER.defaultBlockState(), player).isSucceed();
 
             if (succeed) {
-                NetworkUtils.sendMessage(player, ChatUtils.format(new TranslationTextComponent("msg.lootgames.gol_master.start"), NotifyColor.NOTIFY.getColor()));
+                NetworkUtils.sendMessage(player, ChatUtils.format(new TranslationTextComponent("msg.lootgames.gol.start"), NotifyColor.NOTIFY.getColor()));
                 LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayerEntity) player), new UseBlockTrigger.ExtraInfo(state, pos, player.getItemInHand(handIn)));
             }
         }
