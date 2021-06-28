@@ -19,6 +19,7 @@ import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.common.packet.game.CPGOLSymbolsShown;
 import ru.timeconqueror.lootgames.common.packet.game.SPGOLDrawMark;
 import ru.timeconqueror.lootgames.common.packet.game.SPGOLSendDisplayedSymbol;
+import ru.timeconqueror.lootgames.common.packet.game.SPGOLSpawnStageUpParticles;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
@@ -78,6 +79,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             } else {
                 resetTimer.update();
             }
+
+            sendUpdatePacketToNearby(new SPGOLSpawnStageUpParticles());
         } else {
             displayedSymbols.removeIf((symbol) -> System.currentTimeMillis() - symbol.getClickedTime() > 600);
 
@@ -204,6 +207,14 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         super.onStageUpdate(oldStage, newStage);
     }
 
+    public void spawnFeedbackParticles(IParticleData particle, BlockPos pos) {
+        if (isClientSide()) {
+            for (int i = 0; i < 20; i++) {
+                getWorld().addParticle(particle, pos.getX() + RandHelper.RAND.nextFloat(), pos.getY() + 0.5F + RandHelper.RAND.nextFloat(), pos.getZ() + RandHelper.RAND.nextFloat(), RandHelper.RAND.nextGaussian() * 0.02D, (0.02D + RandHelper.RAND.nextGaussian()) * 0.02D, RandHelper.RAND.nextGaussian() * 0.02D);
+            }
+        }
+    }
+
     public class StageUnderExpanding extends BoardStage {
         private static final String ID = "under_expanding";
         public static final int MAX_TICKS_EXPANDING = 20;
@@ -253,6 +264,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             super.init();
             stage = 0;
             round = 0;
+            save();
         }
 
         @Override
@@ -268,7 +280,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                 if (isCenter(pos)) {
                     sendTo(player, new TranslationTextComponent("msg.lootgames.gol.rules"), NotifyColor.NOTIFY);
 
-                    switchStage(new StageShowSequence(stage, true, new ArrayList<>()));
+                    switchStage(new StageShowSequence(true, new ArrayList<>()));
                 } else {
                     sendTo(player, new TranslationTextComponent("msg.lootgames.gol.click_center"), NotifyColor.WARN);
                 }
@@ -300,7 +312,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             displayTime = nbt.getInt("display_time");
         }
 
-        public StageShowSequence(int stageIndex, boolean isNewStage, List<Symbol> prevSequence) {
+        public StageShowSequence(boolean isNewStage, List<Symbol> prevSequence) {
+            int stageIndex = stage;
             ConfigGOL.StageConfig stage = LGConfigs.GOL.getStageByIndex(stageIndex);
             if (isNewStage) {
                 if (stageIndex == 0) {
@@ -404,12 +417,6 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             return shouldRenderSymbol() ? sequence.get(symbolIndex) : null;
         }
 
-        private void spawnFeedbackParticles(IParticleData particle, BlockPos pos) {
-            for (int i = 0; i < 20; i++) {
-                getWorld().addParticle(particle, pos.getX() + RandHelper.RAND.nextFloat(), pos.getY() + 0.5F + RandHelper.RAND.nextFloat(), pos.getZ() + RandHelper.RAND.nextFloat(), RandHelper.RAND.nextGaussian() * 0.02D, (0.02D + RandHelper.RAND.nextGaussian()) * 0.02D, RandHelper.RAND.nextGaussian() * 0.02D);
-            }
-        }
-
         private List<Symbol> generateSequence(int stage, int size) {
             List<Symbol> sequence = new ArrayList<>();
             for (int i = 0; i < size; i++) {
@@ -493,6 +500,29 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         private void onSuccessSequence(ServerPlayerEntity player) {
             getWorld().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_COMPLETE, SoundCategory.MASTER, 0.75F, 1.0F);
             sendUpdatePacketToNearby(SPGOLDrawMark.accepted());
+
+            ConfigGOL.StageConfig stageCfg = LGConfigs.GOL.getStageByIndex(stage);
+            Integer maxRounds = stageCfg.rounds.get();
+            if (round == maxRounds - 1) {//move to the next stage
+                if (stage == 3) {
+                    triggerGameWin();
+                } else {
+                    stage++;
+                    round = 0;
+                    save();
+
+                    getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundCategory.MASTER, 0.75F, 1.0F);
+                    spawnFeedbackParticles(ParticleTypes.HAPPY_VILLAGER, getGameCenter().above());
+                    sendToNearby(new TranslationTextComponent("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
+
+                    switchStage(new StageShowSequence(true, sequence));
+                }
+            } else {
+                round++;
+                save();
+
+                switchStage(new StageShowSequence(false, sequence));
+            }
         }
 
         @Override

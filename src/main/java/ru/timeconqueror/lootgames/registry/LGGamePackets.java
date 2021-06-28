@@ -24,5 +24,6 @@ public class LGGamePackets {
         REGISTER.regServerPacket(SPGOLSendDisplayedSymbol.class);
         REGISTER.regClientPacket(CPGOLSymbolsShown.class);
         REGISTER.regServerPacket(SPGOLDrawMark.class);
+        REGISTER.regServerPacket(SPGOLSpawnStageUpParticles.class);
     }
 }
