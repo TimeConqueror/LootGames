@@ -85,6 +85,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         if (isServerSide()) {
             if (tickTimer && resetTimer.ended()) {
                 failGame(true);
+                return;
                 //TODO add animation of hard switch to waiting for sequence?
             }
 
@@ -217,7 +218,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             }
         });
 
-        RewardUtils.spawnFourStagedReward(((ServerWorld) getWorld()), this, getGameCenter(), maxReachedStage, LGConfigs.REWARDS.minesweeper);
+        RewardUtils.spawnFourStagedReward(((ServerWorld) getWorld()), this, getGameCenter(), maxReachedStage, LGConfigs.REWARDS.gol);
     }
 
     @Override
@@ -286,7 +287,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     @Override
     protected void onStageUpdate(BoardStage oldStage, BoardStage newStage) {
         ticks = 0;
-        tickTimer = true;
+        tickTimer = false;
         super.onStageUpdate(oldStage, newStage);
     }
 
@@ -343,11 +344,10 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         private static final String ID = "waiting_start";
 
         @Override
-        public void init() {
-            super.init();
+        public void preInit() {
+            super.preInit();
             stage = 0;
             round = 0;
-            save();
         }
 
         @Override
@@ -415,8 +415,6 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
         @Override
         protected void onTick() {
-            tickTimer = false;
-
             if (pauseBeforeShowing) {
                 if (ticks > TICKS_PAUSE_BETWEEN_ROUNDS) {
                     ticks = 0;
@@ -547,6 +545,11 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         public StageWaitingForSequence(CompoundNBT nbt) {
             this.sequence = deserializeSequence(nbt.getIntArray("sequence"));
             this.currentSymbol = nbt.getInt("symbol_index");
+        }
+
+        @Override
+        protected void onStart(boolean clientSide) {
+            tickTimer = true;
         }
 
         @Override

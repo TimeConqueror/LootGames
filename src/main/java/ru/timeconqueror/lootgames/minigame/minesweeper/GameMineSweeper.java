@@ -1,5 +1,6 @@
 package ru.timeconqueror.lootgames.minigame.minesweeper;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.SoundCategory;
@@ -245,23 +246,26 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
 
         @Override
-        public void onServerClick(ServerPlayerEntity player, Pos2i clickedPos, MouseClickType type) {
-            getWorld().playSound(null, convertToBlockPos(clickedPos), SoundEvents.NOTE_BLOCK_HAT, SoundCategory.MASTER, 0.6F, 0.8F);
+        protected void onClick(PlayerEntity player, Pos2i pos, MouseClickType type) {
+            if (isServerSide()) {
+                ServerPlayerEntity sPlayer = (ServerPlayerEntity) player;
+                getWorld().playSound(null, convertToBlockPos(pos), SoundEvents.NOTE_BLOCK_HAT, SoundCategory.MASTER, 0.6F, 0.8F);
 
-            if (!board.isGenerated()) {
-                generateBoard(player, clickedPos);
-            } else {
-                playRevealNeighboursSound = true;
-
-                if (type == MouseClickType.LEFT) {
-                    if (board.getMark(clickedPos) == Mark.NO_MARK) {
-                        revealField(player, clickedPos);
-                    }
+                if (!board.isGenerated()) {
+                    generateBoard(sPlayer, pos);
                 } else {
-                    if (player.isShiftKeyDown()) {
-                        revealAllNeighbours(player, clickedPos, false);
-                    } else if (board.isHidden(clickedPos)) {
-                        swapFieldMark(clickedPos);
+                    playRevealNeighboursSound = true;
+
+                    if (type == MouseClickType.LEFT) {
+                        if (board.getMark(pos) == Mark.NO_MARK) {
+                            revealField(sPlayer, pos);
+                        }
+                    } else {
+                        if (player.isShiftKeyDown()) {
+                            revealAllNeighbours(sPlayer, pos, false);
+                        } else if (board.isHidden(pos)) {
+                            swapFieldMark(pos);
+                        }
                     }
                 }
             }
@@ -437,11 +441,9 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
 
         @Override
-        protected void onStart() {
-            if (isServerSide()) {
-                int longestDetTime = detonateBoard(currentLevel + 3, Explosion.Mode.BREAK);
-                ticks = longestDetTime + 2 * 20; //number represents some pause after detonating
-            }
+        public void preInit() {
+            int longestDetTime = detonateBoard(currentLevel + 3, Explosion.Mode.BREAK);
+            ticks = longestDetTime + 2 * 20; //number represents some pause after detonating
         }
 
         @Override

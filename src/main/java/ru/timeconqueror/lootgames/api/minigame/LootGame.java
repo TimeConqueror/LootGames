@@ -238,6 +238,8 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         LOGGER.debug(DEBUG_MARKER, formatLogMessage("stage '{}' was deserialized {}."), getStage(), type == SerializationType.SAVE ? "from saved file" : "on client");
 
         justPlaced = false;
+
+        onStageStart(type == SerializationType.SYNC);
     }
 
     /**
@@ -300,28 +302,36 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      * @param stage initial stage of game
      */
     public void setupInitialStage(STAGE stage) {
-        setStage(stage);
         LOGGER.debug(DEBUG_MARKER, formatLogMessage("initial stage '{}' was set up."), stage);
-        stage.onStart();
+
+        setStage(stage);
+        onStageUpdate(null, stage);
+        onStageStart(isClientSide());
     }
 
     public void switchStage(@Nullable STAGE stage) {
         STAGE old = this.getStage();
         if (old != null) old.onEnd();
 
-        setStage(stage);
-
         LOGGER.debug(DEBUG_MARKER, formatLogMessage("switching from stage '{}' to '{}'."), old, stage);
-        onStageUpdate(old, stage);
 
-        if (this.getStage() != null) this.getStage().onStart();
+        setStage(stage);
+        onStageUpdate(old, stage);
+        onStageStart(isClientSide());
     }
 
-    protected void onStageUpdate(STAGE oldStage, STAGE newStage) {
+    /**
+     * Called for both logical sides when the game was switched to this stage.
+     * For server: called only when you manually change stage on server side via {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)}
+     * For client: called every time server sends new state, including deserializing from saved nbt.
+     */
+    protected void onStageUpdate(@Nullable STAGE oldStage, @Nullable STAGE newStage) {
         if (isServerSide()) {
-            newStage.init();
+            if (newStage != null) newStage.preInit();
             save();
             sendUpdatePacketToNearby(new SPChangeStage(this));
+
+            if (newStage != null) newStage.postInit();
         }
     }
 
@@ -337,15 +347,30 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         this.stage = stage;
     }
 
+    /**
+     * Called for both logical sides when the game was switched to this stage:
+     * <ol>- by changing stage via {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)}</ol>
+     * <ol>- by deserializing and syncing</ol>
+     * <p>
+     * Warning: {@link #getWorld()} can return null here, because world is set after reading from nbt!
+     */
+    protected void onStageStart(boolean clientSide) {
+        if (this.stage != null) {
+            this.stage.onStart(clientSide);
+        }
+    }
+
     public abstract void onDestroy();
 
     public abstract static class Stage {
         /**
-         * Called for both logical sides when the game was switched to this stage.
-         * For server: called only when you manually change stage on server side via {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)}
-         * For client: called every time server sends new state, including deserializing from saved nbt.
+         * Called for both logical sides when the game was switched to this stage:
+         * <ol>- by changing stage via {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)}</ol>
+         * <ol>- by deserializing and syncing</ol>
+         * <p>
+         * Warning: {@link #getWorld()} can return null here, because world is set after reading from nbt!
          */
-        protected void onStart() {
+        protected void onStart(boolean clientSide) {
 
         }
 
@@ -381,9 +406,22 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         }
 
         /**
-         * Will be called only on server side right after stage was created, but before it will be saved and synced.
+         * Called on server side right after the game switched to this stage {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)},
+         * but BEFORE it will be saved and synced.
+         * <p>
+         * Is not called upon serializing and deserializing.
          */
-        public void init() {
+        public void preInit() {
+
+        }
+
+        /**
+         * Called on server side right after the game switched to this stage {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)},
+         * and AFTER it will be saved and synced.
+         * <p>
+         * Is not called upon serializing and deserializing.
+         */
+        public void postInit() {
 
         }
     }

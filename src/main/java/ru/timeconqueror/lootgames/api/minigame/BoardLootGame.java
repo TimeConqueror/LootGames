@@ -1,7 +1,6 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 import org.apache.logging.log4j.LogManager;
@@ -79,13 +78,6 @@ public abstract class BoardLootGame<G extends BoardLootGame<G>> extends LootGame
          * Called for both sides when player clicks on board block.
          */
         protected void onClick(PlayerEntity player, Pos2i pos, MouseClickType type) {
-            if (!player.level.isClientSide()) {
-                onServerClick((ServerPlayerEntity) player, pos, type);
-            }
-        }
-
-        @Deprecated // todo remove, use #onClick instead
-        protected void onServerClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
         }
     }
 }

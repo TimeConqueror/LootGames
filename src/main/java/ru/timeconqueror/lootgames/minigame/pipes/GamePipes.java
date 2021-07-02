@@ -1,6 +1,6 @@
 package ru.timeconqueror.lootgames.minigame.pipes;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -104,30 +104,30 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         }
 
         @Override
-        protected void onServerClick(ServerPlayerEntity player, Pos2i pos, MouseClickType type) {
-            board.rotateAt(pos.getX(), pos.getY(), type == MouseClickType.LEFT ? -1 : 1);
+        protected void onClick(PlayerEntity player, Pos2i pos, MouseClickType type) {
+            if (isServerSide()) {
+                board.rotateAt(pos.getX(), pos.getY(), type == MouseClickType.LEFT ? -1 : 1);
 
-            if (board.isCompleted()) {
-                switchStage(new WinningStage(cycleId, 0));
+                if (board.isCompleted()) {
+                    switchStage(new WinningStage(cycleId, 0));
+                }
+
+                checkForDirtyBoard();
             }
-
-            checkForDirtyBoard();
         }
 
         @Override
-        protected void onStart() {
-            if (isServerSide()) {
-                if (cycleId != 0) {
-                    board = new PipesBoard(board.getSize() + 2);
-                    masterTileEntity.setChanged();
-                }
+        public void postInit() {
+            if (cycleId != 0) {
+                board = new PipesBoard(board.getSize() + 2);
+                save();
+            }
 
-                PipesBoardGenerator generator = new PipesBoardGenerator(board);
-                generator.fillBoard(cycleId + 1, board.getSize() * 2);
+            PipesBoardGenerator generator = new PipesBoardGenerator(board);
+            generator.fillBoard(cycleId + 1, board.getSize() * 2);
 
-                if (cycleId != 0) {
-                    sendBoard();
-                }
+            if (cycleId != 0) {
+                sendBoard();
             }
         }
 
@@ -156,14 +156,6 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         }
 
         @Override
-        protected void onStart() {
-            if (isServerSide()) {
-                getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
-                board.removeNonPoweredPipes();
-            }
-        }
-
-        @Override
         protected void onTick() {
             if (isServerSide()) {
                 ticksPassed++;
@@ -184,6 +176,12 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         @Override
         public String getID() {
             return ID;
+        }
+
+        @Override
+        public void postInit() {
+            getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
+            board.removeNonPoweredPipes();
         }
     }
 
