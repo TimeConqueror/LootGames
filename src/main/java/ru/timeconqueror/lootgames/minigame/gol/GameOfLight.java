@@ -19,6 +19,7 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.world.NoteBlockEvent;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
+import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.api.util.RewardUtils;
@@ -30,6 +31,7 @@ import ru.timeconqueror.lootgames.common.packet.game.SPGOLDrawMark;
 import ru.timeconqueror.lootgames.common.packet.game.SPGOLSendDisplayedSymbol;
 import ru.timeconqueror.lootgames.common.packet.game.SPGOLSpawnStageUpParticles;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
+import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
@@ -659,5 +661,13 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
     private static int[] serializeSequence(List<Symbol> sequence) {
         return sequence.stream().mapToInt(Symbol::getIndex).toArray();
+    }
+
+    public static class Factory implements ILootGameFactory {
+        @Override
+        public void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos) {
+            BlockPos floorCenterPos = puzzleMasterPos.offset(0, -2, 0);//TODo make puzzle master be also manually placeable and in this case in should spawn activator in its place
+            world.setBlockAndUpdate(floorCenterPos, LGBlocks.GOL_ACTIVATOR.defaultBlockState());
+        }
     }
 }

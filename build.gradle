@@ -193,7 +193,7 @@ def reobfArtifact = artifacts.add('default', reobfFile) {
     builtBy 'reobfJar'
 }
 
-//def mavenLinkRepsy = "https://repo.repsy.io/mvn/${secretProps.repsy.user}/${secretProps.repsy.repo_name}"
+def mavenLinkRepsy = "https://repo.repsy.io/mvn/${secretProps.repsy.user}/${secretProps.repsy.repo_name}"
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -204,14 +204,14 @@ publishing {
         maven {
             url "file:///${project.projectDir}/mcmodsrepo"
         }
-//        if (secretProps != null) {
-//            maven {
-//                url mavenLinkRepsy
-//                credentials {
-//                    username secretProps.repsy.user
-//                    password secretProps.repsy.password
-//                }
-//            }
-//        }
+        if (secretProps != null) {
+            maven {
+                url mavenLinkRepsy
+                credentials {
+                    username secretProps.repsy.user
+                    password secretProps.repsy.password
+                }
+            }
+        }
     }
 }
