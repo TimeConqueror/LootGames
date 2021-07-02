@@ -6,6 +6,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.task.TaskRegistry;
+import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.pipes.GamePipes;
 
@@ -17,6 +18,7 @@ public class LGMiscRegistry {
         event.enqueueWork(() -> {
             TaskRegistry.registerTaskFactory(TaskCreateExplosion.class, TaskCreateExplosion::new);
 
+            LootGamesAPI.getGameManager().registerGameGenerator(new GameOfLight.Factory());
             LootGamesAPI.getGameManager().registerGameGenerator(new GameMineSweeper.Factory());
             LootGamesAPI.getGameManager().registerGameGenerator(new GamePipes.Factory());
         });

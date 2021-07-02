@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.Random;
 //TODO check surface before placing game block
+//TODO add animation, which places block below
 public class PuzzleMasterBlock extends GameBlock {
 
     public PuzzleMasterBlock() {
