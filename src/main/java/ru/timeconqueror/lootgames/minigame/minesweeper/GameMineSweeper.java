@@ -40,7 +40,7 @@ import static ru.timeconqueror.timecore.api.util.NetworkUtils.getPlayersNearby;
 //TODO remove break particle before left click interact
 //TODO if all non-bomb fields are revealed, finish the game
 public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
-    public static final String ADV_TYPE_BEAT_LEVEL4 = "ms_level4";
+    public static final String ADV_BEAT_LEVEL4 = "ms_level_4";
 
     public boolean cIsGenerated;
 
@@ -135,7 +135,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         BlockPos central = getGameCenter();
 
         if (currentLevel > 4) { // end of the game
-            players.forEach(player -> LGAdvancementTriggers.END_GAME.trigger(player, ADV_TYPE_BEAT_LEVEL4));
+            players.forEach(player -> LGAdvancementTriggers.END_GAME.trigger(player, ADV_BEAT_LEVEL4));
         }
 
         RewardUtils.spawnFourStagedReward(((ServerWorld) getWorld()), this, central, currentLevel - 1, LGConfigs.REWARDS.minesweeper);

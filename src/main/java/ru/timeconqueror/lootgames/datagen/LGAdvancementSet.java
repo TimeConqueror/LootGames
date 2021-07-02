@@ -8,6 +8,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
 import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger;
+import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.timecore.api.devtools.gen.advancement.IAdvancementSet;
@@ -82,17 +83,56 @@ public class LGAdvancementSet implements IAdvancementSet {
                                 true)
                         .addCriterion("click", UseBlockTrigger.Instance.forBlock(LGBlocks.MS_ACTIVATOR)));
 
-        Advancement msBeatLevel4 = saveFunction.process(LootGames.rl("minesweeper/beat_level4"),
+        Advancement msBeatLevel4 = saveFunction.process(LootGames.rl("minesweeper/beat_level_4"),
                 Advancement.Builder.advancement()
                         .parent(startMinesweeper)
                         .display(Items.CREEPER_HEAD,
-                                new TranslationTextComponent("advancement.lootgames.ms.beat_level4"),
-                                new TranslationTextComponent("advancement.lootgames.ms.beat_level4.desc"),
+                                new TranslationTextComponent("advancement.lootgames.ms.beat_level_4"),
+                                new TranslationTextComponent("advancement.lootgames.ms.beat_level_4.desc"),
                                 null,
                                 FrameType.CHALLENGE,
                                 true,
                                 true,
                                 false)
-                        .addCriterion("end_level4", new EndGameTrigger.Instance(GameMineSweeper.ADV_TYPE_BEAT_LEVEL4, AndPredicate.ANY)));
+                        .addCriterion("end_level4", new EndGameTrigger.Instance(GameMineSweeper.ADV_BEAT_LEVEL4, AndPredicate.ANY)));
+
+        Advancement startGameOfLight = saveFunction.process(LootGames.rl("gameoflight/start"),
+                Advancement.Builder.advancement()
+                        .parent(findDungeon)
+                        .display(LGBlocks.GOL_ACTIVATOR,
+                                new TranslationTextComponent("advancement.lootgames.gol.start"),
+                                new TranslationTextComponent("advancement.lootgames.gol.start.desc"),
+                                null,
+                                FrameType.TASK,
+                                true,
+                                true,
+                                true)
+                        .addCriterion("click", UseBlockTrigger.Instance.forBlock(LGBlocks.GOL_ACTIVATOR)));
+
+        Advancement golBeatLevel3 = saveFunction.process(LootGames.rl("gameoflight/beat_level_3"),
+                Advancement.Builder.advancement()
+                        .parent(startGameOfLight)
+                        .display(Items.DIAMOND,
+                                new TranslationTextComponent("advancement.lootgames.gol.beat_level_3"),
+                                new TranslationTextComponent("advancement.lootgames.gol.beat_level_3.desc"),
+                                null,
+                                FrameType.CHALLENGE,
+                                true,
+                                true,
+                                false)
+                        .addCriterion("end_level3", new EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL3, AndPredicate.ANY)));
+
+        Advancement golBeatLevel4 = saveFunction.process(LootGames.rl("gameoflight/beat_level_4"),
+                Advancement.Builder.advancement()
+                        .parent(startGameOfLight)
+                        .display(Items.EMERALD,
+                                new TranslationTextComponent("advancement.lootgames.gol.beat_level_4"),
+                                new TranslationTextComponent("advancement.lootgames.gol.beat_level_4.desc"),
+                                null,
+                                FrameType.CHALLENGE,
+                                true,
+                                true,
+                                false)
+                        .addCriterion("end_level4", new EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL4, AndPredicate.ANY)));
     }
 }

@@ -1,0 +1,31 @@
+{
+  "parent": "lootgames:gameoflight/start",
+  "display": {
+    "icon": {
+      "item": "minecraft:diamond"
+    },
+    "title": {
+      "translate": "advancement.lootgames.gol.beat_level_3"
+    },
+    "description": {
+      "translate": "advancement.lootgames.gol.beat_level_3.desc"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "end_level3": {
+      "trigger": "lootgames:end_minigame",
+      "conditions": {
+        "type": "gol_level_3"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "end_level3"
+    ]
+  ]
+}

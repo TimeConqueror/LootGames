@@ -13,7 +13,7 @@ import net.minecraft.world.server.ServerWorld;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.GameBlock;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
-import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger;
+import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger.ExtraInfo;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
@@ -30,7 +30,7 @@ public class GOLActivatorBlock extends GameBlock {
 
             if (succeed) {
                 NetworkUtils.sendMessage(player, ChatUtils.format(new TranslationTextComponent("msg.lootgames.gol.start"), NotifyColor.NOTIFY.getColor()));
-                LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayerEntity) player), new UseBlockTrigger.ExtraInfo(state, pos, player.getItemInHand(handIn)));
+                LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayerEntity) player), new ExtraInfo(state, pos, player.getItemInHand(handIn)));
             }
         }
 

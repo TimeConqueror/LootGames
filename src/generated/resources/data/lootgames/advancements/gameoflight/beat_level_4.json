@@ -1,14 +1,14 @@
 {
-  "parent": "lootgames:minesweeper/start",
+  "parent": "lootgames:gameoflight/start",
   "display": {
     "icon": {
-      "item": "minecraft:creeper_head"
+      "item": "minecraft:emerald"
     },
     "title": {
-      "translate": "advancement.lootgames.ms.beat_level4"
+      "translate": "advancement.lootgames.gol.beat_level_4"
     },
     "description": {
-      "translate": "advancement.lootgames.ms.beat_level4.desc"
+      "translate": "advancement.lootgames.gol.beat_level_4.desc"
     },
     "frame": "challenge",
     "show_toast": true,
@@ -19,7 +19,7 @@
     "end_level4": {
       "trigger": "lootgames:end_minigame",
       "conditions": {
-        "type": "ms_level4"
+        "type": "gol_level_4"
       }
     }
   },

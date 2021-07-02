@@ -1,0 +1,31 @@
+{
+  "parent": "lootgames:minesweeper/start",
+  "display": {
+    "icon": {
+      "item": "minecraft:creeper_head"
+    },
+    "title": {
+      "translate": "advancement.lootgames.ms.beat_level_4"
+    },
+    "description": {
+      "translate": "advancement.lootgames.ms.beat_level_4.desc"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "end_level4": {
+      "trigger": "lootgames:end_minigame",
+      "conditions": {
+        "type": "ms_level_4"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "end_level4"
+    ]
+  ]
+}

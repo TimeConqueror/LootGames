@@ -15,11 +15,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.world.NoteBlockEvent;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
+import ru.timeconqueror.lootgames.api.util.RewardUtils;
 import ru.timeconqueror.lootgames.common.config.ConfigGOL;
 import ru.timeconqueror.lootgames.common.config.ConfigGOL.Fail;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
@@ -27,6 +29,7 @@ import ru.timeconqueror.lootgames.common.packet.game.CPGOLSymbolsShown;
 import ru.timeconqueror.lootgames.common.packet.game.SPGOLDrawMark;
 import ru.timeconqueror.lootgames.common.packet.game.SPGOLSendDisplayedSymbol;
 import ru.timeconqueror.lootgames.common.packet.game.SPGOLSpawnStageUpParticles;
+import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
@@ -39,6 +42,9 @@ import java.util.stream.Collectors;
 //TODO add question mark flicker on WaitingStartStage
 //TODO add reward giving upon some combination
 public class GameOfLight extends BoardLootGame<GameOfLight> {
+    public static final String ADV_BEAT_LEVEL3 = "gol_level_3";
+    public static final String ADV_BEAT_LEVEL4 = "gol_level_4";
+
     public static final int BOARD_SIZE = 3;
 
     private int round = 0;
@@ -198,6 +204,22 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     @Override
     protected void triggerGameWin() {
         super.triggerGameWin();
+
+        BlockPos central = getGameCenter();
+
+        forEachPlayerNearby(player -> {
+            sendTo(player, new TranslationTextComponent("msg.lootgames.gol.reward_level_info", stage + 1, maxReachedStage), NotifyColor.SUCCESS);
+
+            if (maxReachedStage >= 3) {
+                LGAdvancementTriggers.END_GAME.trigger(player, ADV_BEAT_LEVEL3);
+            }
+
+            if (maxReachedStage == 4) {
+                LGAdvancementTriggers.END_GAME.trigger(player, ADV_BEAT_LEVEL4);
+            }
+        });
+
+        RewardUtils.spawnFourStagedReward(((ServerWorld) getWorld()), this, central, maxReachedStage, LGConfigs.REWARDS.minesweeper);
     }
 
     @Override

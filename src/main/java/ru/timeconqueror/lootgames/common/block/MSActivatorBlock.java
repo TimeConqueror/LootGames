@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.GameBlock;
-import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger;
+import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger.ExtraInfo;
 import ru.timeconqueror.lootgames.common.block.tile.MSMasterTile;
 import ru.timeconqueror.lootgames.common.config.ConfigMS;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
@@ -34,7 +34,7 @@ public class MSActivatorBlock extends GameBlock {
 
             if (succeed) {
                 worldIn.playSound(null, pos, LGSounds.MS_START_GAME, SoundCategory.BLOCKS, 0.6F, 1.0F);
-                LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayerEntity) player), new UseBlockTrigger.ExtraInfo(state, pos, player.getItemInHand(handIn)));
+                LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayerEntity) player), new ExtraInfo(state, pos, player.getItemInHand(handIn)));
             }
         }
 
