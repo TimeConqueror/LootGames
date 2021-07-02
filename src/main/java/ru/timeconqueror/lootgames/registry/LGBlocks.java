@@ -53,29 +53,29 @@ public class LGBlocks {
 
         @AutoRegistrable.InitMethod
         private static void register() {
-            REGISTER.register("dungeon_ceiling", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("cracked_dungeon_ceiling", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("dungeon_wall", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("cracked_dungeon_wall", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("dungeon_floor", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("cracked_dungeon_floor", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("shielded_dungeon_floor", () -> new DungeonBlock(BlockPropsFactory.unbreakable(BRICKS_PROPS_CREATOR.create()))).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("broken_dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create().lightLevel(value -> 0))).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("puzzle_master", PuzzleMasterBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("dungeon_ceiling", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Dungeon Ceiling");
+            REGISTER.register("cracked_dungeon_ceiling", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Cracked Dungeon Ceiling");
+            REGISTER.register("dungeon_wall", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Dungeon Wall");
+            REGISTER.register("cracked_dungeon_wall", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Cracked Dungeon Wall");
+            REGISTER.register("dungeon_floor", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Dungeon Floor");
+            REGISTER.register("cracked_dungeon_floor", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Cracked Dungeon Floor");
+            REGISTER.register("shielded_dungeon_floor", () -> new DungeonBlock(BlockPropsFactory.unbreakable(BRICKS_PROPS_CREATOR.create()))).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Shielded Dungeon Floor");
+            REGISTER.register("dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Dungeon Lamp");
+            REGISTER.register("broken_dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create().lightLevel(value -> 0))).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Broken Dungeon Lamp");
+            REGISTER.register("puzzle_master", PuzzleMasterBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Puzzle Master");
 
             TextureLocation shieldedDungeonFloorText = new TextureLocation(REGISTER.getModId(), "block/shielded_dungeon_floor");
 
-            REGISTER.register("smart_subordinate", SmartSubordinateBlock::new).oneVarStateAndCubeAllModel(shieldedDungeonFloorText);
-            REGISTER.register("board_border", BoardBorderBlock::new).also(BoardBorderBlockResources::fillChain);
+            REGISTER.register("smart_subordinate", SmartSubordinateBlock::new).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Smart Subordinate");
+            REGISTER.register("board_border", BoardBorderBlock::new).also(BoardBorderBlockResources::fillChain).name("Board Border");
 
-            REGISTER.register("ms_activator", MSActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("pipes_activator", PipesActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
-            REGISTER.register("gol_activator", GOLActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN);
+            REGISTER.register("gol_activator", GOLActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Game of Light");
+            REGISTER.register("ms_activator", MSActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Minesweeper");
+            REGISTER.register("pipes_activator", PipesActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Pipes");
 
-            REGISTER.register("ms_master", gameMaster(MSMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText);
-            REGISTER.register("pipes_master", gameMaster(PipesMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText);
-            REGISTER.register("gol_master", gameMaster(GOLMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText);
+            REGISTER.register("ms_master", gameMaster(MSMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Game of Light");
+            REGISTER.register("pipes_master", gameMaster(PipesMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Pipes");
+            REGISTER.register("gol_master", gameMaster(GOLMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Minesweeper");
         }
 
         @SuppressWarnings("CodeBlock2Expr")

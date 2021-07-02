@@ -82,8 +82,8 @@ public class FieldManager {
         BlockPos.Mutable borderPos = cornerPos.mutable();
         if (!canReplaceAreaWithBoard(world, borderPos, xSize + 2, height + 1, zSize + 2, centerPos)) {
             if (player != null) {
-                NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.field.not_enough_space", xSize + 2, height + 1, zSize + 2));
-                world.playSound(null, centerPos, LGSounds.GAME_LOSE, SoundCategory.BLOCKS, 0.6F, 1.0F);//TODO change sound
+                NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.field.not_enough_space", xSize + 2, height + 1, zSize + 2).withStyle(NotifyColor.FAIL.getColor()));
+                world.playSound(null, centerPos, LGSounds.GAME_LOSE, SoundCategory.BLOCKS, 0.4F, 1.0F);//TODO change sound
             }
             return new GenerationChain(null, null, false);
         }

@@ -84,7 +84,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
         if (isServerSide()) {
             if (tickTimer && resetTimer.ended()) {
-                failGame();
+                failGame(true);
                 //TODO add animation of hard switch to waiting for sequence?
             }
 
@@ -102,8 +102,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
     }
 
-    private void failGame() {
-        getWorld().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_WRONG, SoundCategory.MASTER, 0.75F, 1.0F);
+    private void failGame(boolean dueTimeout) {
+        getWorld().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_WRONG, SoundCategory.MASTER, dueTimeout ? 0.2F : 0.75F, 1.0F);
         sendToNearby(new TranslationTextComponent("msg.lootgames.gol.wrong_block"), NotifyColor.FAIL);
         sendUpdatePacketToNearby(SPGOLDrawMark.denied());
 
@@ -116,7 +116,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         } else {
             attempt++;
 
-            getWorld().playSound(null, getGameCenter(), LGSounds.GOL_START_GAME, SoundCategory.MASTER, 0.75F, 1.0F);
+            getWorld().playSound(null, getGameCenter(), LGSounds.GOL_START_GAME, SoundCategory.MASTER, dueTimeout ? 0.2F : 0.75F, 1.0F);
             switchStage(new StageWaitingStart());
         }
     }
@@ -205,8 +205,6 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     protected void triggerGameWin() {
         super.triggerGameWin();
 
-        BlockPos central = getGameCenter();
-
         forEachPlayerNearby(player -> {
             sendTo(player, new TranslationTextComponent("msg.lootgames.gol.reward_level_info", stage + 1, maxReachedStage), NotifyColor.SUCCESS);
 
@@ -219,7 +217,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             }
         });
 
-        RewardUtils.spawnFourStagedReward(((ServerWorld) getWorld()), this, central, maxReachedStage, LGConfigs.REWARDS.minesweeper);
+        RewardUtils.spawnFourStagedReward(((ServerWorld) getWorld()), this, getGameCenter(), maxReachedStage, LGConfigs.REWARDS.minesweeper);
     }
 
     @Override
@@ -569,7 +567,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
                     Symbol correct = sequence.get(currentSymbol);
                     if (chosen != correct) {
-                        failGame();
+                        failGame(false);
                         return;
                     }
 
