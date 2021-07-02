@@ -4,6 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -32,12 +33,14 @@ import ru.timeconqueror.lootgames.common.packet.game.SPChangeStage;
 import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
 import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
+import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.util.ChatUtils;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<STAGE, G>> {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -117,6 +120,8 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
                     LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_WIN);
                     player.sendMessage(ChatUtils.format(new TranslationTextComponent("msg.lootgames.win"), TextFormatting.GREEN), player.getUUID());
                 });
+
+        getWorld().playSound(null, getGameCenter(), LGSounds.GAME_WIN, SoundCategory.MASTER, 0.75F, 1.0F);
     }
 
     /**
@@ -131,6 +136,8 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
                     LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_LOSE);
                     player.sendMessage(ChatUtils.format(new TranslationTextComponent("msg.lootgames.lose"), TextFormatting.DARK_PURPLE), player.getUUID());
                 });
+
+        getWorld().playSound(null, getGameCenter(), LGSounds.GAME_LOSE, SoundCategory.MASTER, 0.75F, 1.0F);
     }
 
     /**
@@ -174,6 +181,14 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
 
     public void sendToNearby(IFormattableTextComponent component, NotifyColor format) {
         sendToNearby(component, format.getColor());
+    }
+
+    /**
+     * Applies the consumer for every player that are nearby.
+     * Server-only.
+     */
+    public void forEachPlayerNearby(Consumer<ServerPlayerEntity> action) {
+        NetworkUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(), action);
     }
 
     /**

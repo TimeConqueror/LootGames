@@ -26,20 +26,20 @@
       }
     ]
   },
-  "gol_game_win": {
+  "game_win": {
     "category": "master",
     "sounds": [
       {
-        "name": "lootgames:gameoflight/gameover_win",
+        "name": "lootgames:gameover_win",
         "stream": false
       }
     ]
   },
-  "gol_game_lose": {
+  "game_lose": {
     "category": "master",
     "sounds": [
       {
-        "name": "lootgames:gameoflight/gameover_lose",
+        "name": "lootgames:gameover_lose",
         "stream": false
       }
     ]

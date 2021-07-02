@@ -9,6 +9,8 @@ import ru.timeconqueror.timecore.api.common.config.ConfigSection;
 import ru.timeconqueror.timecore.api.common.config.IQuickConfigValue;
 import ru.timeconqueror.timecore.api.common.config.ImprovedConfigBuilder;
 
+import java.util.EnumSet;
+
 public class ConfigGOL extends Config {
     public IQuickConfigValue<Integer> startDigitAmount;
     public IQuickConfigValue<Integer> attemptCount;
@@ -76,6 +78,22 @@ public class ConfigGOL extends Config {
         return LGConfigs.resolve("games/" + getKey() + ".toml");
     }
 
+    public EnumSet<Fail> getAllowedFails() {
+        EnumSet<Fail> fails = EnumSet.noneOf(Fail.class);
+
+        if (zombiesOnFail.get()) {
+            fails.add(Fail.ZOMBIES);
+        }
+        if (explodeOnFail.get()) {
+            fails.add(Fail.EXPLOSION);
+        }
+        if (lavaOnFail.get()) {
+            fails.add(Fail.LAVA);
+        }
+
+        return fails;
+    }
+
     /**
      * @param index - 0-3 (inclusive)
      * @throws RuntimeException if stage config was not found for provided index.
@@ -131,5 +149,9 @@ public class ConfigGOL extends Config {
             this.randomizeSequence = randomizeSequence;
             this.displayTime = displayTime;
         }
+    }
+
+    public enum Fail {
+        ZOMBIES, EXPLOSION, LAVA
     }
 }

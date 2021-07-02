@@ -23,7 +23,6 @@ plugins {
 }
 
 apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
@@ -31,10 +30,10 @@ apply plugin: 'org.spongepowered.mixin'
 apply from: 'gradle/scripts/configs.gradle'
 
 version = "${buildProps.minecraft.version}-${buildProps.lootgames.version}"
-group = 'ru.timeconqueror' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = 'ru.timeconqueror'
 archivesBaseName = 'LootGames'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 sourceSets {
     main.kotlin.srcDirs += 'src/main/kotlin'
@@ -73,8 +72,6 @@ minecraft {
     }
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
     def jvmArgs = Arrays.asList('-Dmixin.env.disableRefMap=true'.split(' '))
     runs {
         client {
@@ -164,7 +161,7 @@ dependencies {
 
     implementation 'org.jetbrains:annotations:18.0.0'
 
-    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.5-3.2.0.0.build11:dev", true))
+    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.5-3.2.0.0.build14:dev", true))
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"

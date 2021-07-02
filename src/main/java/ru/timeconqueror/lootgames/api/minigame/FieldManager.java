@@ -83,7 +83,7 @@ public class FieldManager {
         if (!canReplaceAreaWithBoard(world, borderPos, xSize + 2, height + 1, zSize + 2, centerPos)) {
             if (player != null) {
                 NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.field.not_enough_space", xSize + 2, height + 1, zSize + 2));
-                world.playSound(null, centerPos, LGSounds.GOL_GAME_LOSE, SoundCategory.BLOCKS, 0.6F, 1.0F);//TODO change sound
+                world.playSound(null, centerPos, LGSounds.GAME_LOSE, SoundCategory.BLOCKS, 0.6F, 1.0F);//TODO change sound
             }
             return new GenerationChain(null, null, false);
         }
