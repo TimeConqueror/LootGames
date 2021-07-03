@@ -29,9 +29,9 @@ apply plugin: 'org.spongepowered.mixin'
 
 apply from: 'gradle/scripts/configs.gradle'
 
-version = "${buildProps.minecraft.version}-${buildProps.lootgames.version}"
-group = 'ru.timeconqueror'
-archivesBaseName = 'LootGames'
+version = "${buildProps.lootgames.version}"
+group = 'ru.timeconqueror.lootgames'
+archivesBaseName = "LootGames-${buildProps.minecraft.version}"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
@@ -181,7 +181,7 @@ jar {
                 "Specification-Vendor"    : "Time_Conqueror",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
-                "Implementation-Version"  : "${version}",
+                "Implementation-Version"  : archiveVersion,
                 "Implementation-Vendor"   : "Time_Conqueror",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
         ])
@@ -202,6 +202,7 @@ def mavenLinkRepsy = "https://repo.repsy.io/mvn/${secretProps.repsy.user}/${secr
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            artifactId archivesBaseName
             artifact reobfArtifact
         }
     }

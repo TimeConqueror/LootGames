@@ -71,7 +71,7 @@ public class LGBlocks {
 
             REGISTER.register("gol_activator", GOLActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Game of Light");
             REGISTER.register("ms_activator", MSActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Minesweeper");
-            REGISTER.register("pipes_activator", PipesActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Pipes");
+            REGISTER.register("pipes_activator", PipesActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Pipes (WIP)");
 
             REGISTER.register("ms_master", gameMaster(MSMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Game of Light");
             REGISTER.register("pipes_master", gameMaster(PipesMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Pipes");

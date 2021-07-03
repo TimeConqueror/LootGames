@@ -8,7 +8,6 @@ import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.task.TaskRegistry;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
-import ru.timeconqueror.lootgames.minigame.pipes.GamePipes;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class LGMiscRegistry {
@@ -20,7 +19,7 @@ public class LGMiscRegistry {
 
             LootGamesAPI.getGameManager().registerGameGenerator(new GameOfLight.Factory());
             LootGamesAPI.getGameManager().registerGameGenerator(new GameMineSweeper.Factory());
-            LootGamesAPI.getGameManager().registerGameGenerator(new GamePipes.Factory());
+//            LootGamesAPI.getGameManager().registerGameGenerator(new GamePipes.Factory());//TODO restore
         });
     }
 }
