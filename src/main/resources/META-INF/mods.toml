@@ -56,6 +56,6 @@ side = "BOTH"
 [[dependencies.lootgames]]
 modId = "timecore"
 mandatory = true
-versionRange = "[1.16.5-3.3.0,)"
+versionRange = "[1.16.5-3.3,)"
 ordering = "NONE"
 side = "BOTH"

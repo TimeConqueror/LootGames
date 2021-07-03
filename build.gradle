@@ -14,7 +14,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.7-patched'
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT-patched'
     }
 }
 
@@ -161,10 +161,15 @@ dependencies {
 
     implementation 'org.jetbrains:annotations:18.0.0'
 
-    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.5-3.2.0.0.build14:dev", true))
+    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.5-3.3.0.0", true))
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
+
+    if (System.getProperty("idea.sync.active") != "true") {
+        annotationProcessor("org.spongepowered:mixin:0.8.3-SNAPSHOT-patched:processor")
+        testAnnotationProcessor("org.spongepowered:mixin:0.8.3-SNAPSHOT-patched:processor")
+    }
 
 //    runtimeOnly fg.deobf("mezz.jei:jei-1.14.4:6.0.0.27")
 }
@@ -202,7 +207,7 @@ publishing {
     }
     repositories {
         maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
+            url "file:///${project.projectDir}/maven"
         }
         if (secretProps != null) {
             maven {
