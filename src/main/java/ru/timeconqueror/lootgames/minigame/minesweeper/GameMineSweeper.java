@@ -40,6 +40,7 @@ import static ru.timeconqueror.timecore.api.util.NetworkUtils.getPlayersNearby;
 //todo add game rules in chat
 //TODO remove break particle before left click interact
 //TODO if all non-bomb fields are revealed, finish the game
+//TODO remove interact with opened fields
 public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
     public static final String ADV_BEAT_LEVEL4 = "ms_level_4";
 
