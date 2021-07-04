@@ -24,8 +24,8 @@ public class ConfigGeneral extends Config {
                         .define("disable_minigames", false)
         );
 
-        worldGen = new WorldGenCategory();
-        builder.addAndSetupSection(worldGen);
+//        worldGen = new WorldGenCategory();  //TODO
+//        builder.addAndSetupSection(worldGen);
     }
 
     @Override
