@@ -29,7 +29,7 @@ public class BlockLightGameBlock extends Block implements ITileEntityProvider {
     public BlockLightGameBlock() {
         super(Material.iron);
         setBlockUnbreakable();
-        setBlockName("lightGame");
+        setUnlocalizedName("lightGame");
         setCreativeTab(LootGames.CreativeTab);
         setLightLevel(1.0F);
     }
@@ -52,7 +52,7 @@ public class BlockLightGameBlock extends Block implements ITileEntityProvider {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerBlockIcons(IIconRegister register) {
+    public void registerIcons(IIconRegister register) {
         mTexturesOff = new IIcon[9];
         mTexturesOn = new IIcon[9];
 

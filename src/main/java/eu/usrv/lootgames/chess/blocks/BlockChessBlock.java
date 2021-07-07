@@ -25,7 +25,7 @@ public class BlockChessBlock extends Block implements ITileEntityProvider {
     public BlockChessBlock() {
         super(Material.iron);
         setBlockUnbreakable();
-        setBlockName("chessGame");
+        setUnlocalizedName("chessGame");
         setCreativeTab(LootGames.CreativeTab);
         setLightLevel(1.0F);
     }
@@ -42,7 +42,7 @@ public class BlockChessBlock extends Block implements ITileEntityProvider {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerBlockIcons(IIconRegister register) {
+    public void registerIcons(IIconRegister register) {
         mTexture = register.registerIcon(String.format("LootGames:chess/chessmasterblock"));
     }
 

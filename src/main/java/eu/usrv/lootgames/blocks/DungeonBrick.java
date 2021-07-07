@@ -25,7 +25,7 @@ public class DungeonBrick extends Block {
 
     public DungeonBrick() {
         super(Material.rock);
-        setBlockName("dungeonBrick");
+        setUnlocalizedName("dungeonBrick");
         setCreativeTab(LootGames.CreativeTab);
         setHardness(10.0F);
         setResistance(6.0F);
@@ -60,7 +60,7 @@ public class DungeonBrick extends Block {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerBlockIcons(IIconRegister register) {
+    public void registerIcons(IIconRegister register) {
         mIcons = new IIcon[7];
         mIcons[0] = register.registerIcon(String.format("LootGames:dungeonWall"));
         mIcons[1] = register.registerIcon(String.format("LootGames:dungeonCeiling"));

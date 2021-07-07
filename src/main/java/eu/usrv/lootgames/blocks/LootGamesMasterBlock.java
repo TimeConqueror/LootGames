@@ -32,7 +32,7 @@ public class LootGamesMasterBlock extends Block implements ITileEntityProvider {
     public LootGamesMasterBlock() {
         super(Material.iron);
         setBlockUnbreakable();
-        setBlockName("lootGamesMaster");
+        setUnlocalizedName("lootGamesMaster");
         setCreativeTab(LootGames.CreativeTab);
         setLightLevel(1.0F);
     }
@@ -49,7 +49,7 @@ public class LootGamesMasterBlock extends Block implements ITileEntityProvider {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerBlockIcons(IIconRegister register) {
+    public void registerIcons(IIconRegister register) {
         mTexture = register.registerIcon(String.format("LootGames:masterblock"));
     }
 

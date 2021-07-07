@@ -36,21 +36,21 @@ import java.util.*;
 
 
 public class TELightGameBlock extends TileEntity {
-    private static String NBTTAG_ISACTIVE = "mIsActive";
-    private static String NBTTAG_ISMASTER = "mIsMaster";
-    private static String NBTTAG_DIRECTION = "mTEDirection";
-    private static String NBTTAG_BLOCK_NORTH = "mGameBlockNorth";
-    private static String NBTTAG_BLOCK_SOUTH = "mGameBlockSouth";
-    private static String NBTTAG_BLOCK_WEST = "mGameBlockEast";
-    private static String NBTTAG_BLOCK_EAST = "mGameBlockWest";
-    private static String NBTTAG_BLOCK_NW = "mGameBlockNW";
-    private static String NBTTAG_BLOCK_NE = "mGameBlockNE";
-    private static String NBTTAG_BLOCK_SW = "mGameBlockSW";
-    private static String NBTTAG_BLOCK_SE = "mGameBlockSE";
-    private static String NBTTAG_BLOCK_MASTER = "mMasterBlock";
-    private static String NBTTAG_BLOCKPOS_X = "posX";
-    private static String NBTTAG_BLOCKPOS_Y = "posY";
-    private static String NBTTAG_BLOCKPOS_Z = "posZ";
+    private static final String NBTTAG_ISACTIVE = "mIsActive";
+    private static final String NBTTAG_ISMASTER = "mIsMaster";
+    private static final String NBTTAG_DIRECTION = "mTEDirection";
+    private static final String NBTTAG_BLOCK_NORTH = "mGameBlockNorth";
+    private static final String NBTTAG_BLOCK_SOUTH = "mGameBlockSouth";
+    private static final String NBTTAG_BLOCK_WEST = "mGameBlockEast";
+    private static final String NBTTAG_BLOCK_EAST = "mGameBlockWest";
+    private static final String NBTTAG_BLOCK_NW = "mGameBlockNW";
+    private static final String NBTTAG_BLOCK_NE = "mGameBlockNE";
+    private static final String NBTTAG_BLOCK_SW = "mGameBlockSW";
+    private static final String NBTTAG_BLOCK_SE = "mGameBlockSE";
+    private static final String NBTTAG_BLOCK_MASTER = "mMasterBlock";
+    private static final String NBTTAG_BLOCKPOS_X = "posX";
+    private static final String NBTTAG_BLOCKPOS_Y = "posY";
+    private static final String NBTTAG_BLOCKPOS_Z = "posZ";
     private Vec3 mNorthPos;
     private Vec3 mSouthPos;
     private Vec3 mWestPos;
@@ -192,7 +192,7 @@ public class TELightGameBlock extends TileEntity {
 
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet) {
-        readFromNBT(packet.func_148857_g());
+        readFromNBT(packet.getNbtCompound());
         worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
     }
 
@@ -611,9 +611,7 @@ public class TELightGameBlock extends TileEntity {
         if (mGameStage != eGameStage.SLEEP && mGameStage != eGameStage.UNDEPLOYED)
             return false;
 
-        boolean tSpawnCheck = true;
-        if (!isValidLocationForDeploy(ExtendedDirections.NORTH))
-            tSpawnCheck = false;
+        boolean tSpawnCheck = isValidLocationForDeploy(ExtendedDirections.NORTH);
         if (!isValidLocationForDeploy(ExtendedDirections.NORTHEAST))
             tSpawnCheck = false;
         if (!isValidLocationForDeploy(ExtendedDirections.NORTHWEST))

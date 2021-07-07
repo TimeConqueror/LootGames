@@ -15,10 +15,10 @@ import java.util.List;
 
 
 public class ProfilingCommand implements ICommand {
-    private List aliases;
+    private final List<String> aliases;
 
     public ProfilingCommand() {
-        this.aliases = new ArrayList();
+        this.aliases = new ArrayList<>();
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ProfilingCommand implements ICommand {
     }
 
     @Override
-    public List getCommandAliases() {
+    public List<String> getCommandAliases() {
         return this.aliases;
     }
 
@@ -59,7 +59,7 @@ public class ProfilingCommand implements ICommand {
 
         if (pCommandSender instanceof EntityPlayerMP) {
             EntityPlayerMP tEP = (EntityPlayerMP) pCommandSender;
-            return MinecraftServer.getServer().getConfigurationManager().func_152596_g(tEP.getGameProfile());
+            return MinecraftServer.getServer().getConfigurationManager().canSendCommands(tEP.getGameProfile());
         }
         return false;
     }
@@ -70,7 +70,7 @@ public class ProfilingCommand implements ICommand {
     }
 
     @Override
-    public List addTabCompletionOptions(ICommandSender p_71516_1_, String[] p_71516_2_) {
+    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args) {
         return null;
     }
 

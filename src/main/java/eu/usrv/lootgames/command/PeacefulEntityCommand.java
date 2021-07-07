@@ -16,7 +16,7 @@ import java.util.List;
 
 
 public class PeacefulEntityCommand implements ICommand {
-    private List aliases;
+    private final List<String> aliases;
 
     public PeacefulEntityCommand() {
         this.aliases = new ArrayList();
@@ -39,7 +39,7 @@ public class PeacefulEntityCommand implements ICommand {
     }
 
     @Override
-    public List getCommandAliases() {
+    public List<String> getCommandAliases() {
         return this.aliases;
     }
 
@@ -81,17 +81,17 @@ public class PeacefulEntityCommand implements ICommand {
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender pCommandSender) {
-        if (pCommandSender instanceof EntityPlayerMP) {
-            EntityPlayerMP tEP = (EntityPlayerMP) pCommandSender;
-            boolean tPlayerOpped = MinecraftServer.getServer().getConfigurationManager().func_152596_g(tEP.getGameProfile());
-            boolean tIncreative = tEP.capabilities.isCreativeMode;
-            return tPlayerOpped && tIncreative;
-        } else return pCommandSender instanceof MinecraftServer;
+    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+        if (sender instanceof EntityPlayerMP) {
+            EntityPlayerMP player = (EntityPlayerMP) sender;
+            boolean opped = MinecraftServer.getServer().getConfigurationManager().canSendCommands(player.getGameProfile());
+            boolean inCreative = player.capabilities.isCreativeMode;
+            return opped && inCreative;
+        } else return sender instanceof MinecraftServer;
     }
 
     @Override
-    public List addTabCompletionOptions(ICommandSender p_71516_1_, String[] p_71516_2_) {
+    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args) {
         return null;
     }
 

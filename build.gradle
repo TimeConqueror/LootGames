@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
@@ -12,11 +13,13 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
     }
 }
 
 apply plugin: 'forge'
 apply plugin: 'signing'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 allprojects {
     apply plugin: 'java'
@@ -41,13 +44,8 @@ minecraft {
     replaceIn "src/main/java/eu/usrv/lootgames/LootGames.java"
     def versionArray = project.version.tokenize('-')
     replace "GRADLETOKEN_VERSION", versionArray[1]
-}
 
-repositories {
-    maven { // GalacticGreg, YAMCore,..
-        name 'UsrvDE'
-        url "http://jenkins.usrv.eu:8081/nexus/content/repositories/releases/"
-    }
+    mappings = "stable_12"
 }
 
 configurations {
@@ -55,31 +53,30 @@ configurations {
 }
 
 dependencies {
-    compile "eu.usrv:YAMCore:${config.minecraft.version}-${config.yamcore.version}:deobf"
     shadeOnly group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.3'
 }
 
 processResources {
-        def cleanVersion = ""
-        def versionArray = project.version.tokenize('-')
-        cleanVersion = versionArray[1]
+    def cleanVersion = ""
+    def versionArray = project.version.tokenize('-')
+    cleanVersion = versionArray[1]
 
-        // this will ensure that this task is redone when the versions change.
-        inputs.property "version", cleanVersion
-        inputs.property "mcversion", project.minecraft.version
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", cleanVersion
+    inputs.property "mcversion", project.minecraft.version
 
-        // replace stuff in mcmod.info, nothing else
-        from(sourceSets.main.resources.srcDirs) {
-            include 'mcmod.info'
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
 
-            // replace version and mcversion
-            expand 'version': cleanVersion, 'mcversion': project.minecraft.version
-        }
+        // replace version and mcversion
+        expand 'version': cleanVersion, 'mcversion': project.minecraft.version
+    }
 
-            // copy everything else, thats not the mcmod.info
-            from(sourceSets.main.resources.srcDirs) {
-                exclude 'mcmod.info'
-            }
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
 }
 
 idea {
@@ -88,28 +85,66 @@ idea {
     }
 }
 
-jar {
-    configurations.shadeOnly.each { dep ->
-        from(project.zipTree(dep)){
-            exclude 'META-INF', 'META-INF/**'
-        }
+//jar {
+//    configurations.shadeOnly.each { dep ->
+//        from(project.zipTree(dep)) {
+//            exclude 'META-INF', 'META-INF/**'
+//        }
+//    }
+//}
+
+task signJar(dependsOn: 'reobf') {
+    doLast {
+        ant.signjar(
+                destDir: jar.destinationDir,
+                jar: jar.getArchivePath(),
+                alias: findProperty('keyStoreAlias') ?: '',
+                keystore: findProperty('keyStore') ?: '',
+                storepass: findProperty('keyStorePass') ?: '',
+                digestalg: findProperty('signDigestAlg') ?: '',
+                tsaurl: findProperty('signTSAurl') ?: '',
+                verbose: true
+        )
     }
 }
 
-task signJar(dependsOn: 'reobf'){
-    doLast {
-        ant.signjar(
-            destDir: jar.destinationDir,
-            jar: jar.getArchivePath(),
-            alias: findProperty('keyStoreAlias') ?: '',
-            keystore: findProperty('keyStore') ?: '',
-            storepass: findProperty('keyStorePass') ?: '',
-            digestalg: findProperty('signDigestAlg') ?: '',
-            tsaurl: findProperty('signTSAurl') ?: '',
-            verbose: true
-            )
+/*
+#######################################
+##########   SHADOW PART   ############
+#######################################
+ */
+
+shadowJar {
+    classifier = ""
+    dependencies {
+        exclude 'net\\minecraftforge\\**'
+        exclude 'GradleStart*'
+        include(dependency('org.apache.httpcomponents:httpclient:4.3.3'))
+//        include(dependency("org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"))
+//        include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}"))
+//        include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_version}"))
+//        include(dependency("org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"))
+//        include(dependency("org.jetbrains:annotations:${annotations_version}"))
+//        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}"))
+//        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${coroutines_version}"))
+
+        relocate 'org.apache', 'lgrepack.org.apache'
     }
 }
+
+tasks.build.dependsOn shadowJar
+
+artifacts {
+    archives shadowJar
+}
+
+reobf {shadowJar {}}
+
+task reobfShadowJar(dependsOn: 'reobf') {
+}
+
+tasks.reobfShadowJar.mustRunAfter shadowJar
+tasks.build.dependsOn reobfShadowJar
 
 //shadowJar {
 //    classifier = ""

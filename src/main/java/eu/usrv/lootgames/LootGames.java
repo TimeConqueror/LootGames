@@ -7,7 +7,10 @@ import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.registry.GameRegistry;
 import eu.usrv.lootgames.achievements.LootGameAchievement;
-import eu.usrv.lootgames.auxiliary.*;
+import eu.usrv.lootgames.auxiliary.CheaterHandler;
+import eu.usrv.lootgames.auxiliary.GameManager;
+import eu.usrv.lootgames.auxiliary.LGDonorController;
+import eu.usrv.lootgames.auxiliary.ProfilingStorage;
 import eu.usrv.lootgames.blocks.DungeonBrick;
 import eu.usrv.lootgames.blocks.DungeonLightSource;
 import eu.usrv.lootgames.blocks.LootGamesMasterBlock;
@@ -92,6 +95,8 @@ public class LootGames {
 
         NW = new NetDispatcher();
         NW.registerPackets();
+
+//        LootGamesAPI.init(event);
     }
 
     @EventHandler
