@@ -75,7 +75,7 @@ public abstract class PacketGameUpdate<T extends IGamePacket> {
             P packet = packetFactory.get();
             BlockPos masterPos = buffer.readBlockPos();
 
-            Key key = new Key(buffer.readUtf(), buffer.readInt());
+            Key key = new Key(buffer.readUtf(Short.MAX_VALUE), buffer.readInt());
             Class<? extends T> packetClass = packet.getStorage().getPacketClass(key);
 
             T gamePacket;
