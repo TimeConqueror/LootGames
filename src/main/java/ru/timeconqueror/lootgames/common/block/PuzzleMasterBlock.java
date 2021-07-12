@@ -69,7 +69,7 @@ public class PuzzleMasterBlock extends GameBlock {
                     LGAdvancementTriggers.USE_BLOCK.trigger((ServerPlayerEntity) player, new ExtraInfo(state, pos, player.getItemInHand(handIn)));
                 } else {
                     NetworkUtils.sendMessage(player, new StringTextComponent(error.get()));//TODO move error to lang file
-                    worldIn.setBlock(pos, state, 2);
+                    worldIn.setBlock(pos, state, 2);//rollback
                 }
             } catch (Throwable e) {
                 NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.puzzle_master.broken"));

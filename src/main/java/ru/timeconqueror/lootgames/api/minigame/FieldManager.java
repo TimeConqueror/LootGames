@@ -1,5 +1,6 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
+import com.google.common.collect.Iterables;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
@@ -61,11 +62,16 @@ public class FieldManager {
     }
 
     public boolean canReplaceAreaWithBoard(World world, BlockPos cornerPos, int xSize, int ySize, int zSize, @Nullable BlockPos except) {
-        return CollectionUtils.allMatch(BlockPosUtils.between(cornerPos, xSize, ySize, zSize), (pos) -> {
-                    BlockState state = world.getBlockState(pos);
-                    return state.getBlock() == LGBlocks.SHIELDED_DUNGEON_FLOOR || state.getMaterial().isReplaceable() || pos.equals(except);
-                }
+        Iterable<BlockPos> positions = Iterables.concat(
+                BlockPosUtils.between(cornerPos, xSize, 1, zSize), // board positions
+                //second area is smaller because we don't need to check if the player can fit the place in the corner blocks above the border.
+                BlockPosUtils.between(cornerPos.offset(1, 1, 1), xSize - 2, ySize - 1, zSize - 2) // positions above the board
         );
+
+        return CollectionUtils.allMatch(positions, (pos) -> {
+            BlockState state = world.getBlockState(pos);
+            return state.getBlock() == LGBlocks.SHIELDED_DUNGEON_FLOOR || state.getMaterial().isReplaceable() || pos.equals(except);
+        });
     }
 
     /**
@@ -95,8 +101,8 @@ public class FieldManager {
 
         // Filling area above field with air
         if (height > 0) {
-            BlockPos abovePos = borderPos.offset(0, 1, 0);
-            for (BlockPos pos : BlockPosUtils.between(abovePos, xSize + 2, height, zSize + 2)) {
+            BlockPos abovePos = borderPos.offset(1, 1, 1);
+            for (BlockPos pos : BlockPosUtils.between(abovePos, xSize, height, zSize)) {
                 world.removeBlock(pos, false);
             }
         }
