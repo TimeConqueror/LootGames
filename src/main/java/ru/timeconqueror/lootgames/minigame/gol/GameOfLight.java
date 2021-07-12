@@ -287,10 +287,10 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     }
 
     @Override
-    protected void onStageUpdate(BoardStage oldStage, BoardStage newStage) {
+    protected void onStageUpdate(BoardStage oldStage, BoardStage newStage, boolean shouldDelayPacketSending) {
         ticks = 0;
         tickTimer = false;
-        super.onStageUpdate(oldStage, newStage);
+        super.onStageUpdate(oldStage, newStage, shouldDelayPacketSending);
     }
 
     public void spawnFeedbackParticles(IParticleData particle, BlockPos pos) {

@@ -30,6 +30,7 @@ import ru.timeconqueror.lootgames.common.packet.CPacketGameUpdate;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.packet.SPacketGameUpdate;
 import ru.timeconqueror.lootgames.common.packet.game.SPChangeStage;
+import ru.timeconqueror.lootgames.common.packet.game.SPDelayedChangeStage;
 import ru.timeconqueror.lootgames.common.world.gen.DungeonGenerator;
 import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
@@ -37,6 +38,7 @@ import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.util.ChatUtils;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
+import ru.timeconqueror.timecore.api.util.Pair;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.Objects;
@@ -53,6 +55,8 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      * Determines if tile entity is placed, but was never read from nbt.
      */
     private boolean justPlaced = true;
+    @Nullable
+    private Pair<Stage, Stage> pendingStageUpdate = null;
     private STAGE stage;
 
     public void setMasterTileEntity(GameMasterTile<G> masterTileEntity) {
@@ -84,6 +88,14 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     public void onTick() {
         if (isServerSide()) {
             taskScheduler.onUpdate();
+
+            if (pendingStageUpdate != null) {
+                if (pendingStageUpdate.right() == getStage()) { //if it's still the same
+                    sendUpdatePacketToNearby(new SPDelayedChangeStage(this, pendingStageUpdate.left()));
+                }
+
+                pendingStageUpdate = null;
+            }
         }
 
         if (getStage() != null) {
@@ -305,7 +317,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         LOGGER.debug(DEBUG_MARKER, formatLogMessage("initial stage '{}' was set up."), stage);
 
         setStage(stage);
-        onStageUpdate(null, stage);
+        onStageUpdate(null, stage, true);
         onStageStart(isClientSide());
     }
 
@@ -316,7 +328,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         LOGGER.debug(DEBUG_MARKER, formatLogMessage("switching from stage '{}' to '{}'."), old, stage);
 
         setStage(stage);
-        onStageUpdate(old, stage);
+        onStageUpdate(old, stage, false);
         onStageStart(isClientSide());
     }
 
@@ -325,11 +337,17 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      * For server: called only when you manually change stage on server side via {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)}
      * For client: called every time server sends new state, including deserializing from saved nbt.
      */
-    protected void onStageUpdate(@Nullable STAGE oldStage, @Nullable STAGE newStage) {
+    protected void onStageUpdate(@Nullable STAGE oldStage, @Nullable STAGE newStage, boolean shouldDelayPacketSending) {
         if (isServerSide()) {
             if (newStage != null) newStage.preInit();
             save();
-            sendUpdatePacketToNearby(new SPChangeStage(this));
+
+            if (shouldDelayPacketSending) {
+                pendingStageUpdate = Pair.of(oldStage, newStage);
+                LOGGER.debug(DEBUG_MARKER, () -> logMessage("update packet '{}' was delayed for sending to the next tick."));
+            } else {
+                sendUpdatePacketToNearby(new SPChangeStage(this));
+            }
 
             if (newStage != null) newStage.postInit();
         }

@@ -152,8 +152,8 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
     }
 
     @Override
-    protected void onStageUpdate(BoardStage oldStage, BoardStage newStage) {
-        super.onStageUpdate(oldStage, newStage);
+    protected void onStageUpdate(BoardStage oldStage, BoardStage newStage, boolean shouldDelayPacketSending) {
+        super.onStageUpdate(oldStage, newStage, shouldDelayPacketSending);
         ticks = 0;
     }
 

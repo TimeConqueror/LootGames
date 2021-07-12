@@ -12,6 +12,7 @@ public class LGGamePackets {
     @AutoRegistrable.InitMethod
     private static void register() {
         REGISTER.regServerPacket(SPChangeStage.class);
+        REGISTER.regServerPacket(SPDelayedChangeStage.class);
 
         REGISTER.regServerPacket(SPPipesGameChangeChunks.class);
         REGISTER.regServerPacket(SPPipesGameSetBoard.class);
