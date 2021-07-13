@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.common.config.base;
 
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.common.config.StagedRewards;
+import ru.timeconqueror.lootgames.common.config.base.RewardConfig.Names;
 import ru.timeconqueror.timecore.api.common.config.Config;
 
 public class StagedRewardConfig extends Config {
@@ -44,10 +45,10 @@ public class StagedRewardConfig extends Config {
     public static class FourStagedRewardConfig extends StagedRewardConfig {
         private FourStagedRewardConfig(String key, StagedRewards.FourStagedDefaults fourStagedDefaults) {
             super(key,
-                    new RewardConfig("stage_1", fourStagedDefaults.getStage1()),
-                    new RewardConfig("stage_2", fourStagedDefaults.getStage2()),
-                    new RewardConfig("stage_3", fourStagedDefaults.getStage3()),
-                    new RewardConfig("stage_4", fourStagedDefaults.getStage4()));
+                    new RewardConfig(Names.CATEGORY_STAGE_1, fourStagedDefaults.getStage1()),
+                    new RewardConfig(Names.CATEGORY_STAGE_2, fourStagedDefaults.getStage2()),
+                    new RewardConfig(Names.CATEGORY_STAGE_3, fourStagedDefaults.getStage3()),
+                    new RewardConfig(Names.CATEGORY_STAGE_4, fourStagedDefaults.getStage4()));
         }
     }
 }

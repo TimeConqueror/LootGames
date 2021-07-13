@@ -5,7 +5,7 @@ import eu.usrv.yamcore.auxiliary.IntHelper;
 import eu.usrv.yamcore.config.ConfigManager;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
-import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.LegacyMigrator;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,17 +14,17 @@ import java.util.List;
 import java.util.logging.Level;
 
 
-public class LootGamesConfig extends ConfigManager {
-    public boolean RetroGenDungeons;
+public class LegacyLGConfig extends ConfigManager {
+    public boolean RetroGenDungeons; //ignored
     public boolean WorldGenEnabled;
     public String DungeonLoggerLogLevel;
     public boolean MinigamesEnabled;
     public GOLConfig GolConfig;
-    private HashMap<Integer, Integer> DimensionWhitelist = new HashMap<>();
+    public HashMap<Integer, Integer> DimensionWhitelist = new HashMap<>();
 
-    private boolean disableDonorListDownloading;
+    private boolean disableDonorListDownloading; //ignored
 
-    public LootGamesConfig(File pConfigBaseDirectory, String pModCollectionDirectory, String pModID) {
+    public LegacyLGConfig(File pConfigBaseDirectory, String pModCollectionDirectory, String pModID) {
         super(pConfigBaseDirectory, pModCollectionDirectory, pModID);
     }
 
@@ -57,18 +57,17 @@ public class LootGamesConfig extends ConfigManager {
                     Integer tRhombSize = Integer.parseInt(tArray[1]);
 
                     if (tRhombSize < 5 || tRhombSize > 100)
-                        LootGames.LOGGER.error(String.format("Invalid DimensionWhitelist entry found: [%s;]; RhombusSize must be between 5 and 100", tEntry));
+                        LegacyMigrator.LOGGER.error(String.format("Invalid DimensionWhitelist entry found: [%s;]; RhombusSize must be between 5 and 100", tEntry));
                     else {
                         if (!DimensionWhitelist.containsKey(tDimID)) {
                             DimensionWhitelist.put(tDimID, tRhombSize);
-                            LootGames.LOGGER.info(String.format("Worldgen enabled in DimensionID %d with Rhombus Size %d", tDimID, tRhombSize));
                         } else
-                            LootGames.LOGGER.error(String.format("Invalid DimensionWhitelist entry found: [%s;]; DimensionID is already defined", tEntry));
+                            LegacyMigrator.LOGGER.error(String.format("Invalid DimensionWhitelist entry found: [%s;]; DimensionID is already defined", tEntry));
                     }
                 } else
-                    LootGames.LOGGER.error(String.format("Invalid DimensionWhitelist entry found: [%s;]; DimensionID or Rhombus Size is not an Integer", tEntry));
+                    LegacyMigrator.LOGGER.error(String.format("Invalid DimensionWhitelist entry found: [%s;]; DimensionID or Rhombus Size is not an Integer", tEntry));
             } else
-                LootGames.LOGGER.error(String.format("Invalid DimensionWhitelist entry found: [%s;]; Syntax is <DimensionID>;<Rhombus Size>", tEntry));
+                LegacyMigrator.LOGGER.error(String.format("Invalid DimensionWhitelist entry found: [%s;]; Syntax is <DimensionID>;<Rhombus Size>", tEntry));
         }
     }
 
@@ -230,8 +229,8 @@ public class LootGamesConfig extends ConfigManager {
         public boolean RandomizeSequence;
         public int LevelID;
         public HashMap<Integer, DimensionalConfig> DimensionalLoots;
-        private int MinDigitsRequired;
-        private String LootTable;
+        public int MinDigitsRequired;
+        public String LootTable;
 
         LootStageConfig(int pLevel) {
             DimensionalLoots = null;
@@ -272,14 +271,14 @@ public class LootGamesConfig extends ConfigManager {
                         if (!DimensionalLoots.containsKey(tDimID))
                             DimensionalLoots.put(tDimID, new DimensionalConfig(tArray[1], tAddDig));
                         else
-                            LootGames.LOGGER.error(String.format("Invalid DimensionalLootConfig entry found: [%s;] DimensionID is already defined", tEntry));
+                            LegacyMigrator.LOGGER.error(String.format("Invalid DimensionalLootConfig entry found: [%s;] DimensionID is already defined", tEntry));
                     } else
-                        LootGames.LOGGER.error(String.format("Invalid DimensionalLootConfig entry found: [%s;]; DimensionID is not an Integer", tEntry));
+                        LegacyMigrator.LOGGER.error(String.format("Invalid DimensionalLootConfig entry found: [%s;]; DimensionID is not an Integer", tEntry));
                 } else
-                    LootGames.LOGGER.error(String.format("Invalid DimensionalLootConfig entry found: [%s;]; Syntax is <DimensionID>;<LootTableName>;<AdditionalDigitsRequired> ", tEntry));
+                    LegacyMigrator.LOGGER.error(String.format("Invalid DimensionalLootConfig entry found: [%s;]; Syntax is <DimensionID>;<LootTableName>;<AdditionalDigitsRequired> ", tEntry));
             }
 
-            LootGames.LOGGER.info(String.format("Loaded %d DimensionID based LootTables for StageID %d", DimensionalLoots.size(), LevelID));
+            LegacyMigrator.LOGGER.info(String.format("Loaded %d DimensionID based LootTables for StageID %d", DimensionalLoots.size(), LevelID));
         }
 
         public static class DimensionalConfig {

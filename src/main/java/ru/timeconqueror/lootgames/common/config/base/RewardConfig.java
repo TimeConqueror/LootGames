@@ -21,12 +21,24 @@ public class RewardConfig extends ConfigSection {
         this.defaults = defaults;
     }
 
-    public void init(Configuration config) {
-        minItems = config.getInt("min_items", getKey(), defaults.minItems, 0, 256, "Minimum amount of item stacks to be generated in chest.");
-        maxItems = config.getInt("max_items", getKey(), defaults.maxItems, 1, 256, "Maximum amount of item stacks to be generated in chest.");
-        defaultLootTable = config.getString("default_loot_table", getKey(), defaults.lootTable, "Name of the loot table, items from which will be generated in the chest of this stage. This can be adjusted per dimension in \"per_dim_configs\".");
+    public static class Names {
+        public static final String CATEGORY_STAGE_1 = "stage_1";
+        public static final String CATEGORY_STAGE_2 = "stage_2";
+        public static final String CATEGORY_STAGE_3 = "stage_3";
+        public static final String CATEGORY_STAGE_4 = "stage_4";
 
-        String[] perDimConfigs = config.getStringList("per_dim_configs", getKey(), new String[]{}, "Here you can add different loot tables to each dimension. If dimension isn't in this list, then game will take default loot table for this stage.\nSyntax: <dimension_key>; <loottable_name>\n<loottable_name> - The loottable name for the chest in this stage.\nGeneral Example: [ \"0; minecraft:chests/simple_dungeon\" ]");
+        public static final String MIN_ITEMS = "min_items";
+        public static final String MAX_ITEMS = "max_items";
+        public static final String DEFAULT_LOOT_TABLE = "default_loot_table";
+        public static final String PER_DIM_CONFIGS = "per_dim_configs";
+    }
+
+    public void init(Configuration config) {
+        minItems = config.getInt(Names.MIN_ITEMS, getKey(), defaults.minItems, 0, 256, "Minimum amount of item stacks to be generated in chest.");
+        maxItems = config.getInt(Names.MAX_ITEMS, getKey(), defaults.maxItems, 1, 256, "Maximum amount of item stacks to be generated in chest.");
+        defaultLootTable = config.getString(Names.DEFAULT_LOOT_TABLE, getKey(), defaults.lootTable, "Name of the loot table, items from which will be generated in the chest of this stage. This can be adjusted per dimension in \"per_dim_configs\".");
+
+        String[] perDimConfigs = config.getStringList(Names.PER_DIM_CONFIGS, getKey(), new String[]{}, "Here you can add different loot tables to each dimension. If dimension isn't in this list, then game will take default loot table for this stage.\nSyntax: <dimension_key>|<loottable_name>\n<loottable_name> - The loottable name for the chest in this stage.\nGeneral Example: [ \"0|minecraft:chests/simple_dungeon\" ]");
         parseDimConfigs(perDimConfigs);
     }
 
@@ -40,7 +52,7 @@ public class RewardConfig extends ConfigSection {
         dimensionsConfigs.clear();
 
         for (String entry : perDimConfigs) {
-            String[] config = entry.split(";");
+            String[] config = entry.split("\\|");
             for (int i = 0; i < config.length; i++) {
                 config[i] = config[i].trim();
             }
@@ -49,13 +61,13 @@ public class RewardConfig extends ConfigSection {
                 int dimKey;
                 try {
                     dimKey = Integer.parseInt(config[0]);
-                } catch (Exception e) {
-                    LootGames.LOGGER.error("Invalid dimension configs entry found: {}. Dimension id must be a valid Resource Location.  Skipping entry...", config);
+                } catch (NumberFormatException e) {
+                    LootGames.LOGGER.error("Invalid dimension configs entry found: {}. Dimension id is not an Integer.  Skipping entry...", entry);
                     continue;
                 }
 
                 if (dimensionsConfigs.containsKey(dimKey)) {
-                    LootGames.LOGGER.error("Invalid dimension configs entry found: {}. Dimension ID is already defined. Skipping entry...", entry);
+                    LootGames.LOGGER.error("Invalid dimension configs entry found: {}. Dimension id is already defined. Skipping entry...", entry);
                     continue;
                 }
 
@@ -65,7 +77,7 @@ public class RewardConfig extends ConfigSection {
                     LootGames.LOGGER.error("Invalid dimension configs entry found: {}. LootTable key must not be an empty string. Skipping entry...", entry);
                 }
             } else {
-                LootGames.LOGGER.error("Invalid dimension configs entry found: {}. Syntax is <dimension_key>; <loottable_key>.  Skipping entry...", entry);
+                LootGames.LOGGER.error("Invalid dimension configs entry found: {}. Syntax is <dimension_key>|<loottable_key>.  Skipping entry...", entry);
             }
         }
     }

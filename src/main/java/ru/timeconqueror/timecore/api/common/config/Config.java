@@ -36,6 +36,10 @@ public abstract class Config {
 
     public abstract void init();
 
+    public Configuration getConfig() {
+        return config;
+    }
+
     public void load() {
         config.load();
         init();

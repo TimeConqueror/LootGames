@@ -12,7 +12,7 @@ import eu.usrv.legacylootgames.auxiliary.ProfilingStorage;
 import eu.usrv.legacylootgames.command.LootGamesCommand;
 import eu.usrv.legacylootgames.command.PeacefulEntityCommand;
 import eu.usrv.legacylootgames.command.ProfilingCommand;
-import eu.usrv.legacylootgames.config.LootGamesConfig;
+import eu.usrv.legacylootgames.config.LegacyLGConfig;
 import eu.usrv.legacylootgames.network.NetDispatcher;
 import eu.usrv.legacylootgames.worldgen.LootGamesWorldGen;
 import eu.usrv.yamcore.YAMCore;
@@ -31,11 +31,11 @@ public class LootGamesLegacy {
 
     public static GameManager GameMgr;
 
-    public static LootGamesConfig ModConfig;
+    public static LegacyLGConfig ModConfig;
     public static LootGamesWorldGen WorldGen;
 
     public static void PreLoad(FMLPreInitializationEvent PreEvent) {
-        ModConfig = new LootGamesConfig(PreEvent.getModConfigurationDirectory(), LootGames.MODNAME, LootGames.MODID);
+        ModConfig = new LegacyLGConfig(PreEvent.getModConfigurationDirectory(), LootGames.MODNAME, LootGames.MODID);
         if (!ModConfig.LoadConfig())
             LootGames.LOGGER.error(String.format("%s could not load its config file. Things are going to be weird!", LootGames.MODID));
 

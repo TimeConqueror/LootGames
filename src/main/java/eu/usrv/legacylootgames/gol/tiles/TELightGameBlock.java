@@ -8,7 +8,7 @@ import eu.usrv.legacylootgames.StructureGenerator;
 import eu.usrv.legacylootgames.achievements.LootGameAchievement;
 import eu.usrv.legacylootgames.auxiliary.ExtendedDirections;
 import eu.usrv.legacylootgames.blocks.DungeonLightSource;
-import eu.usrv.legacylootgames.config.LootGamesConfig.LootStageConfig;
+import eu.usrv.legacylootgames.config.LegacyLGConfig.LootStageConfig;
 import eu.usrv.legacylootgames.gol.GameOfLightGame;
 import eu.usrv.legacylootgames.network.NetDispatcher;
 import eu.usrv.legacylootgames.network.msg.SpawnParticleFXMessage;

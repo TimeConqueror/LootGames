@@ -76,6 +76,8 @@ public class LootGames {
         }
 
         LootGamesLegacy.PreLoad(event);
+
+        LegacyMigrator.onPreInit(event);
     }
 
     @Mod.EventHandler
