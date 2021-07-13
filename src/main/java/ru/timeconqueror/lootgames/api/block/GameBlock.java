@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.api.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -23,6 +24,13 @@ public abstract class GameBlock extends Block {
     public IIcon getIcon(int side, int meta) {
         if (this.textureName != null) return blockIcon;
         return IconLoader.shieldedDungeonFloor;
+    }
+
+    @Override
+    public void registerIcons(IIconRegister reg) {
+        if (this.textureName != null) {
+            super.registerIcons(reg);
+        }
     }
 
     @Override

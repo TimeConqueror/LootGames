@@ -19,8 +19,8 @@ public enum LGAchievements {
     MS_START(resolve("ms.start"), new ItemStack(LGBlocks.MS_ACTIVATOR), -2, 0, LGAchievements.FIND_DUNGEON),
     MS_BEAT_LEVEL4(resolve("ms.beat_level_4"), new ItemStack(Blocks.tnt), -4, 0, true, LGAchievements.MS_START),
     GOL_START(resolve("gol.start"), new ItemStack(LGBlocks.GOL_ACTIVATOR), 2, 0, LGAchievements.FIND_DUNGEON),
-    GOL_MASTER_LEVEL3(resolve("gol.beat_level_3"), new ItemStack(Items.diamond), 3, -1, true, LGAchievements.GOL_START),
-    GOL_MASTER_LEVEL4(resolve("gol.beat_level_4"), new ItemStack(Items.emerald), 3, 1, true, LGAchievements.GOL_START);
+    GOL_MASTER_LEVEL3(resolve("gol.beat_level_3"), new ItemStack(Items.diamond), 4, -1, true, LGAchievements.GOL_START),
+    GOL_MASTER_LEVEL4(resolve("gol.beat_level_4"), new ItemStack(Items.emerald), 4, 1, true, LGAchievements.GOL_START);
 
     private final Achievement achievement;
 
