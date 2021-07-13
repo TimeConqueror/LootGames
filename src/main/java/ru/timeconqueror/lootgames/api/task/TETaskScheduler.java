@@ -26,27 +26,23 @@ public class TETaskScheduler implements INBTSerializable<ListNBT> {
      * Thread-safely adds task to scheduler.
      */
     public void addTask(ITask task, int timeBeforeStart) {
-        synchronized (tasks) {
-            tasks.add(new TaskWrapper(timeBeforeStart, task));
-        }
+        tasks.add(new TaskWrapper(timeBeforeStart, task));
     }
 
     /**
      * Must be called to update scheduler.
      */
     public void onUpdate() {
-        synchronized (tasks) {
-            Iterator<TaskWrapper> iterator = tasks.iterator();
+        Iterator<TaskWrapper> iterator = tasks.iterator();
 
-            while (iterator.hasNext()) {
-                TaskWrapper task = iterator.next();
+        while (iterator.hasNext()) {
+            TaskWrapper task = iterator.next();
 
-                if (task.timeBeforeStart <= 0) {
-                    task.run(tileEntity.getLevel());
-                    iterator.remove();
-                } else {
-                    task.decreaseTimer();
-                }
+            if (task.timeBeforeStart <= 0) {
+                task.run(tileEntity.getLevel());
+                iterator.remove();
+            } else {
+                task.decreaseTimer();
             }
         }
     }
@@ -55,16 +51,14 @@ public class TETaskScheduler implements INBTSerializable<ListNBT> {
     public ListNBT serializeNBT() {
         ListNBT out = new ListNBT();
 
-        synchronized (tasks) {
-            for (TaskWrapper wrapper : tasks) {
-                CompoundNBT element = new CompoundNBT();
+        for (TaskWrapper wrapper : tasks) {
+            CompoundNBT element = new CompoundNBT();
 
-                element.put("task", wrapper.task.serializeNBT());
-                element.putInt("time", wrapper.timeBeforeStart);
-                element.putString("name", wrapper.task.getClass().getName());
+            element.put("task", wrapper.task.serializeNBT());
+            element.putInt("time", wrapper.timeBeforeStart);
+            element.putString("name", wrapper.task.getClass().getName());
 
-                out.add(element);
-            }
+            out.add(element);
         }
 
         return out;
@@ -101,7 +95,7 @@ public class TETaskScheduler implements INBTSerializable<ListNBT> {
 
     private static class TaskWrapper {
         private int timeBeforeStart;
-        private ITask task;
+        private final ITask task;
 
         private TaskWrapper(int timeBeforeStart, ITask task) {
             this.timeBeforeStart = timeBeforeStart;

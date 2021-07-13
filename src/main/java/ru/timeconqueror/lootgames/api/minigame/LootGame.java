@@ -343,7 +343,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
 
             if (shouldDelayPacketSending) {
                 pendingStageUpdate = Pair.of(oldStage, newStage);
-                LOGGER.debug(DEBUG_MARKER, () -> logMessage("update packet '{}' was delayed for sending to the next tick."));
+                LOGGER.debug(DEBUG_MARKER, () -> logMessage("update packet '{}' was delayed for sending till the next tick."));
             } else {
                 sendUpdatePacketToNearby(new SPChangeStage(this));
             }

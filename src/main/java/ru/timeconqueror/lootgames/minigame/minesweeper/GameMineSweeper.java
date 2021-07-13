@@ -153,8 +153,8 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
     @Override
     protected void onStageUpdate(BoardStage oldStage, BoardStage newStage, boolean shouldDelayPacketSending) {
-        super.onStageUpdate(oldStage, newStage, shouldDelayPacketSending);
         ticks = 0;
+        super.onStageUpdate(oldStage, newStage, shouldDelayPacketSending);
     }
 
     public MSBoard getBoard() {
@@ -442,9 +442,9 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
 
         @Override
-        public void preInit() {
+        public void postInit() {
             int longestDetTime = detonateBoard(currentLevel + 3, Explosion.Mode.BREAK);
-            ticks = longestDetTime + 2 * 20; //number represents some pause after detonating
+            ticks = longestDetTime + 20; //number represents some pause after detonating
         }
 
         @Override
