@@ -1,0 +1,84 @@
+package ru.timeconqueror.lootgames.common.config.base;
+
+import net.minecraft.world.World;
+import net.minecraftforge.common.config.Configuration;
+import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.timecore.api.common.config.ConfigSection;
+
+import java.util.HashMap;
+
+public class RewardConfig extends ConfigSection {
+    public int minItems;
+    public int maxItems;
+    public String defaultLootTable;
+
+    private final HashMap<Integer, String> dimensionsConfigs = new HashMap<>();
+
+    private final Defaults defaults;
+
+    public RewardConfig(String key, Defaults defaults) {
+        super(key, null);
+        this.defaults = defaults;
+    }
+
+    public void init(Configuration config) {
+        minItems = config.getInt("min_items", getKey(), defaults.minItems, -1, 256, "Minimum amount of item stacks to be generated in chest. Won't be applied, if count of items in bound loot table are less than it. If min and max are set to -1, the limits will be disabled.");
+        maxItems = config.getInt("max_items", getKey(), defaults.maxItems, -1, 256, "Maximum amount of item stacks to be generated in chest. If this is set to -1, max limit will be disabled.");
+        defaultLootTable = config.getString("default_loot_table", getKey(), defaults.lootTable, "Name of the loot table, items from which will be generated in the chest of this stage. This can be adjusted per dimension in \"per_dim_configs\".");
+
+        String[] perDimConfigs = config.getStringList("per_dim_configs", getKey(), new String[]{}, "Here you can add different loot tables to each dimension. If dimension isn't in this list, then game will take default loot table for this stage.\nSyntax: <dimension_key>; <loottable_name>\n<loottable_name> - The loottable name for the chest in this stage.\nGeneral Example: [ \"0; minecraft:chests/simple_dungeon\" ]");
+        parseDimConfigs(perDimConfigs);
+    }
+
+    public String getLootTable(World world) {
+        String lootTable = dimensionsConfigs.get(world.provider.dimensionId);
+
+        return lootTable != null ? lootTable : defaultLootTable;
+    }
+
+    private void parseDimConfigs(String[] perDimConfigs) {
+        dimensionsConfigs.clear();
+
+        for (String entry : perDimConfigs) {
+            String[] config = entry.split(";");
+            for (int i = 0; i < config.length; i++) {
+                config[i] = config[i].trim();
+            }
+
+            if (config.length == 2) {
+                int dimKey;
+                try {
+                    dimKey = Integer.parseInt(config[0]);
+                } catch (Exception e) {
+                    LootGames.LOGGER.error("Invalid dimension configs entry found: {}. Dimension id must be a valid Resource Location.  Skipping entry...", config);
+                    continue;
+                }
+
+                if (dimensionsConfigs.containsKey(dimKey)) {
+                    LootGames.LOGGER.error("Invalid dimension configs entry found: {}. Dimension ID is already defined. Skipping entry...", entry);
+                    continue;
+                }
+
+                if (!config[1].isEmpty()) {
+                    dimensionsConfigs.put(dimKey, config[1]);
+                } else {
+                    LootGames.LOGGER.error("Invalid dimension configs entry found: {}. LootTable key must not be an empty string. Skipping entry...", entry);
+                }
+            } else {
+                LootGames.LOGGER.error("Invalid dimension configs entry found: {}. Syntax is <dimension_key>; <loottable_key>.  Skipping entry...", entry);
+            }
+        }
+    }
+
+    public static class Defaults {
+        private final String lootTable;
+        private final int minItems;
+        private final int maxItems;
+
+        public Defaults(String lootTable, int minItems, int maxItems) {
+            this.lootTable = lootTable;
+            this.minItems = minItems;
+            this.maxItems = maxItems;
+        }
+    }
+}

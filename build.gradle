@@ -85,13 +85,11 @@ idea {
     }
 }
 
-//jar {
-//    configurations.shadeOnly.each { dep ->
-//        from(project.zipTree(dep)) {
-//            exclude 'META-INF', 'META-INF/**'
-//        }
-//    }
-//}
+jar {
+    manifest {
+        attributes 'FMLAT': 'lootgames_at.cfg'
+    }
+}
 
 task signJar(dependsOn: 'reobf') {
     doLast {
