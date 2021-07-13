@@ -82,8 +82,6 @@ public class MSOverlayHandler {
 
         float startY = 20;
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(OVERLAY);
-
         GL11.glColor4f(1, 1, 1, 1);
 
         for (int i = 0; i < masters.size(); i++) {
@@ -95,13 +93,14 @@ public class MSOverlayHandler {
 
             float finalMaxRectWidth = maxRectWidth;
             if (i == 0) {
+                Minecraft.getMinecraft().getTextureManager().bindTexture(OVERLAY);
                 DrawHelper.drawTexturedRectByParts(5, 5, 15 * 1.5F, 16 * 1.5F, 0, 0, 0, 15, 16, 48);
                 DrawHelper.drawWidthExpandableTexturedRect(5 + 15 * 1.5F, 5, finalMaxRectWidth, 0, FIRST_SLOT_START, FIRST_SLOT_REPEAT, FIRST_SLOT_END, 48);
 
-                DrawHelper.drawYCenteredStringWithShadow(fontRenderer, toDisplay, 33, 18, color.getRGB());
+                DrawHelper.drawYCenteredStringWithShadow(fontRenderer, toDisplay, 33, 17, color.getRGB());
             } else {
                 float finalStartY = startY;
-
+                Minecraft.getMinecraft().getTextureManager().bindTexture(OVERLAY);
                 DrawHelper.drawWidthExpandableTexturedRect(27.5F, finalStartY, finalMaxRectWidth, 0, EXTRA_SLOT_START, EXTRA_SLOT_REPEAT, EXTRA_SLOT_END, 48);
 
                 DrawHelper.drawYCenteredStringWithShadow(fontRenderer, toDisplay, 33, (int) (startY + 8), color.getRGB());
