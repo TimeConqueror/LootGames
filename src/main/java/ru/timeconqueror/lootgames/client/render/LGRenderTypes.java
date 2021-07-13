@@ -21,7 +21,7 @@ public class LGRenderTypes extends RenderType {
     public static RenderType brightenedTranslucent(ResourceLocation texture) {
         return RenderHelper.rtTextured(LootGames.rl("brightened_translucent"),
                 GLDrawMode.QUADS,
-                DefaultVertexFormats.POSITION_TEX,
+                DefaultVertexFormats.POSITION_COLOR_TEX,
                 texture,
                 builder -> builder.setAlphaState(RenderState.DEFAULT_ALPHA)
                         .setTransparencyState(RenderState.TRANSLUCENT_TRANSPARENCY));

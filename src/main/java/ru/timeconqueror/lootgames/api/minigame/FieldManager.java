@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * <p>
  * Manager that can be used to handle generation and clearing flat board from {@link BoardLootGame}
  */
-public class FieldManager {
+public class FieldManager {//TODO rename to board manager
 
     private boolean fieldUnderBreaking = false;
 

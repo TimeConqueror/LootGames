@@ -36,7 +36,6 @@ import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
-import ru.timeconqueror.timecore.api.util.ChatUtils;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 import ru.timeconqueror.timecore.api.util.Pair;
 
@@ -130,7 +129,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         NetworkUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
                 player -> {
                     LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_WIN);
-                    player.sendMessage(ChatUtils.format(new TranslationTextComponent("msg.lootgames.win"), TextFormatting.GREEN), player.getUUID());
+                    sendTo(player, new TranslationTextComponent("msg.lootgames.win"), NotifyColor.SUCCESS);
                 });
 
         getWorld().playSound(null, getGameCenter(), LGSounds.GAME_WIN, SoundCategory.MASTER, 0.75F, 1.0F);
@@ -146,7 +145,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         NetworkUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
                 player -> {
                     LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_LOSE);
-                    player.sendMessage(ChatUtils.format(new TranslationTextComponent("msg.lootgames.lose"), TextFormatting.DARK_PURPLE), player.getUUID());
+                    sendTo(player, new TranslationTextComponent("msg.lootgames.lose"), NotifyColor.FAIL);
                 });
 
         getWorld().playSound(null, getGameCenter(), LGSounds.GAME_LOSE, SoundCategory.MASTER, 0.75F, 1.0F);

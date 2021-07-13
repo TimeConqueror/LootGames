@@ -87,7 +87,7 @@ public class GOLMasterRenderer extends TileEntityRenderer<GOLMasterTile> {
                 break;
         }
 
-        DrawHelper.drawTexturedRectByParts(buffer, matrix, 1, 1, 1, 1, -0.006F, textureX, textureY, 1, 1, 2);
+        DrawHelper.drawTexturedRectByParts(buffer, matrix, 1, 1, 1, 1, -0.006F, textureX, textureY, 1, 1, 2, 0xFFFFFFFF);
     }
 
     private void drawBoard(GameOfLight game, MatrixStack matrix, IRenderTypeBuffer bufferIn, int ticks, float partialTicks) {
