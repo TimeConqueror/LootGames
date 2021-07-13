@@ -6,6 +6,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import org.lwjgl.opengl.GL11;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.common.block.tile.MSMasterTile;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
@@ -82,6 +83,8 @@ public class MSOverlayHandler {
         float startY = 20;
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(OVERLAY);
+
+        GL11.glColor4f(1, 1, 1, 1);
 
         for (int i = 0; i < masters.size(); i++) {
             MSMasterTile msMaster = masters.get(i);
