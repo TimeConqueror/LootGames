@@ -11,8 +11,10 @@ import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
 import ru.timeconqueror.lootgames.registry.LGAchievements;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
+import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.future.BlockPos;
 import ru.timeconqueror.lootgames.utils.future.ChatComponentExt;
+import ru.timeconqueror.lootgames.utils.future.WorldExt;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 
 public class GOLActivatorBlock extends GameBlock {
@@ -29,6 +31,7 @@ public class GOLActivatorBlock extends GameBlock {
 
             if (succeed) {
                 NetworkUtils.sendMessage(player, ChatComponentExt.withStyle(new ChatComponentTranslation("msg.lootgames.gol.start"), NotifyColor.NOTIFY.getColor()));
+                WorldExt.playSoundServerly(worldIn, pos, LGSounds.GOL_START_GAME, 0.75F, 1.0F);
                 LGAchievements.GOL_START.trigger(player);
             }
         }

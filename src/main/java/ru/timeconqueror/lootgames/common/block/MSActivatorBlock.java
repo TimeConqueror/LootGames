@@ -34,7 +34,7 @@ public class MSActivatorBlock extends GameBlock {
                     .isSucceed();
 
             if (succeed) {
-                WorldExt.playSound(worldIn, pos, LGSounds.MS_START_GAME, 0.6F, 1.0F);
+                WorldExt.playSoundServerly(worldIn, pos, LGSounds.MS_START_GAME, 0.6F, 1.0F);
                 LGAchievements.MS_START.trigger(player);
             }
         }

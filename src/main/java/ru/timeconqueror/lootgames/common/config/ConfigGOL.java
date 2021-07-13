@@ -96,7 +96,7 @@ public class ConfigGOL extends Config {
         private void init(Configuration config) {
             rounds = config.getInt("round_count", key, defData.rounds, 1, 256, "Round count required to complete this stage and unlock leveled reward.");
             randomizeSequence = config.getBoolean("randomize_sequence", key, defData.randomizeSequence, "If true, the pattern will randomize on each round in this stage.");
-            rounds = config.getInt("display_time", key, defData.displayTime, 2, 40, "Amount of time (in ticks; 20 ticks = 1s) for which the symbol will be displayed.");
+            displayTime = config.getInt("display_time", key, defData.displayTime, 2, 40, "Amount of time (in ticks; 20 ticks = 1s) for which the symbol will be displayed.");
 
             config.setCategoryComment(key, comment);
         }

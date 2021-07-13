@@ -132,7 +132,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
                     sendTo(player, new ChatComponentTranslation("msg.lootgames.win"), NotifyColor.SUCCESS);
                 });
 
-        WorldExt.playSound(getWorld(), getGameCenter(), LGSounds.GAME_WIN, 0.75F, 1.0F);
+        WorldExt.playSoundServerly(getWorld(), getGameCenter(), LGSounds.GAME_WIN, 0.75F, 1.0F);
     }
 
     /**
@@ -149,7 +149,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
                 });
 
 
-        WorldExt.playSound(getWorld(), getGameCenter(), LGSounds.GAME_LOSE, 0.75F, 1.0F);
+        WorldExt.playSoundServerly(getWorld(), getGameCenter(), LGSounds.GAME_LOSE, 0.75F, 1.0F);
     }
 
     /**

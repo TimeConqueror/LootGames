@@ -33,6 +33,13 @@ public class GOLMasterRenderer extends TileEntitySpecialRenderer {
 
         GL11.glTranslated(x, y, z);
 
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glColor4f(1, 1, 1, 1);
+
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+
         GOLMasterTile master = (GOLMasterTile) tileEntityIn;
 
         BoardGameMasterTile.prepareMatrix(master);
@@ -58,6 +65,9 @@ public class GOLMasterRenderer extends TileEntitySpecialRenderer {
         if (questionMark != State.NONE) {
             drawMark(questionMark);
         }
+
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
 
         GL11.glPopMatrix();
     }

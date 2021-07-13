@@ -14,7 +14,7 @@ public class PuzzleMasterTile extends SimpleTile {
             if (RandHelper.RAND.nextInt(100) <= 10) {
                 if (lastSoundTick < System.currentTimeMillis()) {
                     lastSoundTick = System.currentTimeMillis() + (RandHelper.RAND.nextInt(90) + 30) * 1000;
-                    WorldExt.playSound(worldObj, getBlockPos(), LGSounds.PUZZLE_MASTER_STRANGE, 0.5F, 1.0F);
+                    WorldExt.playSoundServerly(worldObj, getBlockPos(), LGSounds.PUZZLE_MASTER_STRANGE, 0.5F, 1.0F);
                 }
             }
         }

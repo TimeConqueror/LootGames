@@ -92,7 +92,7 @@ public class FieldManager {
         if (!canReplaceAreaWithBoard(world, borderPos, xSize + 2, height + 1, zSize + 2, centerPos)) {
             if (player != null) {
                 NetworkUtils.sendMessage(player, ChatComponentExt.withStyle(new ChatComponentTranslation("msg.lootgames.field.not_enough_space", xSize + 2, height + 1, zSize + 2), NotifyColor.FAIL.getColor()));
-                WorldExt.playSound(world, centerPos, LGSounds.GAME_LOSE, 0.4F, 1.0F);
+                WorldExt.playSoundServerly(world, centerPos, LGSounds.GAME_LOSE, 0.4F, 1.0F);
             }
             return new GenerationChain(null, null, false);
         }

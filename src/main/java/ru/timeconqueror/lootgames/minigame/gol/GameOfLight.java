@@ -42,9 +42,6 @@ import java.util.stream.Collectors;
 //TODO add question mark flicker on WaitingStartStage
 //TODO add reward giving upon some combination
 public class GameOfLight extends BoardLootGame<GameOfLight> {
-    public static final String ADV_BEAT_LEVEL3 = "gol_level_3";
-    public static final String ADV_BEAT_LEVEL4 = "gol_level_4";
-
     public static final int BOARD_SIZE = 3;
 
     private int round = 0;
@@ -70,7 +67,6 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     public void onPlace() {
         if (isServerSide()) {
             setupInitialStage(new StageUnderExpanding());
-            WorldExt.playSound(getWorld(), getGameCenter(), LGSounds.GOL_START_GAME, 0.75F, 1.0F);
         }
     }
 
@@ -104,7 +100,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     }
 
     private void failGame(boolean dueTimeout) {
-        WorldExt.playSound(getWorld(), getGameCenter(), LGSounds.GOL_SEQUENCE_WRONG, dueTimeout ? 0.2F : 0.75F, 1.0F);
+        WorldExt.playSoundServerly(getWorld(), getGameCenter(), LGSounds.GOL_SEQUENCE_WRONG, dueTimeout ? 0.2F : 0.75F, 1.0F);
         sendToNearby(new ChatComponentTranslation("msg.lootgames.gol.wrong_block"), NotifyColor.FAIL);
         sendUpdatePacketToNearby(SPGOLDrawMark.denied());
 
@@ -117,7 +113,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         } else {
             attempt++;
 
-            WorldExt.playSound(getWorld(), getGameCenter(), LGSounds.GOL_START_GAME, dueTimeout ? 0.2F : 0.75F, 1.0F);
+            WorldExt.playSoundServerly(getWorld(), getGameCenter(), LGSounds.GOL_START_GAME, dueTimeout ? 0.2F : 0.75F, 1.0F);
             switchStage(new StageWaitingStart());
         }
     }
@@ -153,7 +149,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                 break;
         }
 
-        WorldExt.playSound(getWorld(), getGameCenter(), Sounds.NOTE_BLOCK_HARP, 3.0F, getPitchForNote(note, octave));
+        WorldExt.playSoundCliently(getWorld(), getGameCenter(), Sounds.NOTE_BLOCK_HARP, 3.0F, getPitchForNote(note, octave), false);
     }
 
     private float getPitchForNote(NoteBlockEvent.Note note, NoteBlockEvent.Octave octave) {
@@ -585,7 +581,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
 
         private void onSuccessSequence(EntityPlayerMP player) {
-            WorldExt.playSound(getWorld(), getGameCenter(), LGSounds.GOL_SEQUENCE_COMPLETE, 0.75F, 1.0F);
+            WorldExt.playSoundServerly(getWorld(), getGameCenter(), LGSounds.GOL_SEQUENCE_COMPLETE, 0.75F, 1.0F);
             sendUpdatePacketToNearby(SPGOLDrawMark.accepted());
 
             ConfigGOL.StageConfig stageCfg = LGConfigs.GOL.getStageByIndex(stage);
@@ -601,7 +597,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                     maxReachedStage = Math.max(maxReachedStage, stage);
                     save();
 
-                    WorldExt.playSound(getWorld(), getGameCenter(), Sounds.PLAYER_LEVELUP, 0.75F, 1.0F);
+                    WorldExt.playSoundServerly(getWorld(), getGameCenter(), Sounds.PLAYER_LEVELUP, 0.75F, 1.0F);
                     sendUpdatePacketToNearby(new SPGOLSpawnStageUpParticles());
                     sendToNearby(new ChatComponentTranslation("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
 

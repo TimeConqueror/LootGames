@@ -41,8 +41,12 @@ public class WorldExt {
         setBlock(world, pos, state.getBlock(), state.getMeta(), 3);
     }
 
-    public static void playSound(World world, BlockPos pos, String sound, float volume, float pitch) {
+    public static void playSoundServerly(World world, BlockPos pos, String sound, float volume, float pitch) {
         world.playSoundEffect(pos.getX(), pos.getY(), pos.getZ(), sound, volume, pitch);
+    }
+
+    public static void playSoundCliently(World world, BlockPos pos, String sound, float volume, float pitch, boolean distanceDelay) {
+        world.playSound(pos.getX(), pos.getY(), pos.getZ(), sound, volume, pitch, distanceDelay);
     }
 
     public static void explode(World world, @Nullable Entity exploder, BlockPos pos, float strength, boolean affectBlocks) {

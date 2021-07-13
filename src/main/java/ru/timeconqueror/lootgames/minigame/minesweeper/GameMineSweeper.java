@@ -104,7 +104,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
             sendUpdatePacketToNearby(new SPMSSpawnLevelBeatParticles());
 
             sendToNearby(new ChatComponentTranslation("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
-            WorldExt.playSound(getWorld(), getGameCenter(), Sounds.PLAYER_LEVELUP, 0.75F, 1.0F);
+            WorldExt.playSoundServerly(getWorld(), getGameCenter(), Sounds.PLAYER_LEVELUP, 0.75F, 1.0F);
 
             Snapshot.StageSnapshot stageSnapshot = configSnapshot.getStageByIndex(currentLevel + 1);
 
@@ -249,7 +249,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         protected void onClick(EntityPlayer player, Pos2i pos, MouseClickType type) {
             if (isServerSide()) {
                 EntityPlayerMP sPlayer = (EntityPlayerMP) player;
-                WorldExt.playSound(getWorld(), convertToBlockPos(pos), Sounds.NOTE_BLOCK_HARP, 0.6F, 0.8F);
+                WorldExt.playSoundServerly(getWorld(), convertToBlockPos(pos), Sounds.NOTE_BLOCK_HARP, 0.6F, 0.8F);
 
                 if (!board.isGenerated()) {
                     generateBoard(sPlayer, pos);
@@ -289,7 +289,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
                 if (type == Type.EMPTY) {
                     if (playRevealNeighboursSound) {
-                        WorldExt.playSound(getWorld(), convertToBlockPos(pos), LGSounds.MS_ON_EMPTY_REVEAL_NEIGHBOURS, 0.6F, 1.0F);
+                        WorldExt.playSoundServerly(getWorld(), convertToBlockPos(pos), LGSounds.MS_ON_EMPTY_REVEAL_NEIGHBOURS, 0.6F, 1.0F);
                         playRevealNeighboursSound = false;
                     }
 
@@ -363,7 +363,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
 
         private void triggerBombs(Pos2i pos) {
-            WorldExt.playSound(getWorld(), convertToBlockPos(pos), LGSounds.MS_BOMB_ACTIVATED, 0.6F, 1.0F);
+            WorldExt.playSoundServerly(getWorld(), convertToBlockPos(pos), LGSounds.MS_BOMB_ACTIVATED, 0.6F, 1.0F);
 
             switchStage(new StageDetonating());
 
