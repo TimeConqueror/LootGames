@@ -22,8 +22,8 @@ public class RewardConfig extends ConfigSection {
     }
 
     public void init(Configuration config) {
-        minItems = config.getInt("min_items", getKey(), defaults.minItems, -1, 256, "Minimum amount of item stacks to be generated in chest. Won't be applied, if count of items in bound loot table are less than it. If min and max are set to -1, the limits will be disabled.");
-        maxItems = config.getInt("max_items", getKey(), defaults.maxItems, -1, 256, "Maximum amount of item stacks to be generated in chest. If this is set to -1, max limit will be disabled.");
+        minItems = config.getInt("min_items", getKey(), defaults.minItems, 0, 256, "Minimum amount of item stacks to be generated in chest.");
+        maxItems = config.getInt("max_items", getKey(), defaults.maxItems, 1, 256, "Maximum amount of item stacks to be generated in chest.");
         defaultLootTable = config.getString("default_loot_table", getKey(), defaults.lootTable, "Name of the loot table, items from which will be generated in the chest of this stage. This can be adjusted per dimension in \"per_dim_configs\".");
 
         String[] perDimConfigs = config.getStringList("per_dim_configs", getKey(), new String[]{}, "Here you can add different loot tables to each dimension. If dimension isn't in this list, then game will take default loot table for this stage.\nSyntax: <dimension_key>; <loottable_name>\n<loottable_name> - The loottable name for the chest in this stage.\nGeneral Example: [ \"0; minecraft:chests/simple_dungeon\" ]");

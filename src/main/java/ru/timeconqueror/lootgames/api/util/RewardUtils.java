@@ -1,6 +1,5 @@
 package ru.timeconqueror.lootgames.api.util;
 
-import eu.usrv.legacylootgames.LootGamesLegacy;
 import eu.usrv.legacylootgames.blocks.DungeonLightSource;
 import eu.usrv.yamcore.auxiliary.ItemDescriptor;
 import net.minecraft.init.Blocks;
@@ -20,6 +19,7 @@ import ru.timeconqueror.lootgames.utils.future.BlockState;
 import ru.timeconqueror.lootgames.utils.future.WorldExt;
 import ru.timeconqueror.timecore.api.util.HorizontalDirection;
 import ru.timeconqueror.timecore.api.util.MathUtils;
+import ru.timeconqueror.timecore.api.util.RandHelper;
 
 public class RewardUtils {
     /**
@@ -64,11 +64,11 @@ public class RewardUtils {
         EnumFacing direction = horizontalDirection.get();
         String lootTable = chestData.getLootTableKey();
 
-        WeightedRandomChestContent[] randomLoot = ChestGenHooks.getItems(lootTable, LootGamesLegacy.Rnd);
+        WeightedRandomChestContent[] randomLoot = ChestGenHooks.getItems(lootTable, RandHelper.RAND);
 
         BlockPos pos = centralPos.offset(direction.getFrontOffsetX(), 0, direction.getFrontOffsetZ());
-        WorldExt.setBlock(world, pos, Blocks.chest);//FIXME what about block facing?
-        IInventory chestTile = (IInventory) WorldExt.getBlock(world, pos);
+        WorldExt.setBlock(world, pos, Blocks.chest, 3);//FIXME what about block facing?
+        IInventory chestTile = (IInventory) WorldExt.getTileEntity(world, pos);
 
         if (chestTile != null) {
             if (randomLoot.length == 0) {
@@ -77,8 +77,8 @@ public class RewardUtils {
                 ItemStack sorryStack = tSorryItem.getItemStackwNBT(1, String.format("{display:{Name:\"The Sorry-Stone\",Lore:[\"Modpack creator failed to configure the LootTables properly.\nPlease report that Loot Table [%s] for %s stage is broken, thank you!\"]}}", chestData.lootTableRL, chestData.getGameName()));
                 chestTile.setInventorySlotContents(0, sorryStack);
             } else {
-                int tNumItems = LootGamesLegacy.Rnd.nextInt(chestData.getMaxItems()) + chestData.getMinItems();
-                WeightedRandomChestContent.generateChestContents(LootGamesLegacy.Rnd, randomLoot, chestTile, tNumItems);
+                int count = RandHelper.RAND.nextInt(chestData.getMaxItems()) + chestData.getMinItems();
+                WeightedRandomChestContent.generateChestContents(RandHelper.RAND, randomLoot, chestTile, count);
             }
         }
     }

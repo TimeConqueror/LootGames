@@ -40,7 +40,7 @@ public class ConfigGeneral extends Config {
 //            retroGenDungeons = config.getBoolean("retrogen_dungeons", "worldgen", false, "Enable or disable RetroGen"); is disabled
             String[] dimConfigs = config.getStringList("per_dimension_configs", "worldgen", new String[]{"0; 20"}, "Whitelisted dimensions' ids that were allowed for dungeon generation and rhomb size.\nRhomb size means the size of rhombs, which will imaginary cover the world. Dungeon will be generated in each rhomb. \nSo the larger the size, the less chance of generation. \nRhomb size must be between 5 and 100. \nExample of array element: 0; 20 - this means that dungeons will be generated in rhombs with size equal to 20 in the overworld (ID = 0).");
             parseDimensionConfig(dimConfigs);
-            dungeonLogLevel = config.getString("DungeonLoggerLogLevel", "worldgen", Level.INFO.toString(), "LogLevel for the separate DungeonGenerator Logger. Valid options: info, debug, trace", new String[]{"INFO", "DEBUG", "TRACE"});
+            dungeonLogLevel = config.getString("dungeon_log_level", "worldgen", Level.INFO.toString(), "Log level for the separate DungeonGenerator Logger. Valid options: INFO, DEBUG, TRACE", new String[]{"INFO", "DEBUG", "TRACE"});
 
             config.setCategoryComment("worldgen", "Regulates dungeon appearing in world.");
         }

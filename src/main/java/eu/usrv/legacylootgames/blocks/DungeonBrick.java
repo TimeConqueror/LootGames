@@ -3,7 +3,6 @@ package eu.usrv.legacylootgames.blocks;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import eu.usrv.legacylootgames.auxiliary.RandHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -16,6 +15,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.client.IconLoader;
+import ru.timeconqueror.timecore.api.util.RandHelper;
 
 import java.util.List;
 
