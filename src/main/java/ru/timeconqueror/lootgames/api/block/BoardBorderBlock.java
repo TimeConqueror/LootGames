@@ -1,7 +1,11 @@
 package ru.timeconqueror.lootgames.api.block;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.utils.future.BlockPos;
 import ru.timeconqueror.lootgames.utils.future.BlockState;
@@ -48,6 +52,45 @@ public class BoardBorderBlock extends GameBlock implements IGameField {
         }
 
         return currentPos.immutable();
+    }
+
+    private IIcon bottomLeft;
+    private IIcon bottomRight;
+    private IIcon topLeft;
+    private IIcon topRight;
+    private IIcon horizontal;
+    private IIcon vertical;
+
+    @Override
+    public void registerIcons(IIconRegister reg) {
+        bottomLeft = reg.registerIcon(LootGames.namespaced("border/bottom_left"));
+        bottomRight = reg.registerIcon(LootGames.namespaced("border/bottom_right"));
+        topLeft = reg.registerIcon(LootGames.namespaced("border/top_left"));
+        topRight = reg.registerIcon(LootGames.namespaced("border/top_right"));
+        horizontal = reg.registerIcon(LootGames.namespaced("border/horizontal"));
+        vertical = reg.registerIcon(LootGames.namespaced("border/vertical"));
+    }
+
+    @Override
+    public IIcon getIcon(int sideIn, int meta) {
+        ForgeDirection side = ForgeDirection.getOrientation(sideIn);
+        Type type = Type.byMeta(meta);
+
+        if (type == Type.HORIZONTAL || side.offsetY == 0) {
+            return horizontal;
+        } else if (type == Type.VERTICAL) {
+            return vertical;
+        } else if (type == Type.TOP_LEFT) {
+            return topLeft;
+        } else if (type == Type.TOP_RIGHT) {
+            return topRight;
+        } else if (type == Type.BOTTOM_RIGHT) {
+            return bottomRight;
+        } else if (type == Type.BOTTOM_LEFT) {
+            return bottomLeft;
+        }
+
+        return super.getIcon(sideIn, meta);
     }
 
     @Override

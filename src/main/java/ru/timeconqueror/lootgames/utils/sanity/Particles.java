@@ -1,4 +1,4 @@
-package ru.timeconqueror.lootgames.utils.future;
+package ru.timeconqueror.lootgames.utils.sanity;
 
 public class Particles {
     public static final String SPELL = "spell";

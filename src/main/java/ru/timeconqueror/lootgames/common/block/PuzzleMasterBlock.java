@@ -18,8 +18,8 @@ import ru.timeconqueror.lootgames.common.block.tile.PuzzleMasterTile;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.registry.LGAchievements;
 import ru.timeconqueror.lootgames.utils.future.BlockPos;
-import ru.timeconqueror.lootgames.utils.future.Particles;
 import ru.timeconqueror.lootgames.utils.future.WorldExt;
+import ru.timeconqueror.lootgames.utils.sanity.Particles;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 
 import java.util.Optional;

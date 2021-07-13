@@ -5,7 +5,7 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.utils.future.BlockPos;
-import ru.timeconqueror.lootgames.utils.future.Particles;
+import ru.timeconqueror.lootgames.utils.sanity.Particles;
 
 public class SPMSSpawnLevelBeatParticles implements IServerGamePacket {
     @Override

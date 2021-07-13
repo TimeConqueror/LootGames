@@ -28,9 +28,12 @@ public class MSMasterRenderer extends TileEntitySpecialRenderer {
 
         GL11.glPushMatrix();
 
+        GL11.glTranslated(x, y, z);
         BoardGameMasterTile.prepareMatrix(te);
 
         bindTexture(BOARD);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glColor4f(1, 1, 1, 1);
 
         if (!game.cIsGenerated) {
             for (int xL = 0; xL < boardSize; xL++) {
@@ -61,8 +64,14 @@ public class MSMasterRenderer extends TileEntitySpecialRenderer {
                         //brightened
                         DrawHelper.drawTexturedRectByParts(xL, zL, 1, 1, -0.005F, 1, 0, 1, 1, 4F);
 
+                        GL11.glEnable(GL11.GL_BLEND);
+                        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                        GL11.glEnable(GL11.GL_ALPHA_TEST);
                         //brightened translucent
                         DrawHelper.drawTexturedRectByParts(xL, zL, 1, 1, -0.005F, 1, 3, 1, 1, 4F, alphaColor);
+
+                        GL11.glDisable(GL11.GL_BLEND);
+                        GL11.glDisable(GL11.GL_ALPHA_TEST);
                     } else {
 
                         Mark mark = game.getBoard().getMark(xL, zL);
@@ -96,6 +105,8 @@ public class MSMasterRenderer extends TileEntitySpecialRenderer {
                 }
             }
         }
+
+        GL11.glEnable(GL11.GL_LIGHTING);
 
         GL11.glPopMatrix();
 

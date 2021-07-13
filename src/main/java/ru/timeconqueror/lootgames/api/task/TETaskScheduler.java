@@ -25,27 +25,23 @@ public class TETaskScheduler implements INBTSerializable<NBTTagList> {
      * Thread-safely adds task to scheduler.
      */
     public void addTask(ITask task, int timeBeforeStart) {
-        synchronized (tasks) {
-            tasks.add(new TaskWrapper(timeBeforeStart, task));
-        }
+        tasks.add(new TaskWrapper(timeBeforeStart, task));
     }
 
     /**
      * Must be called to update scheduler.
      */
     public void onUpdate() {
-        synchronized (tasks) {
-            Iterator<TaskWrapper> iterator = tasks.iterator();
+        Iterator<TaskWrapper> iterator = tasks.iterator();
 
-            while (iterator.hasNext()) {
-                TaskWrapper task = iterator.next();
+        while (iterator.hasNext()) {
+            TaskWrapper task = iterator.next();
 
-                if (task.timeBeforeStart <= 0) {
-                    task.run(tileEntity.getWorld());
-                    iterator.remove();
-                } else {
-                    task.decreaseTimer();
-                }
+            if (task.timeBeforeStart <= 0) {
+                task.run(tileEntity.getWorld());
+                iterator.remove();
+            } else {
+                task.decreaseTimer();
             }
         }
     }
@@ -54,16 +50,14 @@ public class TETaskScheduler implements INBTSerializable<NBTTagList> {
     public NBTTagList serializeNBT() {
         NBTTagList out = new NBTTagList();
 
-        synchronized (tasks) {
-            for (TaskWrapper wrapper : tasks) {
-                NBTTagCompound element = new NBTTagCompound();
+        for (TaskWrapper wrapper : tasks) {
+            NBTTagCompound element = new NBTTagCompound();
 
-                element.setTag("task", wrapper.task.serializeNBT());
-                element.setInteger("time", wrapper.timeBeforeStart);
-                element.setString("name", wrapper.task.getClass().getName());
+            element.setTag("task", wrapper.task.serializeNBT());
+            element.setInteger("time", wrapper.timeBeforeStart);
+            element.setString("name", wrapper.task.getClass().getName());
 
-                out.appendTag(element);
-            }
+            out.appendTag(element);
         }
 
         return out;

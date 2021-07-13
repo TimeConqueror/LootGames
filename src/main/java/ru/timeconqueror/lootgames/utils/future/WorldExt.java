@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.utils.future;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -53,6 +54,6 @@ public class WorldExt {
     }
 
     public static void setBlockToAir(World world, BlockPos pos) {
-        world.setBlockToAir(pos.getX(), pos.getY(), pos.getZ());
+        world.setBlock(pos.getX(), pos.getY(), pos.getZ(), Blocks.air, 0, 3);
     }
 }

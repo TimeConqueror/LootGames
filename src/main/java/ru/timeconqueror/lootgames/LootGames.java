@@ -27,6 +27,7 @@ import ru.timeconqueror.lootgames.registry.LGAchievements;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGGamePackets;
 import ru.timeconqueror.lootgames.registry.LGGames;
+import ru.timeconqueror.timecore.api.common.CommonEventHandler;
 import ru.timeconqueror.timecore.api.common.config.Config;
 import ru.timeconqueror.timecore.api.util.Hacks;
 
@@ -61,6 +62,7 @@ public class LootGames {
             MinecraftForge.EVENT_BUS.register(new IconLoader());
             MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
             MinecraftForge.EVENT_BUS.register(new MSOverlayHandler());
+            MinecraftForge.EVENT_BUS.register(new CommonEventHandler());
         }
 
         Config.setConfigDir(event.getModConfigurationDirectory());

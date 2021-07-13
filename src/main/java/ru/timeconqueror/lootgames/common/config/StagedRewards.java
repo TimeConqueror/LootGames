@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.common.config;
 
 import ru.timeconqueror.lootgames.common.config.base.RewardConfig.Defaults;
-import ru.timeconqueror.lootgames.utils.future.LootTables;
+import ru.timeconqueror.lootgames.utils.sanity.LootTables;
 
 public class StagedRewards {
     public static FourStagedDefaults fourStagedDefaults() {

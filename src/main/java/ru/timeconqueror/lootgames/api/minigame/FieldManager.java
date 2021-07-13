@@ -102,11 +102,12 @@ public class FieldManager {
             WorldExt.setBlock(world, pos, LGBlocks.SMART_SUBORDINATE, 2);
         }
 
+        long end3 = System.currentTimeMillis();
         // Filling area above field with air
         if (height > 0) {
             BlockPos abovePos = borderPos.offset(1, 1, 1);
             for (BlockPos pos : BlockPosUtils.between(abovePos, xSize, height, zSize)) {
-                WorldExt.setBlockToAir(world, pos);
+                WorldExt.setBlock(world, pos, Blocks.air, 0, 2);
             }
         }
 
@@ -145,7 +146,7 @@ public class FieldManager {
 
         for (BlockPos pos : gameBlocks) {
             if (WorldExt.getBlock(world, pos) instanceof IGameField) {
-                WorldExt.setBlock(world, pos, Blocks.air, 2);
+                WorldExt.setBlockToAir(world, pos);
             }
         }
     }

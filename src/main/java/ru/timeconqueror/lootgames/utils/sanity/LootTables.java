@@ -1,4 +1,4 @@
-package ru.timeconqueror.lootgames.utils.future;
+package ru.timeconqueror.lootgames.utils.sanity;
 
 import net.minecraftforge.common.ChestGenHooks;
 

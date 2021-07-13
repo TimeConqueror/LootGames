@@ -1,4 +1,4 @@
-package ru.timeconqueror.lootgames.utils.future;
+package ru.timeconqueror.lootgames.utils.sanity;
 
 public class Sounds {
     public static final String NOTE_BLOCK_HARP = "note.harp";

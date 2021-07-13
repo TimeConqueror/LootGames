@@ -23,8 +23,8 @@ import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.lootgames.utils.future.BlockPos;
-import ru.timeconqueror.lootgames.utils.future.Sounds;
 import ru.timeconqueror.lootgames.utils.future.WorldExt;
+import ru.timeconqueror.lootgames.utils.sanity.Sounds;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 import ru.timeconqueror.timecore.api.util.Wrapper;
@@ -152,8 +152,8 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
     @Override
     protected void onStageUpdate(BoardStage oldStage, BoardStage newStage, boolean shouldDelayPacketSending) {
-        super.onStageUpdate(oldStage, newStage, shouldDelayPacketSending);
         ticks = 0;
+        super.onStageUpdate(oldStage, newStage, shouldDelayPacketSending);
     }
 
     public MSBoard getBoard() {
@@ -441,9 +441,9 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
 
         @Override
-        public void preInit() {
+        public void postInit() {
             int longestDetTime = detonateBoard(currentLevel + 3, false);
-            ticks = longestDetTime + 2 * 20; //number represents some pause after detonating
+            ticks = longestDetTime + 20; //number represents some pause after detonating
         }
 
         @Override
