@@ -85,8 +85,6 @@ public class LootGames {
         LGNetwork.init();
         LGGames.register();
         LGGamePackets.register();
-
-        LootGamesLegacy.init(event);
     }
 
     @Mod.EventHandler
@@ -96,7 +94,6 @@ public class LootGames {
 
     @Mod.EventHandler
     public static void onComplete(FMLLoadCompleteEvent event) {
-        LootGamesLegacy.onComplete(event);
     }
 
     @Mod.EventHandler

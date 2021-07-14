@@ -29,17 +29,6 @@ public class StructureGenerator {
 
     private final Material[] _mValidMaterials = {Material.wood, Material.water, Material.cactus, Material.snow, Material.grass, Material.leaves, Material.plants, Material.air, Material.lava, Material.portal};
 
-    public static void resetUnbreakablePlayfield(World pWorldObject, int pCoordX, int pCoordY, int pCoordZ) {
-        for (int axisX = (PUZZLEROOM_CENTER_TO_BORDER * -1); axisX <= PUZZLEROOM_CENTER_TO_BORDER; axisX++) {
-            for (int axisZ = (PUZZLEROOM_CENTER_TO_BORDER * -1); axisZ <= PUZZLEROOM_CENTER_TO_BORDER; axisZ++) {
-                if (pWorldObject.getBlock(pCoordX + axisX, pCoordY, pCoordZ + axisZ) == LGBlocks.DUNGEON_WALL) {
-                    if (pWorldObject.getBlockMetadata(pCoordX + axisX, pCoordY, pCoordZ + axisZ) == 6)
-                        pWorldObject.setBlockMetadataWithNotify(pCoordX + axisX, pCoordY, pCoordZ + axisZ, 2, 2);
-                }
-            }
-        }
-    }
-
     public static int getRoomWidth() {
         return PUZZLEROOM_CENTER_TO_BORDER * 2 + 1;
     }

@@ -1,6 +1,8 @@
 package eu.usrv.legacylootgames;
 
 
+import ru.timeconqueror.lootgames.common.config.LGConfigs;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -35,12 +37,12 @@ public class LootGamesDungeonLogger {
     }
 
     public void debug(String pMessage) {
-        if (LootGamesLegacy.ModConfig.DungeonLoggerLogLevel.equalsIgnoreCase("debug") || LootGamesLegacy.ModConfig.DungeonLoggerLogLevel.equalsIgnoreCase("trace"))
+        if (LGConfigs.GENERAL.worldGen.dungeonLogLevel.equalsIgnoreCase("debug") || LGConfigs.GENERAL.worldGen.dungeonLogLevel.equalsIgnoreCase("trace"))
             _mLootgameLogger.log(Level.FINE, pMessage);
     }
 
     public void trace(String pMessage) {
-        if (LootGamesLegacy.ModConfig.DungeonLoggerLogLevel.equalsIgnoreCase("trace"))
+        if (LGConfigs.GENERAL.worldGen.dungeonLogLevel.equalsIgnoreCase("trace"))
             _mLootgameLogger.log(Level.FINEST, pMessage);
     }
 

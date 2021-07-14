@@ -2,10 +2,8 @@ package eu.usrv.legacylootgames.worldgen;
 
 
 import cpw.mods.fml.common.IWorldGenerator;
-import eu.usrv.legacylootgames.ILootGame;
 import eu.usrv.legacylootgames.LootGamesLegacy;
 import eu.usrv.legacylootgames.StructureGenerator;
-import eu.usrv.legacylootgames.gol.GameOfLightGame;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
@@ -30,8 +28,6 @@ public class LootGamesWorldGen implements IWorldGenerator {
             return;
         }
         StructureGenerator sGen = new StructureGenerator();
-        // Locked to GOL for now. Will be changed to random later
-        ILootGame tGOLgame = new GameOfLightGame();
 
         sGen.generatePuzzleMicroDungeon(pWorld, (pChunkX << 4) + 8, (pChunkZ << 4) + 8);
         long tStop = System.currentTimeMillis();

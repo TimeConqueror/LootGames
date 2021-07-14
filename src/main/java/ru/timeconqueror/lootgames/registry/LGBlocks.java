@@ -4,7 +4,6 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import eu.usrv.legacylootgames.blocks.DungeonBrick;
 import eu.usrv.legacylootgames.blocks.DungeonLightSource;
 import eu.usrv.legacylootgames.items.DungeonBlockItem;
-import eu.usrv.legacylootgames.tiles.TELootGamesMasterBlock;
 import net.minecraft.block.Block;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.block.BoardBorderBlock;
@@ -37,6 +36,7 @@ public class LGBlocks {
         GameRegistry.registerBlock(DUNGEON_WALL, DungeonBlockItem.class, "LootGamesDungeonWall");
         GameRegistry.registerBlock(DUNGEON_LAMP, DungeonBlockItem.class, "LootGamesDungeonLight");
         GameRegistry.registerBlock(PUZZLE_MASTER, "LootGamesMasterBlock");
+        GameRegistry.registerTileEntity(PuzzleMasterTile.class, "LOOTGAMES_MASTER_TE");
 
         regBlock(SMART_SUBORDINATE, "smart_subordinate");
         regBlock(BOARD_BORDER, "board_border");
@@ -45,11 +45,8 @@ public class LGBlocks {
         regBlock(GOL_MASTER, "gol_master");
         regBlock(MS_MASTER, "ms_master");
 
-        GameRegistry.registerTileEntity(TELootGamesMasterBlock.class, "LOOTGAMES_MASTER_TE");
-
         GameRegistry.registerTileEntity(GOLMasterTile.class, "gol_master");
         GameRegistry.registerTileEntity(MSMasterTile.class, "ms_master");
-        GameRegistry.registerTileEntity(PuzzleMasterTile.class, "puzzle_master");
     }
 
     public static void regBlock(Block block, String name) {

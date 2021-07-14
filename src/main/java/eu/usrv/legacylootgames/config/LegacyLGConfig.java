@@ -3,14 +3,11 @@ package eu.usrv.legacylootgames.config;
 
 import eu.usrv.yamcore.auxiliary.IntHelper;
 import eu.usrv.yamcore.config.ConfigManager;
-import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
 import ru.timeconqueror.lootgames.LegacyMigrator;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.logging.Level;
 
 
@@ -22,25 +19,8 @@ public class LegacyLGConfig extends ConfigManager {
     public GOLConfig GolConfig;
     public HashMap<Integer, Integer> DimensionWhitelist = new HashMap<>();
 
-    private boolean disableDonorListDownloading; //ignored
-
     public LegacyLGConfig(File pConfigBaseDirectory, String pModCollectionDirectory, String pModID) {
         super(pConfigBaseDirectory, pModCollectionDirectory, pModID);
-    }
-
-    public boolean isDimensionEnabledForWG(int pDimensionID) {
-        return DimensionWhitelist.containsKey(pDimensionID);
-    }
-
-    public boolean isDonorListEnabled() {
-        return !disableDonorListDownloading;
-    }
-
-    public int getWorldGenRhombusSize(int pDimensionID) {
-        if (!isDimensionEnabledForWG(pDimensionID))
-            return -1;
-        else
-            return DimensionWhitelist.get(pDimensionID);
     }
 
     private void parseDimensionConfig(String[] pDimensionList) {
@@ -91,36 +71,6 @@ public class LegacyLGConfig extends ConfigManager {
         parseDimensionConfig(tDimConfig);
 
         DungeonLoggerLogLevel = _mainConfig.getString("DungeonLoggerLogLevel", "debug", DungeonLoggerLogLevel, "LogLevel for the separate DungeonGenerator Logger. Valid options: info, debug, trace", new String[]{"INFO", "DEBUG", "TRACE"});
-
-        initNewConfigs();
-    }
-
-    private List<Integer> parseStringListToIntList(String[] pSource) {
-        List<Integer> tLst = new ArrayList<Integer>();
-
-        for (String tEntry : pSource) {
-            if (IntHelper.tryParse(tEntry))
-                tLst.add(Integer.parseInt(tEntry));
-        }
-
-        return tLst;
-    }
-
-    public void reload() {
-        GolConfig.Init();
-        MinigamesEnabled = _mainConfig.getBoolean("MinigamesEnabled", "main", MinigamesEnabled, "Switch to enable or disable the Master-Blocks. If disabled, no minigames will spawn.");
-        WorldGenEnabled = _mainConfig.getBoolean("WorldGenEnabled", "worldgen", WorldGenEnabled, "Enable or disable WorldGen");
-
-        String[] tDimConfig = _mainConfig.getStringList("DimensionWhitelist", "worldgen", new String[]{"0; 20"}, "List DimensionIDs where LootGame Dungeons are allowed to spawn");
-        parseDimensionConfig(tDimConfig);
-
-        DungeonLoggerLogLevel = _mainConfig.getString("DungeonLoggerLogLevel", "debug", DungeonLoggerLogLevel, "LogLevel for the separate DungeonGenerator Logger. Valid options: info, debug, trace", new String[]{"INFO", "DEBUG", "TRACE"});
-
-        initNewConfigs();
-    }
-
-    private void initNewConfigs() {
-        disableDonorListDownloading = _mainConfig.getBoolean("disableDonorListDownloading", "main", false, "Disables downloading of donors list. It will speed-up mod loading, when you don't have an access to the Pastebin or play offline.");
     }
 
     protected void PostInit() {
@@ -235,24 +185,6 @@ public class LegacyLGConfig extends ConfigManager {
         LootStageConfig(int pLevel) {
             DimensionalLoots = null;
             LevelID = pLevel;
-        }
-
-        // Get suitable LootTable for DimensionID.
-        // If none is configured, return the default Loottable
-        public String GetLootTable(World pWorldObject) {
-            if (DimensionalLoots.containsKey(pWorldObject.provider.dimensionId))
-                return DimensionalLoots.get(pWorldObject.provider.dimensionId).LootTable;
-            else
-                return LootTable;
-        }
-
-        public int getMinDigitsRequired(World pWorldObject) {
-            int tRet = MinDigitsRequired;
-
-            if (DimensionalLoots.containsKey(pWorldObject.provider.dimensionId))
-                tRet += DimensionalLoots.get(pWorldObject.provider.dimensionId).AdditionalDigits;
-
-            return tRet;
         }
 
         public void SetDimensionalLootConfig(String[] pConfigList) {

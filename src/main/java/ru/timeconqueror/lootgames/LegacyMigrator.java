@@ -40,7 +40,7 @@ public class LegacyMigrator {
 
             migrateConfigs(legacyCfg);
 
-            boolean cantDelete = false;
+            boolean cantDelete;
             try {
                 cantDelete = !file.delete();
             } catch (Exception e) {
