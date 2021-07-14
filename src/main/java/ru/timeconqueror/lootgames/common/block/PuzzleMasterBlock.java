@@ -33,6 +33,8 @@ public class PuzzleMasterBlock extends GameBlock {
 
     public PuzzleMasterBlock() {
         setLightLevel(1);
+        setCreativeTab(LootGames.CREATIVE_TAB);
+        setUnlocalizedName(LootGames.dotted("puzzle_master"));
     }
 
     @Override

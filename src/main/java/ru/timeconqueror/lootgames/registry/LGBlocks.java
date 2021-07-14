@@ -5,6 +5,7 @@ import eu.usrv.legacylootgames.blocks.DungeonBrick;
 import eu.usrv.legacylootgames.blocks.DungeonLightSource;
 import eu.usrv.legacylootgames.items.DungeonBlockItem;
 import net.minecraft.block.Block;
+import net.minecraft.item.ItemBlock;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.block.BoardBorderBlock;
 import ru.timeconqueror.lootgames.api.block.GameMasterBlock;
@@ -35,7 +36,7 @@ public class LGBlocks {
     public static void register() {
         GameRegistry.registerBlock(DUNGEON_WALL, DungeonBlockItem.class, "LootGamesDungeonWall");
         GameRegistry.registerBlock(DUNGEON_LAMP, DungeonBlockItem.class, "LootGamesDungeonLight");
-        GameRegistry.registerBlock(PUZZLE_MASTER, "LootGamesMasterBlock");
+        GameRegistry.registerBlock(PUZZLE_MASTER, ItemBlock.class, "LootGamesMasterBlock");
         GameRegistry.registerTileEntity(PuzzleMasterTile.class, "LOOTGAMES_MASTER_TE");
 
         regBlock(SMART_SUBORDINATE, "smart_subordinate");
@@ -50,7 +51,7 @@ public class LGBlocks {
     }
 
     public static void regBlock(Block block, String name) {
-        block.setUnlocalizedName(name);
+        block.setUnlocalizedName(LootGames.dotted(name));
         GameRegistry.registerBlock(block, name);
     }
 

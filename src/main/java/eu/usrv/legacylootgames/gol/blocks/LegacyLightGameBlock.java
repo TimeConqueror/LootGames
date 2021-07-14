@@ -8,6 +8,7 @@ import eu.usrv.legacylootgames.gol.tiles.LegacyGameOfLightTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
@@ -27,6 +28,10 @@ public class LegacyLightGameBlock extends Block implements ITileEntityProvider {
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int p_149691_1_, int p_149691_2_) {
         return IconLoader.shieldedDungeonFloor;
+    }
+
+    @Override
+    public void registerIcons(IIconRegister reg) {
     }
 
     @Override

@@ -105,6 +105,10 @@ public class LootGames {
         return LootGames.MODID + ":" + name;
     }
 
+    public static String dotted(String name) {
+        return LootGames.MODID + "." + name;
+    }
+
     public static ResourceLocation rl(String path) {
         return new ResourceLocation(MODID, path);
     }
