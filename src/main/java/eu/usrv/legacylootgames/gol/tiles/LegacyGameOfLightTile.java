@@ -241,8 +241,4 @@ public class LegacyGameOfLightTile extends TileEntity {
             }
         }
     }
-
-    public enum eGameStage {
-        UNDEPLOYED, SLEEP, ACTIVE_PLAY_SEQUENCE, ACTIVE_WAIT_FOR_PLAYER, PENDING_GAME_START, PLAYMUSIC
-    }
 }
