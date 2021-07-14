@@ -233,10 +233,10 @@ public class LegacyGameOfLightTile extends TileEntity {
 
                 BlockPos puzzle = pos.offset(0, 2, 0);
                 if (WorldExt.getBlock(worldObj, puzzle).isReplaceable(worldObj, puzzle.getX(), puzzle.getY(), puzzle.getZ())) {
-                    LegacyMigrator.LOGGER.info("Found old Game Of Light block on {}! Converting structure back to puzzle master!", pos);
+                    LegacyMigrator.LOGGER.debug("Found old Game Of Light block on {}! Converting structure back to puzzle master!", pos);
                     WorldExt.setBlock(worldObj, puzzle, LGBlocks.PUZZLE_MASTER);
                 } else {
-                    LegacyMigrator.LOGGER.info("Found old Game Of Light block on {}! But the position for puzzle master is obstructed, so I just delete this minigame block, sorry :c", pos);
+                    LegacyMigrator.LOGGER.debug("Found old Game Of Light block on {}! But the position for puzzle master is obstructed, so I just delete this minigame block, sorry :c", pos);
                 }
             }
         }
