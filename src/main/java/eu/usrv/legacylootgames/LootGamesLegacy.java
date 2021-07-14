@@ -13,7 +13,6 @@ import eu.usrv.legacylootgames.command.LootGamesCommand;
 import eu.usrv.legacylootgames.command.PeacefulEntityCommand;
 import eu.usrv.legacylootgames.command.ProfilingCommand;
 import eu.usrv.legacylootgames.config.LegacyLGConfig;
-import eu.usrv.legacylootgames.network.NetDispatcher;
 import eu.usrv.legacylootgames.worldgen.LootGamesWorldGen;
 import eu.usrv.yamcore.YAMCore;
 import ru.timeconqueror.lootgames.LootGames;
@@ -58,8 +57,6 @@ public class LootGamesLegacy {
     public static void init(FMLInitializationEvent event) {
         GameMgr = new GameManager();
         GameMgr.initGames();
-
-        NetDispatcher.INSTANCE.registerPackets();
     }
 
     public static void onComplete(FMLLoadCompleteEvent event) {

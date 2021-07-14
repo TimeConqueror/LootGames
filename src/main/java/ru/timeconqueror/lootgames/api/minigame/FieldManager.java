@@ -73,7 +73,7 @@ public class FieldManager {
 
         return CollectionUtils.allMatch(positions, (pos) -> {
             BlockState state = WorldExt.getBlockState(world, pos);
-            return (state.getBlock() == LGBlocks.DUNGEON_WALL && state.getMeta() == DungeonBrick.eDungeonBricks.FLOOR_SHIELDED.ordinal()) || state.getBlock().getMaterial().isReplaceable() || pos.equals(except);
+            return (state.getBlock() == LGBlocks.DUNGEON_WALL && state.getMeta() == DungeonBrick.Type.FLOOR_SHIELDED.ordinal()) || state.getBlock().getMaterial().isReplaceable() || pos.equals(except);
         });
     }
 

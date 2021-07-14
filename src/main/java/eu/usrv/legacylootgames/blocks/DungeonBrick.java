@@ -52,7 +52,7 @@ public class DungeonBrick extends Block {
     public int damageDropped(int meta) {
         int tRetMeta = meta;
 
-        if (meta == eDungeonBricks.CEILING.ordinal() || meta == eDungeonBricks.FLOOR.ordinal() || meta == eDungeonBricks.WALL.ordinal())
+        if (meta == Type.CEILING.ordinal() || meta == Type.FLOOR.ordinal() || meta == Type.WALL.ordinal())
             tRetMeta = meta + RandHelper.flipCoin(0, 3);
 
         return tRetMeta;
@@ -74,9 +74,9 @@ public class DungeonBrick extends Block {
     public int getHarvestLevel(int metadata) {
         int tHarvestLevel = super.getHarvestLevel(metadata);
 
-        if (metadata == eDungeonBricks.CEILING.ordinal() || metadata == eDungeonBricks.FLOOR.ordinal() || metadata == eDungeonBricks.WALL.ordinal())
+        if (metadata == Type.CEILING.ordinal() || metadata == Type.FLOOR.ordinal() || metadata == Type.WALL.ordinal())
             tHarvestLevel = 4;
-        else if (metadata == eDungeonBricks.CEILING_CRACKED.ordinal() || metadata == eDungeonBricks.FLOOR_CRACKED.ordinal() || metadata == eDungeonBricks.WALL_CRACKED.ordinal())
+        else if (metadata == Type.CEILING_CRACKED.ordinal() || metadata == Type.FLOOR_CRACKED.ordinal() || metadata == Type.WALL_CRACKED.ordinal())
             tHarvestLevel = 2;
 
         return tHarvestLevel;
@@ -92,9 +92,9 @@ public class DungeonBrick extends Block {
         int tMeta = pWorld.getBlockMetadata(pX, pY, pZ);
         float tBlockHardness = super.getBlockHardness(pWorld, pX, pY, pZ);
 
-        if (tMeta == eDungeonBricks.FLOOR_SHIELDED.ordinal())
+        if (tMeta == Type.FLOOR_SHIELDED.ordinal())
             tBlockHardness = -1F;
-        else if (tMeta == eDungeonBricks.CEILING_CRACKED.ordinal() || tMeta == eDungeonBricks.FLOOR_CRACKED.ordinal() || tMeta == eDungeonBricks.WALL_CRACKED.ordinal())
+        else if (tMeta == Type.CEILING_CRACKED.ordinal() || tMeta == Type.FLOOR_CRACKED.ordinal() || tMeta == Type.WALL_CRACKED.ordinal())
             tBlockHardness = 2.0F;
 
         return tBlockHardness;
@@ -107,7 +107,7 @@ public class DungeonBrick extends Block {
         return mIcons[pMeta];
     }
 
-    public enum eDungeonBricks {
+    public enum Type {
         WALL,
         CEILING,
         FLOOR,

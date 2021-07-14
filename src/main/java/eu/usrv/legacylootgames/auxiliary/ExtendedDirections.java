@@ -1,6 +1,10 @@
 package eu.usrv.legacylootgames.auxiliary;
 
 
+import com.google.common.collect.Lists;
+
+import java.util.List;
+
 /**
  * Extended ForgeDirections enum to cover a full block-circle
  */
@@ -46,6 +50,7 @@ public enum ExtendedDirections {
     UNKNOWN(0, 0, 0);
 
     public static final ExtendedDirections[] VALID_DIRECTIONS = {DOWN, UP, NORTH, SOUTH, WEST, EAST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST};
+    public static final List<ExtendedDirections> HORIZONTAL = Lists.newArrayList(NORTH, SOUTH, WEST, EAST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST);
     public static final int[] OPPOSITES = {1, 0, 3, 2, 5, 4, 9, 8, 7, 6, 10};
     public final int offsetX;
     public final int offsetY;
@@ -68,6 +73,10 @@ public enum ExtendedDirections {
         offsetY = y;
         offsetZ = z;
         flag = 1 << ordinal();
+    }
+
+    public static boolean isHorizontal(ExtendedDirections direction) {
+        return HORIZONTAL.contains(direction);
     }
 
     public static ExtendedDirections getOrientation(int id) {

@@ -54,7 +54,7 @@ public class LegacyMigrator {
         }
     }
 
-    public static void migrateConfigs(LegacyLGConfig legacyCfg) {
+    private static void migrateConfigs(LegacyLGConfig legacyCfg) {
         Configuration cfgGeneral = LGConfigs.GENERAL.getConfig();
         ConfigCategory catWorldGen = cfgGeneral.getCategory(ConfigGeneral.Names.CATEGORY_WORLDGEN);
         catWorldGen.get(ConfigGeneral.Names.DISABLE_DUNGEON_GEN).set(!legacyCfg.WorldGenEnabled);

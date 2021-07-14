@@ -135,17 +135,17 @@ public class StructureGenerator {
                         if (axisX == 0 && axisZ == 0 && axisY == _mDungeonBottom + PUZZLEROOM_MASTER_TE_OFFSET)
                             _mWorldObj.setBlock(axisX + _mCenterX, axisY, axisZ + _mCenterZ, LGBlocks.PUZZLE_MASTER);
                         else if (axisY == _mDungeonBottom) // bottom layer of the dungeon
-                            _mWorldObj.setBlock(axisX + _mCenterX, axisY, axisZ + _mCenterZ, LGBlocks.DUNGEON_WALL, RandHelper.chance(10, DungeonBrick.eDungeonBricks.FLOOR_CRACKED.ordinal(), DungeonBrick.eDungeonBricks.FLOOR.ordinal()), 2);
+                            _mWorldObj.setBlock(axisX + _mCenterX, axisY, axisZ + _mCenterZ, LGBlocks.DUNGEON_WALL, RandHelper.chance(10, DungeonBrick.Type.FLOOR_CRACKED.ordinal(), DungeonBrick.Type.FLOOR.ordinal()), 2);
                         else if (axisY == _mDungeonTop) // Top layer of the dungeon
-                            _mWorldObj.setBlock(axisX + _mCenterX, axisY, axisZ + _mCenterZ, LGBlocks.DUNGEON_WALL, RandHelper.chance(10, DungeonBrick.eDungeonBricks.CEILING_CRACKED.ordinal(), DungeonBrick.eDungeonBricks.CEILING.ordinal()), 2);
+                            _mWorldObj.setBlock(axisX + _mCenterX, axisY, axisZ + _mCenterZ, LGBlocks.DUNGEON_WALL, RandHelper.chance(10, DungeonBrick.Type.CEILING_CRACKED.ordinal(), DungeonBrick.Type.CEILING.ordinal()), 2);
                         else if (axisY == _mDungeonBottom + 1) // Playfield placeholder to the player doesn't stand within generated blocks
-                            _mWorldObj.setBlock(axisX + _mCenterX, axisY, axisZ + _mCenterZ, LGBlocks.DUNGEON_WALL, DungeonBrick.eDungeonBricks.FLOOR_SHIELDED.ordinal(), 2);
+                            _mWorldObj.setBlock(axisX + _mCenterX, axisY, axisZ + _mCenterZ, LGBlocks.DUNGEON_WALL, DungeonBrick.Type.FLOOR_SHIELDED.ordinal(), 2);
                         else {
                             if (axisX == (PUZZLEROOM_CENTER_TO_BORDER * -1) || axisX == PUZZLEROOM_CENTER_TO_BORDER || axisZ == (PUZZLEROOM_CENTER_TO_BORDER * -1) || axisZ == PUZZLEROOM_CENTER_TO_BORDER) {
                                 if (axisY == (_mDungeonTop - (int) Math.floor((PUZZLEROOM_HEIGHT / 2))))
                                     _mWorldObj.setBlock(axisX + _mCenterX, axisY, axisZ + _mCenterZ, LGBlocks.DUNGEON_LAMP, RandHelper.chance(10, DungeonLightSource.State.BROKEN.ordinal(), DungeonLightSource.State.NORMAL.ordinal()), 2);
                                 else
-                                    _mWorldObj.setBlock(axisX + _mCenterX, axisY, axisZ + _mCenterZ, LGBlocks.DUNGEON_WALL, RandHelper.chance(10, DungeonBrick.eDungeonBricks.WALL_CRACKED.ordinal(), DungeonBrick.eDungeonBricks.WALL.ordinal()), 2);
+                                    _mWorldObj.setBlock(axisX + _mCenterX, axisY, axisZ + _mCenterZ, LGBlocks.DUNGEON_WALL, RandHelper.chance(10, DungeonBrick.Type.WALL_CRACKED.ordinal(), DungeonBrick.Type.WALL.ordinal()), 2);
                             }
                         }
                     }

@@ -7,11 +7,10 @@ import eu.usrv.legacylootgames.LootGamesLegacy;
 import eu.usrv.legacylootgames.StructureGenerator;
 import eu.usrv.legacylootgames.achievements.LootGameAchievement;
 import eu.usrv.legacylootgames.auxiliary.ExtendedDirections;
+import eu.usrv.legacylootgames.blocks.DungeonBrick;
 import eu.usrv.legacylootgames.blocks.DungeonLightSource;
 import eu.usrv.legacylootgames.config.LegacyLGConfig.LootStageConfig;
 import eu.usrv.legacylootgames.gol.GameOfLightGame;
-import eu.usrv.legacylootgames.network.NetDispatcher;
-import eu.usrv.legacylootgames.network.msg.SpawnParticleFXMessage;
 import eu.usrv.yamcore.auxiliary.ItemDescriptor;
 import eu.usrv.yamcore.auxiliary.PlayerChatHelper;
 import net.minecraft.block.Block;
@@ -32,11 +31,16 @@ import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.event.world.NoteBlockEvent.Note;
 import net.minecraftforge.event.world.NoteBlockEvent.Octave;
+import ru.timeconqueror.lootgames.LegacyMigrator;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
+import ru.timeconqueror.lootgames.utils.future.BlockPos;
+import ru.timeconqueror.lootgames.utils.future.WorldExt;
 
 import java.util.*;
+
+import static eu.usrv.legacylootgames.auxiliary.ExtendedDirections.*;
 
 
 public class TELightGameBlock extends TileEntity {
@@ -464,7 +468,7 @@ public class TELightGameBlock extends TileEntity {
         }
 
         // Destroy all gameblocks
-        setBlockDirectionToAir(ExtendedDirections.NORTH);
+        setBlockDirectionToAir(NORTH);
         setBlockDirectionToAir(ExtendedDirections.EAST);
         setBlockDirectionToAir(ExtendedDirections.SOUTH);
         setBlockDirectionToAir(ExtendedDirections.WEST);
@@ -491,7 +495,7 @@ public class TELightGameBlock extends TileEntity {
 
         // 01.01.2018: Change Loot-Chest spawn to Max-Reached level instead of current correct digits
         if (mMaxLevelReached >= 5) {
-            spawnLootChest(ExtendedDirections.NORTH, LootGamesLegacy.ModConfig.GolConfig.GameStageIV);
+            spawnLootChest(NORTH, LootGamesLegacy.ModConfig.GolConfig.GameStageIV);
             LootGameAchievement.GOL_MASTER_LEVEL4.triggerAchievement(pPlayer);
         }
         if (mMaxLevelReached >= 4) {
@@ -615,7 +619,7 @@ public class TELightGameBlock extends TileEntity {
         if (mGameStage != eGameStage.SLEEP && mGameStage != eGameStage.UNDEPLOYED)
             return false;
 
-        boolean tSpawnCheck = isValidLocationForDeploy(ExtendedDirections.NORTH);
+        boolean tSpawnCheck = isValidLocationForDeploy(NORTH);
         if (!isValidLocationForDeploy(ExtendedDirections.NORTHEAST))
             tSpawnCheck = false;
         if (!isValidLocationForDeploy(ExtendedDirections.NORTHWEST))
@@ -632,7 +636,7 @@ public class TELightGameBlock extends TileEntity {
             tSpawnCheck = false;
 
         if (tSpawnCheck) {
-            mNorthPos = setAndReturnGameBlock(ExtendedDirections.NORTH);
+            mNorthPos = setAndReturnGameBlock(NORTH);
             mSouthPos = setAndReturnGameBlock(ExtendedDirections.SOUTH);
             mWestPos = setAndReturnGameBlock(ExtendedDirections.WEST);
             mEastPos = setAndReturnGameBlock(ExtendedDirections.EAST);
@@ -914,13 +918,28 @@ public class TELightGameBlock extends TileEntity {
             LootGames.LOGGER.info(String.format("FX at %.2f %.2f %.2f", fxPosX, fxPosY, fxPosZ));
 
         TargetPoint tp = new TargetPoint(this.worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 100);
-        NetDispatcher.INSTANCE.sendToAllAround(new SpawnParticleFXMessage(pFX.getFXName(), fxPosX, fxPosY, fxPosZ, motionX, motionY, motionZ), tp);
     }
 
     // State-machine style main loop for TE update
     @Override
     public void updateEntity() {
-        super.updateEntity();
+        if (!worldObj.isRemote) {
+            ExtendedDirections direction = getDirection();
+            BlockPos pos = BlockPos.of(xCoord, yCoord, zCoord);
+            if (isHorizontal(direction)) {
+                WorldExt.setBlock(worldObj, pos, LGBlocks.DUNGEON_WALL, DungeonBrick.Type.FLOOR_SHIELDED.ordinal(), 3);
+            } else if (direction == UP) {
+                WorldExt.setBlock(worldObj, pos, LGBlocks.DUNGEON_WALL, DungeonBrick.Type.FLOOR_SHIELDED.ordinal(), 3);
+
+                BlockPos puzzle = pos.offset(0, 2, 0);
+                if (WorldExt.getBlock(worldObj, puzzle).isReplaceable(worldObj, puzzle.getX(), puzzle.getY(), puzzle.getZ())) {
+                    LegacyMigrator.LOGGER.info("Found old Game Of Light block on {}! Converting structure back to puzzle master!", pos);
+                    WorldExt.setBlock(worldObj, puzzle, LGBlocks.PUZZLE_MASTER);
+                } else {
+                    LegacyMigrator.LOGGER.info("Found old Game Of Light block on {}! But the position for puzzle master is obstructed, so I just delete this minigame block, sorry :c", pos);
+                }
+            }
+        }
 
         if (!mIsMaster)
             return;
