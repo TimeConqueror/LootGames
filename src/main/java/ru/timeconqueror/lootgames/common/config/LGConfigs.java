@@ -1,24 +1,26 @@
 package ru.timeconqueror.lootgames.common.config;
 
+import net.minecraftforge.common.config.Configuration;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.common.config.base.StagedRewardConfig;
 
 public class LGConfigs {
     public static final ConfigGeneral GENERAL = new ConfigGeneral();
     public static final ConfigMS MINESWEEPER = new ConfigMS();
     public static final ConfigGOL GOL = new ConfigGOL();
-    public static final StagedRewardConfig.FourStagedRewardConfig REWARDS_MINESWEEPER = StagedRewardConfig.fourStaged(LGConfigs.MINESWEEPER.getKey(), StagedRewards.fourStagedDefaults());
-    public static final StagedRewardConfig.FourStagedRewardConfig REWARDS_GOL = StagedRewardConfig.fourStaged(LGConfigs.GOL.getKey(), StagedRewards.fourStagedDefaults());
+    public static final ConfigRewards REWARDS = new ConfigRewards();
 
     public static String resolve(String path) {
         return LootGames.MODID + "/" + path + ".cfg";
+    }
+
+    public static String mergeCategories(String parent, String child) {
+        return parent + Configuration.CATEGORY_SPLITTER + child;
     }
 
     public static void load() {
         GENERAL.load();
         MINESWEEPER.load();
         GOL.load();
-        REWARDS_MINESWEEPER.load();
-        REWARDS_GOL.load();
+        REWARDS.load();
     }
 }

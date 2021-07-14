@@ -42,7 +42,7 @@ public class LegacyMigrator {
 
             boolean cantDelete = false;
             try {
-//                cantDelete = !file.delete();
+                cantDelete = !file.delete();
             } catch (Exception e) {
                 cantDelete = true;
                 e.printStackTrace();
@@ -77,15 +77,15 @@ public class LegacyMigrator {
         catGol.get(ConfigGOL.Names.LAVA_ON_FAIL).set(legacyGol.GameFail_Lava);
 
         int rounds = legacyGol.StartDigits;
-        Configuration cfgRewardsGol = LGConfigs.REWARDS_GOL.getConfig();
-        rounds = processStageConfig(rounds, legacyGol.GameStageI, cfgGol.getCategory(ConfigGOL.Names.CATEGORY_STAGE_1), cfgRewardsGol.getCategory(RewardConfig.Names.CATEGORY_STAGE_1));
-        rounds = processStageConfig(rounds, legacyGol.GameStageII, cfgGol.getCategory(ConfigGOL.Names.CATEGORY_STAGE_2), cfgRewardsGol.getCategory(RewardConfig.Names.CATEGORY_STAGE_2));
-        rounds = processStageConfig(rounds, legacyGol.GameStageIII, cfgGol.getCategory(ConfigGOL.Names.CATEGORY_STAGE_3), cfgRewardsGol.getCategory(RewardConfig.Names.CATEGORY_STAGE_3));
-        processStageConfig(rounds, legacyGol.GameStageIV, cfgGol.getCategory(ConfigGOL.Names.CATEGORY_STAGE_4), cfgRewardsGol.getCategory(RewardConfig.Names.CATEGORY_STAGE_4));
+        Configuration cfgRewards = LGConfigs.REWARDS.getConfig();
+        rounds = processStageConfig(rounds, legacyGol.GameStageI, cfgGol.getCategory(LGConfigs.GOL.stage1.getCategoryName()), cfgRewards.getCategory(LGConfigs.REWARDS.rewardsGol.getStage1().getCategoryName()));
+        rounds = processStageConfig(rounds, legacyGol.GameStageII, cfgGol.getCategory(LGConfigs.GOL.stage2.getCategoryName()), cfgRewards.getCategory(LGConfigs.REWARDS.rewardsGol.getStage2().getCategoryName()));
+        rounds = processStageConfig(rounds, legacyGol.GameStageIII, cfgGol.getCategory(LGConfigs.GOL.stage3.getCategoryName()), cfgRewards.getCategory(LGConfigs.REWARDS.rewardsGol.getStage3().getCategoryName()));
+        processStageConfig(rounds, legacyGol.GameStageIV, cfgGol.getCategory(LGConfigs.GOL.stage4.getCategoryName()), cfgRewards.getCategory(LGConfigs.REWARDS.rewardsGol.getStage4().getCategoryName()));
 
         LOGGER.info("Successfully migrated old config file!");
 
-        reloadConfigs(LGConfigs.GENERAL, LGConfigs.GOL, LGConfigs.REWARDS_GOL);
+        reloadConfigs(LGConfigs.GENERAL, LGConfigs.GOL, LGConfigs.REWARDS);
         LOGGER.info("Configs reloaded!");
     }
 

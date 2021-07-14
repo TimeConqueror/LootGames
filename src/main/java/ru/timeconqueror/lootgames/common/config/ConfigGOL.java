@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.common.config;
 
 import net.minecraftforge.common.config.Configuration;
 import ru.timeconqueror.timecore.api.common.config.Config;
+import ru.timeconqueror.timecore.api.common.config.ConfigSection;
 
 import java.util.EnumSet;
 
@@ -14,13 +15,17 @@ public class ConfigGOL extends Config {
     public boolean lavaOnFail;
     public int timeout;
 
-    public StageConfig stage1 = new StageConfig(Names.CATEGORY_STAGE_1, "Regulates characteristics of stage 1.", new DefaultData(5, false, 24));
-    public StageConfig stage2 = new StageConfig(Names.CATEGORY_STAGE_2, "Regulates characteristics of stage 2.", new DefaultData(5, false, 16));
-    public StageConfig stage3 = new StageConfig(Names.CATEGORY_STAGE_3, "Regulates characteristics of stage 3.", new DefaultData(5, false, 12));
-    public StageConfig stage4 = new StageConfig(Names.CATEGORY_STAGE_4, "Regulates characteristics of stage 4.", new DefaultData(5, true, 12));
+    public StageConfig stage1;
+    public StageConfig stage2;
+    public StageConfig stage3;
+    public StageConfig stage4;
 
     public ConfigGOL() {
         super(Names.CATEGORY_GAME_OF_LIGHT);
+        stage1 = new StageConfig(getKey(), "stage_1", "Regulates characteristics of stage 1.", new DefaultData(5, false, 24));
+        stage2 = new StageConfig(getKey(), "stage_2", "Regulates characteristics of stage 2.", new DefaultData(5, false, 16));
+        stage3 = new StageConfig(getKey(), "stage_3", "Regulates characteristics of stage 3.", new DefaultData(5, false, 12));
+        stage4 = new StageConfig(getKey(), "stage_4", "Regulates characteristics of stage 4.", new DefaultData(5, true, 12));
     }
 
     @Override
@@ -90,37 +95,29 @@ public class ConfigGOL extends Config {
         public static final String LAVA_ON_FAIL = "lava_on_fail";
         public static final String TIMEOUT = "timeout";
 
-        public static final String CATEGORY_STAGE_1 = "stage_1";
-        public static final String CATEGORY_STAGE_2 = "stage_2";
-        public static final String CATEGORY_STAGE_3 = "stage_3";
-        public static final String CATEGORY_STAGE_4 = "stage_4";
-
         public static final String ROUNDS = "round_count";
         public static final String RANDOMIZE_SEQUENCE = "randomize_sequence";
         public static final String DISPLAY_TIME = "display_time";
     }
 
-    public static class StageConfig {
+    public static class StageConfig extends ConfigSection {
         public int rounds;
         public boolean randomizeSequence;
         public int displayTime;
 
         private final DefaultData defData;
-        private final String key;
-        private final String comment;
 
-        public StageConfig(String key, String comment, DefaultData defData) {
-            this.key = key;
-            this.comment = comment;
+        public StageConfig(String parentKey, String key, String comment, DefaultData defData) {
+            super(parentKey, key, comment);
             this.defData = defData;
         }
 
-        private void init(Configuration config) {
-            rounds = config.getInt(Names.ROUNDS, key, defData.rounds, 1, 256, "Round count required to complete this stage and unlock leveled reward.");
-            randomizeSequence = config.getBoolean(Names.RANDOMIZE_SEQUENCE, key, defData.randomizeSequence, "If true, the pattern will randomize on each round in this stage.");
-            displayTime = config.getInt(Names.DISPLAY_TIME, key, defData.displayTime, 2, 40, "Amount of time (in ticks; 20 ticks = 1s) for which the symbol will be displayed.");
+        protected void init(Configuration config) {
+            rounds = config.getInt(Names.ROUNDS, getCategoryName(), defData.rounds, 1, 256, "Round count required to complete this stage and unlock leveled reward.");
+            randomizeSequence = config.getBoolean(Names.RANDOMIZE_SEQUENCE, getCategoryName(), defData.randomizeSequence, "If true, the pattern will randomize on each round in this stage.");
+            displayTime = config.getInt(Names.DISPLAY_TIME, getCategoryName(), defData.displayTime, 2, 40, "Amount of time (in ticks; 20 ticks = 1s) for which the symbol will be displayed.");
 
-            config.setCategoryComment(key, comment);
+            config.setCategoryComment(getCategoryName(), getComment());
         }
     }
 

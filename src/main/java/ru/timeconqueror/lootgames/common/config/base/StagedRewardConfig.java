@@ -1,19 +1,19 @@
 package ru.timeconqueror.lootgames.common.config.base;
 
+import net.minecraftforge.common.config.Configuration;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.common.config.StagedRewards;
-import ru.timeconqueror.lootgames.common.config.base.RewardConfig.Names;
-import ru.timeconqueror.timecore.api.common.config.Config;
+import ru.timeconqueror.timecore.api.common.config.ConfigSection;
 
-public class StagedRewardConfig extends Config {
+public class StagedRewardConfig extends ConfigSection {
     private final RewardConfig[] configs;
 
-    public static FourStagedRewardConfig fourStaged(String key, StagedRewards.FourStagedDefaults fourStagedDefaults) {
-        return new FourStagedRewardConfig(key, fourStagedDefaults);
+    public static FourStagedRewardConfig fourStaged(String parentKey, String key, String comment, StagedRewards.FourStagedDefaults fourStagedDefaults) {
+        return new FourStagedRewardConfig(parentKey, key, comment, fourStagedDefaults);
     }
 
-    protected StagedRewardConfig(String key, RewardConfig... rewardConfigs) {
-        super(key);
+    protected StagedRewardConfig(String parentKey, String key, String comment, RewardConfig... rewardConfigs) {
+        super(parentKey, key, comment);
         this.configs = rewardConfigs;
     }
 
@@ -29,26 +29,39 @@ public class StagedRewardConfig extends Config {
     }
 
     @Override
-    public void init() {
+    public void init(Configuration config) {
         for (int i = 0; i < configs.length; i++) {
             RewardConfig rc = configs[i];
             rc.init(config);
-            config.setCategoryComment(rc.getKey(), "Rewards for stage " + (i + 1));
+            config.setCategoryComment(rc.getCategoryName(), "Rewards for stage " + (i + 1));
         }
-    }
 
-    @Override
-    public String getRelativePath() {
-        return LGConfigs.resolve("rewards/" + getKey());
+        config.setCategoryComment(getCategoryName(), getComment());
     }
 
     public static class FourStagedRewardConfig extends StagedRewardConfig {
-        private FourStagedRewardConfig(String key, StagedRewards.FourStagedDefaults fourStagedDefaults) {
-            super(key,
-                    new RewardConfig(Names.CATEGORY_STAGE_1, fourStagedDefaults.getStage1()),
-                    new RewardConfig(Names.CATEGORY_STAGE_2, fourStagedDefaults.getStage2()),
-                    new RewardConfig(Names.CATEGORY_STAGE_3, fourStagedDefaults.getStage3()),
-                    new RewardConfig(Names.CATEGORY_STAGE_4, fourStagedDefaults.getStage4()));
+        private FourStagedRewardConfig(String parentKey, String key, String comment, StagedRewards.FourStagedDefaults fourStagedDefaults) {
+            super(parentKey, key, comment,
+                    new RewardConfig(LGConfigs.mergeCategories(parentKey, key), "stage_1", "Rewards for stage 1", fourStagedDefaults.getStage1()),
+                    new RewardConfig(LGConfigs.mergeCategories(parentKey, key), "stage_2", "Rewards for stage 2", fourStagedDefaults.getStage2()),
+                    new RewardConfig(LGConfigs.mergeCategories(parentKey, key), "stage_3", "Rewards for stage 3", fourStagedDefaults.getStage3()),
+                    new RewardConfig(LGConfigs.mergeCategories(parentKey, key), "stage_4", "Rewards for stage 4", fourStagedDefaults.getStage4()));
+        }
+
+        public RewardConfig getStage1() {
+            return getStageByIndex(0);
+        }
+
+        public RewardConfig getStage2() {
+            return getStageByIndex(1);
+        }
+
+        public RewardConfig getStage3() {
+            return getStageByIndex(2);
+        }
+
+        public RewardConfig getStage4() {
+            return getStageByIndex(3);
         }
     }
 }

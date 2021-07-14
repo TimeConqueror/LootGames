@@ -214,7 +214,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             }
         });
 
-        RewardUtils.spawnFourStagedReward(((WorldServer) getWorld()), this, getGameCenter(), maxReachedStage, LGConfigs.REWARDS_GOL);
+        RewardUtils.spawnFourStagedReward(((WorldServer) getWorld()), this, getGameCenter(), maxReachedStage, LGConfigs.REWARDS.rewardsGol);
     }
 
     @Override

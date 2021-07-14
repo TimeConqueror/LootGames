@@ -5,6 +5,7 @@ import net.minecraftforge.common.config.Configuration;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.common.config.ConfigMS.Snapshot.StageSnapshot;
 import ru.timeconqueror.timecore.api.common.config.Config;
+import ru.timeconqueror.timecore.api.common.config.ConfigSection;
 
 public class ConfigMS extends Config {
     private static final String NO_CHANGE_FOR_GENERATED = "Won't be changed for already generated Minesweeper boards!";
@@ -12,13 +13,17 @@ public class ConfigMS extends Config {
     public int detonationTime;
     public int attemptCount;
 
-    public final StageConfig stage1 = new StageConfig("stage_1", "Regulates characteristics of stage 1.", new DefaultData(6, 20));
-    public final StageConfig stage2 = new StageConfig("stage_2", "Regulates characteristics of stage 2.", new DefaultData(7, 30));
-    public final StageConfig stage3 = new StageConfig("stage_3", "Regulates characteristics of stage 3.", new DefaultData(8, 42));
-    public final StageConfig stage4 = new StageConfig("stage_4", "Regulates characteristics of stage 4.", new DefaultData(9, 68));
+    public final StageConfig stage1;
+    public final StageConfig stage2;
+    public final StageConfig stage3;
+    public final StageConfig stage4;
 
     public ConfigMS() {
         super("minesweeper");
+        stage1 = new StageConfig(getKey(), "stage_1", "Regulates characteristics of stage 1.", new DefaultData(6, 20));
+        stage2 = new StageConfig(getKey(), "stage_2", "Regulates characteristics of stage 2.", new DefaultData(7, 30));
+        stage3 = new StageConfig(getKey(), "stage_3", "Regulates characteristics of stage 3.", new DefaultData(8, 42));
+        stage4 = new StageConfig(getKey(), "stage_4", "Regulates characteristics of stage 4.", new DefaultData(9, 68));
     }
 
     @Override
@@ -63,17 +68,14 @@ public class ConfigMS extends Config {
         return new Snapshot(stage1.snapshot(), stage2.snapshot(), stage3.snapshot(), stage4.snapshot());
     }
 
-    public static class StageConfig {
+    public static class StageConfig extends ConfigSection {
         private int bombCount;
         private int boardRadius;
 
         private final DefaultData defData;
-        private final String key;
-        private final String comment;
 
-        public StageConfig(String key, String comment, DefaultData defData) {
-            this.key = key;
-            this.comment = comment;
+        public StageConfig(String parentKey, String key, String comment, DefaultData defData) {
+            super(parentKey, key, comment);
             this.defData = defData;
         }
 
@@ -81,9 +83,9 @@ public class ConfigMS extends Config {
             return new StageSnapshot(bombCount, getBoardSize());
         }
 
-        private void init(Configuration config) {
-            boardRadius = config.getInt("board_radius", key, defData.boardRadius, 2, 9, "The radius of Minesweeper board. " + NO_CHANGE_FOR_GENERATED);
-            bombCount = config.getInt("bomb_count", key, defData.bombCount, 1, Integer.MAX_VALUE, "The amount of bombs on the board. Bomb count must be strictly less than amount of game fields (board_radius ^ 2). ", NO_CHANGE_FOR_GENERATED);
+        public void init(Configuration config) {
+            boardRadius = config.getInt("board_radius", getCategoryName(), defData.boardRadius, 2, 9, "The radius of Minesweeper board. " + NO_CHANGE_FOR_GENERATED);
+            bombCount = config.getInt("bomb_count", getCategoryName(), defData.bombCount, 1, Integer.MAX_VALUE, "The amount of bombs on the board. Bomb count must be strictly less than amount of game fields (board_radius ^ 2). ", NO_CHANGE_FOR_GENERATED);
 
             int boardSize = getBoardSize();
 
@@ -94,7 +96,7 @@ public class ConfigMS extends Config {
                 this.bombCount = boardSize * boardSize - 2; // at least 1 field with no bomb
             }
 
-            config.setCategoryComment(key, comment);
+            config.setCategoryComment(getCategoryName(), getComment());
         }
 
         public int getBoardSize() {

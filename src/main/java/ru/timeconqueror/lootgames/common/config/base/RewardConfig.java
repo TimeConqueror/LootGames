@@ -16,29 +16,24 @@ public class RewardConfig extends ConfigSection {
 
     private final Defaults defaults;
 
-    public RewardConfig(String key, Defaults defaults) {
-        super(key, null);
+    public RewardConfig(String parent, String key, String comment, Defaults defaults) {
+        super(parent, key, comment);
         this.defaults = defaults;
     }
 
     public static class Names {
-        public static final String CATEGORY_STAGE_1 = "stage_1";
-        public static final String CATEGORY_STAGE_2 = "stage_2";
-        public static final String CATEGORY_STAGE_3 = "stage_3";
-        public static final String CATEGORY_STAGE_4 = "stage_4";
-
         public static final String MIN_ITEMS = "min_items";
         public static final String MAX_ITEMS = "max_items";
         public static final String DEFAULT_LOOT_TABLE = "default_loot_table";
         public static final String PER_DIM_CONFIGS = "per_dim_configs";
     }
 
-    public void init(Configuration config) {
-        minItems = config.getInt(Names.MIN_ITEMS, getKey(), defaults.minItems, 0, 256, "Minimum amount of item stacks to be generated in chest.");
-        maxItems = config.getInt(Names.MAX_ITEMS, getKey(), defaults.maxItems, 1, 256, "Maximum amount of item stacks to be generated in chest.");
-        defaultLootTable = config.getString(Names.DEFAULT_LOOT_TABLE, getKey(), defaults.lootTable, "Name of the loot table, items from which will be generated in the chest of this stage. This can be adjusted per dimension in \"per_dim_configs\".");
+    protected void init(Configuration config) {
+        minItems = config.getInt(Names.MIN_ITEMS, getCategoryName(), defaults.minItems, 0, 256, "Minimum amount of item stacks to be generated in chest.");
+        maxItems = config.getInt(Names.MAX_ITEMS, getCategoryName(), defaults.maxItems, 1, 256, "Maximum amount of item stacks to be generated in chest.");
+        defaultLootTable = config.getString(Names.DEFAULT_LOOT_TABLE, getCategoryName(), defaults.lootTable, "Name of the loot table, items from which will be generated in the chest of this stage. This can be adjusted per dimension in \"per_dim_configs\".");
 
-        String[] perDimConfigs = config.getStringList(Names.PER_DIM_CONFIGS, getKey(), new String[]{}, "Here you can add different loot tables to each dimension. If dimension isn't in this list, then game will take default loot table for this stage.\nSyntax: <dimension_key>|<loottable_name>\n<loottable_name> - The loottable name for the chest in this stage.\nGeneral Example: [ \"0|minecraft:chests/simple_dungeon\" ]");
+        String[] perDimConfigs = config.getStringList(Names.PER_DIM_CONFIGS, getCategoryName(), new String[]{}, "Here you can add different loot tables to each dimension. If dimension isn't in this list, then game will take default loot table for this stage.\nSyntax: <dimension_key>|<loottable_name>\n<loottable_name> - The loottable name for the chest in this stage.\nGeneral Example: [ \"0|minecraft:chests/simple_dungeon\" ]");
         parseDimConfigs(perDimConfigs);
     }
 

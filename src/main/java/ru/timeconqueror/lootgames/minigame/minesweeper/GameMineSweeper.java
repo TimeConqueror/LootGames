@@ -139,7 +139,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
             players.forEach(LGAchievements.MS_BEAT_LEVEL4::trigger);
         }
 
-        RewardUtils.spawnFourStagedReward(((WorldServer) getWorld()), this, central, currentLevel - 1, LGConfigs.REWARDS_MINESWEEPER);
+        RewardUtils.spawnFourStagedReward(((WorldServer) getWorld()), this, central, currentLevel - 1, LGConfigs.REWARDS.rewardsMinesweeper);
     }
 
     @Override
