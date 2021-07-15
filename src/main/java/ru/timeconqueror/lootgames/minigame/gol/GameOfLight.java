@@ -203,7 +203,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         super.triggerGameWin();
 
         forEachPlayerNearby(player -> {
-            sendTo(player, new ChatComponentTranslation("msg.lootgames.gol.reward_level_info", stage + 1, maxReachedStage), NotifyColor.SUCCESS);
+            sendTo(player, new ChatComponentTranslation("msg.lootgames.gol.reward_level_info", stage, maxReachedStage), NotifyColor.SUCCESS);
 
             if (maxReachedStage >= 3) {
                 LGAchievements.GOL_MASTER_LEVEL3.trigger(player);
@@ -588,6 +588,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             int maxRounds = stageCfg.rounds;
             if (round == maxRounds - 1) {//move to the next stage
                 if (stage == 3) {
+                    stage++;
                     maxReachedStage = 4;
                     save();
                     triggerGameWin();
