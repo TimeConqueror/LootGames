@@ -2,7 +2,6 @@ package ru.timeconqueror.lootgames.utils.future;
 
 import com.google.common.collect.AbstractIterator;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -349,24 +348,22 @@ public class BlockPos extends Vector3i {
         int j = y2 - y1 + 1;
         int k = z2 - z1 + 1;
         int l = i * j * k;
-        return () -> {
-            return new AbstractIterator<BlockPos>() {
-                private final BlockPos.Mutable cursor = new BlockPos.Mutable();
-                private int index;
+        return () -> new AbstractIterator<BlockPos>() {
+            private final Mutable cursor = new Mutable();
+            private int index;
 
-                protected BlockPos computeNext() {
-                    if (this.index == l) {
-                        return this.endOfData();
-                    } else {
-                        int i1 = this.index % i;
-                        int j1 = this.index / i;
-                        int k1 = j1 % j;
-                        int l1 = j1 / j;
-                        ++this.index;
-                        return this.cursor.set(x1 + i1, y1 + k1, z1 + l1);
-                    }
+            protected BlockPos computeNext() {
+                if (this.index == l) {
+                    return this.endOfData();
+                } else {
+                    int i1 = this.index % i;
+                    int j1 = this.index / i;
+                    int k1 = j1 % j;
+                    int l1 = j1 / j;
+                    ++this.index;
+                    return this.cursor.set(x1 + i1, y1 + k1, z1 + l1);
                 }
-            };
+            }
         };
     }
 
