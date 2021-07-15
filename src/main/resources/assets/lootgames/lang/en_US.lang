@@ -23,6 +23,7 @@ tile.lootgames.puzzle_master.name=Puzzle Master
 item.lootgames.dungeon_block.tooltip=Mobs can't spawn on this block.
 
 msg.lootgames.stage_complete=The structure seems to acknowledge your efforts...
+msg.lootgames.puzzle_master.turned_off=This structure seems to be disabled by the higher powers...
 msg.lootgames.win=The structure is pleased and rewards you!
 msg.lootgames.lose=The structure seems to be offended by your failure.
 msg.lootgames.attempt_left=You have %d attempts left.
@@ -38,7 +39,7 @@ msg.lootgames.gol.not_ready=You feel that the structure is not ready for reply n
 msg.lootgames.gol.wrong_block=It appears you chose the wrong color...
 msg.lootgames.gol.reward_level_info=Current reward level reached: %d (Best: %d)
 
-lootgames.achivement_page.name=Loot Games
+lootgames.achievement_page.name=Loot Games
 achievement.lootgames.find_dungeon=Buried secrets
 achievement.lootgames.find_dungeon.desc=Find a mysterious Minigame Dungeon
 achievement.lootgames.win_game=My precious!
