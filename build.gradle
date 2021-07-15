@@ -48,14 +48,6 @@ minecraft {
     mappings = "stable_12"
 }
 
-configurations {
-    shadeOnly
-}
-
-dependencies {
-    shadeOnly group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.3'
-}
-
 processResources {
     def cleanVersion = ""
     def versionArray = project.version.tokenize('-')
@@ -105,50 +97,3 @@ task signJar(dependsOn: 'reobf') {
         )
     }
 }
-
-/*
-#######################################
-##########   SHADOW PART   ############
-#######################################
- */
-
-shadowJar {
-    classifier = ""
-    dependencies {
-        exclude 'net\\minecraftforge\\**'
-        exclude 'GradleStart*'
-        include(dependency('org.apache.httpcomponents:httpclient:4.3.3'))
-//        include(dependency("org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"))
-//        include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}"))
-//        include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_version}"))
-//        include(dependency("org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"))
-//        include(dependency("org.jetbrains:annotations:${annotations_version}"))
-//        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}"))
-//        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${coroutines_version}"))
-
-        relocate 'org.apache', 'lgrepack.org.apache'
-    }
-}
-
-tasks.build.dependsOn shadowJar
-
-artifacts {
-    archives shadowJar
-}
-
-reobf {shadowJar {}}
-
-task reobfShadowJar(dependsOn: 'reobf') {
-}
-
-tasks.reobfShadowJar.mustRunAfter shadowJar
-tasks.build.dependsOn reobfShadowJar
-
-//shadowJar {
-//    classifier = ""
-//
-//    relocate 'org.apache.http.client', 'lgrepack.org.apache.http.client'
-//}
-//
-//reobf { shadowJar {  } }
-//tasks.reobfShadowJar.mustRunAfter shadowJar
