@@ -93,7 +93,7 @@ public class LegacyMigrator {
         int roundsStage2 = Math.max(legacyStage.MinDigitsRequired - startDigits, 1);
         catStage.get(ConfigGOL.Names.ROUNDS).set(roundsStage2);
         catStage.get(ConfigGOL.Names.RANDOMIZE_SEQUENCE).set(legacyStage.RandomizeSequence);
-        catStage.get(ConfigGOL.Names.DISPLAY_TIME).set(legacyStage.DisplayTime);
+        catStage.get(ConfigGOL.Names.DISPLAY_TIME).set(legacyStage.DisplayTime * 20 / 1000);
 
         catRew.get(RewardConfig.Names.MIN_ITEMS).set(legacyStage.MinItems);
         catRew.get(RewardConfig.Names.MAX_ITEMS).set(legacyStage.MaxItems);
