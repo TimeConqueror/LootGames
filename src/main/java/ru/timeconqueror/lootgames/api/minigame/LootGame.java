@@ -1,6 +1,5 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
-import com.sun.istack.internal.NotNull;
 import eu.usrv.legacylootgames.StructureGenerator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -110,7 +109,6 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         return getWorld().isRemote;
     }
 
-    @NotNull
     public World getWorld() {
         return Objects.requireNonNull(masterTileEntity.getWorld());
     }

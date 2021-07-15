@@ -1,6 +1,5 @@
 package ru.timeconqueror.timecore.api.common.config;
 
-import com.sun.istack.internal.NotNull;
 import net.minecraftforge.common.config.Configuration;
 
 import java.io.File;
@@ -27,7 +26,6 @@ public abstract class Config {
      * Example:
      * {@code lootgames/minesweeper.cfg} will be saved in {@code config/lootgames/minesweeper.toml}.
      */
-    @NotNull
     public abstract String getRelativePath();
 
     public String getKey() {

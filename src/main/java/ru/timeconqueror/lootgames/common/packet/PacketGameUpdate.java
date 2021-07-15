@@ -1,6 +1,5 @@
 package ru.timeconqueror.lootgames.common.packet;
 
-import com.sun.istack.internal.NotNull;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -122,7 +121,6 @@ public abstract class PacketGameUpdate<T extends IGamePacket> implements IMessag
             return null;
         }
 
-        @NotNull
         @SuppressWarnings("ConstantConditions")
         private World getWorld(MessageContext ctx) {
             return ctx.side == Side.CLIENT ? ClientProxy.world() : ctx.getServerHandler().playerEntity.worldObj;

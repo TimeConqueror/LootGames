@@ -1,6 +1,5 @@
 package ru.timeconqueror.lootgames.api.task;
 
-import com.sun.istack.internal.NotNull;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -17,7 +16,7 @@ public class TETaskScheduler implements INBTSerializable<NBTTagList> {
 
     private final TileEntity tileEntity;
 
-    public TETaskScheduler(@NotNull TileEntity tileEntity) {
+    public TETaskScheduler(TileEntity tileEntity) {
         this.tileEntity = tileEntity;
     }
 

@@ -1,6 +1,5 @@
 package ru.timeconqueror.lootgames.api.block.tile;
 
-import com.sun.istack.internal.NotNull;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
@@ -49,7 +48,6 @@ public class BoardGameMasterTile<T extends BoardLootGame<T>> extends GameMasterT
         GL11.glRotatef(90, 1, 0, 0);
     }
 
-    @NotNull
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
         return TileEntity.INFINITE_EXTENT_AABB;
