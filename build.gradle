@@ -41,7 +41,7 @@ minecraft {
     version = "${config.forge.version}-${config.minecraft.version}"
     runDir = "eclipse"
 
-    replaceIn "src/main/java/eu/usrv/lootgames/LootGames.java"
+    replaceIn "src/main/java/ru/timeconqueror/lootgames/LootGames.java"
     def versionArray = project.version.tokenize('-')
     replace "GRADLETOKEN_VERSION", versionArray[1]
 
