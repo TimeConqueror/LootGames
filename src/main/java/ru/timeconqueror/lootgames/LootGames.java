@@ -62,8 +62,9 @@ public class LootGames {
             MinecraftForge.EVENT_BUS.register(new IconLoader());
             MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
             MinecraftForge.EVENT_BUS.register(new MSOverlayHandler());
-            MinecraftForge.EVENT_BUS.register(new CommonEventHandler());
         }
+
+        MinecraftForge.EVENT_BUS.register(new CommonEventHandler());
 
         Config.setConfigDir(event.getModConfigurationDirectory());
 
