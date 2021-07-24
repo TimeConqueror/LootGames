@@ -13,8 +13,6 @@ import net.minecraft.world.server.ServerWorld;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.GameBlock;
 import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger.ExtraInfo;
-import ru.timeconqueror.lootgames.common.block.tile.MSMasterTile;
-import ru.timeconqueror.lootgames.common.config.ConfigMS;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
@@ -24,12 +22,10 @@ public class MSActivatorBlock extends GameBlock {
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (!worldIn.isClientSide()) {
-            ConfigMS.Snapshot snapshot = LGConfigs.MINESWEEPER.snapshot();
-            int allocatedSize = snapshot.getStage4().getBoardSize();
+            int allocatedSize = LGConfigs.MINESWEEPER.stage4.getBoardSize();
 
             boolean succeed = LootGamesAPI.getFieldManager()
                     .trySetupBoard(((ServerWorld) worldIn), pos, allocatedSize, 2, allocatedSize, LGBlocks.MS_MASTER.defaultBlockState(), player)
-                    .forTileIfSucceed(MSMasterTile.class, master -> master.init(snapshot))
                     .isSucceed();
 
             if (succeed) {

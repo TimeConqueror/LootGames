@@ -5,6 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -17,6 +18,7 @@ import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger.ExtraInfo;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
+import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.util.ChatUtils;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 
@@ -30,6 +32,7 @@ public class GOLActivatorBlock extends GameBlock {
 
             if (succeed) {
                 NetworkUtils.sendMessage(player, ChatUtils.format(new TranslationTextComponent("msg.lootgames.gol.start"), NotifyColor.NOTIFY.getColor()));
+                worldIn.playSound(null, pos, LGSounds.GOL_START_GAME, SoundCategory.MASTER, 0.75F, 1.0F);
                 LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayerEntity) player), new ExtraInfo(state, pos, player.getItemInHand(handIn)));
             }
         }

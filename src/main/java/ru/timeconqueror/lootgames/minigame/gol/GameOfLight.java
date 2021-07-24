@@ -72,7 +72,6 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     public void onPlace() {
         if (isServerSide()) {
             setupInitialStage(new StageUnderExpanding());
-            getWorld().playSound(null, getGameCenter(), LGSounds.GOL_START_GAME, SoundCategory.MASTER, 0.75F, 1.0F);
         }
     }
 

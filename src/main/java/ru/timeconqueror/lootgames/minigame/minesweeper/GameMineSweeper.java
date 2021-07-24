@@ -55,23 +55,10 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
     private boolean playRevealNeighboursSound = true;
 
-    /**
-     * Server-side only
-     */
     private Snapshot configSnapshot = null;
 
     public GameMineSweeper() {
         board = new MSBoard(0, 0);
-    }
-
-    public static Pos2i convertToGamePos(BlockPos masterPos, BlockPos subordinatePos) {
-        BlockPos temp = subordinatePos.subtract(masterPos);
-        return new Pos2i(temp.getX(), temp.getZ());
-    }
-
-    // server only
-    public void setConfigSnapshot(Snapshot configSnapshot) {
-        this.configSnapshot = configSnapshot;
     }
 
     @Override

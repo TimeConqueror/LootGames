@@ -73,9 +73,9 @@ public class LGBlocks {
             REGISTER.register("ms_activator", MSActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Minesweeper");
             REGISTER.register("pipes_activator", PipesActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGItemGroup.MAIN).name("Pipes (WIP)");
 
-            REGISTER.register("ms_master", gameMaster(MSMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Game of Light");
+            REGISTER.register("gol_master", gameMaster(GOLMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Game of Light");
+            REGISTER.register("ms_master", gameMaster(MSMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Minesweeper");
             REGISTER.register("pipes_master", gameMaster(PipesMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Pipes");
-            REGISTER.register("gol_master", gameMaster(GOLMasterTile::new)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Minesweeper");
         }
 
         @SuppressWarnings("CodeBlock2Expr")
