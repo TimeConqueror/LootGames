@@ -16,6 +16,7 @@ import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.api.util.RewardUtils;
+import ru.timeconqueror.lootgames.common.config.ConfigMS;
 import ru.timeconqueror.lootgames.common.config.ConfigMS.Snapshot;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSFieldChanged;
@@ -72,6 +73,15 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
 
         super.onPlace();
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+
+        if (isClientSide()) {
+            configSnapshot = ConfigMS.Snapshot.stub(); // needs for first client ticks, because the config from readNBT is called a little bit later
+        }
     }
 
     public boolean isBoardGenerated() {

@@ -118,7 +118,7 @@ public class ConfigMS extends Config {
         private final int boardRadius;
         private final int bombCount;
 
-        public DefaultData(int boardRadius, int bombCount) {
+        private DefaultData(int boardRadius, int bombCount) {
             this.boardRadius = boardRadius;
             this.bombCount = bombCount;
         }
@@ -139,7 +139,7 @@ public class ConfigMS extends Config {
         private final StageSnapshot stage3;
         private final StageSnapshot stage4;
 
-        public Snapshot(StageSnapshot stage1, StageSnapshot stage2, StageSnapshot stage3, StageSnapshot stage4) {
+        private Snapshot(StageSnapshot stage1, StageSnapshot stage2, StageSnapshot stage3, StageSnapshot stage4) {
             this.stage1 = stage1;
             this.stage2 = stage2;
             this.stage3 = stage3;
@@ -170,6 +170,10 @@ public class ConfigMS extends Config {
             return stage4;
         }
 
+        public static Snapshot stub() {
+            return new Snapshot(StageSnapshot.stub(), StageSnapshot.stub(), StageSnapshot.stub(), StageSnapshot.stub());
+        }
+
         public static class StageSnapshot {
             public static final Codec<StageSnapshot> CODEC = RecordCodecBuilder.create(instance ->
                     instance.group(
@@ -191,6 +195,10 @@ public class ConfigMS extends Config {
 
             public int getBombCount() {
                 return bombCount;
+            }
+
+            private static StageSnapshot stub() {
+                return new StageSnapshot(0, 0);
             }
         }
 
