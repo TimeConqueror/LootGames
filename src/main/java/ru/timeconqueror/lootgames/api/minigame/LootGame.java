@@ -24,7 +24,6 @@ import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.lootgames.api.packet.IClientGamePacket;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.api.task.TETaskScheduler;
-import ru.timeconqueror.lootgames.api.util.Auxiliary;
 import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
 import ru.timeconqueror.lootgames.common.packet.CPacketGameUpdate;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
@@ -36,6 +35,7 @@ import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
+import ru.timeconqueror.timecore.api.util.Auxiliary;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
 import ru.timeconqueror.timecore.api.util.Pair;
 

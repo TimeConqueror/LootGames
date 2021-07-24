@@ -1,7 +1,8 @@
 package ru.timeconqueror.lootgames.common.world.gen;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FlowingFluidBlock;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -25,6 +26,7 @@ import ru.timeconqueror.timecore.api.common.world.structure.processor.RandomizeB
 import java.util.Random;
 
 public class GameDungeonPieces {
+    private static final Direction[] DIRECTIONS = Direction.values();
     public static final ResourceLocation ROOM = LootGames.rl("room");
 
     public static class Piece extends TunedTemplateStructurePiece {
@@ -87,7 +89,10 @@ public class GameDungeonPieces {
             updateAbsolute(absPos, pos);
             while (boundingBox.isInside(absPos)) {
                 for (int i = 0; i < 3; i++) {
-                    if (shouldReplace(world, absPos)) {
+                    FluidState fluid = getFluidAround(world, absPos);
+                    if (!fluid.isEmpty()) {
+                        placeBlock(world, fluid.createLegacyBlock(), pos.getX(), pos.getY() + i, pos.getZ(), chunkBox);
+                    } else {
                         placeBlock(world, Blocks.AIR.defaultBlockState(), pos.getX(), pos.getY() + i, pos.getZ(), chunkBox);
                     }
                 }
@@ -99,8 +104,22 @@ public class GameDungeonPieces {
             return true;
         }
 
-        private boolean shouldReplace(ISeedReader world, BlockPos pos) {
-            return !(world.getBlockState(pos).getBlock() instanceof FlowingFluidBlock);
+        public FluidState getFluidAround(ISeedReader world, BlockPos pos) {
+            FluidState fluidState = world.getFluidState(pos);
+            if (!fluidState.isEmpty()) {
+                return fluidState;
+            }
+
+            BlockPos.Mutable mutable = pos.mutable();
+            for (Direction direction : DIRECTIONS) {
+                mutable.move(direction);
+                fluidState = world.getFluidState(mutable);
+                if (!fluidState.isEmpty()) return fluidState;
+
+                mutable.set(pos);
+            }
+
+            return Fluids.EMPTY.defaultFluidState();
         }
 
         private void updateAbsolute(BlockPos.Mutable absolute, BlockPos relative) {

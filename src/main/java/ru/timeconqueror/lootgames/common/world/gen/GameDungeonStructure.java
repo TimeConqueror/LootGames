@@ -5,14 +5,19 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.util.registry.DynamicRegistries;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biome.Category;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.feature.structure.StructureStart;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
+import ru.timeconqueror.timecore.api.util.CollectionUtils;
 import ru.timeconqueror.timecore.api.util.GenHelper;
+
+import java.util.Set;
 
 public class GameDungeonStructure extends Structure<NoFeatureConfig> {
     public static final int ROOM_WIDTH = 21;
@@ -41,13 +46,20 @@ public class GameDungeonStructure extends Structure<NoFeatureConfig> {
         }
 
         @Override
-        public void generatePieces(DynamicRegistries dynamicRegistries, ChunkGenerator chunkGenerator, TemplateManager templateManager, int chunkX, int chunkZ, Biome biome, NoFeatureConfig featureConfig) {
+        public void generatePieces(DynamicRegistries dynamicRegistries, ChunkGenerator chunkGenerator, TemplateManager templateManager, int chunkX, int chunkZ, Biome biomeIn, NoFeatureConfig featureConfig) {
             int x = chunkX << 4;
             int z = chunkZ << 4;
 
-            int surfaceY = GenHelper.getMinFirstFreeHeight(chunkGenerator, x, z, x + ROOM_WIDTH, z + ROOM_WIDTH);
+            int startTopY = GenHelper.getMinFirstFreeHeight(chunkGenerator, x, z, x + ROOM_WIDTH, z + ROOM_WIDTH);
+            Set<Biome> biomesNearby = chunkGenerator.getBiomeSource().getBiomesWithin(x + ROOM_WIDTH / 2, startTopY, z + ROOM_WIDTH / 2, ROOM_WIDTH / 2);
 
-            int yDungeonBottom = surfaceY - DISTANCE_FROM_SURFACE - ROOM_HEIGHT;
+            //makes deeper in water biomes
+            if (CollectionUtils.anyMatch(biomesNearby, biome -> biome.getBiomeCategory() == Category.BEACH || biome.getBiomeCategory() == Category.OCEAN || biome.getBiomeCategory() == Category.RIVER)) {
+                startTopY = GenHelper.getMinFirstFreeHeight(chunkGenerator, x, z, x + ROOM_WIDTH, z + ROOM_WIDTH, Heightmap.Type.OCEAN_FLOOR_WG);
+            }
+
+            int yDungeonBottom = startTopY - DISTANCE_FROM_SURFACE - ROOM_HEIGHT;
+            if (yDungeonBottom < 1) return;
 
             BlockPos start = new BlockPos(x, yDungeonBottom, z);
 
