@@ -208,7 +208,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         super.triggerGameWin();
 
         forEachPlayerNearby(player -> {
-            sendTo(player, new TranslationTextComponent("msg.lootgames.gol.reward_level_info", stage + 1, maxReachedStage), NotifyColor.SUCCESS);
+            sendTo(player, new TranslationTextComponent("msg.lootgames.gol.reward_level_info", stage, maxReachedStage), NotifyColor.SUCCESS);
 
             if (maxReachedStage >= 3) {
                 LGAdvancementTriggers.END_GAME.trigger(player, ADV_BEAT_LEVEL3);
