@@ -74,7 +74,14 @@ public class RewardUtils {
             if (randomLoot.length == 0) {
                 LootGames.LOGGER.error("Received LootTable is empty. Skipping Chest-Gen to avoid NPE Crash");
                 ItemDescriptor tSorryItem = ItemDescriptor.fromString("minecraft:stone");
-                ItemStack sorryStack = tSorryItem.getItemStackwNBT(1, String.format("{display:{Name:\"The Sorry-Stone\",Lore:[\"Modpack creator failed to configure the LootTables properly.\nPlease report that Loot Table [%s] for %s stage is broken, thank you!\"]}}", chestData.lootTableRL, chestData.getGameName()));
+                String lore = String.join("\",\"",
+                        "Modpack creator failed to configure",
+                        "the Loot Tables properly.",
+                        String.format("Please report that Loot Table [%s]", chestData.lootTableRL),
+                        String.format("for %s stage is broken.", chestData.getGameName()),
+                        "Thank you!"
+                );
+                ItemStack sorryStack = tSorryItem.getItemStackwNBT(1, String.format("{display:{Name:\"The Sorry-Stone\",Lore:[\"%s\"]}}", lore));
                 chestTile.setInventorySlotContents(0, sorryStack);
             } else {
                 int count = RandHelper.RAND.nextInt(chestData.getMaxItems()) + chestData.getMinItems();
