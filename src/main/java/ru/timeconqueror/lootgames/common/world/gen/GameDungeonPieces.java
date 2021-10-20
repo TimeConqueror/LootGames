@@ -82,7 +82,7 @@ public class GameDungeonPieces {
         }
 
         @Override
-        public boolean postProcess(ISeedReader world, StructureManager structureManager_, ChunkGenerator chunkGenerator_, Random random_, MutableBoundingBox chunkBox, ChunkPos chunkPos_, BlockPos blockPos_) {
+        public boolean postProcess(ISeedReader world, StructureManager structureManager_, ChunkGenerator chunkGenerator, Random random_, MutableBoundingBox chunkBox, ChunkPos chunkPos_, BlockPos blockPos_) {
             BlockPos.Mutable pos = new BlockPos.Mutable();
             BlockPos.Mutable absPos = new BlockPos.Mutable();
 
@@ -91,7 +91,11 @@ public class GameDungeonPieces {
                 for (int i = 0; i < 3; i++) {
                     FluidState fluid = getFluidAround(world, absPos);
                     if (!fluid.isEmpty()) {
-                        placeBlock(world, fluid.createLegacyBlock(), pos.getX(), pos.getY() + i, pos.getZ(), chunkBox);
+                        int freeHeight = chunkGenerator.getFirstFreeHeight(absPos.getX(), absPos.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
+
+                        if (absPos.getY() + i < freeHeight) {
+                            placeBlock(world, fluid.createLegacyBlock(), pos.getX(), pos.getY() + i, pos.getZ(), chunkBox);
+                        }
                     } else {
                         placeBlock(world, Blocks.AIR.defaultBlockState(), pos.getX(), pos.getY() + i, pos.getZ(), chunkBox);
                     }
