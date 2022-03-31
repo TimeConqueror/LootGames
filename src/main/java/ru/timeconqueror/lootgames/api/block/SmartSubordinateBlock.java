@@ -72,10 +72,4 @@ public class SmartSubordinateBlock extends GameBlock implements ILeftInteractibl
         // moving to corner, because master is there
         return currentPos.move(-1, 0, -1).immutable();
     }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IIcon getIcon(int side, int meta) {
-        return IconLoader.shieldedDungeonFloor;
-    }
 }

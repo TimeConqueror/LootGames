@@ -48,6 +48,7 @@ public class ConfigGeneral extends Config {
         public boolean retroGenDungeons;
         private Map<Integer, Integer> dimRhombs;
         public String dungeonLogLevel;
+        public boolean fitVanillaDungeonStyle;
 
         private void init(Configuration config) {
             disableDungeonGen = config.getBoolean(Names.DISABLE_DUNGEON_GEN, Names.CATEGORY_WORLDGEN, false, "Enable or disable dungeon generation");
@@ -55,6 +56,7 @@ public class ConfigGeneral extends Config {
             String[] dimConfigs = config.getStringList(Names.PER_DIMENSION_CONFIGS, Names.CATEGORY_WORLDGEN, new String[]{"0| 20"}, "Whitelisted dimensions' ids that were allowed for dungeon generation and rhomb size.\nRhomb size means the size of rhombs, which will imaginary cover the world. Dungeon will be generated in each rhomb. \nSo the larger the size, the less chance of generation. \nRhomb size must be between 5 and 100. \nExample of array element: 0| 20 - this means that dungeons will be generated in rhombs with size equal to 20 in the overworld (ID = 0).");
             parseDimAndRhombList(dimConfigs);
             dungeonLogLevel = config.getString(Names.DUNGEON_LOG_LEVEL, Names.CATEGORY_WORLDGEN, Level.INFO.toString(), "Log level for the separate DungeonGenerator Logger. Valid options: INFO, DEBUG, TRACE", new String[]{"INFO", "DEBUG", "TRACE"});
+            fitVanillaDungeonStyle = config.getBoolean("fit_vanilla_dungeon_style", Names.CATEGORY_WORLDGEN, false, "Changes the way structure looks like. Uses vanilla blocks and fits the style in Monster Rooms (Dungeon).");
 
             config.setCategoryComment(Names.CATEGORY_WORLDGEN, "Regulates dungeon appearing in world.");
         }

@@ -8,6 +8,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -15,9 +16,13 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.client.IconLoader;
+import ru.timeconqueror.lootgames.common.config.LGConfigs;
+import ru.timeconqueror.lootgames.utils.VanillaStyler;
+import ru.timeconqueror.lootgames.utils.future.BlockPos;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 
 import java.util.List;
+import java.util.Random;
 
 
 public class DungeonBrick extends Block {
@@ -101,10 +106,21 @@ public class DungeonBrick extends Block {
     }
 
     @Override
+    public IIcon getIcon(IBlockAccess worldIn, int x, int y, int z, int side) {
+        if(worldIn.getBlockMetadata(x, y, z) == 6 && LGConfigs.GENERAL.worldGen.fitVanillaDungeonStyle) {
+            return VanillaStyler.getIcon(x, y, z, side);
+        }
+
+        return super.getIcon(worldIn, x, y, z, side);
+    }
+
+    @Override
     @SideOnly(Side.CLIENT)
-    public IIcon getIcon(int pSide, int pMeta) {
-        if (pMeta == 6) return IconLoader.shieldedDungeonFloor;
-        return mIcons[pMeta];
+    public IIcon getIcon(int side, int meta) {
+        if (meta == 6) {
+            return IconLoader.shieldedDungeonFloor;
+        }
+        return mIcons[meta];
     }
 
     public enum Type {
