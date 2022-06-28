@@ -36,7 +36,7 @@
   "advancement.lootgames.ms.beat_level_4": "这儿没有坏的工兵",
   "advancement.lootgames.ms.beat_level_4.desc": "在四级难度下赢得扫雷",
   "#MARK AUTO GEN START": "",
-  "block.lootgames.board_border": "板边框",
+  "block.lootgames.board_border": "Board Block",
   "block.lootgames.broken_dungeon_lamp": "破损的地牢灯笼",
   "block.lootgames.cracked_dungeon_ceiling": "破裂的地牢天花板",
   "block.lootgames.cracked_dungeon_floor": "破裂的地牢地板",
@@ -53,6 +53,6 @@
   "block.lootgames.pipes_master": "管道",
   "block.lootgames.puzzle_master": "问题中心",
   "block.lootgames.shielded_dungeon_floor": "坚实地牢地板",
-  "block.lootgames.smart_subordinate": "智能面板",
+  "block.lootgames.smart_subordinate": "Board Block",
   "#MARK AUTO GEN END": ""
 }
