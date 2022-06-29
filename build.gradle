@@ -142,7 +142,7 @@ dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.16.5-36.1.0'
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.34'
 
     if (file("runtimeMods").exists()) {
         file("runtimeMods").eachFile { file ->
@@ -161,7 +161,7 @@ dependencies {
 
     implementation 'org.jetbrains:annotations:18.0.0'
 
-    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.5-3.4.0.0", true))
+    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.5-3.5.0.0", true))
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"

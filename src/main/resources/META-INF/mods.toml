@@ -41,7 +41,7 @@ modId = "forge" #mandatory
 # Does this dependency have to exist - if not, ordering below must be specified
 mandatory = true #mandatory
 # The version range of the dependency
-versionRange = "[36.1.0,)" #mandatory
+versionRange = "[36.2.34,)" #mandatory
 # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
 ordering = "NONE"
 # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -56,6 +56,6 @@ side = "BOTH"
 [[dependencies.lootgames]]
 modId = "timecore"
 mandatory = true
-versionRange = "[1.16.5-3.4.0.0,)"
+versionRange = "[1.16.5-3.5.0.0,)"
 ordering = "NONE"
 side = "BOTH"

@@ -33,20 +33,22 @@ public class GamePacketRegister extends TimeRegister {
 
     private void onSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            clientPackets.transferAndRemove(classes -> {
-                Wrapper<Integer> i = new Wrapper<>(0);
+            catchErrors(event, () -> {
+                clientPackets.doAndRemove(classes -> {
+                    Wrapper<Integer> i = new Wrapper<>(0);
 
-                classes.forEach(clazz -> {
-                    GamePacketRegistry.clientStorage().regPacket(getModId(), i.get(), clazz);
-                    i.set(i.get() + 1);
+                    classes.forEach(clazz -> {
+                        GamePacketRegistry.clientStorage().regPacket(getModId(), i.get(), clazz);
+                        i.set(i.get() + 1);
+                    });
                 });
-            });
-            serverPackets.transferAndRemove(classes -> {
-                Wrapper<Integer> i = new Wrapper<>(0);
+                serverPackets.doAndRemove(classes -> {
+                    Wrapper<Integer> i = new Wrapper<>(0);
 
-                classes.forEach(clazz -> {
-                    GamePacketRegistry.serverStorage().regPacket(getModId(), i.get(), clazz);
-                    i.set(i.get() + 1);
+                    classes.forEach(clazz -> {
+                        GamePacketRegistry.serverStorage().regPacket(getModId(), i.get(), clazz);
+                        i.set(i.get() + 1);
+                    });
                 });
             });
         });
