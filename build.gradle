@@ -13,8 +13,10 @@ buildscript {
         }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.7-patched'
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT-patched'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+'
+        classpath 'org.spongepowered:mixingradle:0.7.+'
+        classpath 'gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
     }
 }
 
@@ -26,8 +28,11 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'kotlin'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 apply from: 'gradle/scripts/configs.gradle'
+apply from: 'https://raw.githubusercontent.com/TimeConqueror/Time-Core/1.16/gradle/scripts/timecore.gradle'
 
 version = "${buildProps.lootgames.version}"
 group = 'ru.timeconqueror.lootgames'
@@ -35,20 +40,12 @@ archivesBaseName = "LootGames-${buildProps.minecraft.version}"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
-sourceSets {
-    main.kotlin.srcDirs += 'src/main/kotlin'
-}
-
 repositories {
     flatDir {
         dirs 'runtimeMods'
     }
     mavenCentral()
     mavenLocal()
-    maven {
-        name = "TimeConqueror's Maven" // dot to make it first priority
-        url = "https://repo.repsy.io/mvn/timeconqueror/mc/"
-    }
     maven {
         // location of the maven that hosts JEI files
         name = "Progwml6 maven"
@@ -158,13 +155,6 @@ dependencies {
             }
         }
     }
-
-    implementation 'org.jetbrains:annotations:18.0.0'
-
-    implementation(fg.deobf("ru.timeconqueror:TimeCore:1.16.5-3.5.0.0", true))
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
 
     if (System.getProperty("idea.sync.active") != "true") {
         annotationProcessor("org.spongepowered:mixin:0.8.3-SNAPSHOT-patched:processor")
