@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.minigame.gol;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.Tag;
 import ru.timeconqueror.timecore.api.util.CodecUtils;
 import ru.timeconqueror.timecore.api.util.Requirements;
 
@@ -33,11 +33,11 @@ public class Timer {
         return ticks == 0;
     }
 
-    public static Timer fromNBT(INBT nbt) {
+    public static Timer fromNBT(Tag nbt) {
         return CodecUtils.decodeStrictly(CODEC, CodecUtils.NBT_OPS, nbt);
     }
 
-    public static INBT toNBT(Timer timer) {
+    public static Tag toNBT(Timer timer) {
         return CodecUtils.encodeStrictly(CODEC, CodecUtils.NBT_OPS, timer);
     }
 }

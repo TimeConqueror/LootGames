@@ -1,12 +1,12 @@
 package ru.timeconqueror.lootgames.client.render.tile;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.block.tile.BoardGameMasterTile;
@@ -21,17 +21,17 @@ import ru.timeconqueror.lootgames.minigame.minesweeper.Mark;
 import ru.timeconqueror.lootgames.minigame.minesweeper.Type;
 import ru.timeconqueror.timecore.api.util.client.DrawHelper;
 
-public class MSMasterRenderer extends TileEntityRenderer<MSMasterTile> {
+public class MSMasterRenderer extends BlockEntityRenderer<MSMasterTile> {
     private static final ResourceLocation MS_BOARD = LootGames.rl("textures/game/ms_board.png");
     private static final RenderType RT_BRIGHTENED_BOARD = LGRenderTypes.brightened(MS_BOARD);
     private static final RenderType RT_BRIGHTENED_TRANSLUCENT_BOARD = LGRenderTypes.brightenedTranslucent(MS_BOARD);
 
-    public MSMasterRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
+    public MSMasterRenderer(BlockEntityRenderDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
     }
 
     @Override
-    public void render(MSMasterTile te, float partialTicks, MatrixStack matrix, @NotNull IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(MSMasterTile te, float partialTicks, PoseStack matrix, @NotNull MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         GameMineSweeper game = te.getGame();
         int boardSize = game.getCurrentBoardSize();
         LootGame.Stage stage = game.getStage();
@@ -40,7 +40,7 @@ public class MSMasterRenderer extends TileEntityRenderer<MSMasterTile> {
         BoardGameMasterTile.prepareMatrix(matrix, te);
 
         if (!game.cIsGenerated) {
-            IVertexBuilder brightenedBuilder = bufferIn.getBuffer(RT_BRIGHTENED_BOARD);
+            VertexConsumer brightenedBuilder = bufferIn.getBuffer(RT_BRIGHTENED_BOARD);
             for (int xL = 0; xL < boardSize; xL++) {
                 for (int zL = 0; zL < boardSize; zL++) {
                     DrawHelper.drawTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, 0, 0, 1, 1, 4);
@@ -53,7 +53,7 @@ public class MSMasterRenderer extends TileEntityRenderer<MSMasterTile> {
 
                     Type type = game.getBoard().getType(xL, zL);
 
-                    IVertexBuilder brightenedBuilder = bufferIn.getBuffer(RT_BRIGHTENED_BOARD);
+                    VertexConsumer brightenedBuilder = bufferIn.getBuffer(RT_BRIGHTENED_BOARD);
                     if (!isHidden && type == Type.BOMB) {
                         int max = stage instanceof StageDetonating ? ((StageDetonating) stage).getDetonationTicks() : 1;
                         int ticks = game.getTicks();
@@ -68,7 +68,7 @@ public class MSMasterRenderer extends TileEntityRenderer<MSMasterTile> {
 
                         DrawHelper.drawTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, 1, 0, 1, 1, 4F);
 
-                        IVertexBuilder translucentBuilder = bufferIn.getBuffer(RT_BRIGHTENED_TRANSLUCENT_BOARD);
+                        VertexConsumer translucentBuilder = bufferIn.getBuffer(RT_BRIGHTENED_TRANSLUCENT_BOARD);
                         DrawHelper.drawTexturedRectByParts(translucentBuilder, matrix, xL, zL, 1, 1, -0.005F, 1, 3, 1, 1, 4F, alphaColor);
                     } else {
 

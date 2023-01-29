@@ -1,8 +1,8 @@
 package ru.timeconqueror.lootgames.common.packet;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.util.ThreeConsumer;
 import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
@@ -60,7 +60,7 @@ public abstract class PacketGameUpdate<T extends IGamePacket> {
             this.gameUpdater = gameUpdater;
         }
 
-        public void encode(P packet, PacketBuffer buffer) throws IOException {
+        public void encode(P packet, FriendlyByteBuf buffer) throws IOException {
             buffer.writeBlockPos(packet.getMasterPos());
 
             Storage<T> storage = packet.getStorage();
@@ -71,7 +71,7 @@ public abstract class PacketGameUpdate<T extends IGamePacket> {
             packet.getGamePacket().encode(buffer);
         }
 
-        public P decode(PacketBuffer buffer) throws IOException {
+        public P decode(FriendlyByteBuf buffer) throws IOException {
             P packet = packetFactory.get();
             BlockPos masterPos = buffer.readBlockPos();
 
@@ -95,7 +95,7 @@ public abstract class PacketGameUpdate<T extends IGamePacket> {
         @Override
         public boolean handle(P packet, NetworkEvent.Context ctx) {
             ctx.enqueueWork(() -> {
-                TileEntity te = getWorld(ctx).getBlockEntity(packet.getMasterPos());
+                BlockEntity te = getWorld(ctx).getBlockEntity(packet.getMasterPos());
                 if (te instanceof GameMasterTile<?>) {
                     GameMasterTile<?> master = ((GameMasterTile<?>) te);
                     gameUpdater.accept(ctx, master.getGame(), packet.getGamePacket());

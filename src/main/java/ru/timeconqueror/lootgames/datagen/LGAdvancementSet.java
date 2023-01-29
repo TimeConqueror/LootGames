@@ -1,42 +1,25 @@
 package ru.timeconqueror.lootgames.datagen;
 
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.FrameType;
-import net.minecraft.advancements.criterion.TickTrigger;
-import net.minecraft.item.Items;
-import net.minecraft.util.text.TranslationTextComponent;
-import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
-import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger;
-import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
-import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
-import ru.timeconqueror.lootgames.registry.LGBlocks;
-import ru.timeconqueror.timecore.api.devtools.gen.advancement.IAdvancementSet;
-import ru.timeconqueror.timecore.api.devtools.gen.advancement.ISaveFunction;
-
-import static net.minecraft.advancements.criterion.EntityPredicate.AndPredicate;
-
-public class LGAdvancementSet implements IAdvancementSet {
-    @Override
+public clasnet.minecraft.advancements.critereon.EntityPredicate @Override
     public void fill(ISaveFunction saveFunction) {
         Advancement root = saveFunction.process(LootGames.rl("root"),
                 Advancement.Builder.advancement()
                         .display(LGBlocks.PUZZLE_MASTER,
-                                new TranslationTextComponent("advancement.lootgames.root"),
-                                new TranslationTextComponent("advancement.lootgames.root.desc"),
+                                new TranslatableComponent("advancement.lootgames.root"),
+                                new TranslatableComponent("advancement.lootgames.root.desc"),
                                 LootGames.rl("textures/block/dungeon_floor.png"),
                                 FrameType.GOAL,
                                 false, /*Whether or not to show the toast pop up after completing this advancement*/
                                 false, /*Whether or not to announce in the chat when this advancement has been completed*/
                                 false)
-                        .addCriterion("tick", new TickTrigger.Instance(AndPredicate.ANY)));
+                        .addCriterion("tick", new TickTrigger.TriggerInstance(Composite.ANY)));
 
         Advancement findDungeon = saveFunction.process(LootGames.rl("find_dungeon"),
                 Advancement.Builder.advancement()
                         .parent(root)
                         .display(LGBlocks.DUNGEON_LAMP,
-                                new TranslationTextComponent("advancement.lootgames.find_dungeon"),
-                                new TranslationTextComponent("advancement.lootgames.find_dungeon.desc"),
+                                new TranslatableComponent("advancement.lootgames.find_dungeon"),
+                                new TranslatableComponent("advancement.lootgames.find_dungeon.desc"),
                                 null,
                                 FrameType.TASK,
                                 true,
@@ -48,34 +31,34 @@ public class LGAdvancementSet implements IAdvancementSet {
                 Advancement.Builder.advancement()
                         .parent(findDungeon)
                         .display(Items.NETHER_STAR,
-                                new TranslationTextComponent("advancement.lootgames.win_game"),
-                                new TranslationTextComponent("advancement.lootgames.win_game.desc"),
+                                new TranslatableComponent("advancement.lootgames.win_game"),
+                                new TranslatableComponent("advancement.lootgames.win_game.desc"),
                                 null,
                                 FrameType.TASK,
                                 true,
                                 true,
                                 false)
-                        .addCriterion("win", new EndGameTrigger.Instance(EndGameTrigger.TYPE_WIN, AndPredicate.ANY)));
+                        .addCriterion("win", new EndGameTrigger.Instance(EndGameTrigger.TYPE_WIN, Composite.ANY)));
 
         Advancement loseGame = saveFunction.process(LootGames.rl("lose_game"),
                 Advancement.Builder.advancement()
                         .parent(findDungeon)
                         .display(Items.SKELETON_SKULL,
-                                new TranslationTextComponent("advancement.lootgames.lose_game"),
-                                new TranslationTextComponent("advancement.lootgames.lose_game.desc"),
+                                new TranslatableComponent("advancement.lootgames.lose_game"),
+                                new TranslatableComponent("advancement.lootgames.lose_game.desc"),
                                 null,
                                 FrameType.TASK,
                                 true,
                                 true,
                                 true)
-                        .addCriterion("lose", new EndGameTrigger.Instance(EndGameTrigger.TYPE_LOSE, AndPredicate.ANY)));
+                        .addCriterion("lose", new EndGameTrigger.Instance(EndGameTrigger.TYPE_LOSE, Composite.ANY)));
 
         Advancement startMinesweeper = saveFunction.process(LootGames.rl("minesweeper/start"),
                 Advancement.Builder.advancement()
                         .parent(findDungeon)
                         .display(LGBlocks.MS_ACTIVATOR,
-                                new TranslationTextComponent("advancement.lootgames.ms.start"),
-                                new TranslationTextComponent("advancement.lootgames.ms.start.desc"),
+                                new TranslatableComponent("advancement.lootgames.ms.start"),
+                                new TranslatableComponent("advancement.lootgames.ms.start.desc"),
                                 null,
                                 FrameType.TASK,
                                 true,
@@ -87,21 +70,21 @@ public class LGAdvancementSet implements IAdvancementSet {
                 Advancement.Builder.advancement()
                         .parent(startMinesweeper)
                         .display(Items.CREEPER_HEAD,
-                                new TranslationTextComponent("advancement.lootgames.ms.beat_level_4"),
-                                new TranslationTextComponent("advancement.lootgames.ms.beat_level_4.desc"),
+                                new TranslatableComponent("advancement.lootgames.ms.beat_level_4"),
+                                new TranslatableComponent("advancement.lootgames.ms.beat_level_4.desc"),
                                 null,
                                 FrameType.CHALLENGE,
                                 true,
                                 true,
                                 false)
-                        .addCriterion("end_level4", new EndGameTrigger.Instance(GameMineSweeper.ADV_BEAT_LEVEL4, AndPredicate.ANY)));
+                        .addCriterion("end_level4", new EndGameTrigger.Instance(GameMineSweeper.ADV_BEAT_LEVEL4, Composite.ANY)));
 
         Advancement startGameOfLight = saveFunction.process(LootGames.rl("gameoflight/start"),
                 Advancement.Builder.advancement()
                         .parent(findDungeon)
                         .display(LGBlocks.GOL_ACTIVATOR,
-                                new TranslationTextComponent("advancement.lootgames.gol.start"),
-                                new TranslationTextComponent("advancement.lootgames.gol.start.desc"),
+                                new TranslatableComponent("advancement.lootgames.gol.start"),
+                                new TranslatableComponent("advancement.lootgames.gol.start.desc"),
                                 null,
                                 FrameType.TASK,
                                 true,
@@ -113,26 +96,26 @@ public class LGAdvancementSet implements IAdvancementSet {
                 Advancement.Builder.advancement()
                         .parent(startGameOfLight)
                         .display(Items.DIAMOND,
-                                new TranslationTextComponent("advancement.lootgames.gol.beat_level_3"),
-                                new TranslationTextComponent("advancement.lootgames.gol.beat_level_3.desc"),
+                                new TranslatableComponent("advancement.lootgames.gol.beat_level_3"),
+                                new TranslatableComponent("advancement.lootgames.gol.beat_level_3.desc"),
                                 null,
                                 FrameType.CHALLENGE,
                                 true,
                                 true,
                                 false)
-                        .addCriterion("end_level3", new EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL3, AndPredicate.ANY)));
+                        .addCriterion("end_level3", new EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL3, Composite.ANY)));
 
         Advancement golBeatLevel4 = saveFunction.process(LootGames.rl("gameoflight/beat_level_4"),
                 Advancement.Builder.advancement()
                         .parent(startGameOfLight)
                         .display(Items.EMERALD,
-                                new TranslationTextComponent("advancement.lootgames.gol.beat_level_4"),
-                                new TranslationTextComponent("advancement.lootgames.gol.beat_level_4.desc"),
+                                new TranslatableComponent("advancement.lootgames.gol.beat_level_4"),
+                                new TranslatableComponent("advancement.lootgames.gol.beat_level_4.desc"),
                                 null,
                                 FrameType.CHALLENGE,
                                 true,
                                 true,
                                 false)
-                        .addCriterion("end_level4", new EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL4, AndPredicate.ANY)));
+                        .addCriterion("end_level4", new EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL4, Composite.ANY)));
     }
 }

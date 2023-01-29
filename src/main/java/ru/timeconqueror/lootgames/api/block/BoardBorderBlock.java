@@ -1,12 +1,12 @@
 package ru.timeconqueror.lootgames.api.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -22,12 +22,12 @@ public class BoardBorderBlock extends GameBlock implements IGameField {
         this.registerDefaultState(this.defaultBlockState().setValue(TYPE, Type.HORIZONTAL));
     }
 
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(TYPE);
     }
 
-    public static BlockPos getMasterPos(World world, BlockPos pos, BlockState oldState) {
-        BlockPos.Mutable currentPos = pos.mutable();
+    public static BlockPos getMasterPos(Level world, BlockPos pos, BlockState oldState) {
+        BlockPos.MutableBlockPos currentPos = pos.mutable();
         BlockState currentState = oldState;
         int limit = 128;
 
@@ -55,7 +55,7 @@ public class BoardBorderBlock extends GameBlock implements IGameField {
     }
 
     @Override
-    public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!worldIn.isClientSide()) {
             LootGamesAPI.getFieldManager().onFieldBlockBroken(worldIn, () -> getMasterPos(worldIn, pos, state));
         }
@@ -63,7 +63,7 @@ public class BoardBorderBlock extends GameBlock implements IGameField {
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
-    public enum Type implements IStringSerializable {
+    public enum Type implements StringRepresentable {
         HORIZONTAL,
         VERTICAL,
         TOP_LEFT,

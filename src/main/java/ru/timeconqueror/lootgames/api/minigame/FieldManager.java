@@ -1,15 +1,15 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
 import com.google.common.collect.Iterables;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.BoardBorderBlock;
@@ -37,10 +37,10 @@ public class FieldManager {//TODO rename to board manager
     /**
      * Destroys the full structure, which this block belongs to.
      */
-    public void onFieldBlockBroken(World worldIn, Supplier<BlockPos> masterPosGetter) {
+    public void onFieldBlockBroken(Level worldIn, Supplier<BlockPos> masterPosGetter) {
         if (tryStartFieldBreaking()) {
             BlockPos masterPos = masterPosGetter.get();
-            TileEntity tileEntity = worldIn.getBlockEntity(masterPos);
+            BlockEntity tileEntity = worldIn.getBlockEntity(masterPos);
 
             if (tileEntity instanceof GameMasterTile<?>) {
                 ((GameMasterTile<?>) tileEntity).onDestroy();
@@ -61,7 +61,7 @@ public class FieldManager {//TODO rename to board manager
         fieldUnderBreaking = false;
     }
 
-    public boolean canReplaceAreaWithBoard(World world, BlockPos cornerPos, int xSize, int ySize, int zSize, @Nullable BlockPos except) {
+    public boolean canReplaceAreaWithBoard(Level world, BlockPos cornerPos, int xSize, int ySize, int zSize, @Nullable BlockPos except) {
         Iterable<BlockPos> positions = Iterables.concat(
                 BlockPosUtils.between(cornerPos, xSize, 1, zSize), // board positions
                 //second area is smaller because we don't need to check if the player can fit the place in the corner blocks above the border.
@@ -83,13 +83,13 @@ public class FieldManager {//TODO rename to board manager
      * @param player to notify about fail
      * @return true if field placed.
      */
-    public GenerationChain trySetupBoard(ServerWorld world, BlockPos centerPos, int xSize, int height, int zSize, BlockState masterBlock, @Nullable PlayerEntity player) {
+    public GenerationChain trySetupBoard(ServerLevel world, BlockPos centerPos, int xSize, int height, int zSize, BlockState masterBlock, @Nullable Player player) {
         BlockPos cornerPos = centerPos.offset(-xSize / 2 - 1, 0, -zSize / 2 - 1);
-        BlockPos.Mutable borderPos = cornerPos.mutable();
+        BlockPos.MutableBlockPos borderPos = cornerPos.mutable();
         if (!canReplaceAreaWithBoard(world, borderPos, xSize + 2, height + 1, zSize + 2, centerPos)) {
             if (player != null) {
-                NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.field.not_enough_space", xSize + 2, height + 1, zSize + 2).withStyle(NotifyColor.FAIL.getColor()));
-                world.playSound(null, centerPos, LGSounds.GAME_LOSE, SoundCategory.BLOCKS, 0.4F, 1.0F);//TODO change sound
+                NetworkUtils.sendMessage(player, new TranslatableComponent("msg.lootgames.field.not_enough_space", xSize + 2, height + 1, zSize + 2).withStyle(NotifyColor.FAIL.getColor()));
+                world.playSound(null, centerPos, LGSounds.GAME_LOSE, SoundSource.BLOCKS, 0.4F, 1.0F);//TODO change sound
             }
             return new GenerationChain(null, null, false);
         }
@@ -137,7 +137,7 @@ public class FieldManager {//TODO rename to board manager
         return new GenerationChain(world, cornerPos, true);
     }
 
-    public void clearBoard(ServerWorld world, BlockPos start, int sizeX, int sizeZ) {
+    public void clearBoard(ServerLevel world, BlockPos start, int sizeX, int sizeZ) {
         Iterable<BlockPos> gameBlocks = BlockPos.betweenClosed(start.offset(-1, 0, -1), start.offset(sizeX + 1, 0, sizeZ + 1));
 
         for (BlockPos pos : gameBlocks) {
@@ -148,11 +148,11 @@ public class FieldManager {//TODO rename to board manager
     }
 
     public static class GenerationChain {
-        private final World world;
+        private final Level world;
         private final BlockPos pos;
         private final boolean succeed;
 
-        private GenerationChain(World world, BlockPos masterPos, boolean succeed) {
+        private GenerationChain(Level world, BlockPos masterPos, boolean succeed) {
             this.world = world;
             this.succeed = succeed;
             this.pos = masterPos;

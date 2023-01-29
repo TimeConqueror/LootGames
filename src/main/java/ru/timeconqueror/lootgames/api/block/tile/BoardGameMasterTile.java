@@ -1,13 +1,13 @@
 package ru.timeconqueror.lootgames.api.block.tile;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.math.vector.Vector3i;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -16,23 +16,23 @@ import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 
 public class BoardGameMasterTile<T extends BoardLootGame<T>> extends GameMasterTile<T> {
-    public BoardGameMasterTile(TileEntityType<? extends GameMasterTile<T>> type, T game) {
+    public BoardGameMasterTile(BlockEntityType<? extends GameMasterTile<T>> type, T game) {
         super(type, game);
     }
 
     @Override
-    public void onBlockLeftClick(PlayerEntity player, BlockPos subordinatePos) {
+    public void onBlockLeftClick(Player player, BlockPos subordinatePos) {
         super.onBlockLeftClick(player, subordinatePos);
         onClick(player, subordinatePos, MouseClickType.LEFT);
     }
 
     @Override
-    public void onBlockRightClick(PlayerEntity player, BlockPos subordinatePos) {
+    public void onBlockRightClick(Player player, BlockPos subordinatePos) {
         super.onBlockRightClick(player, subordinatePos);
         onClick(player, subordinatePos, MouseClickType.RIGHT);
     }
 
-    private void onClick(PlayerEntity player, BlockPos subordinatePos, MouseClickType type) {
+    private void onClick(Player player, BlockPos subordinatePos, MouseClickType type) {
         Pos2i pos = game.convertToGamePos(subordinatePos);
 
         int size = game.getCurrentBoardSize();
@@ -43,9 +43,9 @@ public class BoardGameMasterTile<T extends BoardLootGame<T>> extends GameMasterT
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static void prepareMatrix(MatrixStack matrixStack, BoardGameMasterTile<?> master) {
+    public static void prepareMatrix(PoseStack matrixStack, BoardGameMasterTile<?> master) {
         BlockPos boardOrigin = master.getGame().getBoardOrigin();
-        Vector3i originOffset = boardOrigin.subtract(master.getBlockPos()).offset(0, 1, 0);
+        Vec3i originOffset = boardOrigin.subtract(master.getBlockPos()).offset(0, 1, 0);
 
         matrixStack.translate(originOffset.getX(), originOffset.getY(), originOffset.getZ());
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
@@ -53,7 +53,7 @@ public class BoardGameMasterTile<T extends BoardLootGame<T>> extends GameMasterT
 
     @NotNull
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return TileEntity.INFINITE_EXTENT_AABB;
+    public AABB getRenderBoundingBox() {
+        return BlockEntity.INFINITE_EXTENT_AABB;
     }
 }

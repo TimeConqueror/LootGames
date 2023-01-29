@@ -1,6 +1,6 @@
 package ru.timeconqueror.lootgames.common.packet.game;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 
@@ -19,7 +19,7 @@ public class SPDelayedChangeStage extends SPChangeStage {
     }
 
     @Override
-    public void encode(PacketBuffer bufferTo) {
+    public void encode(FriendlyByteBuf bufferTo) {
         super.encode(bufferTo);
         bufferTo.writeBoolean(prevStageId != null);
         if (prevStageId != null) {
@@ -28,7 +28,7 @@ public class SPDelayedChangeStage extends SPChangeStage {
     }
 
     @Override
-    public void decode(PacketBuffer bufferFrom) {
+    public void decode(FriendlyByteBuf bufferFrom) {
         super.decode(bufferFrom);
         if (bufferFrom.readBoolean()) {
             prevStageId = bufferFrom.readUtf();

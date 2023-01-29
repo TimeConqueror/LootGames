@@ -1,6 +1,7 @@
 package ru.timeconqueror.lootgames.common.config;
 
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.config.ModConfig.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.timecore.api.common.config.Config;
@@ -13,7 +14,7 @@ public class ConfigGeneral extends Config {
     public IQuickConfigValue<Boolean> disableMinigames;
     public WorldGenCategory worldGen;
 
-    public ConfigGeneral(ModConfig.@NotNull Type type, @NotNull String key, @Nullable String comment) {
+    public ConfigGeneral(@NotNull Type type, @NotNull String key, @Nullable String comment) {
         super(type, key, comment);
     }
 

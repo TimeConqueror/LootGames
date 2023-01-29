@@ -1,19 +1,15 @@
 package ru.timeconqueror.lootgames.common.advancement;
 
 import com.google.gson.JsonObject;
-import net.minecraft.advancements.criterion.AbstractCriterionTrigger;
-import net.minecraft.advancements.criterion.CriterionInstance;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.loot.ConditionArrayParser;
-import net.minecraft.loot.ConditionArraySerializer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.advancements.critereon.*;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.GsonHelper;
 import ru.timeconqueror.lootgames.LootGames;
 
 import static ru.timeconqueror.lootgames.common.advancement.EndGameTrigger.Instance;
 
-public class EndGameTrigger extends AbstractCriterionTrigger<Instance> {
+public class EndGameTrigger extends SimpleCriterionTrigger<Instance> {
     private static final ResourceLocation ID = LootGames.rl("end_minigame");
     public static final String TYPE_WIN = "win";
     public static final String TYPE_LOSE = "lose";
@@ -25,28 +21,28 @@ public class EndGameTrigger extends AbstractCriterionTrigger<Instance> {
     }
 
     @Override
-    protected Instance createInstance(JsonObject json, EntityPredicate.AndPredicate player, ConditionArrayParser conditionsParser) {
-        return new Instance(JSONUtils.getAsString(json, "type", TYPE_ANY), player);
+    protected Instance createInstance(JsonObject json, EntityPredicate.Composite player, DeserializationContext conditionsParser) {
+        return new Instance(GsonHelper.getAsString(json, "type", TYPE_ANY), player);
     }
 
-    public void trigger(ServerPlayerEntity player, String type) {
+    public void trigger(ServerPlayer player, String type) {
         this.trigger(player, (instance) -> instance.matches(player, type));
     }
 
-    public static class Instance extends CriterionInstance {
+    public static class Instance extends AbstractCriterionTriggerInstance {
         private final String type;
 
-        public Instance(String type, EntityPredicate.AndPredicate player) {
+        public Instance(String type, EntityPredicate.Composite player) {
             super(ID, player);
             this.type = type;
         }
 
-        public boolean matches(ServerPlayerEntity player, String type) {
+        public boolean matches(ServerPlayer player, String type) {
             return this.type.equals(TYPE_ANY) || this.type.equals(type);
         }
 
         @Override
-        public JsonObject serializeToJson(ConditionArraySerializer conditions) {
+        public JsonObject serializeToJson(SerializationContext conditions) {
             JsonObject root = super.serializeToJson(conditions);
 
             root.addProperty("type", type);

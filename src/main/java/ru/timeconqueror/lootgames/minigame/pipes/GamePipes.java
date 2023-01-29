@@ -1,11 +1,11 @@
 package ru.timeconqueror.lootgames.minigame.pipes;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
@@ -17,6 +17,8 @@ import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 
 //FIXME secure nbt sync!!!
 //TODO custom sounds of open
+
+
 public class GamePipes extends BoardLootGame<GamePipes> {
     private PipesBoard board;
 
@@ -49,7 +51,7 @@ public class GamePipes extends BoardLootGame<GamePipes> {
     }
 
     @Override
-    public void writeNBT(CompoundNBT nbt, SerializationType type) {
+    public void writeNBT(CompoundTag nbt, SerializationType type) {
         super.writeNBT(nbt, type);
 
         nbt.putInt("Size", getCurrentBoardSize());
@@ -57,7 +59,7 @@ public class GamePipes extends BoardLootGame<GamePipes> {
     }
 
     @Override
-    public void readNBT(CompoundNBT nbt, SerializationType type) {
+    public void readNBT(CompoundTag nbt, SerializationType type) {
         super.readNBT(nbt, type);
 
         int size = nbt.getInt("Size");
@@ -83,7 +85,7 @@ public class GamePipes extends BoardLootGame<GamePipes> {
     }
 
     @Override
-    public BoardStage createStageFromNBT(String id, CompoundNBT stageNBT, SerializationType serializationType) {
+    public BoardStage createStageFromNBT(String id, CompoundTag stageNBT, SerializationType serializationType) {
         switch (id) {
             case GameStage.ID:
                 return new GameStage(stageNBT.getInt("CycleId"));
@@ -104,7 +106,7 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         }
 
         @Override
-        protected void onClick(PlayerEntity player, Pos2i pos, MouseClickType type) {
+        protected void onClick(Player player, Pos2i pos, MouseClickType type) {
             if (isServerSide()) {
                 board.rotateAt(pos.getX(), pos.getY(), type == MouseClickType.LEFT ? -1 : 1);
 
@@ -132,8 +134,8 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         }
 
         @Override
-        public CompoundNBT serialize(SerializationType serializationType) {
-            CompoundNBT nbt = super.serialize(serializationType);
+        public CompoundTag serialize(SerializationType serializationType) {
+            CompoundTag nbt = super.serialize(serializationType);
             nbt.putInt("CycleId", cycleId);
             return nbt;
         }
@@ -166,8 +168,8 @@ public class GamePipes extends BoardLootGame<GamePipes> {
         }
 
         @Override
-        public CompoundNBT serialize(SerializationType serializationType) {
-            CompoundNBT nbt = super.serialize(serializationType);
+        public CompoundTag serialize(SerializationType serializationType) {
+            CompoundTag nbt = super.serialize(serializationType);
             nbt.putInt("PrevCycleId", prevCycleId);
             nbt.putInt("TicksPassed", ticksPassed);
             return nbt;
@@ -180,14 +182,14 @@ public class GamePipes extends BoardLootGame<GamePipes> {
 
         @Override
         public void postInit() {
-            getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundCategory.BLOCKS, 0.75F, 1.0F);
+            getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 0.75F, 1.0F);
             board.removeNonPoweredPipes();
         }
     }
 
     public static class Factory implements ILootGameFactory {
         @Override
-        public void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos) {
+        public void genOnPuzzleMasterClick(Level world, BlockPos puzzleMasterPos) {
             BlockPos floorCenterPos = puzzleMasterPos.offset(0, -3/*instead of GameDungeonStructure.MASTER_BLOCK_OFFSET*/ + 1, 0);
             world.setBlockAndUpdate(floorCenterPos, LGBlocks.PIPES_ACTIVATOR.defaultBlockState());
         }

@@ -1,6 +1,6 @@
 package ru.timeconqueror.lootgames.common.packet.game;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
@@ -26,7 +26,7 @@ public class SPMSFieldChanged implements IServerGamePacket {
     }
 
     @Override
-    public void encode(PacketBuffer bufferTo) throws IOException {
+    public void encode(FriendlyByteBuf bufferTo) throws IOException {
         bufferTo.writeInt(pos.getX());
         bufferTo.writeInt(pos.getY());
 
@@ -34,7 +34,7 @@ public class SPMSFieldChanged implements IServerGamePacket {
     }
 
     @Override
-    public void decode(PacketBuffer bufferFrom) throws IOException {
+    public void decode(FriendlyByteBuf bufferFrom) throws IOException {
         pos = new Pos2i(bufferFrom.readInt(), bufferFrom.readInt());
 
         this.field = bufferFrom.readWithCodec(MSBoard.MSField.SYNC_CODEC);

@@ -1,14 +1,14 @@
 package ru.timeconqueror.lootgames.client.render.tile;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
 import ru.timeconqueror.lootgames.common.block.tile.PipesMasterTile;
@@ -18,22 +18,22 @@ import ru.timeconqueror.lootgames.minigame.pipes.board.PipeState;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class PipesMasterRenderer extends TileEntityRenderer<PipesMasterTile> {
+public class PipesMasterRenderer extends BlockEntityRenderer<PipesMasterTile> {
 
     private static final ResourceLocation BOARD = new ResourceLocation(LootGames.MODID, "textures/game/pipes.png");
     private static final RenderType BOARD_RENDER_TYPE = LGRenderTypes.brightenedCutout(BOARD);
 
-    public PipesMasterRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
+    public PipesMasterRenderer(BlockEntityRenderDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
     }
 
     @Override
-    public void render(PipesMasterTile te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(PipesMasterTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         GamePipes game = te.getGame();
         int size = game.getCurrentBoardSize();
         int animation = (int) (te.getAge() / 2 % 32);
 
-        IVertexBuilder vb = bufferIn.getBuffer(BOARD_RENDER_TYPE);
+        VertexConsumer vb = bufferIn.getBuffer(BOARD_RENDER_TYPE);
 
         BlockPos boardOrigin = game.getBoardOrigin();
         BlockPos offset = boardOrigin.subtract(te.getBlockPos());
@@ -70,7 +70,7 @@ public class PipesMasterRenderer extends TileEntityRenderer<PipesMasterTile> {
         matrixStack.popPose();
     }
 
-    private IVertexBuilder withTexture(IVertexBuilder buf, float textureX, float textureY, int vertexId, int rotation, int animation) {
+    private VertexConsumer withTexture(VertexConsumer buf, float textureX, float textureY, int vertexId, int rotation, int animation) {
         float startY = textureY + animation;
 
         int corner = (rotation + vertexId) % 4;

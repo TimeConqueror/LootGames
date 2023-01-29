@@ -2,26 +2,24 @@ package ru.timeconqueror.lootgames.common.advancement;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.advancements.criterion.*;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.ConditionArrayParser;
-import net.minecraft.loot.ConditionArraySerializer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.advancements.critereon.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.api.util.CodecUtils;
 import ru.timeconqueror.timecore.api.util.ExtraCodecs;
 
-public class UseBlockTrigger extends AbstractCriterionTrigger<UseBlockTrigger.Instance> {
+public class UseBlockTrigger extends SimpleCriterionTrigger<UseBlockTrigger.Instance> {
     private static final ResourceLocation ID = LootGames.rl("use_block");
 
     @Override
-    protected Instance createInstance(JsonObject json, EntityPredicate.AndPredicate playerPredicate, ConditionArrayParser conditionsParser) {
+    protected Instance createInstance(JsonObject json, EntityPredicate.Composite playerPredicate, DeserializationContext conditionsParser) {
         Block block = json.has("block") ? CodecUtils.decodeStrictly(ExtraCodecs.BLOCK, CodecUtils.JSON_OPS, json.get("block")) : null;
         StatePropertiesPredicate statePredicate = StatePropertiesPredicate.fromJson(json.get("state"));
         if (block != null) {
@@ -36,7 +34,7 @@ public class UseBlockTrigger extends AbstractCriterionTrigger<UseBlockTrigger.In
         return new Instance(playerPredicate, block, statePredicate, locationPredicate, itemPredicate);
     }
 
-    public void trigger(ServerPlayerEntity player, ExtraInfo info) {
+    public void trigger(ServerPlayer player, ExtraInfo info) {
         this.trigger(player, instance -> instance.matches(player, info));
     }
 
@@ -57,13 +55,13 @@ public class UseBlockTrigger extends AbstractCriterionTrigger<UseBlockTrigger.In
         }
     }
 
-    public static class Instance extends CriterionInstance {
+    public static class Instance extends AbstractCriterionTriggerInstance {
         private final Block block;
         private final StatePropertiesPredicate statePredicate;
         private final LocationPredicate locationPredicate;
         private final ItemPredicate itemPredicate;
 
-        public Instance(EntityPredicate.AndPredicate playerPredicate, @Nullable Block block, StatePropertiesPredicate propertiesIn, LocationPredicate locationIn, ItemPredicate itemIn) {
+        public Instance(EntityPredicate.Composite playerPredicate, @Nullable Block block, StatePropertiesPredicate propertiesIn, LocationPredicate locationIn, ItemPredicate itemIn) {
             super(ID, playerPredicate);
             this.block = block;
             this.statePredicate = propertiesIn;
@@ -72,10 +70,10 @@ public class UseBlockTrigger extends AbstractCriterionTrigger<UseBlockTrigger.In
         }
 
         public static Instance forBlock(@Nullable Block block) {
-            return new Instance(EntityPredicate.AndPredicate.ANY, block, StatePropertiesPredicate.ANY, LocationPredicate.ANY, ItemPredicate.ANY);
+            return new Instance(EntityPredicate.Composite.ANY, block, StatePropertiesPredicate.ANY, LocationPredicate.ANY, ItemPredicate.ANY);
         }
 
-        public boolean matches(ServerPlayerEntity player, ExtraInfo info) {
+        public boolean matches(ServerPlayer player, ExtraInfo info) {
             if (this.block != null && !info.state.is(this.block)) {
                 return false;
             }
@@ -84,7 +82,7 @@ public class UseBlockTrigger extends AbstractCriterionTrigger<UseBlockTrigger.In
                 return false;
             }
 
-            ServerWorld world = player.getLevel();
+            ServerLevel world = player.getLevel();
 
             if (!this.locationPredicate.matches(world, info.pos.getX(), info.pos.getY(), info.pos.getZ())) {
                 return false;
@@ -94,7 +92,7 @@ public class UseBlockTrigger extends AbstractCriterionTrigger<UseBlockTrigger.In
         }
 
         @Override
-        public JsonObject serializeToJson(ConditionArraySerializer conditions) {
+        public JsonObject serializeToJson(SerializationContext conditions) {
             JsonObject root = super.serializeToJson(conditions);
 
             if (this.block != null) {

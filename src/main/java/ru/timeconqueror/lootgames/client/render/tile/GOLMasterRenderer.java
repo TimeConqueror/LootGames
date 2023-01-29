@@ -1,11 +1,11 @@
 package ru.timeconqueror.lootgames.client.render.tile;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.block.tile.BoardGameMasterTile;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame.BoardStage;
@@ -25,17 +25,17 @@ import ru.timeconqueror.timecore.api.util.client.DrawHelper;
 import static ru.timeconqueror.lootgames.minigame.gol.GameOfLight.StageUnderExpanding.MAX_TICKS_EXPANDING;
 
 //TODO draw board by symbol, not by fully not activated board with activated overlay
-public class GOLMasterRenderer extends TileEntityRenderer<GOLMasterTile> {
+public class GOLMasterRenderer extends BlockEntityRenderer<GOLMasterTile> {
     private static final RenderType RT_BOARD = LGRenderTypes.brightened(LootGames.rl("textures/game/gol_board.png"));
     private static final RenderType RT_BOARD_ACTIVE = LGRenderTypes.brightened(LootGames.rl("textures/game/gol_board_active.png"));
     private static final RenderType RT_MARKS = LGRenderTypes.brightenedTranslucent(LootGames.rl("textures/game/gol_marks.png"));
 
-    public GOLMasterRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
+    public GOLMasterRenderer(BlockEntityRenderDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
     }
 
     @Override
-    public void render(GOLMasterTile tileEntityIn, float partialTicks, MatrixStack matrix, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(GOLMasterTile tileEntityIn, float partialTicks, PoseStack matrix, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         matrix.pushPose();
         BoardGameMasterTile.prepareMatrix(matrix, tileEntityIn);
 
@@ -64,16 +64,16 @@ public class GOLMasterRenderer extends TileEntityRenderer<GOLMasterTile> {
         matrix.popPose();
     }
 
-    private void drawSymbol(MatrixStack matrix, IRenderTypeBuffer bufferIn, Symbol symbol) {
-        IVertexBuilder buffer = bufferIn.getBuffer(RT_BOARD_ACTIVE);
+    private void drawSymbol(PoseStack matrix, MultiBufferSource bufferIn, Symbol symbol) {
+        VertexConsumer buffer = bufferIn.getBuffer(RT_BOARD_ACTIVE);
 
         Pos2i pos = symbol.getPos();
 
         DrawHelper.drawTexturedRectByParts(buffer, matrix, pos.getX(), pos.getY(), 1, 1, -0.006F, pos.getX(), pos.getY(), 1, 1, 3);
     }
 
-    private void drawMark(MatrixStack matrix, IRenderTypeBuffer bufferIn, State state) {
-        IVertexBuilder buffer = bufferIn.getBuffer(RT_MARKS);
+    private void drawMark(PoseStack matrix, MultiBufferSource bufferIn, State state) {
+        VertexConsumer buffer = bufferIn.getBuffer(RT_MARKS);
 
         int textureX = 0;
         int textureY = 0;
@@ -90,8 +90,8 @@ public class GOLMasterRenderer extends TileEntityRenderer<GOLMasterTile> {
         DrawHelper.drawTexturedRectByParts(buffer, matrix, 1, 1, 1, 1, -0.006F, textureX, textureY, 1, 1, 2, 0xFFFFFFFF);
     }
 
-    private void drawBoard(GameOfLight game, MatrixStack matrix, IRenderTypeBuffer bufferIn, int ticks, float partialTicks) {
-        IVertexBuilder buffer = bufferIn.getBuffer(RT_BOARD);
+    private void drawBoard(GameOfLight game, PoseStack matrix, MultiBufferSource bufferIn, int ticks, float partialTicks) {
+        VertexConsumer buffer = bufferIn.getBuffer(RT_BOARD);
 
         float length = 3;
         float textureStart = 0;

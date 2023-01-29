@@ -1,10 +1,10 @@
 package ru.timeconqueror.lootgames.api.task;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.LootGames;
@@ -13,12 +13,12 @@ import ru.timeconqueror.timecore.api.exception.NotExistsException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class TETaskScheduler implements INBTSerializable<ListNBT> {
+public class TETaskScheduler implements INBTSerializable<ListTag> {
     private final ArrayList<TaskWrapper> tasks = new ArrayList<>();
 
-    private final TileEntity tileEntity;
+    private final BlockEntity tileEntity;
 
-    public TETaskScheduler(@NotNull TileEntity tileEntity) {
+    public TETaskScheduler(@NotNull BlockEntity tileEntity) {
         this.tileEntity = tileEntity;
     }
 
@@ -48,11 +48,11 @@ public class TETaskScheduler implements INBTSerializable<ListNBT> {
     }
 
     @Override
-    public ListNBT serializeNBT() {
-        ListNBT out = new ListNBT();
+    public ListTag serializeNBT() {
+        ListTag out = new ListTag();
 
         for (TaskWrapper wrapper : tasks) {
-            CompoundNBT element = new CompoundNBT();
+            CompoundTag element = new CompoundTag();
 
             element.put("task", wrapper.task.serializeNBT());
             element.putInt("time", wrapper.timeBeforeStart);
@@ -66,9 +66,9 @@ public class TETaskScheduler implements INBTSerializable<ListNBT> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void deserializeNBT(ListNBT nbt) {
-        for (INBT in : nbt) {
-            CompoundNBT c = (CompoundNBT) in;
+    public void deserializeNBT(ListTag nbt) {
+        for (Tag in : nbt) {
+            CompoundTag c = (CompoundTag) in;
             int time = c.getInt("time");
 
             Class<?> clazz = null;
@@ -106,7 +106,7 @@ public class TETaskScheduler implements INBTSerializable<ListNBT> {
             timeBeforeStart--;
         }
 
-        private void run(World world) {
+        private void run(Level world) {
             task.run(world);
         }
     }

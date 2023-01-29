@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class GameManager {
      * @param puzzleMasterPos The position of Puzzle Master Block
      * @return error message if provided
      */
-    public Optional<String> generateRandomGame(World world, BlockPos puzzleMasterPos) {
+    public Optional<String> generateRandomGame(Level world, BlockPos puzzleMasterPos) {
         if (!isGameListEmpty()) {
             GAME_GEN_LIST.get(world.random.nextInt(GAME_GEN_LIST.size())).genOnPuzzleMasterClick(world, puzzleMasterPos);
         } else {

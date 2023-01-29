@@ -1,6 +1,6 @@
 package ru.timeconqueror.lootgames.common.config;
 
-import net.minecraft.loot.LootTables;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import ru.timeconqueror.lootgames.common.config.base.RewardConfig.Defaults;
 
 public class StagedRewards {
@@ -13,10 +13,10 @@ public class StagedRewards {
     }
 
     public static class FourStagedDefaults {
-        private static final FourStagedDefaults DEFAULT = new FourStagedDefaults(new Defaults(LootTables.SIMPLE_DUNGEON, 15, 15),
-                new Defaults(LootTables.DESERT_PYRAMID, -1, -1),
-                new Defaults(LootTables.NETHER_BRIDGE, -1, -1),
-                new Defaults(LootTables.END_CITY_TREASURE, -1, -1)
+        private static final FourStagedDefaults DEFAULT = new FourStagedDefaults(new Defaults(BuiltInLootTables.SIMPLE_DUNGEON, 15, 15),
+                new Defaults(BuiltInLootTables.DESERT_PYRAMID, -1, -1),
+                new Defaults(BuiltInLootTables.NETHER_BRIDGE, -1, -1),
+                new Defaults(BuiltInLootTables.END_CITY_TREASURE, -1, -1)
         );
 
         private final Defaults stage1;

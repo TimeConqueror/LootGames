@@ -1,24 +1,24 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
 
 /**
  * Default notify colors.
  */
 public enum NotifyColor {
-    SUCCESS(TextFormatting.GREEN),
-    WARN(TextFormatting.YELLOW),
-    NOTIFY(TextFormatting.AQUA),
-    FAIL(TextFormatting.DARK_PURPLE),
-    GRAVE_NOTIFY(TextFormatting.RED);
+    SUCCESS(ChatFormatting.GREEN),
+    WARN(ChatFormatting.YELLOW),
+    NOTIFY(ChatFormatting.AQUA),
+    FAIL(ChatFormatting.DARK_PURPLE),
+    GRAVE_NOTIFY(ChatFormatting.RED);
 
-    private final TextFormatting color;
+    private final ChatFormatting color;
 
-    NotifyColor(TextFormatting color) {
+    NotifyColor(ChatFormatting color) {
         this.color = color;
     }
 
-    public TextFormatting getColor() {
+    public ChatFormatting getColor() {
         return color;
     }
 }

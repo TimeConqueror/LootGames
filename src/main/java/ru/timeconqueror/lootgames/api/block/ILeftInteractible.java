@@ -1,13 +1,13 @@
 package ru.timeconqueror.lootgames.api.block;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 public interface ILeftInteractible {
     /**
      * Should return true, if you need to prevent left click.
      */
-    boolean onLeftClick(World world, PlayerEntity player, BlockPos pos, Direction face);
+    boolean onLeftClick(Level world, Player player, BlockPos pos, Direction face);
 }

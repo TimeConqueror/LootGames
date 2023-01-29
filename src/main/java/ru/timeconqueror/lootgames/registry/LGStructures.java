@@ -1,6 +1,6 @@
 package ru.timeconqueror.lootgames.registry;
 
-import net.minecraft.world.gen.feature.NoFeatureConfig;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.common.world.gen.GameDungeonStructure;
@@ -12,12 +12,12 @@ public class LGStructures {
     @AutoRegistrable
     private static final StructureRegister REGISTER = new StructureRegister(LootGames.MODID);
 
-    public static StructureHolder<NoFeatureConfig, GameDungeonStructure> GAME_DUNGEON =
+    public static StructureHolder<NoneFeatureConfiguration, GameDungeonStructure> GAME_DUNGEON =
             REGISTER.register("game_dungeon",
                     GameDungeonStructure::new,
                     StructureRegister.TimeStructureSeparationSettings.create(10, 6),
-                    NoFeatureConfig.CODEC,
-                    NoFeatureConfig.INSTANCE
+                    NoneFeatureConfiguration.CODEC,
+                    NoneFeatureConfiguration.INSTANCE
             )
                     .setDimensionPredicate(serverWorld -> !LGConfigs.GENERAL.worldGen.disableDungeonGen.get())
                     .asHolder();

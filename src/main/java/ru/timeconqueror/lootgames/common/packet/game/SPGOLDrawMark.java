@@ -1,6 +1,6 @@
 package ru.timeconqueror.lootgames.common.packet.game;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
@@ -31,12 +31,12 @@ public class SPGOLDrawMark implements IServerGamePacket {
     }
 
     @Override
-    public void encode(PacketBuffer bufferTo) throws IOException {
+    public void encode(FriendlyByteBuf bufferTo) throws IOException {
         bufferTo.writeVarInt(State.LOOKUP.from(state));
     }
 
     @Override
-    public void decode(PacketBuffer bufferFrom) throws IOException {
+    public void decode(FriendlyByteBuf bufferFrom) throws IOException {
         this.state = State.LOOKUP.by(bufferFrom.readVarInt());
     }
 

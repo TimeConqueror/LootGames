@@ -1,6 +1,6 @@
 package ru.timeconqueror.lootgames.common.packet.game;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.NBTGamePacket;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
@@ -18,7 +18,7 @@ public class SPMSGenBoard extends NBTGamePacket {
 
     public SPMSGenBoard(GameMineSweeper game) {
         super(() -> {
-            CompoundNBT nbt = new CompoundNBT();
+            CompoundTag nbt = new CompoundTag();
             game.writeNBT(nbt, SerializationType.SYNC);
 
             return nbt;

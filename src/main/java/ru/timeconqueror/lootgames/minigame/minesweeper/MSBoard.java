@@ -2,7 +2,7 @@ package ru.timeconqueror.lootgames.minigame.minesweeper;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.timecore.api.util.CodecUtils;
 import ru.timeconqueror.timecore.api.util.Wrapper;
@@ -299,20 +299,20 @@ public class MSBoard {
         this.size = size;
     }
 
-    CompoundNBT writeNBTForSaving() {
+    CompoundTag writeNBTForSaving() {
         return CodecUtils.write2DimArr(board, MSField.SAVE_CODEC);
     }
 
-    CompoundNBT writeNBTForClient() {
+    CompoundTag writeNBTForClient() {
         return CodecUtils.write2DimArr(board, MSField.SYNC_CODEC);
     }
 
-    void readNBTFromClient(CompoundNBT boardTag) {
+    void readNBTFromClient(CompoundTag boardTag) {
         setBoard(CodecUtils.read2DimArr(boardTag, MSField.class, MSField.SYNC_CODEC));
         updateFlaggedFields_c();
     }
 
-    void readNBTFromSave(CompoundNBT boardTag) {
+    void readNBTFromSave(CompoundTag boardTag) {
         setBoard(CodecUtils.read2DimArr(boardTag, MSField.class, MSField.SAVE_CODEC));
     }
 

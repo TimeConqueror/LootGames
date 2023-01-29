@@ -1,20 +1,20 @@
 package ru.timeconqueror.lootgames.api.block.tile;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.common.tile.SyncableTile;
 
-public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableTile implements ITickableTileEntity {
+public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableTile implements TickableBlockEntity {
     protected T game;
     private long age;
 
-    public GameMasterTile(TileEntityType<? extends GameMasterTile<T>> tileEntityTypeIn, T game) {
+    public GameMasterTile(BlockEntityType<? extends GameMasterTile<T>> tileEntityTypeIn, T game) {
         super(tileEntityTypeIn);
         this.game = game;
         game.setMasterTileEntity(this);
@@ -45,16 +45,16 @@ public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableT
     }
 
     @Override
-    protected void writeNBT(CompoundNBT nbt, SerializationType type) {
+    protected void writeNBT(CompoundTag nbt, SerializationType type) {
         super.writeNBT(nbt, type);
 
-        CompoundNBT gameTag = new CompoundNBT();
+        CompoundTag gameTag = new CompoundTag();
         game.writeNBT(gameTag, type);
         nbt.put("game", gameTag);
     }
 
     @Override
-    protected void readNBT(BlockState state, CompoundNBT nbt, SerializationType type) {
+    protected void readNBT(BlockState state, CompoundTag nbt, SerializationType type) {
         super.readNBT(state, nbt, type);
 
         game.readNBT(nbt.getCompound("game"), type);
@@ -66,7 +66,7 @@ public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableT
      * @param player         player, who clicked the subordinate block.
      * @param subordinatePos pos of subordinate block.
      */
-    public void onBlockRightClick(PlayerEntity player, BlockPos subordinatePos) {
+    public void onBlockRightClick(Player player, BlockPos subordinatePos) {
     }
 
     /**
@@ -75,7 +75,7 @@ public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableT
      * @param player         player, who clicked the subordinate block.
      * @param subordinatePos pos of subordinate block.
      */
-    public void onBlockLeftClick(PlayerEntity player, BlockPos subordinatePos) {
+    public void onBlockLeftClick(Player player, BlockPos subordinatePos) {
 
     }
 

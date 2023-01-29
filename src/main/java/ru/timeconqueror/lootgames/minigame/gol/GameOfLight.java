@@ -1,21 +1,21 @@
 package ru.timeconqueror.lootgames.minigame.gol;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.monster.ZombieEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.world.NoteBlockEvent;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
@@ -43,6 +43,8 @@ import java.util.stream.Collectors;
 
 //TODO add question mark flicker on WaitingStartStage
 //TODO add reward giving upon some combination
+
+
 public class GameOfLight extends BoardLootGame<GameOfLight> {
     public static final String ADV_BEAT_LEVEL3 = "gol_level_3";
     public static final String ADV_BEAT_LEVEL4 = "gol_level_4";
@@ -105,8 +107,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     }
 
     private void failGame(boolean dueTimeout) {
-        getWorld().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_WRONG, SoundCategory.MASTER, dueTimeout ? 0.2F : 0.75F, 1.0F);
-        sendToNearby(new TranslationTextComponent("msg.lootgames.gol.wrong_block"), NotifyColor.FAIL);
+        getWorld().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_WRONG, SoundSource.MASTER, dueTimeout ? 0.2F : 0.75F, 1.0F);
+        sendToNearby(new TranslatableComponent("msg.lootgames.gol.wrong_block"), NotifyColor.FAIL);
         sendUpdatePacketToNearby(SPGOLDrawMark.denied());
 
         if (attempt >= LGConfigs.GOL.attemptCount.get()) {
@@ -118,12 +120,12 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         } else {
             attempt++;
 
-            getWorld().playSound(null, getGameCenter(), LGSounds.GOL_START_GAME, SoundCategory.MASTER, dueTimeout ? 0.2F : 0.75F, 1.0F);
+            getWorld().playSound(null, getGameCenter(), LGSounds.GOL_START_GAME, SoundSource.MASTER, dueTimeout ? 0.2F : 0.75F, 1.0F);
             switchStage(new StageWaitingStart());
         }
     }
 
-    private void playFeedbackSound(PlayerEntity player, Symbol symbol) {
+    private void playFeedbackSound(Player player, Symbol symbol) {
         NoteBlockEvent.Note note = NoteBlockEvent.Note.G_SHARP;
         NoteBlockEvent.Octave octave = NoteBlockEvent.Octave.LOW;
         switch (symbol) {
@@ -154,7 +156,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                 break;
         }
 
-        getWorld().playSound(player, convertToBlockPos(symbol.getPos()), SoundEvents.NOTE_BLOCK_HARP, SoundCategory.MASTER, 3.0F, getPitchForNote(note, octave));
+        getWorld().playSound(player, convertToBlockPos(symbol.getPos()), SoundEvents.NOTE_BLOCK_HARP, SoundSource.MASTER, 3.0F, getPitchForNote(note, octave));
     }
 
     private float getPitchForNote(NoteBlockEvent.Note note, NoteBlockEvent.Octave octave) {
@@ -166,7 +168,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     protected void triggerGameLose() {
         super.triggerGameLose();
 
-        World world = getWorld();
+        Level world = getWorld();
 
         EnumSet<Fail> fails = LGConfigs.GOL.getAllowedFails();
         if (fails.isEmpty()) return;
@@ -175,11 +177,11 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
         BlockPos center = getGameCenter();
         if (fail == Fail.EXPLOSION) {
-            world.explode(null, center.getX(), center.getY() + 1.5, center.getZ(), 9, Explosion.Mode.DESTROY);
+            world.explode(null, center.getX(), center.getY() + 1.5, center.getZ(), 9, Explosion.BlockInteraction.DESTROY);
         } else if (fail == Fail.ZOMBIES) {
             for (int i = 0; i < 10; i++) {
-                ZombieEntity zombie = new ZombieEntity(world);
-                zombie.moveTo(center.getX() + RandHelper.RAND.nextFloat() * 2, center.getY() + 1, center.getZ() + RandHelper.RAND.nextFloat() * 2, MathHelper.wrapDegrees(RandHelper.RAND.nextFloat() * 360.0F), 0.0F);
+                Zombie zombie = new Zombie(world);
+                zombie.moveTo(center.getX() + RandHelper.RAND.nextFloat() * 2, center.getY() + 1, center.getZ() + RandHelper.RAND.nextFloat() * 2, Mth.wrapDegrees(RandHelper.RAND.nextFloat() * 360.0F), 0.0F);
                 world.addFreshEntity(zombie);
 
                 if (RandHelper.RAND.nextBoolean()) {
@@ -187,7 +189,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                 }
             }
         } else if (fail == Fail.LAVA) {
-            BlockPos.Mutable mutable = center.mutable();
+            BlockPos.MutableBlockPos mutable = center.mutable();
             for (int x = -5; x <= 5; x++)
                 for (int z = -5; z <= 5; z++)
                     for (int y = 1; y < 3; y++) {
@@ -208,7 +210,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         super.triggerGameWin();
 
         forEachPlayerNearby(player -> {
-            sendTo(player, new TranslationTextComponent("msg.lootgames.gol.reward_level_info", stage, maxReachedStage), NotifyColor.SUCCESS);
+            sendTo(player, new TranslatableComponent("msg.lootgames.gol.reward_level_info", stage, maxReachedStage), NotifyColor.SUCCESS);
 
             if (maxReachedStage >= 3) {
                 LGAdvancementTriggers.END_GAME.trigger(player, ADV_BEAT_LEVEL3);
@@ -219,7 +221,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             }
         });
 
-        RewardUtils.spawnFourStagedReward(((ServerWorld) getWorld()), this, getGameCenter(), maxReachedStage, LGConfigs.REWARDS.gol);
+        RewardUtils.spawnFourStagedReward(((ServerLevel) getWorld()), this, getGameCenter(), maxReachedStage, LGConfigs.REWARDS.gol);
     }
 
     @Override
@@ -233,7 +235,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     }
 
     @Override
-    public @Nullable BoardStage createStageFromNBT(String id, CompoundNBT stageNBT, SerializationType serializationType) {
+    public @Nullable BoardStage createStageFromNBT(String id, CompoundTag stageNBT, SerializationType serializationType) {
         switch (id) {
             case StageUnderExpanding.ID:
                 return new StageUnderExpanding(stageNBT.getInt("ticks"));
@@ -253,7 +255,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     }
 
     @Override
-    public void writeNBT(CompoundNBT nbt, SerializationType type) {
+    public void writeNBT(CompoundTag nbt, SerializationType type) {
         super.writeNBT(nbt, type);
 
         if (type == SerializationType.SAVE) {
@@ -268,7 +270,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     }
 
     @Override
-    public void readNBT(CompoundNBT nbt, SerializationType type) {
+    public void readNBT(CompoundTag nbt, SerializationType type) {
         super.readNBT(nbt, type);
 
         if (type == SerializationType.SAVE) {
@@ -292,7 +294,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         super.onStageUpdate(oldStage, newStage, shouldDelayPacketSending);
     }
 
-    public void spawnFeedbackParticles(IParticleData particle, BlockPos pos) {
+    public void spawnFeedbackParticles(ParticleOptions particle, BlockPos pos) {
         if (isClientSide()) {
             for (int i = 0; i < 20; i++) {
                 getWorld().addParticle(particle, pos.getX() + RandHelper.RAND.nextFloat(), pos.getY() + 1F + RandHelper.RAND.nextFloat() / 2, pos.getZ() + RandHelper.RAND.nextFloat(), RandHelper.RAND.nextGaussian() * 0.02D, (0.02D + RandHelper.RAND.nextGaussian()) * 0.02D, RandHelper.RAND.nextGaussian() * 0.02D);
@@ -334,8 +336,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
 
         @Override
-        public CompoundNBT serialize(SerializationType serializationType) {
-            CompoundNBT nbt = super.serialize(serializationType);
+        public CompoundTag serialize(SerializationType serializationType) {
+            CompoundTag nbt = super.serialize(serializationType);
             nbt.putInt("ticks", ticks);
             return nbt;
         }
@@ -357,16 +359,16 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
 
         @Override
-        protected void onClick(PlayerEntity player, Pos2i pos, MouseClickType type) {
+        protected void onClick(Player player, Pos2i pos, MouseClickType type) {
             super.onClick(player, pos, type);
 
             if (isServerSide()) {
                 if (isCenter(pos)) {
-                    sendTo(player, new TranslationTextComponent("msg.lootgames.gol.rules"), NotifyColor.NOTIFY);
+                    sendTo(player, new TranslatableComponent("msg.lootgames.gol.rules"), NotifyColor.NOTIFY);
 
                     switchStage(new StageShowSequence(true, new ArrayList<>()));
                 } else {
-                    sendTo(player, new TranslationTextComponent("msg.lootgames.gol.click_center"), NotifyColor.WARN);
+                    sendTo(player, new TranslatableComponent("msg.lootgames.gol.click_center"), NotifyColor.WARN);
                 }
             }
         }
@@ -391,7 +393,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
          */
         private final Timer feedbackWaitTimer = new Timer(FEEDBACK_WAIT_TICKS);
 
-        public StageShowSequence(CompoundNBT nbt) {
+        public StageShowSequence(CompoundTag nbt) {
             sequence = deserializeSequence(nbt.getIntArray("sequence"));
             displayTime = nbt.getInt("display_time");
         }
@@ -478,11 +480,11 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
 
         @Override
-        protected void onClick(PlayerEntity player, Pos2i pos, MouseClickType type) {
+        protected void onClick(Player player, Pos2i pos, MouseClickType type) {
             super.onClick(player, pos, type);
 
             if (isServerSide()) {
-                sendTo(player, new TranslationTextComponent("msg.lootgames.gol.not_ready"), NotifyColor.WARN);
+                sendTo(player, new TranslatableComponent("msg.lootgames.gol.not_ready"), NotifyColor.WARN);
             }
         }
 
@@ -524,8 +526,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
 
         @Override
-        public CompoundNBT serialize(SerializationType serializationType) {
-            CompoundNBT nbt = super.serialize(serializationType);
+        public CompoundTag serialize(SerializationType serializationType) {
+            CompoundTag nbt = super.serialize(serializationType);
             nbt.putIntArray("sequence", serializeSequence(sequence));
             nbt.putInt("display_time", displayTime);
 
@@ -543,7 +545,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             this.sequence = sequence;
         }
 
-        public StageWaitingForSequence(CompoundNBT nbt) {
+        public StageWaitingForSequence(CompoundTag nbt) {
             this.sequence = deserializeSequence(nbt.getIntArray("sequence"));
             this.currentSymbol = nbt.getInt("symbol_index");
         }
@@ -554,9 +556,9 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
 
         @Override
-        protected void onClick(PlayerEntity player, Pos2i pos, MouseClickType type) {
+        protected void onClick(Player player, Pos2i pos, MouseClickType type) {
             if (isClientSide() && isCenter(pos)) {
-                sendTo(player, new TranslationTextComponent("msg.lootgames.gol.rules"), NotifyColor.WARN);
+                sendTo(player, new TranslatableComponent("msg.lootgames.gol.rules"), NotifyColor.WARN);
                 return;
             }
 
@@ -567,7 +569,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                 if (isClientSide()) {
                     addDisplayedSymbol(chosen);
                 } else {
-                    sendUpdatePacketToNearbyExcept(((ServerPlayerEntity) player), new SPGOLSendDisplayedSymbol(chosen));
+                    sendUpdatePacketToNearbyExcept(((ServerPlayer) player), new SPGOLSendDisplayedSymbol(chosen));
 
                     Symbol correct = sequence.get(currentSymbol);
                     if (chosen != correct) {
@@ -576,7 +578,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                     }
 
                     if (currentSymbol == sequence.size() - 1) {
-                        onSuccessSequence((ServerPlayerEntity) player);
+                        onSuccessSequence((ServerPlayer) player);
                     } else {
                         currentSymbol++;
                     }
@@ -584,8 +586,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             }
         }
 
-        private void onSuccessSequence(ServerPlayerEntity player) {
-            getWorld().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_COMPLETE, SoundCategory.MASTER, 0.75F, 1.0F);
+        private void onSuccessSequence(ServerPlayer player) {
+            getWorld().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_COMPLETE, SoundSource.MASTER, 0.75F, 1.0F);
             sendUpdatePacketToNearby(SPGOLDrawMark.accepted());
 
             ConfigGOL.StageConfig stageCfg = LGConfigs.GOL.getStageByIndex(stage);
@@ -601,9 +603,9 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                     maxReachedStage = Math.max(maxReachedStage, stage);
                     save();
 
-                    getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundCategory.MASTER, 0.75F, 1.0F);
+                    getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER, 0.75F, 1.0F);
                     sendUpdatePacketToNearby(new SPGOLSpawnStageUpParticles());
-                    sendToNearby(new TranslationTextComponent("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
+                    sendToNearby(new TranslatableComponent("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
 
                     switchStage(new StageShowSequence(true, sequence));
                 }
@@ -616,8 +618,8 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
 
         @Override
-        public CompoundNBT serialize(SerializationType serializationType) {
-            CompoundNBT nbt = super.serialize(serializationType);
+        public CompoundTag serialize(SerializationType serializationType) {
+            CompoundTag nbt = super.serialize(serializationType);
 
             if (serializationType == SerializationType.SAVE) {
                 nbt.putIntArray("sequence", serializeSequence(sequence));
@@ -664,7 +666,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
     public static class Factory implements ILootGameFactory {
         @Override
-        public void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos) {
+        public void genOnPuzzleMasterClick(Level world, BlockPos puzzleMasterPos) {
             BlockPos floorCenterPos = puzzleMasterPos.offset(0, -2, 0);//TODo make puzzle master be also manually placeable and in this case in should spawn activator in its place
             world.setBlockAndUpdate(floorCenterPos, LGBlocks.GOL_ACTIVATOR.defaultBlockState());
         }

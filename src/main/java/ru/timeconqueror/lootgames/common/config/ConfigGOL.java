@@ -1,6 +1,6 @@
 package ru.timeconqueror.lootgames.common.config;
 
-import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.config.ModConfig.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -30,7 +30,7 @@ public class ConfigGOL extends Config {
      * @param key     used as a location for the config file (see {@link #getRelativePath()}). Also determines the section in config file and is used as a part of lang keys.
      * @param comment used to provide a comment that can be seen above this section in the config file.
      */
-    public ConfigGOL(ModConfig.@NotNull Type type, @NotNull String key, @Nullable String comment) {
+    public ConfigGOL(@NotNull Type type, @NotNull String key, @Nullable String comment) {
         super(type, key, comment);
     }
 

@@ -1,19 +1,19 @@
 package ru.timeconqueror.lootgames.common.block;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.GameBlock;
@@ -40,7 +40,7 @@ public class PuzzleMasterBlock extends GameBlock {
     }
 
     @Override
-    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
+    public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, Random rand) {
         int particleCount = rand.nextInt(30);
         for (int i = 0; i <= particleCount; i++) {
             worldIn.addParticle(ParticleTypes.ENCHANT,
@@ -54,35 +54,35 @@ public class PuzzleMasterBlock extends GameBlock {
     }
 
     @Override
-    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         if (!worldIn.isClientSide()) {
             try {
                 if (LGConfigs.GENERAL.disableMinigames.get()) {
-                    NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.puzzle_master.turned_off"));
-                    return ActionResultType.SUCCESS;
+                    NetworkUtils.sendMessage(player, new TranslatableComponent("msg.lootgames.puzzle_master.turned_off"));
+                    return InteractionResult.SUCCESS;
                 }
 
                 worldIn.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
 
                 Optional<String> error = LootGamesAPI.getGameManager().generateRandomGame(worldIn, pos);
                 if (!error.isPresent()) {
-                    LGAdvancementTriggers.USE_BLOCK.trigger((ServerPlayerEntity) player, new ExtraInfo(state, pos, player.getItemInHand(handIn)));
+                    LGAdvancementTriggers.USE_BLOCK.trigger((ServerPlayer) player, new ExtraInfo(state, pos, player.getItemInHand(handIn)));
                 } else {
-                    NetworkUtils.sendMessage(player, new StringTextComponent(error.get()));//TODO move error to lang file
+                    NetworkUtils.sendMessage(player, new TextComponent(error.get()));//TODO move error to lang file
                     worldIn.setBlock(pos, state, 2);//rollback
                 }
             } catch (Throwable e) {
-                NetworkUtils.sendMessage(player, new TranslationTextComponent("msg.lootgames.puzzle_master.broken"));
+                NetworkUtils.sendMessage(player, new TranslatableComponent("msg.lootgames.puzzle_master.broken"));
                 LootGames.LOGGER.error(e);
             }
         }
 
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
         return new PuzzleMasterTile();
     }
 }

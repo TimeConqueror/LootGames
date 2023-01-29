@@ -1,17 +1,17 @@
 package ru.timeconqueror.lootgames.api.util;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.tileentity.ChestTileEntity;
-import net.minecraft.tileentity.LockableLootTileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.common.config.base.RewardConfig;
 import ru.timeconqueror.lootgames.common.config.base.StagedRewardConfig.FourStagedRewardConfig;
@@ -33,7 +33,7 @@ public class RewardUtils {
      * @param rewardLevel  from 0 to 4 inclusive. Zero means no chests will be generated.
      * @param rewardConfig reward part of your game's config
      */
-    public static void spawnFourStagedReward(ServerWorld world, LootGame<?, ?> game, BlockPos centralPos, int rewardLevel, FourStagedRewardConfig rewardConfig) {
+    public static void spawnFourStagedReward(ServerLevel world, LootGame<?, ?> game, BlockPos centralPos, int rewardLevel, FourStagedRewardConfig rewardConfig) {
         BlockState state = LGBlocks.DUNGEON_LAMP.defaultBlockState();
         world.setBlockAndUpdate(centralPos.offset(1, 0, 1), state);
         world.setBlockAndUpdate(centralPos.offset(1, 0, -1), state);
@@ -63,7 +63,7 @@ public class RewardUtils {
      *                            chest will be spawned 1 block north of the {@code centralPos} with south facing.
      * @param chestData           data which contains the rules of setting chest content
      */
-    public static void spawnLootChest(ServerWorld world, BlockPos centralPos, HorizontalDirection horizontalDirection, SpawnChestData chestData) {
+    public static void spawnLootChest(ServerLevel world, BlockPos centralPos, HorizontalDirection horizontalDirection, SpawnChestData chestData) {
         Direction direction = horizontalDirection.get();
 
         BlockState chest = Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, direction.getOpposite());
@@ -72,9 +72,9 @@ public class RewardUtils {
 
         world.setBlockAndUpdate(placePos, chest);
 
-        ChestTileEntity teChest = (ChestTileEntity) Objects.requireNonNull((world.getBlockEntity(placePos)));
+        ChestBlockEntity teChest = (ChestBlockEntity) Objects.requireNonNull((world.getBlockEntity(placePos)));
 
-        LockableLootTileEntity.setLootTable(world, world.random, placePos, chestData.getLootTableKey());
+        RandomizableContainerBlockEntity.setLootTable(world, world.random, placePos, chestData.getLootTableKey());
         teChest.setLootTable(chestData.getLootTableKey(), 0);
         teChest.unpackLootTable(null);
 
@@ -88,7 +88,7 @@ public class RewardUtils {
         if (notEmptyIndexes.size() == 0) {
             ItemStack stack = new ItemStack(Blocks.STONE);
             try {
-                stack.setTag(JsonToNBT.parseTag(String.format("{display:{Name:\"{\\\"text\\\":\\\"The Sorry Stone\\\", \\\"color\\\":\\\"blue\\\", \\\"bold\\\": \\\"true\\\"}\", Lore: [\"{\\\"text\\\":\\\"Modpack creator failed to configure the LootTables properly.\\\\nPlease report that Loot Table [%s] for %s stage is broken, thank you!\\\"}\"]}}", chestData.getLootTableKey(), chestData.getGameName())));
+                stack.setTag(TagParser.parseTag(String.format("{display:{Name:\"{\\\"text\\\":\\\"The Sorry Stone\\\", \\\"color\\\":\\\"blue\\\", \\\"bold\\\": \\\"true\\\"}\", Lore: [\"{\\\"text\\\":\\\"Modpack creator failed to configure the LootTables properly.\\\\nPlease report that Loot Table [%s] for %s stage is broken, thank you!\\\"}\"]}}", chestData.getLootTableKey(), chestData.getGameName())));
             } catch (CommandSyntaxException e) {
                 e.printStackTrace();
             }

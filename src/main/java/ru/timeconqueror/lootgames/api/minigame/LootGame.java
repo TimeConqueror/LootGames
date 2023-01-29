@@ -1,17 +1,17 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.server.ServerChunkProvider;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -111,7 +111,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     @NotNull
-    public World getWorld() {
+    public Level getWorld() {
         return Objects.requireNonNull(masterTileEntity.getLevel());
     }
 
@@ -129,10 +129,10 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         NetworkUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
                 player -> {
                     LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_WIN);
-                    sendTo(player, new TranslationTextComponent("msg.lootgames.win"), NotifyColor.SUCCESS);
+                    sendTo(player, new TranslatableComponent("msg.lootgames.win"), NotifyColor.SUCCESS);
                 });
 
-        getWorld().playSound(null, getGameCenter(), LGSounds.GAME_WIN, SoundCategory.MASTER, 0.75F, 1.0F);
+        getWorld().playSound(null, getGameCenter(), LGSounds.GAME_WIN, SoundSource.MASTER, 0.75F, 1.0F);
     }
 
     /**
@@ -145,10 +145,10 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         NetworkUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
                 player -> {
                     LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_LOSE);
-                    sendTo(player, new TranslationTextComponent("msg.lootgames.lose"), NotifyColor.FAIL);
+                    sendTo(player, new TranslatableComponent("msg.lootgames.lose"), NotifyColor.FAIL);
                 });
 
-        getWorld().playSound(null, getGameCenter(), LGSounds.GAME_LOSE, SoundCategory.MASTER, 0.75F, 1.0F);
+        getWorld().playSound(null, getGameCenter(), LGSounds.GAME_LOSE, SoundSource.MASTER, 0.75F, 1.0F);
     }
 
     /**
@@ -170,27 +170,27 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         return GameDungeonStructure.ROOM_WIDTH / 2 + 3;//3 - it is just extra block distance after passing dungeon wall. Not so much, not so little.
     }
 
-    public void sendTo(PlayerEntity player, IFormattableTextComponent component) {
+    public void sendTo(Player player, MutableComponent component) {
         NetworkUtils.sendMessage(player, component);
     }
 
-    public void sendTo(PlayerEntity player, IFormattableTextComponent component, TextFormatting format) {
+    public void sendTo(Player player, MutableComponent component, ChatFormatting format) {
         sendTo(player, component.withStyle(format));
     }
 
-    public void sendTo(PlayerEntity player, IFormattableTextComponent component, NotifyColor format) {
+    public void sendTo(Player player, MutableComponent component, NotifyColor format) {
         sendTo(player, component, format.getColor());
     }
 
-    public void sendToNearby(IFormattableTextComponent component) {
+    public void sendToNearby(MutableComponent component) {
         NetworkUtils.sendForEachPlayerNearby(getGameCenter(), getBroadcastDistance(), component);
     }
 
-    public void sendToNearby(IFormattableTextComponent component, TextFormatting format) {
+    public void sendToNearby(MutableComponent component, ChatFormatting format) {
         sendToNearby(component.withStyle(format));
     }
 
-    public void sendToNearby(IFormattableTextComponent component, NotifyColor format) {
+    public void sendToNearby(MutableComponent component, NotifyColor format) {
         sendToNearby(component, format.getColor());
     }
 
@@ -198,7 +198,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      * Applies the consumer for every player that are nearby.
      * Server-only.
      */
-    public void forEachPlayerNearby(Consumer<ServerPlayerEntity> action) {
+    public void forEachPlayerNearby(Consumer<ServerPlayer> action) {
         NetworkUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(), action);
     }
 
@@ -227,7 +227,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     @OverridingMethodsMustInvokeSuper
-    public void writeNBT(CompoundNBT nbt, SerializationType type) {
+    public void writeNBT(CompoundTag nbt, SerializationType type) {
         if (type == SerializationType.SAVE) {
             nbt.put("task_scheduler", taskScheduler.serializeNBT());
         }
@@ -237,9 +237,9 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     @OverridingMethodsMustInvokeSuper
-    public void readNBT(CompoundNBT nbt, SerializationType type) {
+    public void readNBT(CompoundTag nbt, SerializationType type) {
         if (type == SerializationType.SAVE) {
-            ListNBT schedulerTag = (ListNBT) nbt.get("task_scheduler");
+            ListTag schedulerTag = (ListTag) nbt.get("task_scheduler");
 
             taskScheduler = new TETaskScheduler(masterTileEntity);
             taskScheduler.deserializeNBT(Objects.requireNonNull(schedulerTag));
@@ -261,19 +261,19 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
             return;
         }
 
-        Chunk chunk = getWorld().getChunkAt(getMasterPos());
+        LevelChunk chunk = getWorld().getChunkAt(getMasterPos());
         LGNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new SPacketGameUpdate(this, packet));
 
         LOGGER.debug(DEBUG_MARKER, () -> logMessage("update packet '{}' was sent.", packet.getClass().getSimpleName()));
     }
 
-    public void sendUpdatePacketToNearbyExcept(ServerPlayerEntity excepting, IServerGamePacket packet) {
+    public void sendUpdatePacketToNearbyExcept(ServerPlayer excepting, IServerGamePacket packet) {
         if (!isServerSide()) {
             return;
         }
 
-        Chunk chunk = getWorld().getChunkAt(getMasterPos());
-        ((ServerChunkProvider) chunk.getLevel().getChunkSource()).chunkMap.getPlayers(chunk.getPos(), false) // copied line from PacketDistributor#trackingChunk
+        LevelChunk chunk = getWorld().getChunkAt(getMasterPos());
+        ((ServerChunkCache) chunk.getLevel().getChunkSource()).chunkMap.getPlayers(chunk.getPos(), false) // copied line from PacketDistributor#trackingChunk
                 .filter(player -> !player.getUUID().equals(excepting.getUUID()))
                 .forEach(player -> LGNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new SPacketGameUpdate(this, packet)));
 
@@ -302,7 +302,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     /**
      * Fired on server when {@link IClientGamePacket} comes from client.
      */
-    public void onFeedbackPacket(ServerPlayerEntity sender, IClientGamePacket packet) {
+    public void onFeedbackPacket(ServerPlayer sender, IClientGamePacket packet) {
         packet.runOnServer(sender, this);
     }
 
@@ -353,7 +353,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     @Nullable
-    public abstract STAGE createStageFromNBT(String id, CompoundNBT stageNBT, SerializationType serializationType);
+    public abstract STAGE createStageFromNBT(String id, CompoundTag stageNBT, SerializationType serializationType);
 
     @Nullable
     public STAGE getStage() {
@@ -411,8 +411,8 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
          *
          * @param serializationType defines for which purpose stage is serializing.
          */
-        public CompoundNBT serialize(SerializationType serializationType) {
-            return new CompoundNBT();
+        public CompoundTag serialize(SerializationType serializationType) {
+            return new CompoundTag();
         }
 
         public abstract String getID();
@@ -443,10 +443,10 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         }
     }
 
-    public static <STAGE extends Stage> void serializeStage(LootGame<STAGE, ?> game, CompoundNBT nbt, SerializationType serializationType) {
+    public static <STAGE extends Stage> void serializeStage(LootGame<STAGE, ?> game, CompoundTag nbt, SerializationType serializationType) {
         Stage stage = game.getStage();
         if (stage != null) {
-            CompoundNBT stageWrapper = new CompoundNBT();
+            CompoundTag stageWrapper = new CompoundTag();
             stageWrapper.put("stage", stage.serialize(serializationType));
             stageWrapper.putString("id", stage.getID());
             nbt.put("stage_wrapper", stageWrapper);
@@ -454,9 +454,9 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     @Nullable
-    public static <S extends Stage, T extends LootGame<S, T>> S deserializeStage(LootGame<S, T> game, CompoundNBT nbt, SerializationType serializationType) {
+    public static <S extends Stage, T extends LootGame<S, T>> S deserializeStage(LootGame<S, T> game, CompoundTag nbt, SerializationType serializationType) {
         if (nbt.contains("stage_wrapper")) {
-            CompoundNBT stageWrapper = nbt.getCompound("stage_wrapper");
+            CompoundTag stageWrapper = nbt.getCompound("stage_wrapper");
             return game.createStageFromNBT(stageWrapper.getString("id"), stageWrapper.getCompound("stage"), serializationType);
         } else {
             return null;
@@ -468,6 +468,6 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     private String formatLogMessage(String message) {
-        return TextFormatting.DARK_BLUE + getClass().getSimpleName() + ": " + message;
+        return ChatFormatting.DARK_BLUE + getClass().getSimpleName() + ": " + message;
     }
 }

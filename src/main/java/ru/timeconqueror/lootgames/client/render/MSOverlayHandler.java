@@ -1,11 +1,11 @@
 package ru.timeconqueror.lootgames.client.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -46,9 +46,9 @@ public class MSOverlayHandler {
         }
     }
 
-    private static void renderNearbyGameBombs(MatrixStack matrixStack) {
-        PlayerEntity player = Minecraft.getInstance().player;
-        FontRenderer fontRenderer = Minecraft.getInstance().font;
+    private static void renderNearbyGameBombs(PoseStack matrixStack) {
+        Player player = Minecraft.getInstance().player;
+        Font fontRenderer = Minecraft.getInstance().font;
 
         List<MSMasterTile> masters = new ArrayList<>(1);
         Iterator<WeakReference<MSMasterTile>> iterator = MS_MASTERS.iterator();

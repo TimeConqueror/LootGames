@@ -2,8 +2,8 @@ package ru.timeconqueror.lootgames.common.config.base;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.DataResult;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import ru.timeconqueror.lootgames.LootGames;
@@ -56,7 +56,7 @@ public class RewardConfig extends ConfigSection {
                 .defineList("per_dim_configs", new ArrayList<>(), o -> true);
     }
 
-    public ResourceLocation getLootTable(World world) {
+    public ResourceLocation getLootTable(Level world) {
         ResourceLocation dimKey = world.dimension().location();
         ResourceLocation lootTableDim = dimensionsConfigs.get(dimKey);
 

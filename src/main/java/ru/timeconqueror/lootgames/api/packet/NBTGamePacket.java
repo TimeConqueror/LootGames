@@ -1,14 +1,14 @@
 package ru.timeconqueror.lootgames.api.packet;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
 public abstract class NBTGamePacket implements IServerGamePacket {
     @Nullable
-    private CompoundNBT compound;
+    private CompoundTag compound;
 
     /**
      * Only for using in constructor on reception side.
@@ -16,16 +16,16 @@ public abstract class NBTGamePacket implements IServerGamePacket {
     public NBTGamePacket() {
     }
 
-    public NBTGamePacket(Supplier<CompoundNBT> compoundSupplier) {
+    public NBTGamePacket(Supplier<CompoundTag> compoundSupplier) {
         this(compoundSupplier.get());
     }
 
-    public NBTGamePacket(@Nullable CompoundNBT compound) {
+    public NBTGamePacket(@Nullable CompoundTag compound) {
         this.compound = compound;
     }
 
     @Override
-    public void encode(PacketBuffer bufferTo) {
+    public void encode(FriendlyByteBuf bufferTo) {
         bufferTo.writeBoolean(compound != null);
 
         if (compound != null) {
@@ -34,7 +34,7 @@ public abstract class NBTGamePacket implements IServerGamePacket {
     }
 
     @Override
-    public void decode(PacketBuffer bufferFrom) {
+    public void decode(FriendlyByteBuf bufferFrom) {
         boolean isNotNull = bufferFrom.readBoolean();
         if (isNotNull) {
             compound = bufferFrom.readNbt();
@@ -42,11 +42,11 @@ public abstract class NBTGamePacket implements IServerGamePacket {
     }
 
     @Nullable
-    public CompoundNBT getCompound() {
+    public CompoundTag getCompound() {
         return compound;
     }
 
-    public void setCompound(@Nullable CompoundNBT compound) {
+    public void setCompound(@Nullable CompoundTag compound) {
         this.compound = compound;
     }
 }

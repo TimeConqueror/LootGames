@@ -1,6 +1,6 @@
 package ru.timeconqueror.lootgames.registry;
 
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.client.render.tile.GOLMasterRenderer;
@@ -18,10 +18,10 @@ import static ru.timeconqueror.timecore.api.util.Hacks.promise;
 @ObjectHolder(LootGames.MODID)
 public class LGTiles {
 
-    public static final TileEntityType<PuzzleMasterTile> PUZZLE_MASTER = promise();
-    public static final TileEntityType<MSMasterTile> MS_MASTER = promise();
-    public static final TileEntityType<PipesMasterTile> PIPES_MASTER = promise();
-    public static final TileEntityType<GOLMasterTile> GOL_MASTER = promise();
+    public static final BlockEntityType<PuzzleMasterTile> PUZZLE_MASTER = promise();
+    public static final BlockEntityType<MSMasterTile> MS_MASTER = promise();
+    public static final BlockEntityType<PipesMasterTile> PIPES_MASTER = promise();
+    public static final BlockEntityType<GOLMasterTile> GOL_MASTER = promise();
 
     private static class Init {
         @AutoRegistrable

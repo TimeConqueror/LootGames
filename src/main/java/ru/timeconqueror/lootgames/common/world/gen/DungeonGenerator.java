@@ -1,15 +1,15 @@
 package ru.timeconqueror.lootgames.common.world.gen;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 //TODO move away from DungeonGenerator
 public class DungeonGenerator {
     private static final BlockState DUNGEON_FLOOR = LGBlocks.DUNGEON_FLOOR.defaultBlockState();
 
     //TODO make it called only when in structure
-    public static void resetUnbreakablePlayField(World world, BlockPos floorPos) {
+    public static void resetUnbreakablePlayField(Level world, BlockPos floorPos) {
         if (!resetUnbreakableFieldsStartingFrom(world, floorPos)) {
             resetUnbreakableFieldsStartingFrom(world, floorPos.north());
             resetUnbreakableFieldsStartingFrom(world, floorPos.east());
@@ -18,7 +18,7 @@ public class DungeonGenerator {
         }
     }
 
-    private static boolean resetUnbreakableFieldsStartingFrom(World world, BlockPos blockPos) {
+    private static boolean resetUnbreakableFieldsStartingFrom(Level world, BlockPos blockPos) {
         BlockState state = world.getBlockState(blockPos);
         if (state.getBlock() == LGBlocks.SHIELDED_DUNGEON_FLOOR) {
             world.setBlockAndUpdate(blockPos, DUNGEON_FLOOR);

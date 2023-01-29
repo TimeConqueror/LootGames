@@ -2,9 +2,10 @@ package ru.timeconqueror.lootgames.common.config;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.Tag;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.config.ModConfig.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
@@ -25,7 +26,7 @@ public class ConfigMS extends Config {
     public final StageConfig stage3 = new StageConfig("stage_3", new DefaultData(8, 42));
     public final StageConfig stage4 = new StageConfig("stage_4", new DefaultData(9, 68));
 
-    public ConfigMS(ModConfig.@NotNull Type type, @NotNull String key, @Nullable String comment) {
+    public ConfigMS(@NotNull Type type, @NotNull String key, @Nullable String comment) {
         super(type, key, comment);
     }
 
@@ -146,11 +147,11 @@ public class ConfigMS extends Config {
             this.stage4 = stage4;
         }
 
-        public static INBT serialize(Snapshot snapshot) {
+        public static Tag serialize(Snapshot snapshot) {
             return CodecUtils.encodeStrictly(CODEC, CodecUtils.NBT_OPS, snapshot);
         }
 
-        public static Snapshot deserialize(INBT serialized) {
+        public static Snapshot deserialize(Tag serialized) {
             return CodecUtils.decodeStrictly(CODEC, CodecUtils.NBT_OPS, serialized);
         }
 

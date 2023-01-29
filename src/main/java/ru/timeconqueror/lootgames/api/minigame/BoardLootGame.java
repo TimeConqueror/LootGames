@@ -1,8 +1,8 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -50,7 +50,7 @@ public abstract class BoardLootGame<G extends BoardLootGame<G>> extends LootGame
 
     @Override
     public void onDestroy() {
-        LootGamesAPI.getFieldManager().clearBoard(((ServerWorld) getWorld()), getMasterPos(), getAllocatedBoardSize(), getAllocatedBoardSize());
+        LootGamesAPI.getFieldManager().clearBoard(((ServerLevel) getWorld()), getMasterPos(), getAllocatedBoardSize(), getAllocatedBoardSize());
     }
 
     public Pos2i convertToGamePos(BlockPos subordinatePos) {
@@ -67,17 +67,17 @@ public abstract class BoardLootGame<G extends BoardLootGame<G>> extends LootGame
         return getMasterPos().mutable().move(1, 0, 1).move(offset / 2, 0, offset / 2).immutable();
     }
 
-    public void onClick(PlayerEntity player, Pos2i pos, MouseClickType type) {
+    public void onClick(Player player, Pos2i pos, MouseClickType type) {
         if (getStage() != null) {
             getStage().onClick(player, pos, type);
         }
     }
 
-    public abstract static class BoardStage extends LootGame.Stage {
+    public abstract static class BoardStage extends Stage {
         /**
          * Called for both sides when player clicks on board block.
          */
-        protected void onClick(PlayerEntity player, Pos2i pos, MouseClickType type) {
+        protected void onClick(Player player, Pos2i pos, MouseClickType type) {
         }
     }
 }

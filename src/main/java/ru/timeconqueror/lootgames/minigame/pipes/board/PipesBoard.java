@@ -1,6 +1,6 @@
 package ru.timeconqueror.lootgames.minigame.pipes.board;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import ru.timeconqueror.lootgames.common.packet.game.SPPipesGameChangeChunks;
 import ru.timeconqueror.lootgames.common.packet.game.SPPipesGameSetBoard;
 
@@ -110,15 +110,15 @@ public class PipesBoard {
         return chunks.length;
     }
 
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.putIntArray("Chunks", chunks);
         nbt.putInt("SinkCount", sinkCount);
         nbt.putInt("PoweredSinkCount", poweredSinkCount);
         return nbt;
     }
 
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         int[] source = nbt.getIntArray("Chunks");
         System.arraycopy(source, 0, chunks, 0, source.length);
         sinkCount = nbt.getInt("SinkCount");

@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public interface ILootGameFactory {
 
@@ -11,5 +11,5 @@ public interface ILootGameFactory {
      * @param world           The world for the Generator
      * @param puzzleMasterPos The position of Puzzle Master Block
      */
-    void genOnPuzzleMasterClick(World world, BlockPos puzzleMasterPos);
+    void genOnPuzzleMasterClick(Level world, BlockPos puzzleMasterPos);
 }
