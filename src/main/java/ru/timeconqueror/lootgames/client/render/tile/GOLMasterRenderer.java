@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.block.tile.BoardGameMasterTile;
@@ -25,14 +24,10 @@ import ru.timeconqueror.timecore.api.util.client.DrawHelper;
 import static ru.timeconqueror.lootgames.minigame.gol.GameOfLight.StageUnderExpanding.MAX_TICKS_EXPANDING;
 
 //TODO draw board by symbol, not by fully not activated board with activated overlay
-public class GOLMasterRenderer extends BlockEntityRenderer<GOLMasterTile> {
+public class GOLMasterRenderer implements BlockEntityRenderer<GOLMasterTile> {
     private static final RenderType RT_BOARD = LGRenderTypes.brightened(LootGames.rl("textures/game/gol_board.png"));
     private static final RenderType RT_BOARD_ACTIVE = LGRenderTypes.brightened(LootGames.rl("textures/game/gol_board_active.png"));
     private static final RenderType RT_MARKS = LGRenderTypes.brightenedTranslucent(LootGames.rl("textures/game/gol_marks.png"));
-
-    public GOLMasterRenderer(BlockEntityRenderDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
-    }
 
     @Override
     public void render(GOLMasterTile tileEntityIn, float partialTicks, PoseStack matrix, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {

@@ -4,26 +4,30 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
+import ru.timeconqueror.timecore.api.util.ITickableBlockEntity;
 import ru.timeconqueror.timecore.api.util.WorldUtils;
 
-import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
-public class GameMasterBlock extends GameBlock implements IGameField {
-    private final BiFunction<BlockState, BlockGetter, GameMasterTile<?>> tileEntityFactory;
+public class GameMasterBlock extends GameBlock implements IGameField, EntityBlock {
+    private final BlockEntityType<? extends GameMasterTile<?>> blockEntityType;
 
-    public GameMasterBlock(BiFunction<BlockState, BlockGetter, GameMasterTile<?>> tileEntityFactory) {
-        this.tileEntityFactory = tileEntityFactory;
+    public GameMasterBlock(Supplier<BlockEntityType<? extends GameMasterTile<?>>> blockEntityType) {
+        this.blockEntityType = blockEntityType.get();
     }
 
-    public GameMasterBlock(Properties props, BiFunction<BlockState, BlockGetter, GameMasterTile<?>> tileEntityFactory) {
+    public GameMasterBlock(Properties props, Supplier<BlockEntityType<? extends GameMasterTile<?>>> blockEntityType) {
         super(props);
-        this.tileEntityFactory = tileEntityFactory;
+        this.blockEntityType = blockEntityType.get();
     }
 
     @Override
@@ -33,13 +37,15 @@ public class GameMasterBlock extends GameBlock implements IGameField {
         return InteractionResult.SUCCESS;
     }
 
+    @Nullable
     @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return blockEntityType.create(pos, state);
     }
 
-    @NotNull
-    public GameMasterTile<?> createTileEntity(BlockState state, BlockGetter world) {
-        return tileEntityFactory.apply(state, world);
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level_, BlockState state_, BlockEntityType<T> blockEntityType_) {
+        return ITickableBlockEntity.makeTicker(blockEntityType_, blockEntityType);
     }
 }

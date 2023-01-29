@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -21,14 +20,10 @@ import ru.timeconqueror.lootgames.minigame.minesweeper.Mark;
 import ru.timeconqueror.lootgames.minigame.minesweeper.Type;
 import ru.timeconqueror.timecore.api.util.client.DrawHelper;
 
-public class MSMasterRenderer extends BlockEntityRenderer<MSMasterTile> {
+public class MSMasterRenderer implements BlockEntityRenderer<MSMasterTile> {
     private static final ResourceLocation MS_BOARD = LootGames.rl("textures/game/ms_board.png");
     private static final RenderType RT_BRIGHTENED_BOARD = LGRenderTypes.brightened(MS_BOARD);
     private static final RenderType RT_BRIGHTENED_TRANSLUCENT_BOARD = LGRenderTypes.brightenedTranslucent(MS_BOARD);
-
-    public MSMasterRenderer(BlockEntityRenderDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
-    }
 
     @Override
     public void render(MSMasterTile te, float partialTicks, PoseStack matrix, @NotNull MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {

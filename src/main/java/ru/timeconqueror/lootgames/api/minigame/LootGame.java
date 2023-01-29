@@ -4,8 +4,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -129,7 +129,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         NetworkUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
                 player -> {
                     LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_WIN);
-                    sendTo(player, new TranslatableComponent("msg.lootgames.win"), NotifyColor.SUCCESS);
+                    sendTo(player, Component.translatable("msg.lootgames.win"), NotifyColor.SUCCESS);
                 });
 
         getWorld().playSound(null, getGameCenter(), LGSounds.GAME_WIN, SoundSource.MASTER, 0.75F, 1.0F);
@@ -145,7 +145,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         NetworkUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
                 player -> {
                     LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_LOSE);
-                    sendTo(player, new TranslatableComponent("msg.lootgames.lose"), NotifyColor.FAIL);
+                    sendTo(player, Component.translatable("msg.lootgames.lose"), NotifyColor.FAIL);
                 });
 
         getWorld().playSound(null, getGameCenter(), LGSounds.GAME_LOSE, SoundSource.MASTER, 0.75F, 1.0F);
@@ -254,7 +254,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     /**
-     * Sends update packet to the client with given {@link CompoundNBT} to all players, tracking the game.
+     * Sends update packet to the client with given {@link CompoundTag} to all players, tracking the game.
      */
     public void sendUpdatePacketToNearby(IServerGamePacket packet) {
         if (!isServerSide()) {

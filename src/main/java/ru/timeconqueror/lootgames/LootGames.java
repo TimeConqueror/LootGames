@@ -7,7 +7,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.timeconqueror.lootgames.api.Markers;
-import ru.timeconqueror.timecore.api.TimeMod;
+import ru.timeconqueror.timecore.api.TimeCoreAPI;
 import ru.timeconqueror.timecore.api.util.EnvironmentUtils;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Mod(LootGames.MODID)
-public class LootGames implements TimeMod {
+public class LootGames {
     public static final String MODID = "lootgames";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static LootGames INSTANCE = null;
@@ -26,6 +26,7 @@ public class LootGames implements TimeMod {
         INSTANCE = this;
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::handleMarkers);
+        TimeCoreAPI.setup(this);
     }
 
     private void handleMarkers(FMLConstructModEvent event) {

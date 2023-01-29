@@ -3,19 +3,20 @@ package ru.timeconqueror.lootgames.api.block.tile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.common.tile.SyncableTile;
+import ru.timeconqueror.timecore.api.util.ITickableBlockEntity;
 
-public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableTile implements TickableBlockEntity {
+public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableTile implements ITickableBlockEntity {
     protected T game;
     private long age;
 
-    public GameMasterTile(BlockEntityType<? extends GameMasterTile<T>> tileEntityTypeIn, T game) {
-        super(tileEntityTypeIn);
+    public GameMasterTile(BlockEntityType<? extends GameMasterTile<T>> tileEntityTypeIn, BlockPos pos, BlockState state, T game) {
+        super(tileEntityTypeIn, pos, state);
         this.game = game;
         game.setMasterTileEntity(this);
     }
@@ -25,7 +26,7 @@ public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableT
     }
 
     @Override
-    public void tick() {
+    public void tick(Level level) {
         age++;
         game.onTick();
     }
@@ -54,8 +55,8 @@ public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableT
     }
 
     @Override
-    protected void readNBT(BlockState state, CompoundTag nbt, SerializationType type) {
-        super.readNBT(state, nbt, type);
+    protected void readNBT(CompoundTag nbt, SerializationType type) {
+        super.readNBT(nbt, type);
 
         game.readNBT(nbt.getCompound("game"), type);
     }

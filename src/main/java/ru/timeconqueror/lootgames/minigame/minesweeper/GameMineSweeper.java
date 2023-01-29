@@ -2,7 +2,6 @@ package ru.timeconqueror.lootgames.minigame.minesweeper;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -102,7 +101,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         if (currentLevel < 4) {
             sendUpdatePacketToNearby(new SPMSSpawnLevelBeatParticles());
 
-            sendToNearby(new TranslatableComponent("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
+            sendToNearby(Component.translatable("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
             getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 0.75F, 1.0F);
 
             Snapshot.StageSnapshot stageSnapshot = configSnapshot.getStageByIndex(currentLevel + 1);
@@ -308,7 +307,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         private void revealAllNeighbours(ServerPlayer player, Pos2i mainPos, boolean revealMarked) {
             if (!revealMarked) {
                 if (board.isHidden(mainPos)) {
-                    sendTo(player, new TranslatableComponent("msg.lootgames.ms.reveal_on_hidden"), NotifyColor.WARN);
+                    sendTo(player, Component.translatable("msg.lootgames.ms.reveal_on_hidden"), NotifyColor.WARN);
                     return;
                 }
 
@@ -326,7 +325,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
                 }
 
                 if (marked != bombsAround) {
-                    sendTo(player, new TranslatableComponent("msg.lootgames.ms.reveal_invalid_mark_count"), NotifyColor.WARN);
+                    sendTo(player, Component.translatable("msg.lootgames.ms.reveal_invalid_mark_count"), NotifyColor.WARN);
                     return;
                 }
             }
@@ -372,7 +371,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
                 }
             });
 
-            sendToNearby(new TranslatableComponent("msg.lootgames.ms.bomb_touched"), NotifyColor.FAIL);
+            sendToNearby(Component.translatable("msg.lootgames.ms.bomb_touched"), NotifyColor.FAIL);
 
             saveAndSync();
 
@@ -451,8 +450,8 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
                 ticks--;
 
                 if (ticks <= 0) {
-                    sendToNearby(new TranslatableComponent("msg.lootgames.ms.new_attempt"), NotifyColor.NOTIFY);
-                    sendToNearby(new TranslatableComponent("msg.lootgames.attempt_left", LGConfigs.MINESWEEPER.attemptCount.get() - attemptCount), NotifyColor.GRAVE_NOTIFY);
+                    sendToNearby(Component.translatable("msg.lootgames.ms.new_attempt"), NotifyColor.NOTIFY);
+                    sendToNearby(Component.translatable("msg.lootgames.attempt_left", LGConfigs.MINESWEEPER.attemptCount.get() - attemptCount), NotifyColor.GRAVE_NOTIFY);
 
                     switchStage(new StageWaiting());
 

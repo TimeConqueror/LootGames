@@ -1,21 +1,24 @@
 package ru.timeconqueror.lootgames.common.block.tile;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import ru.timeconqueror.lootgames.registry.LGBlockEntities;
 import ru.timeconqueror.lootgames.registry.LGSounds;
-import ru.timeconqueror.lootgames.registry.LGTiles;
+import ru.timeconqueror.timecore.api.util.ITickableBlockEntity;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 
-public class PuzzleMasterTile extends BlockEntity implements TickableBlockEntity {
+public class PuzzleMasterTile extends BlockEntity implements ITickableBlockEntity {
     private long lastSoundTick = 0L;
 
-    public PuzzleMasterTile() {
-        super(LGTiles.PUZZLE_MASTER);
+    public PuzzleMasterTile(BlockPos pos, BlockState blockState) {
+        super(LGBlockEntities.PUZZLE_MASTER, pos, blockState);
     }
 
     @Override
-    public void tick() {
+    public void tick(Level level) {
         if (!level.isClientSide()) {
             if (RandHelper.RAND.nextInt(100) <= 10) {
                 if (lastSoundTick < System.currentTimeMillis()) {

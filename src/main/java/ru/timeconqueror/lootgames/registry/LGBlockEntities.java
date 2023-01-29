@@ -1,7 +1,6 @@
 package ru.timeconqueror.lootgames.registry;
 
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.registries.ObjectHolder;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.client.render.tile.GOLMasterRenderer;
 import ru.timeconqueror.lootgames.client.render.tile.MSMasterRenderer;
@@ -15,24 +14,22 @@ import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 
 import static ru.timeconqueror.timecore.api.util.Hacks.promise;
 
-@ObjectHolder(LootGames.MODID)
-public class LGTiles {
+@AutoRegistrable.Entries("block_entity_type")
+public class LGBlockEntities {
 
     public static final BlockEntityType<PuzzleMasterTile> PUZZLE_MASTER = promise();
     public static final BlockEntityType<MSMasterTile> MS_MASTER = promise();
     public static final BlockEntityType<PipesMasterTile> PIPES_MASTER = promise();
     public static final BlockEntityType<GOLMasterTile> GOL_MASTER = promise();
 
-    private static class Init {
-        @AutoRegistrable
-        private static final TileEntityRegister REGISTER = new TileEntityRegister(LootGames.MODID);
+    @AutoRegistrable
+    private static final TileEntityRegister REGISTER = new TileEntityRegister(LootGames.MODID);
 
-        @AutoRegistrable.InitMethod
-        private static void register() {
-            REGISTER.registerSingleBound("puzzle_master", PuzzleMasterTile::new, () -> LGBlocks.PUZZLE_MASTER);
-            REGISTER.registerSingleBound("ms_master", MSMasterTile::new, () -> LGBlocks.MS_MASTER).regCustomRenderer(() -> MSMasterRenderer::new);
-            REGISTER.registerSingleBound("pipes_master", PipesMasterTile::new, () -> LGBlocks.PIPES_MASTER).regCustomRenderer(() -> PipesMasterRenderer::new);
-            REGISTER.registerSingleBound("gol_master", GOLMasterTile::new, () -> LGBlocks.GOL_MASTER).regCustomRenderer(() -> GOLMasterRenderer::new);
-        }
+    @AutoRegistrable.Init
+    private static void register() {
+        REGISTER.registerSingleBound("puzzle_master", PuzzleMasterTile::new, () -> LGBlocks.PUZZLE_MASTER);
+        REGISTER.registerSingleBound("ms_master", MSMasterTile::new, () -> LGBlocks.MS_MASTER).regCustomRenderer(() -> context -> new MSMasterRenderer());
+        REGISTER.registerSingleBound("pipes_master", PipesMasterTile::new, () -> LGBlocks.PIPES_MASTER).regCustomRenderer(() -> context -> new PipesMasterRenderer());
+        REGISTER.registerSingleBound("gol_master", GOLMasterTile::new, () -> LGBlocks.GOL_MASTER).regCustomRenderer(() -> context -> new GOLMasterRenderer());
     }
 }

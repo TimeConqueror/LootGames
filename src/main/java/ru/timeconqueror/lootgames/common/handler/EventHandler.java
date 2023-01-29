@@ -11,11 +11,11 @@ import ru.timeconqueror.lootgames.api.block.ILeftInteractible;
 public class EventHandler {
     @SubscribeEvent
     public static void onBlockBreak(PlayerInteractEvent.LeftClickBlock event) {
-        BlockState blockState = event.getWorld().getBlockState(event.getPos());
+        BlockState blockState = event.getLevel().getBlockState(event.getPos());
         Block block = blockState.getBlock();
 
         if (block instanceof ILeftInteractible) {
-            event.setCanceled(((ILeftInteractible) block).onLeftClick(event.getWorld(), event.getPlayer(), event.getPos(), event.getFace()));
+            event.setCanceled(((ILeftInteractible) block).onLeftClick(event.getLevel(), event.getEntity(), event.getPos(), event.getFace()));
         }
     }
 }

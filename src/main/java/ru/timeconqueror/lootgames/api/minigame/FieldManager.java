@@ -2,7 +2,7 @@ package ru.timeconqueror.lootgames.api.minigame;
 
 import com.google.common.collect.Iterables;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -88,7 +88,7 @@ public class FieldManager {//TODO rename to board manager
         BlockPos.MutableBlockPos borderPos = cornerPos.mutable();
         if (!canReplaceAreaWithBoard(world, borderPos, xSize + 2, height + 1, zSize + 2, centerPos)) {
             if (player != null) {
-                NetworkUtils.sendMessage(player, new TranslatableComponent("msg.lootgames.field.not_enough_space", xSize + 2, height + 1, zSize + 2).withStyle(NotifyColor.FAIL.getColor()));
+                NetworkUtils.sendMessage(player, Component.translatable("msg.lootgames.field.not_enough_space", xSize + 2, height + 1, zSize + 2).withStyle(NotifyColor.FAIL.getColor()));
                 world.playSound(null, centerPos, LGSounds.GAME_LOSE, SoundSource.BLOCKS, 0.4F, 1.0F);//TODO change sound
             }
             return new GenerationChain(null, null, false);

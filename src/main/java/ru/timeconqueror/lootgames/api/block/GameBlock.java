@@ -7,7 +7,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
-import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.timecore.api.registry.util.BlockPropsFactory;
 
 public abstract class GameBlock extends Block {
@@ -25,7 +24,7 @@ public abstract class GameBlock extends Block {
     }
 
     @Override
-    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacements.Type type, @Nullable EntityType<?> entityType) {
+    public boolean isValidSpawn(BlockState state, BlockGetter level, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType) {
         return false;
     }
 }

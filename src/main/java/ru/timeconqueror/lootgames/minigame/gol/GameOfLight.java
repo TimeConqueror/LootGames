@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -12,11 +12,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.event.world.NoteBlockEvent;
+import net.minecraftforge.event.level.NoteBlockEvent;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
@@ -108,7 +107,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
     private void failGame(boolean dueTimeout) {
         getWorld().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_WRONG, SoundSource.MASTER, dueTimeout ? 0.2F : 0.75F, 1.0F);
-        sendToNearby(new TranslatableComponent("msg.lootgames.gol.wrong_block"), NotifyColor.FAIL);
+        sendToNearby(Component.translatable("msg.lootgames.gol.wrong_block"), NotifyColor.FAIL);
         sendUpdatePacketToNearby(SPGOLDrawMark.denied());
 
         if (attempt >= LGConfigs.GOL.attemptCount.get()) {
@@ -156,7 +155,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                 break;
         }
 
-        getWorld().playSound(player, convertToBlockPos(symbol.getPos()), SoundEvents.NOTE_BLOCK_HARP, SoundSource.MASTER, 3.0F, getPitchForNote(note, octave));
+        getWorld().playSound(player, convertToBlockPos(symbol.getPos()), SoundEvents.NOTE_BLOCK_HARP.get(), SoundSource.MASTER, 3.0F, getPitchForNote(note, octave));//todo check sound slightly far
     }
 
     private float getPitchForNote(NoteBlockEvent.Note note, NoteBlockEvent.Octave octave) {
@@ -177,7 +176,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
         BlockPos center = getGameCenter();
         if (fail == Fail.EXPLOSION) {
-            world.explode(null, center.getX(), center.getY() + 1.5, center.getZ(), 9, Explosion.BlockInteraction.DESTROY);
+            world.explode(null, center.getX(), center.getY() + 1.5, center.getZ(), 9, Level.ExplosionInteraction.BLOCK);
         } else if (fail == Fail.ZOMBIES) {
             for (int i = 0; i < 10; i++) {
                 Zombie zombie = new Zombie(world);
@@ -210,7 +209,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         super.triggerGameWin();
 
         forEachPlayerNearby(player -> {
-            sendTo(player, new TranslatableComponent("msg.lootgames.gol.reward_level_info", stage, maxReachedStage), NotifyColor.SUCCESS);
+            sendTo(player, Component.translatable("msg.lootgames.gol.reward_level_info", stage, maxReachedStage), NotifyColor.SUCCESS);
 
             if (maxReachedStage >= 3) {
                 LGAdvancementTriggers.END_GAME.trigger(player, ADV_BEAT_LEVEL3);
@@ -364,11 +363,11 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
             if (isServerSide()) {
                 if (isCenter(pos)) {
-                    sendTo(player, new TranslatableComponent("msg.lootgames.gol.rules"), NotifyColor.NOTIFY);
+                    sendTo(player, Component.translatable("msg.lootgames.gol.rules"), NotifyColor.NOTIFY);
 
                     switchStage(new StageShowSequence(true, new ArrayList<>()));
                 } else {
-                    sendTo(player, new TranslatableComponent("msg.lootgames.gol.click_center"), NotifyColor.WARN);
+                    sendTo(player, Component.translatable("msg.lootgames.gol.click_center"), NotifyColor.WARN);
                 }
             }
         }
@@ -484,7 +483,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             super.onClick(player, pos, type);
 
             if (isServerSide()) {
-                sendTo(player, new TranslatableComponent("msg.lootgames.gol.not_ready"), NotifyColor.WARN);
+                sendTo(player, Component.translatable("msg.lootgames.gol.not_ready"), NotifyColor.WARN);
             }
         }
 
@@ -558,7 +557,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         @Override
         protected void onClick(Player player, Pos2i pos, MouseClickType type) {
             if (isClientSide() && isCenter(pos)) {
-                sendTo(player, new TranslatableComponent("msg.lootgames.gol.rules"), NotifyColor.WARN);
+                sendTo(player, Component.translatable("msg.lootgames.gol.rules"), NotifyColor.WARN);
                 return;
             }
 
@@ -605,7 +604,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
                     getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER, 0.75F, 1.0F);
                     sendUpdatePacketToNearby(new SPGOLSpawnStageUpParticles());
-                    sendToNearby(new TranslatableComponent("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
+                    sendToNearby(Component.translatable("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
 
                     switchStage(new StageShowSequence(true, sequence));
                 }

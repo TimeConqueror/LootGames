@@ -1,12 +1,13 @@
 package ru.timeconqueror.lootgames.api.block.tile;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -16,8 +17,8 @@ import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 
 public class BoardGameMasterTile<T extends BoardLootGame<T>> extends GameMasterTile<T> {
-    public BoardGameMasterTile(BlockEntityType<? extends GameMasterTile<T>> type, T game) {
-        super(type, game);
+    public BoardGameMasterTile(BlockEntityType<? extends GameMasterTile<T>> type, BlockPos pos, BlockState state, T game) {
+        super(type, pos, state, game);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class BoardGameMasterTile<T extends BoardLootGame<T>> extends GameMasterT
         Vec3i originOffset = boardOrigin.subtract(master.getBlockPos()).offset(0, 1, 0);
 
         matrixStack.translate(originOffset.getX(), originOffset.getY(), originOffset.getZ());
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
+        matrixStack.mulPose(Axis.XP.rotationDegrees(90));
     }
 
     @NotNull

@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.common.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -31,7 +31,7 @@ public class GOLActivatorBlock extends GameBlock {
                     .trySetupBoard(((ServerLevel) worldIn), pos, GameOfLight.BOARD_SIZE, 2, GameOfLight.BOARD_SIZE, LGBlocks.GOL_MASTER.defaultBlockState(), player).isSucceed();
 
             if (succeed) {
-                NetworkUtils.sendMessage(player, ChatUtils.format(new TranslatableComponent("msg.lootgames.gol.start"), NotifyColor.NOTIFY.getColor()));
+                NetworkUtils.sendMessage(player, ChatUtils.format(Component.translatable("msg.lootgames.gol.start"), NotifyColor.NOTIFY.getColor()));
                 worldIn.playSound(null, pos, LGSounds.GOL_START_GAME, SoundSource.MASTER, 0.75F, 1.0F);
                 LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayer) player), new ExtraInfo(state, pos, player.getItemInHand(handIn)));
             }

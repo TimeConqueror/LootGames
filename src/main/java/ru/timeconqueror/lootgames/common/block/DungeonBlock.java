@@ -3,7 +3,6 @@ package ru.timeconqueror.lootgames.common.block;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.item.ItemStack;
@@ -13,7 +12,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
-import net.minecraftforge.common.ToolType;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.timecore.api.registry.util.BlockPropsFactory;
 
@@ -34,19 +32,20 @@ public class DungeonBlock extends Block {
     }
 
     @Override
-    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacements.Type type, @Nullable EntityType<?> entityType) {
+    public boolean isValidSpawn(BlockState state, BlockGetter level, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType) {
         return false;
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        tooltip.add(new TranslatableComponent("item.lootgames.dungeon_block.tooltip").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.lootgames.dungeon_block.tooltip").withStyle(ChatFormatting.DARK_GRAY));
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
-    @Nullable
-    @Override
-    public ToolType getHarvestTool(BlockState state) {
-        return ToolType.PICKAXE;
-    }
+    //FIXME
+//    @Nullable
+//    @Override
+//    public ToolType getHarvestTool(BlockState state) {
+//        return ToolType.PICKAXE;
+//    }
 }

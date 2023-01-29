@@ -2,13 +2,12 @@ package ru.timeconqueror.lootgames.client.render.tile;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import org.joml.Matrix4f;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
 import ru.timeconqueror.lootgames.common.block.tile.PipesMasterTile;
@@ -18,14 +17,10 @@ import ru.timeconqueror.lootgames.minigame.pipes.board.PipeState;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class PipesMasterRenderer extends BlockEntityRenderer<PipesMasterTile> {
+public class PipesMasterRenderer implements BlockEntityRenderer<PipesMasterTile> {
 
     private static final ResourceLocation BOARD = new ResourceLocation(LootGames.MODID, "textures/game/pipes.png");
     private static final RenderType BOARD_RENDER_TYPE = LGRenderTypes.brightenedCutout(BOARD);
-
-    public PipesMasterRenderer(BlockEntityRenderDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
-    }
 
     @Override
     public void render(PipesMasterTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
