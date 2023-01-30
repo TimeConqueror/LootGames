@@ -106,7 +106,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     }
 
     private void failGame(boolean dueTimeout) {
-        getWorld().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_WRONG, SoundSource.MASTER, dueTimeout ? 0.2F : 0.75F, 1.0F);
+        getLevel().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_WRONG, SoundSource.MASTER, dueTimeout ? 0.2F : 0.75F, 1.0F);
         sendToNearby(Component.translatable("msg.lootgames.gol.wrong_block"), NotifyColor.FAIL);
         sendUpdatePacketToNearby(SPGOLDrawMark.denied());
 
@@ -119,7 +119,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         } else {
             attempt++;
 
-            getWorld().playSound(null, getGameCenter(), LGSounds.GOL_START_GAME, SoundSource.MASTER, dueTimeout ? 0.2F : 0.75F, 1.0F);
+            getLevel().playSound(null, getGameCenter(), LGSounds.GOL_START_GAME, SoundSource.MASTER, dueTimeout ? 0.2F : 0.75F, 1.0F);
             switchStage(new StageWaitingStart());
         }
     }
@@ -155,7 +155,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                 break;
         }
 
-        getWorld().playSound(player, convertToBlockPos(symbol.getPos()), SoundEvents.NOTE_BLOCK_HARP.get(), SoundSource.MASTER, 3.0F, getPitchForNote(note, octave));//todo check sound slightly far
+        getLevel().playSound(player, convertToBlockPos(symbol.getPos()), SoundEvents.NOTE_BLOCK_HARP.get(), SoundSource.MASTER, 3.0F, getPitchForNote(note, octave));//todo check sound slightly far
     }
 
     private float getPitchForNote(NoteBlockEvent.Note note, NoteBlockEvent.Octave octave) {
@@ -167,7 +167,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     protected void triggerGameLose() {
         super.triggerGameLose();
 
-        Level world = getWorld();
+        Level world = getLevel();
 
         EnumSet<Fail> fails = LGConfigs.GOL.getAllowedFails();
         if (fails.isEmpty()) return;
@@ -220,7 +220,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
             }
         });
 
-        RewardUtils.spawnFourStagedReward(((ServerLevel) getWorld()), this, getGameCenter(), maxReachedStage, LGConfigs.REWARDS.gol);
+        RewardUtils.spawnFourStagedReward(((ServerLevel) getLevel()), this, getGameCenter(), maxReachedStage, LGConfigs.REWARDS.gol);
     }
 
     @Override
@@ -296,7 +296,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
     public void spawnFeedbackParticles(ParticleOptions particle, BlockPos pos) {
         if (isClientSide()) {
             for (int i = 0; i < 20; i++) {
-                getWorld().addParticle(particle, pos.getX() + RandHelper.RAND.nextFloat(), pos.getY() + 1F + RandHelper.RAND.nextFloat() / 2, pos.getZ() + RandHelper.RAND.nextFloat(), RandHelper.RAND.nextGaussian() * 0.02D, (0.02D + RandHelper.RAND.nextGaussian()) * 0.02D, RandHelper.RAND.nextGaussian() * 0.02D);
+                getLevel().addParticle(particle, pos.getX() + RandHelper.RAND.nextFloat(), pos.getY() + 1F + RandHelper.RAND.nextFloat() / 2, pos.getZ() + RandHelper.RAND.nextFloat(), RandHelper.RAND.nextGaussian() * 0.02D, (0.02D + RandHelper.RAND.nextGaussian()) * 0.02D, RandHelper.RAND.nextGaussian() * 0.02D);
             }
         }
     }
@@ -586,7 +586,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
         }
 
         private void onSuccessSequence(ServerPlayer player) {
-            getWorld().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_COMPLETE, SoundSource.MASTER, 0.75F, 1.0F);
+            getLevel().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_COMPLETE, SoundSource.MASTER, 0.75F, 1.0F);
             sendUpdatePacketToNearby(SPGOLDrawMark.accepted());
 
             ConfigGOL.StageConfig stageCfg = LGConfigs.GOL.getStageByIndex(stage);
@@ -602,7 +602,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                     maxReachedStage = Math.max(maxReachedStage, stage);
                     save();
 
-                    getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER, 0.75F, 1.0F);
+                    getLevel().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER, 0.75F, 1.0F);
                     sendUpdatePacketToNearby(new SPGOLSpawnStageUpParticles());
                     sendToNearby(Component.translatable("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
 
@@ -643,7 +643,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
 
     public void addMarkAppearance(QMarkAppearance.State state) {
         if (isClientSide() && QMarkAppearance.canBeHandled(state)) {
-            specialMarkAppearance = new QMarkAppearance(state, getWorld().getGameTime());
+            specialMarkAppearance = new QMarkAppearance(state, getLevel().getGameTime());
         }
     }
 

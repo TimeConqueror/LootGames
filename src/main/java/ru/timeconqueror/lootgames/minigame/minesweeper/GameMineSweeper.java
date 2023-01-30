@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.minigame.minesweeper;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -27,6 +28,7 @@ import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.util.RandHelper;
+import ru.timeconqueror.timecore.api.util.WorldUtilsX;
 import ru.timeconqueror.timecore.api.util.Wrapper;
 
 import java.util.List;
@@ -102,7 +104,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
             sendUpdatePacketToNearby(new SPMSSpawnLevelBeatParticles());
 
             sendToNearby(Component.translatable("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
-            getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 0.75F, 1.0F);
+            getLevel().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 0.75F, 1.0F);
 
             Snapshot.StageSnapshot stageSnapshot = configSnapshot.getStageByIndex(currentLevel + 1);
 
@@ -137,15 +139,15 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
             players.forEach(player -> LGAdvancementTriggers.END_GAME.trigger(player, ADV_BEAT_LEVEL4));
         }
 
-        RewardUtils.spawnFourStagedReward(((ServerLevel) getWorld()), this, central, currentLevel - 1, LGConfigs.REWARDS.minesweeper);
+        RewardUtils.spawnFourStagedReward(((ServerLevel) getLevel()), this, central, currentLevel - 1, LGConfigs.REWARDS.minesweeper);
     }
 
     @Override
     protected void triggerGameLose() {
         super.triggerGameLose();
 
-        BlockPos expPos = getGameCenter();
-        getWorld().explode(null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 9, Explosion.BlockInteraction.DESTROY);
+        BlockPos expPos = getGameCenter();//FIXME check explosion logic
+        WorldUtilsX.explode(getLevel(), null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 9, Explosion.BlockInteraction.DESTROY_WITH_DECAY);
     }
 
     @Override
@@ -247,7 +249,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         protected void onClick(Player player, Pos2i pos, MouseClickType type) {
             if (isServerSide()) {
                 ServerPlayer sPlayer = (ServerPlayer) player;
-                getWorld().playSound(null, convertToBlockPos(pos), SoundEvents.NOTE_BLOCK_HAT, SoundSource.MASTER, 0.6F, 0.8F);
+                getLevel().playSound(null, convertToBlockPos(pos), SoundEvents.NOTE_BLOCK_HAT.get(), SoundSource.MASTER, 0.6F, 0.8F);
 
                 if (!board.isGenerated()) {
                     generateBoard(sPlayer, pos);
@@ -287,7 +289,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
                 if (type == Type.EMPTY) {
                     if (playRevealNeighboursSound) {
-                        getWorld().playSound(null, convertToBlockPos(pos), LGSounds.MS_ON_EMPTY_REVEAL_NEIGHBOURS, SoundSource.MASTER, 0.6F, 1.0F);
+                        getLevel().playSound(null, convertToBlockPos(pos), LGSounds.MS_ON_EMPTY_REVEAL_NEIGHBOURS, SoundSource.MASTER, 0.6F, 1.0F);
                         playRevealNeighboursSound = false;
                     }
 
@@ -361,7 +363,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         }
 
         private void triggerBombs(Pos2i pos) {
-            getWorld().playSound(null, convertToBlockPos(pos), LGSounds.MS_BOMB_ACTIVATED, SoundSource.MASTER, 0.6F, 1.0F);
+            getLevel().playSound(null, convertToBlockPos(pos), LGSounds.MS_BOMB_ACTIVATED, SoundSource.MASTER, 0.6F, 1.0F);
 
             switchStage(new StageDetonating());
 
@@ -440,7 +442,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
         @Override
         public void postInit() {
-            int longestDetTime = detonateBoard(currentLevel + 3, Explosion.BlockInteraction.BREAK);
+            int longestDetTime = detonateBoard(currentLevel + 3, Explosion.BlockInteraction.DESTROY);
             ticks = longestDetTime + 20; //number represents some pause after detonating
         }
 

@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import ru.timeconqueror.lootgames.LootGames;
@@ -73,8 +72,7 @@ public class MSOverlayHandler {
 
         if (masters.isEmpty()) return;
 
-        boolean extendedInfo = false;
-        if (masters.size() > 1) extendedInfo = true;
+        boolean extendedInfo = masters.size() > 1;
 
         float maxRectWidth = 0;
         for (MSMasterTile msMaster : masters) {

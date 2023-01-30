@@ -3,8 +3,7 @@ package ru.timeconqueror.lootgames.common.packet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.util.ThreeConsumer;
+import net.minecraftforge.network.NetworkEvent;
 import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry.Key;
@@ -53,9 +52,9 @@ public abstract class PacketGameUpdate<T extends IGamePacket> {
 
     public static class Handler<T extends IGamePacket, P extends PacketGameUpdate<T>> implements ITimePacketHandler<P> {
         private final Supplier<P> packetFactory;
-        private final ThreeConsumer<NetworkEvent.Context, LootGame<?, ?>, T> gameUpdater;
+        private final GamePacketHandler<T> gameUpdater;
 
-        public Handler(Supplier<P> packetFactory, ThreeConsumer<NetworkEvent.Context, LootGame<?, ?>, T> gameUpdater) {
+        public Handler(Supplier<P> packetFactory, GamePacketHandler<T> gameUpdater) {
             this.packetFactory = packetFactory;
             this.gameUpdater = gameUpdater;
         }
@@ -96,14 +95,17 @@ public abstract class PacketGameUpdate<T extends IGamePacket> {
         public boolean handle(P packet, NetworkEvent.Context ctx) {
             ctx.enqueueWork(() -> {
                 BlockEntity te = getWorld(ctx).getBlockEntity(packet.getMasterPos());
-                if (te instanceof GameMasterTile<?>) {
-                    GameMasterTile<?> master = ((GameMasterTile<?>) te);
-                    gameUpdater.accept(ctx, master.getGame(), packet.getGamePacket());
+                if (te instanceof GameMasterTile<?> master) {
+                    gameUpdater.handle(ctx, master.getGame(), packet.getGamePacket());
                 } else {
                     throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos " + packet.getMasterPos() + " for packet " + packet.getGamePacketClass().getName());
                 }
             });
             return true;
+        }
+
+        public interface GamePacketHandler<T extends IGamePacket> {
+            void handle(NetworkEvent.Context ctx, LootGame<?, ?> game, T packet);
         }
     }
 }

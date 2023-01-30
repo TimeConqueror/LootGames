@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.common.config;
 
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.config.ModConfig.Type;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.timecore.api.common.config.Config;
@@ -74,9 +74,10 @@ public class ConfigGeneral extends Config {
 //            return dimRhombs.get(dimensionID);
 //        }
 
-        @Override
-        public void onEveryLoad(ModConfig.ModConfigEvent configEvent) {
 
+        @Override
+        public void onEveryLoad(ModConfigEvent configEvent) {
+            super.onEveryLoad(configEvent);
 //            parseDimAndRhombList();
         }
 

@@ -1,7 +1,7 @@
 package ru.timeconqueror.lootgames.common.packet;
 
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.simple.SimpleChannel;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.api.registry.PacketRegister;
 import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;

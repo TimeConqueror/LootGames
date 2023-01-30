@@ -182,7 +182,7 @@ public class GamePipes extends BoardLootGame<GamePipes> {
 
         @Override
         public void postInit() {
-            getWorld().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 0.75F, 1.0F);
+            getLevel().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 0.75F, 1.0F);
             board.removeNonPoweredPipes();
         }
     }

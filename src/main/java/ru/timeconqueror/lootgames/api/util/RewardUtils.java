@@ -142,7 +142,7 @@ public class RewardUtils {
         private final int maxItems;
 
         public static SpawnChestData fromRewardConfig(LootGame<?, ?> game, RewardConfig rewardConfig) {
-            return new SpawnChestData(game, rewardConfig.getLootTable(game.getWorld()), rewardConfig.minItems.get(), rewardConfig.maxItems.get());
+            return new SpawnChestData(game, rewardConfig.getLootTable(game.getLevel()), rewardConfig.minItems.get(), rewardConfig.maxItems.get());
         }
 
         /**

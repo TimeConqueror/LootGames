@@ -5,7 +5,7 @@ import com.mojang.serialization.DataResult;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.api.common.config.ConfigSection;
 import ru.timeconqueror.timecore.api.common.config.ConfigValidators;
@@ -64,7 +64,7 @@ public class RewardConfig extends ConfigSection {
     }
 
     @Override
-    public void onEveryLoad(ModConfig.ModConfigEvent configEvent) {
+    public void onEveryLoad(ModConfigEvent configEvent) {
         super.onEveryLoad(configEvent);
 
         parseDimConfigs();

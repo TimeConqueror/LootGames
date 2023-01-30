@@ -4,8 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.Tag;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.config.ModConfig.Type;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
@@ -49,18 +49,14 @@ public class ConfigMS extends Config {
      * @throws RuntimeException if stage config was not found for provided index.
      */
     public StageConfig getStageByIndex(int index) {
-        switch (index) {
-            case 1:
-                return stage1;
-            case 2:
-                return stage2;
-            case 3:
-                return stage3;
-            case 4:
-                return stage4;
-            default:
-                throw new RuntimeException("Provided unknown stage config index " + index + ", please contact with mod author.");
-        }
+        return switch (index) {
+            case 1 -> stage1;
+            case 2 -> stage2;
+            case 3 -> stage3;
+            case 4 -> stage4;
+            default ->
+                    throw new RuntimeException("Provided unknown stage config index " + index + ", please contact with mod author.");
+        };
     }
 
     @Override
@@ -96,7 +92,7 @@ public class ConfigMS extends Config {
         }
 
         @Override
-        public void onEveryLoad(ModConfig.ModConfigEvent configEvent) {
+        public void onEveryLoad(ModConfigEvent configEvent) {
             super.onEveryLoad(configEvent);
 
             int bombCount = this.bombCount.get();

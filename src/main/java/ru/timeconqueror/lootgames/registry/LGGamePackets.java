@@ -9,7 +9,7 @@ public class LGGamePackets {
     @AutoRegistrable
     private static final GamePacketRegister REGISTER = new GamePacketRegister(LootGames.MODID);
 
-    @AutoRegistrable.InitMethod
+    @AutoRegistrable.Init
     private static void register() {
         REGISTER.regServerPacket(SPChangeStage.class);
         REGISTER.regServerPacket(SPDelayedChangeStage.class);

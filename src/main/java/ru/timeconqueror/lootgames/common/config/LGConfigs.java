@@ -17,7 +17,7 @@ public class LGConfigs {
         return LootGames.MODID + "/" + path;
     }
 
-    @AutoRegistrable.InitMethod
+    @AutoRegistrable.Init
     private static void register() {
         REGISTER.register(GENERAL);
         REGISTER.register(MINESWEEPER);

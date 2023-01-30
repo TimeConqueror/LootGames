@@ -12,7 +12,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -107,11 +107,11 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     public boolean isClientSide() {
-        return getWorld().isClientSide();
+        return getLevel().isClientSide();
     }
 
     @NotNull
-    public Level getWorld() {
+    public Level getLevel() {
         return Objects.requireNonNull(masterTileEntity.getLevel());
     }
 
@@ -132,7 +132,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
                     sendTo(player, Component.translatable("msg.lootgames.win"), NotifyColor.SUCCESS);
                 });
 
-        getWorld().playSound(null, getGameCenter(), LGSounds.GAME_WIN, SoundSource.MASTER, 0.75F, 1.0F);
+        getLevel().playSound(null, getGameCenter(), LGSounds.GAME_WIN, SoundSource.MASTER, 0.75F, 1.0F);
     }
 
     /**
@@ -148,7 +148,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
                     sendTo(player, Component.translatable("msg.lootgames.lose"), NotifyColor.FAIL);
                 });
 
-        getWorld().playSound(null, getGameCenter(), LGSounds.GAME_LOSE, SoundSource.MASTER, 0.75F, 1.0F);
+        getLevel().playSound(null, getGameCenter(), LGSounds.GAME_LOSE, SoundSource.MASTER, 0.75F, 1.0F);
     }
 
     /**
@@ -156,7 +156,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      * Overriding is fine.
      */
     protected void onGameEnd() {
-        DungeonGenerator.resetUnbreakablePlayField(getWorld(), getRoomFloorPos());
+        DungeonGenerator.resetUnbreakablePlayField(getLevel(), getRoomFloorPos());
         masterTileEntity.onDestroy();
     }
 
@@ -261,7 +261,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
             return;
         }
 
-        LevelChunk chunk = getWorld().getChunkAt(getMasterPos());
+        LevelChunk chunk = getLevel().getChunkAt(getMasterPos());
         LGNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new SPacketGameUpdate(this, packet));
 
         LOGGER.debug(DEBUG_MARKER, () -> logMessage("update packet '{}' was sent.", packet.getClass().getSimpleName()));
@@ -272,8 +272,9 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
             return;
         }
 
-        LevelChunk chunk = getWorld().getChunkAt(getMasterPos());
-        ((ServerChunkCache) chunk.getLevel().getChunkSource()).chunkMap.getPlayers(chunk.getPos(), false) // copied line from PacketDistributor#trackingChunk
+        LevelChunk chunk = getLevel().getChunkAt(getMasterPos());
+        ((ServerChunkCache) chunk.getLevel().getChunkSource()).chunkMap.getPlayers(chunk.getPos(), false)// copied line from PacketDistributor#trackingChunk
+                .stream()
                 .filter(player -> !player.getUUID().equals(excepting.getUUID()))
                 .forEach(player -> LGNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new SPacketGameUpdate(this, packet)));
 
@@ -288,7 +289,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     /**
-     * Sends update packet to the server with given {@link CompoundNBT}.
+     * Sends update packet to the server with given {@link CompoundTag}.
      */
     public void sendFeedbackPacket(IClientGamePacket packet) {
         if (isServerSide()) {
@@ -369,7 +370,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      * <ol>- by changing stage via {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)}</ol>
      * <ol>- by deserializing and syncing</ol>
      * <p>
-     * Warning: {@link #getWorld()} can return null here, because world is set after reading from nbt!
+     * Warning: {@link #getLevel()} can return null here, because world is set after reading from nbt!
      */
     protected void onStageStart(boolean clientSide) {
         if (this.stage != null) {
@@ -385,7 +386,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
          * <ol>- by changing stage via {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)}</ol>
          * <ol>- by deserializing and syncing</ol>
          * <p>
-         * Warning: {@link #getWorld()} can return null here, because world is set after reading from nbt!
+         * Warning: {@link #getLevel()} can return null here, because world is set after reading from nbt!
          */
         protected void onStart(boolean clientSide) {
 
