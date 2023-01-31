@@ -47,7 +47,7 @@ minecraft {
             setJvmArgs(extraVmArgs)
 
             mods {
-                timecore {
+                lootgames {
                     source sourceSets.main
                     source sourceSets.test
 
@@ -67,7 +67,7 @@ minecraft {
             setJvmArgs(extraVmArgs)
 
             mods {
-                timecore {
+                lootgames {
                     source sourceSets.main
                     source sourceSets.test
 
@@ -84,13 +84,13 @@ minecraft {
 
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'timecore', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'lootgames', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             setArgs(extraArgs)
             setJvmArgs(extraVmArgs)
 
             mods {
-                timecore {
+                lootgames {
                     source sourceSets.main
                     source sourceSets.test
 

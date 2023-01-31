@@ -73,13 +73,11 @@ public class GOLMasterRenderer implements BlockEntityRenderer<GOLMasterTile> {
         int textureX = 0;
         int textureY = 0;
         switch (state) {
-            case ACCEPTED:
-                textureX = 1;
-                break;
-            case DENIED:
+            case ACCEPTED -> textureX = 1;
+            case DENIED -> {
                 textureX = 0;
                 textureY = 1;
-                break;
+            }
         }
 
         DrawHelper.drawTexturedRectByParts(buffer, matrix, 1, 1, 1, 1, -0.006F, textureX, textureY, 1, 1, 2, 0xFFFFFFFF);

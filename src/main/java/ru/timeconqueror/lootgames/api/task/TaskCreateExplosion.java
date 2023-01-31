@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
-import ru.timeconqueror.timecore.api.util.WorldUtilsX;
+import ru.timeconqueror.timecorex.api.util.WorldUtilsX;
 
 public class TaskCreateExplosion implements ITask {
     protected double x;

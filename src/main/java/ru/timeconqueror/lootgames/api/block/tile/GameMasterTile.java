@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.common.tile.SyncableTile;
-import ru.timeconqueror.timecore.api.util.ITickableBlockEntity;
+import ru.timeconqueror.timecorex.api.util.ITickableBlockEntity;
 
 public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableTile implements ITickableBlockEntity {
     protected T game;

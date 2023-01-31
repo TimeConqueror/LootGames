@@ -7,8 +7,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import ru.timeconqueror.lootgames.registry.LGBlockEntities;
 import ru.timeconqueror.lootgames.registry.LGSounds;
-import ru.timeconqueror.timecore.api.util.ITickableBlockEntity;
 import ru.timeconqueror.timecore.api.util.RandHelper;
+import ru.timeconqueror.timecorex.api.util.ITickableBlockEntity;
 
 public class PuzzleMasterTile extends BlockEntity implements ITickableBlockEntity {
     private long lastSoundTick = 0L;

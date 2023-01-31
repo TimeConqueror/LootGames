@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.common.block.tile.MSMasterTile;
@@ -37,13 +36,14 @@ public class MSOverlayHandler {
 
     public static final RenderType TEX_QUAD_TYPE = RenderHelper.rtTexturedRectangles(LootGames.rl("textures/gui/minesweeper/ms_overlay.png"));
 
-    @SubscribeEvent
-    public static void renderOverlay(RenderGameOverlayEvent.Post event) {
-        if (event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
-            renderNearbyGameBombs(event.getMatrixStack());
-            MS_MASTERS.clear();
-        }
-    }
+    //fixme port
+//    @SubscribeEvent
+//    public static void renderOverlay(RenderGameOverlayEvent.Post event) {
+//        if (event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
+//            renderNearbyGameBombs(event.getMatrixStack());
+//            MS_MASTERS.clear();
+//        }
+//    }
 
     private static void renderNearbyGameBombs(PoseStack matrixStack) {
         Player player = Minecraft.getInstance().player;

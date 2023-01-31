@@ -12,15 +12,13 @@ import ru.timeconqueror.lootgames.common.block.tile.PuzzleMasterTile;
 import ru.timeconqueror.timecore.api.registry.TileEntityRegister;
 import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 
-import static ru.timeconqueror.timecore.api.util.Hacks.promise;
-
 @AutoRegistrable.Entries("block_entity_type")
 public class LGBlockEntities {
 
-    public static final BlockEntityType<PuzzleMasterTile> PUZZLE_MASTER = promise();
-    public static final BlockEntityType<MSMasterTile> MS_MASTER = promise();
-    public static final BlockEntityType<PipesMasterTile> PIPES_MASTER = promise();
-    public static final BlockEntityType<GOLMasterTile> GOL_MASTER = promise();
+    public static BlockEntityType<PuzzleMasterTile> PUZZLE_MASTER;
+    public static BlockEntityType<MSMasterTile> MS_MASTER;
+    public static BlockEntityType<PipesMasterTile> PIPES_MASTER;
+    public static BlockEntityType<GOLMasterTile> GOL_MASTER;
 
     @AutoRegistrable
     private static final TileEntityRegister REGISTER = new TileEntityRegister(LootGames.MODID);

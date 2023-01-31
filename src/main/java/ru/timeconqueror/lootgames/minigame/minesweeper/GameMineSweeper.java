@@ -28,8 +28,8 @@ import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.util.RandHelper;
-import ru.timeconqueror.timecore.api.util.WorldUtilsX;
 import ru.timeconqueror.timecore.api.util.Wrapper;
+import ru.timeconqueror.timecorex.api.util.WorldUtilsX;
 
 import java.util.List;
 
