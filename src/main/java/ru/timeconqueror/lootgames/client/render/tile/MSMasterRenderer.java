@@ -22,8 +22,8 @@ import ru.timeconqueror.timecore.api.util.client.DrawHelper;
 
 public class MSMasterRenderer implements BlockEntityRenderer<MSMasterTile> {
     private static final ResourceLocation MS_BOARD = LootGames.rl("textures/game/ms_board.png");
-    private static final RenderType RT_BRIGHTENED_BOARD = LGRenderTypes.brightened(MS_BOARD);
-    private static final RenderType RT_BRIGHTENED_TRANSLUCENT_BOARD = LGRenderTypes.brightenedTranslucent(MS_BOARD);
+    private static final RenderType RT_BRIGHTENED_BOARD = LGRenderTypes.fullbright(MS_BOARD);
+    private static final RenderType RT_BRIGHTENED_TRANSLUCENT_BOARD = LGRenderTypes.fullbrightTranslucent(MS_BOARD);
 
     @Override
     public void render(MSMasterTile te, float partialTicks, PoseStack matrix, @NotNull MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {

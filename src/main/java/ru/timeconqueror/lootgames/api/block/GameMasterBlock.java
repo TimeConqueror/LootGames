@@ -13,8 +13,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
-import ru.timeconqueror.timecore.api.util.WorldUtils;
-import ru.timeconqueror.timecorex.api.util.ITickableBlockEntity;
+import ru.timeconqueror.timecore.api.util.ITickableBlockEntity;
+import ru.timeconqueror.timecore.api.util.LevelUtils;
 
 import java.util.function.Supplier;
 
@@ -32,7 +32,7 @@ public class GameMasterBlock extends GameBlock implements IGameField, EntityBloc
 
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
-        WorldUtils.forTypedTileWithWarn(worldIn, pos, GameMasterTile.class, te -> te.onBlockRightClick(player, pos));
+        LevelUtils.forTypedTileWithWarn(worldIn, pos, GameMasterTile.class, te -> te.onBlockRightClick(player, pos));
 
         return InteractionResult.SUCCESS;
     }

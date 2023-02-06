@@ -20,7 +20,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class PipesMasterRenderer implements BlockEntityRenderer<PipesMasterTile> {
 
     private static final ResourceLocation BOARD = new ResourceLocation(LootGames.MODID, "textures/game/pipes.png");
-    private static final RenderType BOARD_RENDER_TYPE = LGRenderTypes.brightenedCutout(BOARD);
+    private static final RenderType BOARD_RENDER_TYPE = LGRenderTypes.fullbrightCutout(BOARD);
 
     @Override
     public void render(PipesMasterTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {

@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
-import ru.timeconqueror.timecorex.api.util.WorldUtilsX;
+import ru.timeconqueror.timecore.api.util.LevelUtils;
 
 public class TaskCreateExplosion implements ITask {
     protected double x;
@@ -32,7 +32,7 @@ public class TaskCreateExplosion implements ITask {
 
     @Override
     public void run(Level level) {
-        WorldUtilsX.explode(level, null, x, y, z, strength, explosionMode); //FIXME check how modes work
+        LevelUtils.explode(level, null, x, y, z, strength, explosionMode); //FIXME check how modes work
     }
 
     @Override

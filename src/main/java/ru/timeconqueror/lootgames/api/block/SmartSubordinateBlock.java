@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
-import ru.timeconqueror.timecore.api.util.WorldUtils;
+import ru.timeconqueror.timecore.api.util.LevelUtils;
 
 import java.util.function.BiConsumer;
 
@@ -49,7 +49,7 @@ public class SmartSubordinateBlock extends GameBlock implements ILeftInteractibl
 
     private void forMasterTile(Player player, Level world, BlockPos pos, BiConsumer<GameMasterTile<?>, BlockPos> action) {
         BlockPos masterPos = getMasterPos(world, pos);
-        WorldUtils.forTypedTileWithWarn(player, world, masterPos, GameMasterTile.class, master -> action.accept(master, masterPos));
+        LevelUtils.forTypedTileWithWarn(player, world, masterPos, GameMasterTile.class, master -> action.accept(master, masterPos));
     }
 
     public static BlockPos getMasterPos(Level world, BlockPos pos) {

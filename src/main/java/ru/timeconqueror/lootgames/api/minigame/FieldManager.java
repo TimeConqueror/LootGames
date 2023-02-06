@@ -19,8 +19,8 @@ import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.util.BlockPosUtils;
 import ru.timeconqueror.timecore.api.util.CollectionUtils;
+import ru.timeconqueror.timecore.api.util.LevelUtils;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
-import ru.timeconqueror.timecore.api.util.WorldUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -160,7 +160,7 @@ public class FieldManager {//TODO rename to board manager
 
         public <T extends GameMasterTile<?>> GenerationChain forTileIfSucceed(Class<T> tileClass, Consumer<T> action) {
             if (succeed) {
-                WorldUtils.forTileWithReqt(world, pos, tileClass, action);
+                LevelUtils.forTileWithReqt(world, pos, tileClass, action);
             }
 
             return this;

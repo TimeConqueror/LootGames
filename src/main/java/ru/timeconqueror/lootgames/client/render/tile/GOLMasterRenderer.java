@@ -25,9 +25,9 @@ import static ru.timeconqueror.lootgames.minigame.gol.GameOfLight.StageUnderExpa
 
 //TODO draw board by symbol, not by fully not activated board with activated overlay
 public class GOLMasterRenderer implements BlockEntityRenderer<GOLMasterTile> {
-    private static final RenderType RT_BOARD = LGRenderTypes.brightened(LootGames.rl("textures/game/gol_board.png"));
-    private static final RenderType RT_BOARD_ACTIVE = LGRenderTypes.brightened(LootGames.rl("textures/game/gol_board_active.png"));
-    private static final RenderType RT_MARKS = LGRenderTypes.brightenedTranslucent(LootGames.rl("textures/game/gol_marks.png"));
+    private static final RenderType RT_BOARD = LGRenderTypes.fullbright(LootGames.rl("textures/game/gol_board.png"));
+    private static final RenderType RT_BOARD_ACTIVE = LGRenderTypes.fullbright(LootGames.rl("textures/game/gol_board_active.png"));
+    private static final RenderType RT_MARKS = LGRenderTypes.fullbrightTranslucent(LootGames.rl("textures/game/gol_marks.png"));
 
     @Override
     public void render(GOLMasterTile tileEntityIn, float partialTicks, PoseStack matrix, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
@@ -55,6 +55,8 @@ public class GOLMasterRenderer implements BlockEntityRenderer<GOLMasterTile> {
         if (questionMark != State.NONE) {
             drawMark(matrix, bufferIn, questionMark);
         }
+
+        drawMark(matrix, bufferIn, State.ACCEPTED);
 
         matrix.popPose();
     }

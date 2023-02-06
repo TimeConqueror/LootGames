@@ -27,9 +27,9 @@ import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
+import ru.timeconqueror.timecore.api.util.LevelUtils;
 import ru.timeconqueror.timecore.api.util.RandHelper;
-import ru.timeconqueror.timecore.api.util.Wrapper;
-import ru.timeconqueror.timecorex.api.util.WorldUtilsX;
+import ru.timeconqueror.timecore.api.util.holder.Holder;
 
 import java.util.List;
 
@@ -147,7 +147,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         super.triggerGameLose();
 
         BlockPos expPos = getGameCenter();//FIXME check explosion logic
-        WorldUtilsX.explode(getLevel(), null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 9, Explosion.BlockInteraction.DESTROY_WITH_DECAY);
+        LevelUtils.explode(getLevel(), null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 9, Explosion.BlockInteraction.DESTROY_WITH_DECAY);
     }
 
     @Override
@@ -471,7 +471,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
          * Returns the longest detonating time, after which all bombs will explode
          */
         private int detonateBoard(int strength, Explosion.BlockInteraction explosionMode) {
-            Wrapper<Integer> longestDetTime = new Wrapper<>(0);
+            Holder<Integer> longestDetTime = new Holder<>(0);
 
             board.forEach(pos2i -> {
                 if (board.getType(pos2i) == Type.BOMB) {

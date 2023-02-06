@@ -6,12 +6,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.common.tile.SyncableTile;
-import ru.timeconqueror.timecorex.api.util.ITickableBlockEntity;
+import ru.timeconqueror.timecore.api.util.ITickableBlockEntity;
 
 public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableTile implements ITickableBlockEntity {
+    // replacement for IForgeBlockEntity#INFINITE_EXTENT_AABB because 1.19.3's frustrum doesn't see it when look right below (https://github.com/MinecraftForge/MinecraftForge/issues/9321#issuecomment-1407420277)
+    public static final AABB GIANT_AABB = new AABB(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
     protected T game;
     private long age;
 

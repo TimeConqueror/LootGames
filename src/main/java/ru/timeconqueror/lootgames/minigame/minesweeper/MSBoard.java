@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundTag;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.timecore.api.util.CodecUtils;
-import ru.timeconqueror.timecore.api.util.Wrapper;
+import ru.timeconqueror.timecore.api.util.holder.Holder;
 
 import java.util.Collections;
 import java.util.List;
@@ -147,7 +147,7 @@ public class MSBoard {
             safeDistance = 0;
         }
 
-        Wrapper<Integer> count = new Wrapper<>(0);
+        Holder<Integer> count = new Holder<>(0);
 
         return IntStream.range(0, fieldSize).filter(index -> {
             if (count.get() > emptyPlaces) {

@@ -37,7 +37,7 @@ import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.util.Auxiliary;
 import ru.timeconqueror.timecore.api.util.NetworkUtils;
-import ru.timeconqueror.timecore.api.util.Pair;
+import ru.timeconqueror.timecore.api.util.holder.Pair;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.Objects;
