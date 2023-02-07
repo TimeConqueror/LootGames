@@ -41,11 +41,4 @@ public class DungeonBlock extends Block {
         tooltip.add(Component.translatable("item.lootgames.dungeon_block.tooltip").withStyle(ChatFormatting.DARK_GRAY));
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
-
-    //FIXME
-//    @Nullable
-//    @Override
-//    public ToolType getHarvestTool(BlockState state) {
-//        return ToolType.PICKAXE;
-//    }
 }

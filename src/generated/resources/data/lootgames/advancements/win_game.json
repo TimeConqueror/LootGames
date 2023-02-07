@@ -1,26 +1,26 @@
 {
   "parent": "lootgames:find_dungeon",
+  "criteria": {
+    "win": {
+      "conditions": {
+        "type": "win"
+      },
+      "trigger": "lootgames:end_minigame"
+    }
+  },
   "display": {
-    "icon": {
-      "item": "minecraft:nether_star"
-    },
-    "title": {
-      "translate": "advancement.lootgames.win_game"
-    },
+    "announce_to_chat": true,
     "description": {
       "translate": "advancement.lootgames.win_game.desc"
     },
     "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "minecraft:nether_star"
+    },
     "show_toast": true,
-    "announce_to_chat": true,
-    "hidden": false
-  },
-  "criteria": {
-    "win": {
-      "trigger": "lootgames:end_minigame",
-      "conditions": {
-        "type": "win"
-      }
+    "title": {
+      "translate": "advancement.lootgames.win_game"
     }
   },
   "requirements": [

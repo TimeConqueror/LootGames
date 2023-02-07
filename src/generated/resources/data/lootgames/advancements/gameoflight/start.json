@@ -1,26 +1,26 @@
 {
   "parent": "lootgames:find_dungeon",
+  "criteria": {
+    "click": {
+      "conditions": {
+        "block": "lootgames:gol_activator"
+      },
+      "trigger": "lootgames:use_block"
+    }
+  },
   "display": {
-    "icon": {
-      "item": "lootgames:gol_activator"
-    },
-    "title": {
-      "translate": "advancement.lootgames.gol.start"
-    },
+    "announce_to_chat": true,
     "description": {
       "translate": "advancement.lootgames.gol.start.desc"
     },
     "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "lootgames:gol_activator"
+    },
     "show_toast": true,
-    "announce_to_chat": true,
-    "hidden": true
-  },
-  "criteria": {
-    "click": {
-      "trigger": "lootgames:use_block",
-      "conditions": {
-        "block": "lootgames:gol_activator"
-      }
+    "title": {
+      "translate": "advancement.lootgames.gol.start"
     }
   },
   "requirements": [

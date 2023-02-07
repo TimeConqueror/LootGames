@@ -1,26 +1,26 @@
 {
   "parent": "lootgames:find_dungeon",
+  "criteria": {
+    "lose": {
+      "conditions": {
+        "type": "lose"
+      },
+      "trigger": "lootgames:end_minigame"
+    }
+  },
   "display": {
-    "icon": {
-      "item": "minecraft:skeleton_skull"
-    },
-    "title": {
-      "translate": "advancement.lootgames.lose_game"
-    },
+    "announce_to_chat": true,
     "description": {
       "translate": "advancement.lootgames.lose_game.desc"
     },
     "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "minecraft:skeleton_skull"
+    },
     "show_toast": true,
-    "announce_to_chat": true,
-    "hidden": true
-  },
-  "criteria": {
-    "lose": {
-      "trigger": "lootgames:end_minigame",
-      "conditions": {
-        "type": "lose"
-      }
+    "title": {
+      "translate": "advancement.lootgames.lose_game"
     }
   },
   "requirements": [

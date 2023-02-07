@@ -1,141 +1,172 @@
-package ru.timeconqueror.lootgames.datagen;
+package ru.timeconqueror.lootgames.datagen
 
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.advancements.FrameType;
-import net.minecraft.advancements.critereon.EntityPredicate.Composite;
-import net.minecraft.advancements.critereon.PlayerTrigger;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Items;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.ForgeAdvancementProvider;
-import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
-import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger;
-import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
-import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
-import ru.timeconqueror.lootgames.registry.LGBlocks;
+import net.minecraft.advancements.Advancement
+import net.minecraft.advancements.CriteriaTriggers
+import net.minecraft.advancements.FrameType
+import net.minecraft.advancements.critereon.EntityPredicate
+import net.minecraft.advancements.critereon.PlayerTrigger
+import net.minecraft.core.HolderLookup
+import net.minecraft.network.chat.Component
+import net.minecraft.world.item.Items
+import net.minecraftforge.common.data.ExistingFileHelper
+import net.minecraftforge.common.data.ForgeAdvancementProvider.AdvancementGenerator
+import ru.timeconqueror.lootgames.LootGames
+import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger
+import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger
+import ru.timeconqueror.lootgames.minigame.gol.GameOfLight
+import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper
+import ru.timeconqueror.lootgames.registry.LGBlocks
+import ru.timeconqueror.timecore.api.devtools.gen.advancement.saverAwareAdvancementProvider
+import java.util.function.Consumer
 
-import java.util.function.Consumer;
+class LGAdvancementGenerator : AdvancementGenerator {
+    override fun generate(registries: HolderLookup.Provider, saver: Consumer<Advancement>, existingFileHelper: ExistingFileHelper) {
+        saverAwareAdvancementProvider(LootGames.MODID, saver, existingFileHelper) {
+            val root = make("root") {
+                display(
+                    LGBlocks.PUZZLE_MASTER,
+                    Component.translatable("advancement.lootgames.root"),
+                    Component.translatable("advancement.lootgames.root.desc"),
+                    LootGames.rl("textures/block/dungeon_floor.png"),
+                    FrameType.GOAL,
+                    false,  /*Whether to show the toast pop up after completing this advancement*/
+                    false,  /*Whether to announce in the chat when this advancement has been completed*/
+                    false
+                )
+                addCriterion(
+                    "tick",
+                    PlayerTrigger.TriggerInstance(CriteriaTriggers.TICK.id, EntityPredicate.Composite.ANY)
+                )
+            }
 
-public class LGAdvancementSet implements ForgeAdvancementProvider.AdvancementGenerator {
-    @Override
-    public void generate(HolderLookup.Provider registries, Consumer<Advancement> saver, ExistingFileHelper existingFileHelper) {
-        Advancement root = Advancement.Builder.advancement()
-                .display(LGBlocks.PUZZLE_MASTER,
-                        Component.translatable("advancement.lootgames.root"),
-                        Component.translatable("advancement.lootgames.root.desc"),
-                        LootGames.rl("textures/block/dungeon_floor.png"),
-                        FrameType.GOAL,
-                        false, /*Whether to show the toast pop up after completing this advancement*/
-                        false, /*Whether to announce in the chat when this advancement has been completed*/
-                        false)
-                .addCriterion("tick", new PlayerTrigger.TriggerInstance(CriteriaTriggers.TICK.getId(), Composite.ANY))
-                .build(LootGames.rl("root"));
+            val findDungeon = make("find_dungeon") {
+                parent(root)
+                display(
+                    LGBlocks.DUNGEON_LAMP,
+                    Component.translatable("advancement.lootgames.find_dungeon"),
+                    Component.translatable("advancement.lootgames.find_dungeon.desc"),
+                    null,
+                    FrameType.TASK,
+                    true,
+                    true,
+                    false
+                )
+                addCriterion("click", UseBlockTrigger.Instance.forBlock(LGBlocks.PUZZLE_MASTER))
+            }
 
-        Advancement findDungeon = Advancement.Builder.advancement()
-                .parent(root)
-                .display(LGBlocks.DUNGEON_LAMP,
-                        Component.translatable("advancement.lootgames.find_dungeon"),
-                        Component.translatable("advancement.lootgames.find_dungeon.desc"),
-                        null,
-                        FrameType.TASK,
-                        true,
-                        true,
-                        false)
-                .addCriterion("click", UseBlockTrigger.Instance.forBlock(LGBlocks.PUZZLE_MASTER))
-                .build(LootGames.rl("find_dungeon"));
+            val winGame = make("win_game") {
+                parent(findDungeon)
+                display(
+                    Items.NETHER_STAR,
+                    Component.translatable("advancement.lootgames.win_game"),
+                    Component.translatable("advancement.lootgames.win_game.desc"),
+                    null,
+                    FrameType.TASK,
+                    true,
+                    true,
+                    false
+                )
+                addCriterion("win", EndGameTrigger.Instance(EndGameTrigger.TYPE_WIN, EntityPredicate.Composite.ANY))
+            }
 
-        Advancement winGame = Advancement.Builder.advancement()
-                .parent(findDungeon)
-                .display(Items.NETHER_STAR,
-                        Component.translatable("advancement.lootgames.win_game"),
-                        Component.translatable("advancement.lootgames.win_game.desc"),
-                        null,
-                        FrameType.TASK,
-                        true,
-                        true,
-                        false)
-                .addCriterion("win", new EndGameTrigger.Instance(EndGameTrigger.TYPE_WIN, Composite.ANY))
-                .build(LootGames.rl("win_game"));
+            val loseGame = make("lose_game") {
+                parent(findDungeon)
+                display(
+                    Items.SKELETON_SKULL,
+                    Component.translatable("advancement.lootgames.lose_game"),
+                    Component.translatable("advancement.lootgames.lose_game.desc"),
+                    null,
+                    FrameType.TASK,
+                    true,
+                    true,
+                    true
+                )
+                addCriterion("lose", EndGameTrigger.Instance(EndGameTrigger.TYPE_LOSE, EntityPredicate.Composite.ANY))
+            }
 
-        Advancement loseGame = Advancement.Builder.advancement()
-                .parent(findDungeon)
-                .display(Items.SKELETON_SKULL,
-                        Component.translatable("advancement.lootgames.lose_game"),
-                        Component.translatable("advancement.lootgames.lose_game.desc"),
-                        null,
-                        FrameType.TASK,
-                        true,
-                        true,
-                        true)
-                .addCriterion("lose", new EndGameTrigger.Instance(EndGameTrigger.TYPE_LOSE, Composite.ANY))
-                .build(LootGames.rl("lose_game"));
+            val startMinesweeper = make("minesweeper/start") {
+                parent(findDungeon)
+                display(
+                    LGBlocks.MS_ACTIVATOR,
+                    Component.translatable("advancement.lootgames.ms.start"),
+                    Component.translatable("advancement.lootgames.ms.start.desc"),
+                    null,
+                    FrameType.TASK,
+                    true,
+                    true,
+                    true
+                )
+                addCriterion("click", UseBlockTrigger.Instance.forBlock(LGBlocks.MS_ACTIVATOR))
+            }
 
-        Advancement startMinesweeper = Advancement.Builder.advancement()
-                .parent(findDungeon)
-                .display(LGBlocks.MS_ACTIVATOR,
-                        Component.translatable("advancement.lootgames.ms.start"),
-                        Component.translatable("advancement.lootgames.ms.start.desc"),
-                        null,
-                        FrameType.TASK,
-                        true,
-                        true,
-                        true)
-                .addCriterion("click", UseBlockTrigger.Instance.forBlock(LGBlocks.MS_ACTIVATOR))
-                .build(LootGames.rl("minesweeper/start"));
+            val msBeatLevel4 = make("minesweeper/beat_level_4") {
+                parent(startMinesweeper)
+                display(
+                    Items.CREEPER_HEAD,
+                    Component.translatable("advancement.lootgames.ms.beat_level_4"),
+                    Component.translatable("advancement.lootgames.ms.beat_level_4.desc"),
+                    null,
+                    FrameType.CHALLENGE,
+                    true,
+                    true,
+                    false
+                )
+                addCriterion(
+                    "end_level4",
+                    EndGameTrigger.Instance(GameMineSweeper.ADV_BEAT_LEVEL4, EntityPredicate.Composite.ANY)
+                )
+            }
 
-        Advancement msBeatLevel4 = Advancement.Builder.advancement()
-                .parent(startMinesweeper)
-                .display(Items.CREEPER_HEAD,
-                        Component.translatable("advancement.lootgames.ms.beat_level_4"),
-                        Component.translatable("advancement.lootgames.ms.beat_level_4.desc"),
-                        null,
-                        FrameType.CHALLENGE,
-                        true,
-                        true,
-                        false)
-                .addCriterion("end_level4", new EndGameTrigger.Instance(GameMineSweeper.ADV_BEAT_LEVEL4, Composite.ANY))
-                .build(LootGames.rl("minesweeper/beat_level_4"));
+            val startGameOfLight = make("gameoflight/start") {
+                parent(findDungeon)
+                display(
+                    LGBlocks.GOL_ACTIVATOR,
+                    Component.translatable("advancement.lootgames.gol.start"),
+                    Component.translatable("advancement.lootgames.gol.start.desc"),
+                    null,
+                    FrameType.TASK,
+                    true,
+                    true,
+                    true
+                )
+                addCriterion("click", UseBlockTrigger.Instance.forBlock(LGBlocks.GOL_ACTIVATOR))
+            }
 
-        Advancement startGameOfLight = Advancement.Builder.advancement()
-                .parent(findDungeon)
-                .display(LGBlocks.GOL_ACTIVATOR,
-                        Component.translatable("advancement.lootgames.gol.start"),
-                        Component.translatable("advancement.lootgames.gol.start.desc"),
-                        null,
-                        FrameType.TASK,
-                        true,
-                        true,
-                        true)
-                .addCriterion("click", UseBlockTrigger.Instance.forBlock(LGBlocks.GOL_ACTIVATOR))
-                .build(LootGames.rl("gameoflight/start"));
+            val golBeatLevel3 = make("gameoflight/beat_level_3") {
+                parent(startGameOfLight)
+                display(
+                    Items.DIAMOND,
+                    Component.translatable("advancement.lootgames.gol.beat_level_3"),
+                    Component.translatable("advancement.lootgames.gol.beat_level_3.desc"),
+                    null,
+                    FrameType.CHALLENGE,
+                    true,
+                    true,
+                    false
+                )
+                addCriterion(
+                    "end_level3",
+                    EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL3, EntityPredicate.Composite.ANY)
+                )
+            }
 
-        Advancement golBeatLevel3 = Advancement.Builder.advancement()
-                .parent(startGameOfLight)
-                .display(Items.DIAMOND,
-                        Component.translatable("advancement.lootgames.gol.beat_level_3"),
-                        Component.translatable("advancement.lootgames.gol.beat_level_3.desc"),
-                        null,
-                        FrameType.CHALLENGE,
-                        true,
-                        true,
-                        false)
-                .addCriterion("end_level3", new EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL3, Composite.ANY))
-                .build(LootGames.rl("gameoflight/beat_level_3"));
-
-        Advancement golBeatLevel4 = Advancement.Builder.advancement()
-                .parent(startGameOfLight)
-                .display(Items.EMERALD,
-                        Component.translatable("advancement.lootgames.gol.beat_level_4"),
-                        Component.translatable("advancement.lootgames.gol.beat_level_4.desc"),
-                        null,
-                        FrameType.CHALLENGE,
-                        true,
-                        true,
-                        false)
-                .addCriterion("end_level4", new EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL4, Composite.ANY))
-                .build(LootGames.rl("gameoflight/beat_level_4"));
+            val golBeatLevel4 = make("gameoflight/beat_level_4") {
+                parent(startGameOfLight)
+                display(
+                    Items.EMERALD,
+                    Component.translatable("advancement.lootgames.gol.beat_level_4"),
+                    Component.translatable("advancement.lootgames.gol.beat_level_4.desc"),
+                    null,
+                    FrameType.CHALLENGE,
+                    true,
+                    true,
+                    false
+                )
+                addCriterion(
+                    "end_level4",
+                    EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL4, EntityPredicate.Composite.ANY)
+                )
+            }
+        }
     }
 }
