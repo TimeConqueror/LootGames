@@ -1,12 +1,16 @@
 package ru.timeconqueror.lootgames.client.render;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.common.block.tile.MSMasterTile;
@@ -14,15 +18,15 @@ import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.timecore.api.util.MathUtils;
 import ru.timeconqueror.timecore.api.util.client.DrawHelper;
 import ru.timeconqueror.timecore.api.util.client.DrawHelper.TexturedRect;
-import ru.timeconqueror.timecore.api.util.client.RenderHelper;
 
 import java.awt.*;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
+@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class MSOverlayHandler {
     private static final ArrayList<WeakReference<MSMasterTile>> MS_MASTERS = new ArrayList<>(1);
 
@@ -34,19 +38,28 @@ public class MSOverlayHandler {
     private static final TexturedRect EXTRA_SLOT_REPEAT = new TexturedRect(26 * 1.5F, 10 * 1.5F, 18, 16, 26, 10);
     private static final TexturedRect EXTRA_SLOT_END = new TexturedRect(4 * 1.5F, 10 * 1.5F, 44, 16, 4, 10);
 
-    public static final RenderType TEX_QUAD_TYPE = RenderHelper.rtTexturedRectangles(LootGames.rl("textures/gui/minesweeper/ms_overlay.png"));
+    private static final ResourceLocation OVERLAY_TEXTURE = LootGames.rl("textures/gui/minesweeper/ms_overlay.png");
 
-    //fixme port
-//    @SubscribeEvent
-//    public static void renderOverlay(RenderGameOverlayEvent.Post event) {
-//        if (event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
-//            renderNearbyGameBombs(event.getMatrixStack());
-//            MS_MASTERS.clear();
-//        }
-//    }
+    public static final Consumer<BufferBuilder> GUI_POS_TEX_SETUP = bufferBuilder -> {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, OVERLAY_TEXTURE);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+    };
+
+    @SubscribeEvent
+    public static void renderOverlay(RegisterGuiOverlaysEvent event) {
+        event.registerAboveAll("ms_overlay", (gui, poseStack, partialTick, screenWidth, screenHeight) -> {
+            renderNearbyGameBombs(poseStack);
+            MS_MASTERS.clear();
+        });
+    }
 
     private static void renderNearbyGameBombs(PoseStack matrixStack) {
         Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+
         Font fontRenderer = Minecraft.getInstance().font;
 
         List<MSMasterTile> masters = new ArrayList<>(1);
@@ -84,8 +97,6 @@ public class MSOverlayHandler {
 
         float startY = 20;
 
-        RenderHelper.RenderPipeline renderPipeline = RenderHelper.guiRenderPipeline();
-
         for (int i = 0; i < masters.size(); i++) {
             MSMasterTile msMaster = masters.get(i);
             GameMineSweeper game = msMaster.getGame();
@@ -95,25 +106,23 @@ public class MSOverlayHandler {
 
             float finalMaxRectWidth = maxRectWidth;
             if (i == 0) {
-                renderPipeline.renderAndEnd(TEX_QUAD_TYPE, builder -> {
-                    DrawHelper.drawTexturedRectByParts(builder, matrixStack, 5, 5, 15 * 1.5F, 16 * 1.5F, 0, 0, 0, 15, 16, 48);
-                    DrawHelper.drawWidthExpandableTexturedRect(builder, matrixStack, 5 + 15 * 1.5F, 5, finalMaxRectWidth, 0, FIRST_SLOT_START, FIRST_SLOT_REPEAT, FIRST_SLOT_END, 48);
+                DrawHelper.drawBatched(GUI_POS_TEX_SETUP, buffer -> {
+                    DrawHelper.buildTexturedRectByParts(buffer, matrixStack, 5, 5, 15 * 1.5F, 16 * 1.5F, 0, 0, 0, 15, 16, 48);
+                    DrawHelper.buildWidthExpandableTexturedRect(buffer, matrixStack, 5 + 15 * 1.5F, 5, finalMaxRectWidth, 0, FIRST_SLOT_START, FIRST_SLOT_REPEAT, FIRST_SLOT_END, 48);
                 });
 
                 DrawHelper.drawYCenteredStringWithShadow(matrixStack, fontRenderer, toDisplay, 32.6F, 17.5F, color.getRGB());
             } else {
                 float finalStartY = startY;
 
-                renderPipeline.renderAndEnd(TEX_QUAD_TYPE, builder -> {
-                    DrawHelper.drawWidthExpandableTexturedRect(builder, matrixStack, 27.5F, finalStartY, finalMaxRectWidth, 0, EXTRA_SLOT_START, EXTRA_SLOT_REPEAT, EXTRA_SLOT_END, 48);
+                DrawHelper.drawBatched(GUI_POS_TEX_SETUP, buffer -> {
+                    DrawHelper.buildWidthExpandableTexturedRect(buffer, matrixStack, 27.5F, finalStartY, finalMaxRectWidth, 0, EXTRA_SLOT_START, EXTRA_SLOT_REPEAT, EXTRA_SLOT_END, 48);
                 });
 
                 DrawHelper.drawYCenteredStringWithShadow(matrixStack, fontRenderer, toDisplay, 32.6F, startY + 8F, color.getRGB());
                 startY += 7 * 1.5F;
             }
         }
-
-        renderPipeline.end();
     }
 
     private static String getBombDisplayString(GameMineSweeper game, boolean extended) {

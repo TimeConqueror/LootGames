@@ -24,7 +24,7 @@ public class MSActivatorBlock extends GameBlock {
         if (!worldIn.isClientSide()) {
             int allocatedSize = LGConfigs.MINESWEEPER.stage4.getBoardSize();
 
-            boolean succeed = LootGamesAPI.getFieldManager()
+            boolean succeed = LootGamesAPI.getBoardManager()
                     .trySetupBoard(((ServerLevel) worldIn), pos, allocatedSize, 2, allocatedSize, LGBlocks.MS_MASTER.defaultBlockState(), player)
                     .isSucceed();
 

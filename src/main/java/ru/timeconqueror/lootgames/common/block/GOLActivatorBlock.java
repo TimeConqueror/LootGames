@@ -27,7 +27,7 @@ public class GOLActivatorBlock extends GameBlock {
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         if (!worldIn.isClientSide()) {
 
-            boolean succeed = LootGamesAPI.getFieldManager()
+            boolean succeed = LootGamesAPI.getBoardManager()
                     .trySetupBoard(((ServerLevel) worldIn), pos, GameOfLight.BOARD_SIZE, 2, GameOfLight.BOARD_SIZE, LGBlocks.GOL_MASTER.defaultBlockState(), player).isSucceed();
 
             if (succeed) {

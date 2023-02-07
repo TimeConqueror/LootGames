@@ -38,7 +38,7 @@ public class MSMasterRenderer implements BlockEntityRenderer<MSMasterTile> {
             VertexConsumer brightenedBuilder = bufferIn.getBuffer(RT_BRIGHTENED_BOARD);
             for (int xL = 0; xL < boardSize; xL++) {
                 for (int zL = 0; zL < boardSize; zL++) {
-                    DrawHelper.drawTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, 0, 0, 1, 1, 4);
+                    DrawHelper.buildTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, 0, 0, 1, 1, 4);
                 }
             }
         } else {
@@ -61,10 +61,10 @@ public class MSMasterRenderer implements BlockEntityRenderer<MSMasterTile> {
                         double alphaFactor = stage instanceof StageExploding ? 1 : Math.abs(Math.sin(Math.toRadians(ticks / extendedPeriod * 180F)));
                         int alphaColor = DrawHelper.changeAlpha(0xFFFFFFFF, (int) (alphaFactor * 255));
 
-                        DrawHelper.drawTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, 1, 0, 1, 1, 4F);
+                        DrawHelper.buildTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, 1, 0, 1, 1, 4F);
 
                         VertexConsumer translucentBuilder = bufferIn.getBuffer(RT_BRIGHTENED_TRANSLUCENT_BOARD);
-                        DrawHelper.drawTexturedRectByParts(translucentBuilder, matrix, xL, zL, 1, 1, -0.005F, 1, 3, 1, 1, 4F, alphaColor);
+                        DrawHelper.buildTexturedRectByParts(translucentBuilder, matrix, xL, zL, 1, 1, -0.005F, 1, 3, 1, 1, 4F, alphaColor);
                     } else {
 
                         Mark mark = game.getBoard().getMark(xL, zL);
@@ -93,7 +93,7 @@ public class MSMasterRenderer implements BlockEntityRenderer<MSMasterTile> {
                             }
                         }
 
-                        DrawHelper.drawTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, textureX, textureY, 1, 1, 4);
+                        DrawHelper.buildTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, textureX, textureY, 1, 1, 4);
                     }
                 }
             }

@@ -18,13 +18,12 @@ import java.util.function.BiConsumer;
  * Subordinate block for minigames. Will find master block and notify it. The master block must be at the north-west corner of the game border
  * and its tileentity must extend {@link GameMasterTile <>}!
  */
-//TODO "lootgames:smart_subordinate gave null item"
 public class SmartSubordinateBlock extends GameBlock implements ILeftInteractible, ISubordinateProvider {
 
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!worldIn.isClientSide()) {
-            LootGamesAPI.getFieldManager().onFieldBlockBroken(worldIn, () -> getMasterPos(worldIn, pos));
+            LootGamesAPI.getBoardManager().onFieldBlockBroken(worldIn, () -> getMasterPos(worldIn, pos));
         }
 
         super.onRemove(state, worldIn, pos, newState, isMoving);

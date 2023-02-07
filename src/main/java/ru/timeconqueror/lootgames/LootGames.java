@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+//TODO add neon particles on board borders when player is on top
+//TODO replace coords in ms overlay by raytracing on client if player looks at board within N blocks
 @Mod(LootGames.MODID)
 public class LootGames {
     public static final String MODID = "lootgames";

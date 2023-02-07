@@ -2,27 +2,25 @@ package ru.timeconqueror.lootgames.api.task;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
-import ru.timeconqueror.timecore.api.util.LevelUtils;
 
 public class TaskCreateExplosion implements ITask {
     protected double x;
     private double y;
     private double z;
     private float strength;
-    private Explosion.BlockInteraction explosionMode;
+    private Level.ExplosionInteraction explosionMode;
 
     @ApiStatus.Internal
     public TaskCreateExplosion() {
     }
 
-    public TaskCreateExplosion(BlockPos pos, float strength, Explosion.BlockInteraction explosionMode) {
+    public TaskCreateExplosion(BlockPos pos, float strength, Level.ExplosionInteraction explosionMode) {
         this(pos.getX(), pos.getY(), pos.getZ(), strength, explosionMode);
     }
 
-    public TaskCreateExplosion(double x, double y, double z, float strength, Explosion.BlockInteraction explosionMode) {
+    public TaskCreateExplosion(double x, double y, double z, float strength, Level.ExplosionInteraction explosionMode) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -32,7 +30,7 @@ public class TaskCreateExplosion implements ITask {
 
     @Override
     public void run(Level level) {
-        LevelUtils.explode(level, null, x, y, z, strength, explosionMode); //FIXME check how modes work
+        level.explode(null, x, y, z, strength, explosionMode);
     }
 
     @Override
@@ -54,6 +52,6 @@ public class TaskCreateExplosion implements ITask {
         y = nbt.getDouble("y");
         z = nbt.getDouble("z");
         strength = nbt.getFloat("strength");
-        explosionMode = Explosion.BlockInteraction.values()[nbt.getInt("explosion_mode")];
+        explosionMode = Level.ExplosionInteraction.values()[nbt.getInt("explosion_mode")];
     }
 }

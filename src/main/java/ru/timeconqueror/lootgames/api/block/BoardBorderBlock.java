@@ -57,7 +57,7 @@ public class BoardBorderBlock extends GameBlock implements IGameField {
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!worldIn.isClientSide()) {
-            LootGamesAPI.getFieldManager().onFieldBlockBroken(worldIn, () -> getMasterPos(worldIn, pos, state));
+            LootGamesAPI.getBoardManager().onFieldBlockBroken(worldIn, () -> getMasterPos(worldIn, pos, state));
         }
 
         super.onRemove(state, worldIn, pos, newState, isMoving);

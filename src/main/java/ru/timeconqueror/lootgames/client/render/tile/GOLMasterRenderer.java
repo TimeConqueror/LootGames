@@ -66,7 +66,7 @@ public class GOLMasterRenderer implements BlockEntityRenderer<GOLMasterTile> {
 
         Pos2i pos = symbol.getPos();
 
-        DrawHelper.drawTexturedRectByParts(buffer, matrix, pos.getX(), pos.getY(), 1, 1, -0.006F, pos.getX(), pos.getY(), 1, 1, 3);
+        DrawHelper.buildTexturedRectByParts(buffer, matrix, pos.getX(), pos.getY(), 1, 1, -0.006F, pos.getX(), pos.getY(), 1, 1, 3);
     }
 
     private void drawMark(PoseStack matrix, MultiBufferSource bufferIn, State state) {
@@ -82,7 +82,7 @@ public class GOLMasterRenderer implements BlockEntityRenderer<GOLMasterTile> {
             }
         }
 
-        DrawHelper.drawTexturedRectByParts(buffer, matrix, 1, 1, 1, 1, -0.006F, textureX, textureY, 1, 1, 2, 0xFFFFFFFF);
+        DrawHelper.buildTexturedRectByParts(buffer, matrix, 1, 1, 1, 1, -0.006F, textureX, textureY, 1, 1, 2, 0xFFFFFFFF);
     }
 
     private void drawBoard(GameOfLight game, PoseStack matrix, MultiBufferSource bufferIn, int ticks, float partialTicks) {
@@ -101,7 +101,7 @@ public class GOLMasterRenderer implements BlockEntityRenderer<GOLMasterTile> {
         }
 
         matrix.translate(3 / 2F, 3 / 2F, 0);
-        DrawHelper.drawTexturedRectByParts(buffer, matrix, -length / 2, -length / 2, length, length, -0.005F, textureStart, textureStart, textureLength, textureLength, 48);
+        DrawHelper.buildTexturedRectByParts(buffer, matrix, -length / 2, -length / 2, length, length, -0.005F, textureStart, textureStart, textureLength, textureLength, 48);
         matrix.translate(-3 / 2F, -3 / 2F, 0);
     }
 

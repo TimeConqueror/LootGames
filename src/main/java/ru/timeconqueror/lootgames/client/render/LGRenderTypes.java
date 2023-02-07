@@ -26,7 +26,7 @@ public class LGRenderTypes extends RenderType {
                 VertexFormat.Mode.QUADS,
                 DefaultVertexFormat.POSITION_COLOR_TEX,
                 texture,
-                builder -> builder/*.setAlphaState(RenderStateShard.DEFAULT_ALPHA) fixme*/
+                builder -> builder
                         .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                         .setShaderState(FULLBRIGHT_TRANSLUCENT_SHADER)
         );

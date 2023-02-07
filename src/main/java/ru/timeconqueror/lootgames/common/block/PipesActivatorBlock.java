@@ -21,7 +21,7 @@ public class PipesActivatorBlock extends GameBlock {
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         if (!worldIn.isClientSide()) {
-            boolean fieldPlaced = LootGamesAPI.getFieldManager().trySetupBoard(
+            boolean fieldPlaced = LootGamesAPI.getBoardManager().trySetupBoard(
                     (ServerLevel) worldIn,
                     pos, 15, 2, 15,
                     LGBlocks.PIPES_MASTER.defaultBlockState(),

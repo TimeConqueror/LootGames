@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
@@ -27,7 +26,6 @@ import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
-import ru.timeconqueror.timecore.api.util.LevelUtils;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 import ru.timeconqueror.timecore.api.util.holder.Holder;
 
@@ -146,8 +144,8 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
     protected void triggerGameLose() {
         super.triggerGameLose();
 
-        BlockPos expPos = getGameCenter();//FIXME check explosion logic
-        LevelUtils.explode(getLevel(), null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 9, Explosion.BlockInteraction.DESTROY_WITH_DECAY);
+        BlockPos expPos = getGameCenter();
+        getLevel().explode(null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 9, Level.ExplosionInteraction.TNT);
     }
 
     @Override
@@ -442,7 +440,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
         @Override
         public void postInit() {
-            int longestDetTime = detonateBoard(currentLevel + 3, Explosion.BlockInteraction.DESTROY);
+            int longestDetTime = detonateBoard(currentLevel + 3, Level.ExplosionInteraction.NONE/*don't break blocks*/);
             ticks = longestDetTime + 20; //number represents some pause after detonating
         }
 
@@ -470,7 +468,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
          * Adds detonating tasks to scheduler.
          * Returns the longest detonating time, after which all bombs will explode
          */
-        private int detonateBoard(int strength, Explosion.BlockInteraction explosionMode) {
+        private int detonateBoard(int strength, Level.ExplosionInteraction explosionMode) {
             Holder<Integer> longestDetTime = new Holder<>(0);
 
             board.forEach(pos2i -> {

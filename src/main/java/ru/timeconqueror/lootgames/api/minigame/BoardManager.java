@@ -26,11 +26,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Can be accessed via {@link LootGamesAPI#getFieldManager()}.
+ * Can be accessed via {@link LootGamesAPI#getBoardManager()}.
  * <p>
  * Manager that can be used to handle generation and clearing flat board from {@link BoardLootGame}
  */
-public class FieldManager {//TODO rename to board manager
+public class BoardManager {
 
     private boolean fieldUnderBreaking = false;
 
