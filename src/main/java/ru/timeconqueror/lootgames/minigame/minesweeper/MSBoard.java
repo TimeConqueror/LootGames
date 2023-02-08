@@ -154,7 +154,7 @@ public class MSBoard {
                 return true;
             }
 
-            Pos2i pos = toPos(index);//TODO optimize
+            Pos2i pos = toPos(index);
 
             if (start.manhattanDistanceTo(pos) <= safeDistance) {
                 count.set(count.get() + 1);

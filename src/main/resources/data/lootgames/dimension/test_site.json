@@ -1,0 +1,18 @@
+{
+  "type": "lootgames:test_site",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "lootgames:test_site",
+      "lakes": false,
+      "features": false,
+      "layers": [
+        {
+          "block": "minecraft:air",
+          "height": 1
+        }
+      ],
+      "structure_overrides": []
+    }
+  }
+}

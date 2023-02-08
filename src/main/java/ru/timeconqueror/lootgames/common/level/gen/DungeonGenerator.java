@@ -1,4 +1,4 @@
-package ru.timeconqueror.lootgames.common.world.gen;
+package ru.timeconqueror.lootgames.common.level.gen;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;

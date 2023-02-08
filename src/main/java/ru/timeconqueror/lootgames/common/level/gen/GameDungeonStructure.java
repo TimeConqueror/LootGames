@@ -1,4 +1,4 @@
-package ru.timeconqueror.lootgames.common.world.gen;
+package ru.timeconqueror.lootgames.common.level.gen;
 // fixme
 //import com.mojang.serialization.Codec;
 //import net.minecraft.core.BlockPos;
