@@ -31,7 +31,7 @@ import ru.timeconqueror.timecore.api.util.holder.Holder;
 
 import java.util.List;
 
-import static ru.timeconqueror.timecore.api.util.NetworkUtils.getPlayersNearby;
+import static ru.timeconqueror.timecore.api.util.PlayerUtils.getPlayersNearby;
 
 //TODO lang keys for advancements
 //TODO change generation random - depending on world is bad.

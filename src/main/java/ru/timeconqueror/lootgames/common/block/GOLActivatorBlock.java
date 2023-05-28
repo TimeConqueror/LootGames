@@ -20,7 +20,7 @@ import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.util.ChatUtils;
-import ru.timeconqueror.timecore.api.util.NetworkUtils;
+import ru.timeconqueror.timecore.api.util.PlayerUtils;
 
 public class GOLActivatorBlock extends GameBlock {
     @Override
@@ -31,7 +31,7 @@ public class GOLActivatorBlock extends GameBlock {
                     .trySetupBoard(((ServerLevel) worldIn), pos, GameOfLight.BOARD_SIZE, 2, GameOfLight.BOARD_SIZE, LGBlocks.GOL_MASTER.defaultBlockState(), player).isSucceed();
 
             if (succeed) {
-                NetworkUtils.sendMessage(player, ChatUtils.format(Component.translatable("msg.lootgames.gol.start"), NotifyColor.NOTIFY.getColor()));
+                PlayerUtils.sendMessage(player, ChatUtils.format(Component.translatable("msg.lootgames.gol.start"), NotifyColor.NOTIFY.getColor()));
                 worldIn.playSound(null, pos, LGSounds.GOL_START_GAME, SoundSource.MASTER, 0.75F, 1.0F);
                 LGAdvancementTriggers.USE_BLOCK.trigger(((ServerPlayer) player), new ExtraInfo(state, pos, player.getItemInHand(handIn)));
             }

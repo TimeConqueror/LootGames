@@ -20,7 +20,7 @@ import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.util.BlockPosUtils;
 import ru.timeconqueror.timecore.api.util.CollectionUtils;
 import ru.timeconqueror.timecore.api.util.LevelUtils;
-import ru.timeconqueror.timecore.api.util.NetworkUtils;
+import ru.timeconqueror.timecore.api.util.PlayerUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -88,7 +88,7 @@ public class BoardManager {
         BlockPos.MutableBlockPos borderPos = cornerPos.mutable();
         if (!canReplaceAreaWithBoard(world, borderPos, xSize + 2, height + 1, zSize + 2, centerPos)) {
             if (player != null) {
-                NetworkUtils.sendMessage(player, Component.translatable("msg.lootgames.field.not_enough_space", xSize + 2, height + 1, zSize + 2).withStyle(NotifyColor.FAIL.getColor()));
+                PlayerUtils.sendMessage(player, Component.translatable("msg.lootgames.field.not_enough_space", xSize + 2, height + 1, zSize + 2).withStyle(NotifyColor.FAIL.getColor()));
                 world.playSound(null, centerPos, LGSounds.GAME_LOSE, SoundSource.BLOCKS, 0.4F, 1.0F);//TODO change sound
             }
             return new GenerationChain(null, null, false);

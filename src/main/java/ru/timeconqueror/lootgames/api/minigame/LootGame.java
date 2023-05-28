@@ -36,7 +36,7 @@ import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.util.Auxiliary;
-import ru.timeconqueror.timecore.api.util.NetworkUtils;
+import ru.timeconqueror.timecore.api.util.PlayerUtils;
 import ru.timeconqueror.timecore.api.util.holder.Pair;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -45,7 +45,7 @@ import java.util.function.Consumer;
 
 public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<STAGE, G>> {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final Marker DEBUG_MARKER = Markers.LOOTGAME.getMarker();
+    public static final Marker DEBUG_MARKER = Markers.LOOTGAME;
 
     protected GameMasterTile<G> masterTileEntity;
     protected TETaskScheduler taskScheduler;
@@ -126,7 +126,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     @OverridingMethodsMustInvokeSuper
     protected void triggerGameWin() {
         onGameEnd();
-        NetworkUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
+        PlayerUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
                 player -> {
                     LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_WIN);
                     sendTo(player, Component.translatable("msg.lootgames.win"), NotifyColor.SUCCESS);
@@ -142,7 +142,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     @OverridingMethodsMustInvokeSuper
     protected void triggerGameLose() {
         onGameEnd();
-        NetworkUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
+        PlayerUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
                 player -> {
                     LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_LOSE);
                     sendTo(player, Component.translatable("msg.lootgames.lose"), NotifyColor.FAIL);
@@ -171,7 +171,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     public void sendTo(Player player, MutableComponent component) {
-        NetworkUtils.sendMessage(player, component);
+        PlayerUtils.sendMessage(player, component);
     }
 
     public void sendTo(Player player, MutableComponent component, ChatFormatting format) {
@@ -183,7 +183,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
     }
 
     public void sendToNearby(MutableComponent component) {
-        NetworkUtils.sendForEachPlayerNearby(getGameCenter(), getBroadcastDistance(), component);
+        PlayerUtils.sendForEachPlayerNearby(getGameCenter(), getBroadcastDistance(), component);
     }
 
     public void sendToNearby(MutableComponent component, ChatFormatting format) {
@@ -199,7 +199,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
      * Server-only.
      */
     public void forEachPlayerNearby(Consumer<ServerPlayer> action) {
-        NetworkUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(), action);
+        PlayerUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(), action);
     }
 
     /**

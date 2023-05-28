@@ -3,32 +3,34 @@ package ru.timeconqueror.lootgames.common.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.GameBlock;
-import ru.timeconqueror.lootgames.common.advancement.UseBlockTrigger.ExtraInfo;
+import ru.timeconqueror.lootgames.api.room.IRoomStorage;
 import ru.timeconqueror.lootgames.common.block.tile.PuzzleMasterTile;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
-import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGBlockEntities;
+import ru.timeconqueror.lootgames.registry.LGDimensions;
 import ru.timeconqueror.timecore.api.util.ITickableBlockEntity;
-import ru.timeconqueror.timecore.api.util.NetworkUtils;
+import ru.timeconqueror.timecore.api.util.MathUtils;
+import ru.timeconqueror.timecore.api.util.PlayerUtils;
+import ru.timeconqueror.timecore.api.util.Vec2i;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 //TODO check surface before placing game block
 //TODO add animation, which places block below
@@ -57,21 +59,37 @@ public class PuzzleMasterBlock extends GameBlock implements EntityBlock {
         if (!worldIn.isClientSide()) {
             try {
                 if (LGConfigs.GENERAL.disableMinigames.get()) {
-                    NetworkUtils.sendMessage(player, Component.translatable("msg.lootgames.puzzle_master.turned_off"));
+                    PlayerUtils.sendMessage(player, Component.translatable("msg.lootgames.puzzle_master.turned_off"));
                     return InteractionResult.SUCCESS;
                 }
 
-                worldIn.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                if (player instanceof ServerPlayer sp) {
+                    if (player.level.dimension() != LGDimensions.TEST_SITE_DIM) {
+                        ServerLevel roomWorld = ServerLifecycleHooks.getCurrentServer().getLevel(LGDimensions.TEST_SITE_DIM);
+                        IRoomStorage roomStorage = IRoomStorage.getInstance();
 
-                Optional<String> error = LootGamesAPI.getGameManager().generateRandomGame(worldIn, pos);
-                if (error.isEmpty()) {
-                    LGAdvancementTriggers.USE_BLOCK.trigger((ServerPlayer) player, new ExtraInfo(state, pos, player.getItemInHand(handIn)));
-                } else {
-                    NetworkUtils.sendMessage(player, Component.literal(error.get()));//TODO move error to lang file
-                    worldIn.setBlock(pos, state, 2);//rollback
+                        Vec2i vec = MathUtils.OutwardSquareSpiral.offsetByIndex(roomStorage.reserveFreeIndex());
+                        BlockPos roomCorner = new BlockPos(vec.x() * 8 * 16, 64, vec.y() * 8 * 16);
+
+                        LootGamesAPI.getGameManager().generateRandomGame(roomWorld, roomCorner);
+
+                        sp.teleportTo(roomWorld, roomCorner.getX(), roomCorner.getY() + 1, roomCorner.getZ(), player.getXRot(), player.getYRot());
+                    } else {
+                        sp.teleportTo(ServerLifecycleHooks.getCurrentServer().overworld(), player.getX(), player.getY() + 1, player.getZ(), player.getXRot(), player.getYRot());
+                    }
                 }
+                //FIXME
+                //worldIn.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+
+                //Optional<String> error = LootGamesAPI.getGameManager().generateRandomGame(worldIn, pos);
+//                if (error.isEmpty()) {
+//                    LGAdvancementTriggers.USE_BLOCK.trigger((ServerPlayer) player, new ExtraInfo(state, pos, player.getItemInHand(handIn)));
+//                } else {
+//                    PlayerUtils.sendMessage(player, Component.literal(error.get()));//TODO move error to lang file
+//                    worldIn.setBlock(pos, state, 2);//rollback
+//                }
             } catch (Throwable e) {
-                NetworkUtils.sendMessage(player, Component.translatable("msg.lootgames.puzzle_master.broken"));
+                PlayerUtils.sendMessage(player, Component.translatable("msg.lootgames.puzzle_master.broken"));
                 LootGames.LOGGER.error(e);
             }
         }

@@ -50,7 +50,7 @@ public class MSOverlayHandler {
 
     @SubscribeEvent
     public static void renderOverlay(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll("ms_overlay", (gui, poseStack, partialTick, screenWidth, screenHeight) -> {
+        event.registerAboveAll("lg_ms_overlay", (gui, poseStack, partialTick, screenWidth, screenHeight) -> {
             renderNearbyGameBombs(poseStack);
             MS_MASTERS.clear();
         });
