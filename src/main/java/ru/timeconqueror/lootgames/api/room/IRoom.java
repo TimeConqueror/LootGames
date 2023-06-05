@@ -15,7 +15,7 @@ public interface IRoom {
 
     ServerLevel getLevel();
 
-    void allowEnterDuringTick(ServerPlayer player);
+    void addPendingToEnter(ServerPlayer player);
 
-    boolean isAllowedToEnter(ServerPlayer player);
+    boolean isPendingToEnter(ServerPlayer player);
 }

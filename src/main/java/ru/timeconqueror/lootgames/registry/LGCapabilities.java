@@ -1,6 +1,7 @@
 package ru.timeconqueror.lootgames.registry;
 
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -8,6 +9,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.api.room.RoomUtils;
+import ru.timeconqueror.lootgames.room.PlayerData;
 import ru.timeconqueror.lootgames.room.Room;
 import ru.timeconqueror.lootgames.room.RoomStorage;
 import ru.timeconqueror.timecore.api.CapabilityManagerAPI;
@@ -22,10 +24,12 @@ public class LGCapabilities {
 
     public static final Capability<RoomStorage> ROOM_STORAGE = REGISTER.register(RoomStorage.class);
     public static final Capability<Room> ROOM = REGISTER.register(Room.class);
+    public static final Capability<PlayerData> PLAYER_DATA = REGISTER.register(PlayerData.class);
 
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> CapabilityManagerAPI.registerStaticCoffeeAttacher(CapabilityOwner.LEVEL, ROOM_STORAGE, level -> !level.isClientSide, level -> new RoomStorage(((ServerLevel) level))));
         event.enqueueWork(() -> CapabilityManagerAPI.registerStaticCoffeeAttacher(CapabilityOwner.CHUNK, ROOM, chunk -> !chunk.getLevel().isClientSide && RoomUtils.isRoomHolder(chunk.getPos()), chunk -> new Room((ServerLevel) chunk.getLevel(), RoomCoords.of(chunk))));
+        event.enqueueWork(() -> CapabilityManagerAPI.registerStaticCoffeeAttacher(CapabilityOwner.ENTITY, PLAYER_DATA, entity -> entity instanceof ServerPlayer, entity -> new PlayerData((ServerPlayer) entity)));
     }
 }

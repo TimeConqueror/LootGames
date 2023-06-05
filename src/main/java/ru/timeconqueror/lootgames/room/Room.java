@@ -25,7 +25,7 @@ public class Room extends CoffeeCapabilityInstance<LevelChunk> implements IRoom 
     private final AABB roomBox;
     private final ServerLevel level;
 
-    private final Set<UUID> allowedToEnter = new HashSet<>();
+    private final Set<UUID> pendingToEnter = new HashSet<>();
 
     public Room(ServerLevel level, RoomCoords coords) {
         this.level = level;
@@ -58,17 +58,17 @@ public class Room extends CoffeeCapabilityInstance<LevelChunk> implements IRoom 
     }
 
     @Override
-    public void allowEnterDuringTick(ServerPlayer player) {
-        allowedToEnter.add(player.getUUID());
+    public void addPendingToEnter(ServerPlayer player) {
+        pendingToEnter.add(player.getUUID());
     }
 
     @Override
-    public boolean isAllowedToEnter(ServerPlayer player) {
-        return allowedToEnter.contains(player.getUUID());
+    public boolean isPendingToEnter(ServerPlayer player) {
+        return pendingToEnter.contains(player.getUUID());
     }
 
     public void tick() {
-        allowedToEnter.clear();
+        pendingToEnter.clear();
     }
 
     @NotNull

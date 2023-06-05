@@ -11,6 +11,7 @@ import ru.timeconqueror.timecore.api.util.MathUtils;
 import ru.timeconqueror.timecore.api.util.Requirements;
 import ru.timeconqueror.timecore.api.util.Vec2i;
 import ru.timeconqueror.timecore.common.capability.property.serializer.IPropertySerializer;
+import ru.timeconqueror.timecore.common.capability.property.serializer.NullPropertySerializer;
 
 public final class RoomCoords {
     public static final int ROOM_SIZE = 8 * 16;
@@ -96,7 +97,8 @@ public final class RoomCoords {
     }
 
     public static class Serializer implements IPropertySerializer<RoomCoords> {
-        public static final Serializer INSTANCE = new Serializer();
+        public static final IPropertySerializer<RoomCoords> INSTANCE = new Serializer();
+        public static final IPropertySerializer<RoomCoords> NULLABLE_INSTANCE = new NullPropertySerializer<>(INSTANCE);
 
         @Override
         public RoomCoords deserialize(@NotNull String s, @NotNull CompoundTag compoundTag) {

@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.api.room.IPlayerRoomData;
 import ru.timeconqueror.lootgames.api.room.IRoomStorage;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.registry.LGCapabilities;
@@ -86,6 +87,8 @@ public class RoomStorage extends CoffeeCapabilityInstance<Level> implements IRoo
     }
 
     public void enterRoom(ServerPlayer player, Room room) {
+        IPlayerRoomData.of(player).ifPresent(data -> data.setLastAllowedCoords(room.getCoords()));
+
         room.sendCurrentStateToPlayer();
         LOGGER.debug(ROOM, "{} is entering the room ({}).", player.getName().getString(), room.getCoords());
     }
@@ -96,7 +99,7 @@ public class RoomStorage extends CoffeeCapabilityInstance<Level> implements IRoo
 
     public boolean teleportToRoom(ServerPlayer player, RoomCoords coords) {
         Room room = getRoom(coords);
-        if (!room.isAllowedToEnter(player)) {
+        if (!room.isPendingToEnter(player)) {
             return false;
         }
 
