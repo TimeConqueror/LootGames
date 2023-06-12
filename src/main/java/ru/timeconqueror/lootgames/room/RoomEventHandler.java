@@ -51,7 +51,7 @@ public class RoomEventHandler {
         ServerPlayer sp = (ServerPlayer) event.player;
         onPlayerMove(sp);
 
-        if (sp.level.dimension() != LGDimensions.TEST_SITE_DIM) {
+        if (sp.level().dimension() != LGDimensions.TEST_SITE_DIM) {
             IPlayerRoomData.of(sp)
                     .ifPresent(data -> data.setLastAllowedCoords(null));
         }
@@ -68,14 +68,14 @@ public class RoomEventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void checkLegality(EntityItemPickupEvent event) {
-        if (!isActionAllowed(event.getEntity(), event.getEntity().level, event.getItem().blockPosition())) {
+        if (!isActionAllowed(event.getEntity(), event.getEntity().level(), event.getItem().blockPosition())) {
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void checkLegality(BlockEvent.BreakEvent event) {
-        if (!isActionAllowed(event.getPlayer(), event.getPlayer().level, event.getPos())) {
+        if (!isActionAllowed(event.getPlayer(), event.getPlayer().level(), event.getPos())) {
             event.setCanceled(true);
         }
     }
@@ -83,7 +83,7 @@ public class RoomEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void checkLegality(BlockEvent.EntityPlaceEvent event) {
         if (event.getEntity() instanceof Player player) {
-            if (!isActionAllowed(player, event.getEntity().level, event.getPos())) {
+            if (!isActionAllowed(player, event.getEntity().level(), event.getPos())) {
                 event.setCanceled(true);
             }
         }
@@ -105,7 +105,7 @@ public class RoomEventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void checkLegality(LivingDestroyBlockEvent event) {
-        Level level = event.getEntity().getLevel();
+        Level level = event.getEntity().level();
         if (level.isClientSide || level.dimension() != LGDimensions.TEST_SITE_DIM) {
             return;
         }
@@ -116,7 +116,7 @@ public class RoomEventHandler {
     }
 
     public static void onPlayerMove(ServerPlayer player) {
-        if (player.level.dimension() != LGDimensions.TEST_SITE_DIM) {
+        if (player.level().dimension() != LGDimensions.TEST_SITE_DIM) {
             return;
         }
 
@@ -175,7 +175,7 @@ public class RoomEventHandler {
     }
 
     private static boolean authorizePlayer(ServerPlayer player) {
-        if (player.level.dimension() != LGDimensions.TEST_SITE_DIM) {
+        if (player.level().dimension() != LGDimensions.TEST_SITE_DIM) {
             return true;
         }
 
@@ -205,7 +205,7 @@ public class RoomEventHandler {
     }
 
     private static boolean isActionAllowed(Player player, Level level, @Nullable BlockPos actionPos) {
-        if (level.isClientSide || player.level.dimension() != LGDimensions.TEST_SITE_DIM) {
+        if (level.isClientSide || player.level().dimension() != LGDimensions.TEST_SITE_DIM) {
             return true;
         }
 

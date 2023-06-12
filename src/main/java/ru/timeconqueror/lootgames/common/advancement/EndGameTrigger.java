@@ -21,7 +21,7 @@ public class EndGameTrigger extends SimpleCriterionTrigger<Instance> {
     }
 
     @Override
-    protected Instance createInstance(JsonObject json, EntityPredicate.Composite player, DeserializationContext conditionsParser) {
+    protected Instance createInstance(JsonObject json, ContextAwarePredicate player, DeserializationContext conditionsParser) {
         return new Instance(GsonHelper.getAsString(json, "type", TYPE_ANY), player);
     }
 
@@ -32,7 +32,7 @@ public class EndGameTrigger extends SimpleCriterionTrigger<Instance> {
     public static class Instance extends AbstractCriterionTriggerInstance {
         private final String type;
 
-        public Instance(String type, EntityPredicate.Composite player) {
+        public Instance(String type, ContextAwarePredicate player) {
             super(ID, player);
             this.type = type;
         }

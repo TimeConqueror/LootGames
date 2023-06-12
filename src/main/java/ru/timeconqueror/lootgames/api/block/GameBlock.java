@@ -5,13 +5,13 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import ru.timeconqueror.timecore.api.registry.util.BlockPropsFactory;
 
 public abstract class GameBlock extends Block {
     public static final BlockPropsFactory DEF_PROPS = new BlockPropsFactory(() ->
-            BlockPropsFactory.unbreakable(Properties.of(Material.BARRIER)
+            BlockPropsFactory.unbreakable(Properties.copy(Blocks.BARRIER)
                     .lightLevel(value -> 1))
     );
 

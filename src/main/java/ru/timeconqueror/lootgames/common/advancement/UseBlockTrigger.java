@@ -19,7 +19,7 @@ public class UseBlockTrigger extends SimpleCriterionTrigger<UseBlockTrigger.Inst
     private static final ResourceLocation ID = LootGames.rl("use_block");
 
     @Override
-    protected Instance createInstance(JsonObject json, EntityPredicate.Composite playerPredicate, DeserializationContext conditionsParser) {
+    protected Instance createInstance(JsonObject json, ContextAwarePredicate playerPredicate, DeserializationContext conditionsParser) {
         Block block = json.has("block") ? CodecUtils.decodeStrictly(ExtraCodecs.BLOCK, CodecUtils.JSON_OPS, json.get("block")) : null;
         StatePropertiesPredicate statePredicate = StatePropertiesPredicate.fromJson(json.get("state"));
         if (block != null) {
@@ -61,7 +61,7 @@ public class UseBlockTrigger extends SimpleCriterionTrigger<UseBlockTrigger.Inst
         private final LocationPredicate locationPredicate;
         private final ItemPredicate itemPredicate;
 
-        public Instance(EntityPredicate.Composite playerPredicate, @Nullable Block block, StatePropertiesPredicate propertiesIn, LocationPredicate locationIn, ItemPredicate itemIn) {
+        public Instance(ContextAwarePredicate playerPredicate, @Nullable Block block, StatePropertiesPredicate propertiesIn, LocationPredicate locationIn, ItemPredicate itemIn) {
             super(ID, playerPredicate);
             this.block = block;
             this.statePredicate = propertiesIn;
@@ -70,7 +70,7 @@ public class UseBlockTrigger extends SimpleCriterionTrigger<UseBlockTrigger.Inst
         }
 
         public static Instance forBlock(@Nullable Block block) {
-            return new Instance(EntityPredicate.Composite.ANY, block, StatePropertiesPredicate.ANY, LocationPredicate.ANY, ItemPredicate.ANY);
+            return new Instance(ContextAwarePredicate.ANY, block, StatePropertiesPredicate.ANY, LocationPredicate.ANY, ItemPredicate.ANY);
         }
 
         public boolean matches(ServerPlayer player, ExtraInfo info) {
@@ -82,7 +82,7 @@ public class UseBlockTrigger extends SimpleCriterionTrigger<UseBlockTrigger.Inst
                 return false;
             }
 
-            ServerLevel world = player.getLevel();
+            ServerLevel world = player.serverLevel();
 
             if (!this.locationPredicate.matches(world, info.pos.getX(), info.pos.getY(), info.pos.getZ())) {
                 return false;

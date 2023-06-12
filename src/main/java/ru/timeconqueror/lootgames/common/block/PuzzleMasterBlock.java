@@ -64,7 +64,7 @@ public class PuzzleMasterBlock extends GameBlock implements EntityBlock {
                 }
 
                 if (player instanceof ServerPlayer sp) {
-                    if (player.level.dimension() != LGDimensions.TEST_SITE_DIM) {
+                    if (sp.serverLevel().dimension() != LGDimensions.TEST_SITE_DIM) {
                         ServerLevel roomWorld = ServerLifecycleHooks.getCurrentServer().getLevel(LGDimensions.TEST_SITE_DIM);
                         IRoomStorage roomStorage = IRoomStorage.getInstance();
 

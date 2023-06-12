@@ -92,16 +92,13 @@ public abstract class PacketGameUpdate<T extends IGamePacket> {
         }
 
         @Override
-        public boolean handle(P packet, NetworkEvent.Context ctx) {
-            ctx.enqueueWork(() -> {
-                BlockEntity te = getWorld(ctx).getBlockEntity(packet.getMasterPos());
-                if (te instanceof GameMasterTile<?> master) {
-                    gameUpdater.handle(ctx, master.getGame(), packet.getGamePacket());
-                } else {
-                    throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos " + packet.getMasterPos() + " for packet " + packet.getGamePacketClass().getName());
-                }
-            });
-            return true;
+        public void handle(P packet, NetworkEvent.Context ctx) {
+            BlockEntity te = getWorld(ctx).getBlockEntity(packet.getMasterPos());
+            if (te instanceof GameMasterTile<?> master) {
+                gameUpdater.handle(ctx, master.getGame(), packet.getGamePacket());
+            } else {
+                throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos " + packet.getMasterPos() + " for packet " + packet.getGamePacketClass().getName());
+            }
         }
 
         public interface GamePacketHandler<T extends IGamePacket> {

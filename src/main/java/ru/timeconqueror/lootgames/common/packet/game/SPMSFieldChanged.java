@@ -6,6 +6,7 @@ import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard;
+import ru.timeconqueror.timecore.api.util.CodecUtils;
 
 import java.io.IOException;
 
@@ -30,14 +31,14 @@ public class SPMSFieldChanged implements IServerGamePacket {
         bufferTo.writeInt(pos.getX());
         bufferTo.writeInt(pos.getY());
 
-        bufferTo.writeWithCodec(MSBoard.MSField.SYNC_CODEC, field);
+        bufferTo.writeWithCodec(CodecUtils.NBT_OPS, MSBoard.MSField.SYNC_CODEC, field);
     }
 
     @Override
     public void decode(FriendlyByteBuf bufferFrom) throws IOException {
         pos = new Pos2i(bufferFrom.readInt(), bufferFrom.readInt());
 
-        this.field = bufferFrom.readWithCodec(MSBoard.MSField.SYNC_CODEC);
+        this.field = bufferFrom.readWithCodec(CodecUtils.NBT_OPS, MSBoard.MSField.SYNC_CODEC);
     }
 
     @Override

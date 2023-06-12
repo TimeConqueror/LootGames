@@ -195,7 +195,7 @@ public class GameOfLight extends BoardLootGame<GameOfLight> {
                         mutable.set(center.getX(), center.getY(), center.getZ());
 
                         BlockState state = world.getBlockState(mutable.move(x, y, z));
-                        if (state.getMaterial().isReplaceable()) {
+                        if (state.canBeReplaced()) {
                             world.setBlock(center.offset(x, y, z), Blocks.LAVA.defaultBlockState(), 3);
                         }
                     }

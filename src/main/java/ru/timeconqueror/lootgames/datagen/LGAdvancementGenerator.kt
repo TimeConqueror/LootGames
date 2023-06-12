@@ -3,7 +3,7 @@ package ru.timeconqueror.lootgames.datagen
 import net.minecraft.advancements.Advancement
 import net.minecraft.advancements.CriteriaTriggers
 import net.minecraft.advancements.FrameType
-import net.minecraft.advancements.critereon.EntityPredicate
+import net.minecraft.advancements.critereon.ContextAwarePredicate
 import net.minecraft.advancements.critereon.PlayerTrigger
 import net.minecraft.core.HolderLookup
 import net.minecraft.network.chat.Component
@@ -35,7 +35,7 @@ class LGAdvancementGenerator : AdvancementGenerator {
                 )
                 addCriterion(
                     "tick",
-                    PlayerTrigger.TriggerInstance(CriteriaTriggers.TICK.id, EntityPredicate.Composite.ANY)
+                    PlayerTrigger.TriggerInstance(CriteriaTriggers.TICK.id, ContextAwarePredicate.ANY)
                 )
             }
 
@@ -66,7 +66,7 @@ class LGAdvancementGenerator : AdvancementGenerator {
                     true,
                     false
                 )
-                addCriterion("win", EndGameTrigger.Instance(EndGameTrigger.TYPE_WIN, EntityPredicate.Composite.ANY))
+                addCriterion("win", EndGameTrigger.Instance(EndGameTrigger.TYPE_WIN, ContextAwarePredicate.ANY))
             }
 
             val loseGame = make("lose_game") {
@@ -81,7 +81,7 @@ class LGAdvancementGenerator : AdvancementGenerator {
                     true,
                     true
                 )
-                addCriterion("lose", EndGameTrigger.Instance(EndGameTrigger.TYPE_LOSE, EntityPredicate.Composite.ANY))
+                addCriterion("lose", EndGameTrigger.Instance(EndGameTrigger.TYPE_LOSE, ContextAwarePredicate.ANY))
             }
 
             val startMinesweeper = make("minesweeper/start") {
@@ -113,7 +113,7 @@ class LGAdvancementGenerator : AdvancementGenerator {
                 )
                 addCriterion(
                     "end_level4",
-                    EndGameTrigger.Instance(GameMineSweeper.ADV_BEAT_LEVEL4, EntityPredicate.Composite.ANY)
+                    EndGameTrigger.Instance(GameMineSweeper.ADV_BEAT_LEVEL4, ContextAwarePredicate.ANY)
                 )
             }
 
@@ -146,7 +146,7 @@ class LGAdvancementGenerator : AdvancementGenerator {
                 )
                 addCriterion(
                     "end_level3",
-                    EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL3, EntityPredicate.Composite.ANY)
+                    EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL3, ContextAwarePredicate.ANY)
                 )
             }
 
@@ -164,7 +164,7 @@ class LGAdvancementGenerator : AdvancementGenerator {
                 )
                 addCriterion(
                     "end_level4",
-                    EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL4, EntityPredicate.Composite.ANY)
+                    EndGameTrigger.Instance(GameOfLight.ADV_BEAT_LEVEL4, ContextAwarePredicate.ANY)
                 )
             }
         }

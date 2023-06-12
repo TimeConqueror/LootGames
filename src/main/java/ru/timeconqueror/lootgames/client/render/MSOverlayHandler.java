@@ -1,9 +1,13 @@
 package ru.timeconqueror.lootgames.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -50,13 +54,13 @@ public class MSOverlayHandler {
 
     @SubscribeEvent
     public static void renderOverlay(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll("lg_ms_overlay", (gui, poseStack, partialTick, screenWidth, screenHeight) -> {
-            renderNearbyGameBombs(poseStack);
+        event.registerAboveAll("lg_ms_overlay", (gui, graphics, partialTick, screenWidth, screenHeight) -> {
+            renderNearbyGameBombs(graphics);
             MS_MASTERS.clear();
         });
     }
 
-    private static void renderNearbyGameBombs(PoseStack matrixStack) {
+    private static void renderNearbyGameBombs(GuiGraphics guiGraphics) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
@@ -107,19 +111,19 @@ public class MSOverlayHandler {
             float finalMaxRectWidth = maxRectWidth;
             if (i == 0) {
                 DrawHelper.drawBatched(GUI_POS_TEX_SETUP, buffer -> {
-                    DrawHelper.buildTexturedRectByParts(buffer, matrixStack, 5, 5, 15 * 1.5F, 16 * 1.5F, 0, 0, 0, 15, 16, 48);
-                    DrawHelper.buildWidthExpandableTexturedRect(buffer, matrixStack, 5 + 15 * 1.5F, 5, finalMaxRectWidth, 0, FIRST_SLOT_START, FIRST_SLOT_REPEAT, FIRST_SLOT_END, 48);
+                    DrawHelper.buildTexturedRectByParts(buffer, guiGraphics.pose(), 5, 5, 15 * 1.5F, 16 * 1.5F, 0, 0, 0, 15, 16, 48);
+                    DrawHelper.buildWidthExpandableTexturedRect(buffer, guiGraphics.pose(), 5 + 15 * 1.5F, 5, finalMaxRectWidth, 0, FIRST_SLOT_START, FIRST_SLOT_REPEAT, FIRST_SLOT_END, 48);
                 });
 
-                DrawHelper.drawYCenteredStringWithShadow(matrixStack, fontRenderer, toDisplay, 32.6F, 17.5F, color.getRGB());
+                DrawHelper.drawYCenteredStringWithShadow(guiGraphics, fontRenderer, toDisplay, 32.6F, 17.5F, color.getRGB());
             } else {
                 float finalStartY = startY;
 
                 DrawHelper.drawBatched(GUI_POS_TEX_SETUP, buffer -> {
-                    DrawHelper.buildWidthExpandableTexturedRect(buffer, matrixStack, 27.5F, finalStartY, finalMaxRectWidth, 0, EXTRA_SLOT_START, EXTRA_SLOT_REPEAT, EXTRA_SLOT_END, 48);
+                    DrawHelper.buildWidthExpandableTexturedRect(buffer, guiGraphics.pose(), 27.5F, finalStartY, finalMaxRectWidth, 0, EXTRA_SLOT_START, EXTRA_SLOT_REPEAT, EXTRA_SLOT_END, 48);
                 });
 
-                DrawHelper.drawYCenteredStringWithShadow(matrixStack, fontRenderer, toDisplay, 32.6F, startY + 8F, color.getRGB());
+                DrawHelper.drawYCenteredStringWithShadow(guiGraphics, fontRenderer, toDisplay, 32.6F, startY + 8F, color.getRGB());
                 startY += 7 * 1.5F;
             }
         }

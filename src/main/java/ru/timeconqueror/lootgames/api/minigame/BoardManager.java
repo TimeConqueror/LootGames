@@ -70,7 +70,7 @@ public class BoardManager {
 
         return CollectionUtils.allMatch(positions, (pos) -> {
             BlockState state = world.getBlockState(pos);
-            return state.getBlock() == LGBlocks.SHIELDED_DUNGEON_FLOOR || state.getMaterial().isReplaceable() || pos.equals(except);
+            return state.getBlock() == LGBlocks.SHIELDED_DUNGEON_FLOOR || state.canBeReplaced() || pos.equals(except);
         });
     }
 
