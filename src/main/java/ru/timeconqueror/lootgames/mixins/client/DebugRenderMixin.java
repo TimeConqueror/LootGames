@@ -14,6 +14,6 @@ public class DebugRenderMixin {
 
     @Inject(method = "render", at = @At("TAIL"))
     public void renderCustomDebugFeatures(PoseStack poseStack_, MultiBufferSource.BufferSource bufferSource_, double camX_, double camY_, double camZ_, CallbackInfo ci) {
-        RoomDebugRenderer.render(poseStack_, bufferSource_, camX_, camY_, camZ_);
+        RoomDebugRenderer.render(poseStack_, bufferSource_, (float) camX_, (float) camY_, (float) camZ_);
     }
 }
