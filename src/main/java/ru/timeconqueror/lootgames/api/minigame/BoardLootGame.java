@@ -1,36 +1,27 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.Vec3i;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
-import ru.timeconqueror.lootgames.api.LootGamesAPI;
-import ru.timeconqueror.lootgames.api.block.tile.BoardGameMasterTile;
-import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
-import ru.timeconqueror.timecore.api.util.EnvironmentUtils;
 
 import static ru.timeconqueror.lootgames.api.minigame.BoardLootGame.BoardStage;
 
 /**
  * Loot game that is flat.
  */
-public abstract class BoardLootGame<G extends BoardLootGame<G>> extends LootGame<BoardStage, G> {
-    private static final Logger LOGGER = LogManager.getLogger();
-    public static boolean disableMasterCheckWarning;
-    @Nullable
-    private BoardStage stage;
+public abstract class BoardLootGame extends LootGame<BoardStage> {
+    private static final int DEFAULT_FLOOR_POS = 60;
 
-    @Override
-    public void setMasterTileEntity(GameMasterTile<G> masterTileEntity) {
-        super.setMasterTileEntity(masterTileEntity);
-
-        if (EnvironmentUtils.isInDev() && !disableMasterCheckWarning && !(masterTileEntity instanceof BoardGameMasterTile<?>)) {
-            LOGGER.warn("You probably forgot that {} needs to extend {} to handle {} properly.", masterTileEntity.getClass().getSimpleName(), BoardGameMasterTile.class.getSimpleName(), BoardLootGame.class.getSimpleName());
-        }
+    public BoardLootGame(ResourceLocation id, Room room) {
+        super(id, room);
     }
 
     @Override
@@ -39,19 +30,9 @@ public abstract class BoardLootGame<G extends BoardLootGame<G>> extends LootGame
         return getBoardOrigin().offset(size / 2, 0, size / 2);
     }
 
-    @Override
-    protected BlockPos getRoomFloorPos() {
-        return getMasterPos();
-    }
-
     public abstract int getCurrentBoardSize();
 
     public abstract int getAllocatedBoardSize();
-
-    @Override
-    public void onDestroy() {
-        LootGamesAPI.getBoardManager().clearBoard(((ServerLevel) getLevel()), getMasterPos(), getAllocatedBoardSize(), getAllocatedBoardSize());
-    }
 
     public Pos2i convertToGamePos(BlockPos subordinatePos) {
         BlockPos result = subordinatePos.subtract(getBoardOrigin());
@@ -63,14 +44,21 @@ public abstract class BoardLootGame<G extends BoardLootGame<G>> extends LootGame
     }
 
     public BlockPos getBoardOrigin() {
-        int offset = getAllocatedBoardSize() - getCurrentBoardSize();
-        return getMasterPos().mutable().move(1, 0, 1).move(offset / 2, 0, offset / 2).immutable();
+        int size = getCurrentBoardSize();
+        return room.getCoords().centerPos(DEFAULT_FLOOR_POS)
+                .offset(-size / 2, 0, -size / 2);
     }
 
     public void onClick(Player player, Pos2i pos, MouseClickType type) {
-        if (getStage() != null) {
-            getStage().onClick(player, pos, type);
-        }
+        getStage().onClick(player, pos, type);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public void prepareMatrix(PoseStack matrixStack) {
+        Vec3i originOffset = getBoardOrigin().offset(0, 1, 0);
+
+        matrixStack.translate(originOffset.getX(), originOffset.getY(), originOffset.getZ());
+        matrixStack.mulPose(Axis.XP.rotationDegrees(90));
     }
 
     public abstract static class BoardStage extends Stage {

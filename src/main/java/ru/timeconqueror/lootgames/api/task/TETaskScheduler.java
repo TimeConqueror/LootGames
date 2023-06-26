@@ -4,7 +4,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.LootGames;
@@ -16,10 +15,10 @@ import java.util.Iterator;
 public class TETaskScheduler implements INBTSerializable<ListTag> {
     private final ArrayList<TaskWrapper> tasks = new ArrayList<>();
 
-    private final BlockEntity tileEntity;
+    private final Level level;
 
-    public TETaskScheduler(@NotNull BlockEntity tileEntity) {
-        this.tileEntity = tileEntity;
+    public TETaskScheduler(@NotNull Level level) {
+        this.level = level;
     }
 
     /**
@@ -39,7 +38,7 @@ public class TETaskScheduler implements INBTSerializable<ListTag> {
             TaskWrapper task = iterator.next();
 
             if (task.timeBeforeStart <= 0) {
-                task.run(tileEntity.getLevel());
+                task.run(level);
                 iterator.remove();
             } else {
                 task.decreaseTimer();

@@ -18,13 +18,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.block.GameBlock;
-import ru.timeconqueror.lootgames.api.room.IRoomStorage;
+import ru.timeconqueror.lootgames.api.room.RoomCoords;
+import ru.timeconqueror.lootgames.api.room.RoomStorage;
 import ru.timeconqueror.lootgames.common.block.tile.PuzzleMasterTile;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.registry.LGBlockEntities;
 import ru.timeconqueror.lootgames.registry.LGDimensions;
+import ru.timeconqueror.lootgames.room.ServerRoom;
+import ru.timeconqueror.lootgames.room.ServerRoomStorage;
 import ru.timeconqueror.timecore.api.util.ITickableBlockEntity;
 import ru.timeconqueror.timecore.api.util.MathUtils;
 import ru.timeconqueror.timecore.api.util.PlayerUtils;
@@ -66,12 +68,15 @@ public class PuzzleMasterBlock extends GameBlock implements EntityBlock {
                 if (player instanceof ServerPlayer sp) {
                     if (sp.serverLevel().dimension() != LGDimensions.TEST_SITE_DIM) {
                         ServerLevel roomWorld = ServerLifecycleHooks.getCurrentServer().getLevel(LGDimensions.TEST_SITE_DIM);
-                        IRoomStorage roomStorage = IRoomStorage.getInstance();
+                        RoomStorage roomStorage = ServerRoomStorage.getInstance(roomWorld).orElseThrow();
 
                         Vec2i vec = MathUtils.OutwardSquareSpiral.offsetByIndex(roomStorage.reserveFreeIndex());
                         BlockPos roomCorner = new BlockPos(vec.x() * 8 * 16, 64, vec.y() * 8 * 16);
 
-                        LootGamesAPI.getGameManager().generateRandomGame(roomWorld, roomCorner);
+                        ServerRoom room = (ServerRoom) roomStorage.getRoom(new RoomCoords(vec.x(), vec.y()));
+                        room.startGame();
+
+//                        LootGamesAPI.getGameManager().generateRandomGame(roomWorld, roomCorner);
 
                         sp.teleportTo(roomWorld, roomCorner.getX(), roomCorner.getY() + 1, roomCorner.getZ(), player.getXRot(), player.getYRot());
                     } else {

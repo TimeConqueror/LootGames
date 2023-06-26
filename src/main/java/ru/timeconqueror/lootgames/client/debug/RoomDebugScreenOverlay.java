@@ -12,7 +12,9 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
+import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
+import ru.timeconqueror.lootgames.room.client.ClientRoom;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,8 +64,15 @@ public class RoomDebugScreenOverlay implements IGuiOverlay {
 
     private void fillDebugInfo(List<String> debugInfo, Minecraft mc) {
         RoomCoords coords = getRoomCoords(mc);
-
         debugInfo.add("Room Coords: " + (coords != null ? coords.x() + ", " + coords.z() : "<unable>"));
+        ClientRoom room = ClientRoom.getInstance();
+        if (room != null) {
+            LootGame<?> game = room.getGame();
+            debugInfo.add("Game: " + (game != null ? game.getId() : "None"));
+            if (game != null) {
+                debugInfo.add("Stage: " + game.getStage().getID());
+            }
+        }
     }
 
     @Nullable

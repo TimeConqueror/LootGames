@@ -12,19 +12,19 @@ public class LGGamePackets {
     @AutoRegistrable.Init
     private static void register() {
         REGISTER.regServerPacket(SPChangeStage.class);
-        REGISTER.regServerPacket(SPDelayedChangeStage.class);
-
-        REGISTER.regServerPacket(SPPipesGameChangeChunks.class);
-        REGISTER.regServerPacket(SPPipesGameSetBoard.class);
+//        REGISTER.regServerPacket(SPDelayedChangeStage.class);
+//
+//        REGISTER.regServerPacket(SPPipesGameChangeChunks.class);
+//        REGISTER.regServerPacket(SPPipesGameSetBoard.class);
 
         REGISTER.regServerPacket(SPMSFieldChanged.class);
         REGISTER.regServerPacket(SPMSGenBoard.class);
         REGISTER.regServerPacket(SPMSResetFlags.class);
         REGISTER.regServerPacket(SPMSSpawnLevelBeatParticles.class);
-
-        REGISTER.regServerPacket(SPGOLSendDisplayedSymbol.class);
-        REGISTER.regClientPacket(CPGOLSymbolsShown.class);
-        REGISTER.regServerPacket(SPGOLDrawMark.class);
-        REGISTER.regServerPacket(SPGOLSpawnStageUpParticles.class);
+//
+//        REGISTER.regServerPacket(SPGOLSendDisplayedSymbol.class);
+//        REGISTER.regClientPacket(CPGOLSymbolsShown.class);
+//        REGISTER.regServerPacket(SPGOLDrawMark.class);
+//        REGISTER.regServerPacket(SPGOLSpawnStageUpParticles.class);
     }
 }

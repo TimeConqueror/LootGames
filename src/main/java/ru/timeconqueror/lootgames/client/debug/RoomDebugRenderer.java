@@ -12,7 +12,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Matrix4f;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
-import ru.timeconqueror.lootgames.registry.LGDimensions;
+import ru.timeconqueror.lootgames.room.RoomUtils;
 
 import static ru.timeconqueror.lootgames.utils.Log.DEBUGGER;
 
@@ -26,7 +26,7 @@ public class RoomDebugRenderer {
     }
 
     public static boolean isInRoomWorld(Minecraft mc) {
-        return mc.level != null && mc.level.dimension() == LGDimensions.TEST_SITE_DIM;
+        return mc.level != null && RoomUtils.inRoomWorld(mc.level);
     }
 
     public static void render(PoseStack poseStack, MultiBufferSource bufferSource, float camX, float camY, float camZ) {

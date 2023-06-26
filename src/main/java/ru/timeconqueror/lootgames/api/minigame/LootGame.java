@@ -1,106 +1,123 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraftforge.network.PacketDistributor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.message.Message;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.Markers;
-import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
-import ru.timeconqueror.lootgames.api.packet.IClientGamePacket;
-import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
+import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
+import ru.timeconqueror.lootgames.api.minigame.event.GameEvents.StartStageEvent;
+import ru.timeconqueror.lootgames.api.minigame.event.GameEvents.SwitchStageEvent;
+import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.task.TETaskScheduler;
 import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
-import ru.timeconqueror.lootgames.common.level.gen.DungeonGenerator;
-import ru.timeconqueror.lootgames.common.level.gen.GameDungeonStructure;
-import ru.timeconqueror.lootgames.common.packet.CPacketGameUpdate;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
-import ru.timeconqueror.lootgames.common.packet.SPacketGameUpdate;
 import ru.timeconqueror.lootgames.common.packet.game.SPChangeStage;
-import ru.timeconqueror.lootgames.common.packet.game.SPDelayedChangeStage;
+import ru.timeconqueror.lootgames.common.packet.room.SSyncGamePacket;
+import ru.timeconqueror.lootgames.minigame.GameEventBus;
+import ru.timeconqueror.lootgames.minigame.GameNetworkImpl;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGSounds;
+import ru.timeconqueror.lootgames.room.GameSerializer;
+import ru.timeconqueror.lootgames.utils.EventBus;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.util.Auxiliary;
-import ru.timeconqueror.timecore.api.util.PlayerUtils;
-import ru.timeconqueror.timecore.api.util.holder.Pair;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.Objects;
-import java.util.function.Consumer;
 
-public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<STAGE, G>> {
-    private static final Logger LOGGER = LogManager.getLogger();
+@Log4j2
+public abstract class LootGame<STAGE extends Stage> {
     public static final Marker DEBUG_MARKER = Markers.LOOTGAME;
-
-    protected GameMasterTile<G> masterTileEntity;
+    @Getter
+    private boolean started = false;
+    @Getter
+    private final ResourceLocation id;
+    @Getter
+    protected Room room;
     protected TETaskScheduler taskScheduler;
-
-    /**
-     * Determines if tile entity is placed, but was never read from nbt.
-     */
-    private boolean justPlaced = true;
-    @Nullable
-    private Pair<Stage, Stage> pendingStageUpdate = null;
+    private final GameNetwork network;
+    private final GameEventBus eventBus;
+    @Getter
     private STAGE stage;
 
-    public void setMasterTileEntity(GameMasterTile<G> masterTileEntity) {
-        this.masterTileEntity = masterTileEntity;
+    public LootGame(ResourceLocation id, Room room) {
+        this.id = id;
+
+        this.room = room;
+        if (isServerSide()) {
+            taskScheduler = new TETaskScheduler(room.getLevel());
+        }
+        network = new GameNetworkImpl(room, this);
+        eventBus = new GameEventBus(this);
     }
 
-    /**
-     * Method where you can init anything, that requires world and {@link #masterTileEntity} to be not null.
-     */
-    @OverridingMethodsMustInvokeSuper
-    public void onLoad() {
-        if (taskScheduler == null && isServerSide()) {
-            taskScheduler = new TETaskScheduler(masterTileEntity);
-        }
+    protected abstract STAGE makeInitialStage();
 
-        if (justPlaced) {
-            justPlaced = false;
-            onPlace();
-        }
-    }
-
-    /**
-     * Called for both sides when tile entity is just placed in world and has never been write to and read from nbt.
-     */
-    public void onPlace() {
+    public final void start() {
+        this.started = true;
+        setupInitialStage();
+        Stage startStage = getStage();
+        eventBus.post(GameEvents.START_GAME);
+        room.forEachInRoom(player -> LGNetwork.sendToPlayer((ServerPlayer) player, new SSyncGamePacket(this, true)));
+        startStage.postInit();
+        onStageStart(false);
     }
 
     @OverridingMethodsMustInvokeSuper
     public void onTick() {
         if (isServerSide()) {
             taskScheduler.onUpdate();
-
-            if (pendingStageUpdate != null) {
-                if (pendingStageUpdate.right() == getStage()) { //if it's still the same
-                    sendUpdatePacketToNearby(new SPDelayedChangeStage(this, pendingStageUpdate.left()));
-                }
-
-                pendingStageUpdate = null;
-            }
         }
 
-        if (getStage() != null) {
-            getStage().onTick();
-        }
+        getStage().onTick();
     }
+
+    /**
+     * You should call it, when the game is won.
+     * Overriding is fine.
+     */
+    @OverridingMethodsMustInvokeSuper
+    protected void triggerGameWin() {
+        eventBus.post(GameEvents.WIN_GAME);
+        eventBus.post(GameEvents.FINISH_GAME);
+        room.forEachInRoom(player -> {
+            LGAdvancementTriggers.END_GAME.trigger((ServerPlayer) player, EndGameTrigger.TYPE_WIN);
+            network.sendTo(player, Component.translatable("msg.lootgames.win"), NotifyColor.SUCCESS);
+        });
+
+        getLevel().playSound(null, getGameCenter(), LGSounds.GAME_WIN, SoundSource.MASTER, 0.75F, 1.0F);
+    }
+
+    /**
+     * You should call it, when the game is lost.
+     * Overriding is fine.
+     */
+    @OverridingMethodsMustInvokeSuper
+    protected void triggerGameLose() {
+        eventBus.post(GameEvents.LOSE_GAME);
+        eventBus.post(GameEvents.FINISH_GAME);
+        room.forEachInRoom(player -> {
+            LGAdvancementTriggers.END_GAME.trigger((ServerPlayer) player, EndGameTrigger.TYPE_LOSE);
+            network.sendTo(player, Component.translatable("msg.lootgames.lose"), NotifyColor.FAIL);
+        });
+
+        getLevel().playSound(null, getGameCenter(), LGSounds.GAME_LOSE, SoundSource.MASTER, 0.75F, 1.0F);
+    }
+
+    @Deprecated //todo remove
+    protected abstract BlockPos getGameCenter();
 
     public boolean isServerSide() {
         return !isClientSide();
@@ -112,118 +129,7 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
 
     @NotNull
     public Level getLevel() {
-        return Objects.requireNonNull(masterTileEntity.getLevel());
-    }
-
-    public BlockPos getMasterPos() {
-        return masterTileEntity.getBlockPos();
-    }
-
-    /**
-     * You should call it, when the game is won.
-     * Overriding is fine.
-     */
-    @OverridingMethodsMustInvokeSuper
-    protected void triggerGameWin() {
-        onGameEnd();
-        PlayerUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
-                player -> {
-                    LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_WIN);
-                    sendTo(player, Component.translatable("msg.lootgames.win"), NotifyColor.SUCCESS);
-                });
-
-        getLevel().playSound(null, getGameCenter(), LGSounds.GAME_WIN, SoundSource.MASTER, 0.75F, 1.0F);
-    }
-
-    /**
-     * You should call it, when the game is lost.
-     * Overriding is fine.
-     */
-    @OverridingMethodsMustInvokeSuper
-    protected void triggerGameLose() {
-        onGameEnd();
-        PlayerUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(),
-                player -> {
-                    LGAdvancementTriggers.END_GAME.trigger(player, EndGameTrigger.TYPE_LOSE);
-                    sendTo(player, Component.translatable("msg.lootgames.lose"), NotifyColor.FAIL);
-                });
-
-        getLevel().playSound(null, getGameCenter(), LGSounds.GAME_LOSE, SoundSource.MASTER, 0.75F, 1.0F);
-    }
-
-    /**
-     * Will be called when the game ends.
-     * Overriding is fine.
-     */
-    protected void onGameEnd() {
-        DungeonGenerator.resetUnbreakablePlayField(getLevel(), getRoomFloorPos());
-        masterTileEntity.onDestroy();
-    }
-
-    protected abstract BlockPos getGameCenter();
-
-    /**
-     * Returns default broadcast distance (radius) from dungeon central position.
-     * You may use it, for example, for triggering advancements and sending text messages.
-     */
-    public int getBroadcastDistance() {
-        return GameDungeonStructure.ROOM_WIDTH / 2 + 3;//3 - it is just extra block distance after passing dungeon wall. Not so much, not so little.
-    }
-
-    public void sendTo(Player player, MutableComponent component) {
-        PlayerUtils.sendMessage(player, component);
-    }
-
-    public void sendTo(Player player, MutableComponent component, ChatFormatting format) {
-        sendTo(player, component.withStyle(format));
-    }
-
-    public void sendTo(Player player, MutableComponent component, NotifyColor format) {
-        sendTo(player, component, format.getColor());
-    }
-
-    public void sendToNearby(MutableComponent component) {
-        PlayerUtils.sendForEachPlayerNearby(getGameCenter(), getBroadcastDistance(), component);
-    }
-
-    public void sendToNearby(MutableComponent component, ChatFormatting format) {
-        sendToNearby(component.withStyle(format));
-    }
-
-    public void sendToNearby(MutableComponent component, NotifyColor format) {
-        sendToNearby(component, format.getColor());
-    }
-
-    /**
-     * Applies the consumer for every player that are nearby.
-     * Server-only.
-     */
-    public void forEachPlayerNearby(Consumer<ServerPlayer> action) {
-        PlayerUtils.forEachPlayerNearby(getGameCenter(), getBroadcastDistance(), action);
-    }
-
-    /**
-     * Should return the position of block, that is a part of shielded dungeon floor or has a neighbor, that is a shielded floor block.
-     * Used, for example, to recursively reset shield of unbreakability on dungeon floor.
-     */
-    protected abstract BlockPos getRoomFloorPos();
-
-    /**
-     * Saves current data to the disk and sends update to client.
-     */
-    public void saveAndSync() {
-        if (isServerSide()) {
-            masterTileEntity.saveAndSync();
-        }
-    }
-
-    /**
-     * Saves current data to the disk without sending update to client.
-     */
-    public void save() {
-        if (isServerSide()) {
-            masterTileEntity.save();
-        }
+        return Objects.requireNonNull(room.getLevel());
     }
 
     @OverridingMethodsMustInvokeSuper
@@ -232,8 +138,8 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
             nbt.put("task_scheduler", taskScheduler.serializeNBT());
         }
 
-        serializeStage(this, nbt, type);
-        LOGGER.debug(DEBUG_MARKER, formatLogMessage("stage '{}' was serialized for {}."), getStage(), type == SerializationType.SAVE ? "saving" : "syncing");
+        GameSerializer.serializeStage(this, nbt, type);
+        log.debug(DEBUG_MARKER, formatLogMessage("stage '{}' was serialized for {}."), getStage(), type == SerializationType.SAVE ? "saving" : "syncing");
     }
 
     @OverridingMethodsMustInvokeSuper
@@ -241,234 +147,83 @@ public abstract class LootGame<STAGE extends LootGame.Stage, G extends LootGame<
         if (type == SerializationType.SAVE) {
             ListTag schedulerTag = (ListTag) nbt.get("task_scheduler");
 
-            taskScheduler = new TETaskScheduler(masterTileEntity);
+            taskScheduler = new TETaskScheduler(room.getLevel());
             taskScheduler.deserializeNBT(Objects.requireNonNull(schedulerTag));
         }
 
-        setStage(deserializeStage(this, nbt, type));
-        LOGGER.debug(DEBUG_MARKER, formatLogMessage("stage '{}' was deserialized {}."), getStage(), type == SerializationType.SAVE ? "from saved file" : "on client");
-
-        justPlaced = false;
-
+        setStage(GameSerializer.deserializeStage(this, nbt, type));
+        log.debug(DEBUG_MARKER, formatLogMessage("stage '{}' was deserialized {}."), getStage(), type == SerializationType.SAVE ? "from saved file" : "on client");
+        started = true;
         onStageStart(type == SerializationType.SYNC);
     }
 
-    /**
-     * Sends update packet to the client with given {@link CompoundTag} to all players, tracking the game.
-     */
-    public void sendUpdatePacketToNearby(IServerGamePacket packet) {
-        if (!isServerSide()) {
+    private void setupInitialStage() {
+        STAGE startStage = makeInitialStage();
+        log.debug(DEBUG_MARKER, formatLogMessage("initial stage is set: {}"), startStage);
+        setStage(startStage);
+        eventBus.transferEventBus(stage);
+        startStage.preInit();
+    }
+
+    public void switchStage(STAGE stage) {
+        if (stage == this.getStage()) {
             return;
         }
 
-        LevelChunk chunk = getLevel().getChunkAt(getMasterPos());
-        LGNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new SPacketGameUpdate(this, packet));
-
-        LOGGER.debug(DEBUG_MARKER, () -> logMessage("update packet '{}' was sent.", packet.getClass().getSimpleName()));
-    }
-
-    public void sendUpdatePacketToNearbyExcept(ServerPlayer excepting, IServerGamePacket packet) {
-        if (!isServerSide()) {
-            return;
-        }
-
-        LevelChunk chunk = getLevel().getChunkAt(getMasterPos());
-        ((ServerChunkCache) chunk.getLevel().getChunkSource()).chunkMap.getPlayers(chunk.getPos(), false)// copied line from PacketDistributor#trackingChunk
-                .stream()
-                .filter(player -> !player.getUUID().equals(excepting.getUUID()))
-                .forEach(player -> LGNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new SPacketGameUpdate(this, packet)));
-
-        LOGGER.debug(DEBUG_MARKER, () -> logMessage("update packet '{}' to all tracking except {} was sent.", packet.getClass().getSimpleName(), excepting.getName()));
-    }
-
-    /**
-     * Fired on client when {@link IServerGamePacket} comes from server.
-     */
-    public void onUpdatePacket(IServerGamePacket packet) {
-        packet.runOnClient(this);
-    }
-
-    /**
-     * Sends update packet to the server with given {@link CompoundTag}.
-     */
-    public void sendFeedbackPacket(IClientGamePacket packet) {
-        if (isServerSide()) {
-            return;
-        }
-
-        LGNetwork.INSTANCE.sendToServer(new CPacketGameUpdate(this, packet));
-        LOGGER.debug(DEBUG_MARKER, () -> logMessage("feedback packet '{}' was sent.", packet.getClass().getSimpleName()));
-    }
-
-    /**
-     * Fired on server when {@link IClientGamePacket} comes from client.
-     */
-    public void onFeedbackPacket(ServerPlayer sender, IClientGamePacket packet) {
-        packet.runOnServer(sender, this);
-    }
-
-    /**
-     * Only for usage from {@link #onPlace()}.
-     * Will be synced later.
-     *
-     * @param stage initial stage of game
-     */
-    public void setupInitialStage(STAGE stage) {
-        LOGGER.debug(DEBUG_MARKER, formatLogMessage("initial stage '{}' was set up."), stage);
-
-        setStage(stage);
-        onStageUpdate(null, stage, true);
-        onStageStart(isClientSide());
-    }
-
-    public void switchStage(@Nullable STAGE stage) {
         STAGE old = this.getStage();
-        if (old != null) old.onEnd();
+        old.onEnd();
 
-        LOGGER.debug(DEBUG_MARKER, formatLogMessage("switching from stage '{}' to '{}'."), old, stage);
+        log.debug(DEBUG_MARKER, formatLogMessage("switching from stage '{}' to '{}'."), old, stage);
 
         setStage(stage);
-        onStageUpdate(old, stage, false);
+        onStageUpdate(old, stage);
         onStageStart(isClientSide());
     }
 
-    /**
-     * Called for both logical sides when the game was switched to this stage.
-     * For server: called only when you manually change stage on server side via {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)}
-     * For client: called every time server sends new state, including deserializing from saved nbt.
-     */
-    protected void onStageUpdate(@Nullable STAGE oldStage, @Nullable STAGE newStage, boolean shouldDelayPacketSending) {
+
+    private void setStage(STAGE stage) {
+        this.stage = stage;
+    }
+
+    private void onStageUpdate(STAGE oldStage, STAGE newStage) {
+        eventBus.post(GameEvents.SWITCH_STAGE, new SwitchStageEvent(oldStage, newStage));
+        eventBus.transferEventBus(stage);
         if (isServerSide()) {
-            if (newStage != null) newStage.preInit();
-            save();
-
-            if (shouldDelayPacketSending) {
-                pendingStageUpdate = Pair.of(oldStage, newStage);
-                LOGGER.debug(DEBUG_MARKER, () -> logMessage("update packet '{}' was delayed for sending till the next tick."));
-            } else {
-                sendUpdatePacketToNearby(new SPChangeStage(this));
-            }
-
-            if (newStage != null) newStage.postInit();
+            newStage.preInit();
+            network.sendUpdatePacketToNearby(new SPChangeStage(this));
+            newStage.postInit();
         }
     }
 
     @Nullable
     public abstract STAGE createStageFromNBT(String id, CompoundTag stageNBT, SerializationType serializationType);
 
-    @Nullable
-    public STAGE getStage() {
-        return stage;
-    }
-
-    private void setStage(@Nullable STAGE stage) {
-        this.stage = stage;
-    }
-
     /**
      * Called for both logical sides when the game was switched to this stage:
-     * <ol>- by changing stage via {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)}</ol>
-     * <ol>- by deserializing and syncing</ol>
-     * <p>
-     * Warning: {@link #getLevel()} can return null here, because world is set after reading from nbt!
+     * <ol>
+     *     <li>by changing stage via {@link #setupInitialStage()} or {@link #switchStage(Stage)}</li>
+     *     <li>by deserializing and syncing</li>
+     * </ol>
      */
-    protected void onStageStart(boolean clientSide) {
-        if (this.stage != null) {
-            this.stage.onStart(clientSide);
-        }
+    private void onStageStart(boolean clientSide) {
+        STAGE stage = this.stage;
+        stage.onStart(clientSide);
+        eventBus.post(GameEvents.START_STAGE, new StartStageEvent(stage, isClientSide()));
     }
 
-    public abstract void onDestroy();
-
-    public abstract static class Stage {
-        /**
-         * Called for both logical sides when the game was switched to this stage:
-         * <ol>- by changing stage via {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)}</ol>
-         * <ol>- by deserializing and syncing</ol>
-         * <p>
-         * Warning: {@link #getLevel()} can return null here, because world is set after reading from nbt!
-         */
-        protected void onStart(boolean clientSide) {
-
-        }
-
-        /**
-         * Called on every tick for both logical sides.
-         */
-        protected void onTick() {
-
-        }
-
-        /**
-         * Called for both logical sides when the game was switched from this stage to another one.
-         */
-        protected void onEnd() {
-
-        }
-
-        /**
-         * Serializes stage according to the provided serialization type.
-         * If you have some sensitive data you can check here for type before adding it to nbt or not.
-         *
-         * @param serializationType defines for which purpose stage is serializing.
-         */
-        public CompoundTag serialize(SerializationType serializationType) {
-            return new CompoundTag();
-        }
-
-        public abstract String getID();
-
-        @Override
-        public String toString() {
-            return getID();
-        }
-
-        /**
-         * Called on server side right after the game switched to this stage {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)},
-         * but BEFORE it will be saved and synced.
-         * <p>
-         * Is not called upon serializing and deserializing.
-         */
-        public void preInit() {
-
-        }
-
-        /**
-         * Called on server side right after the game switched to this stage {@link #setupInitialStage(Stage)} or {@link #switchStage(Stage)},
-         * and AFTER it will be saved and synced.
-         * <p>
-         * Is not called upon serializing and deserializing.
-         */
-        public void postInit() {
-
-        }
-    }
-
-    public static <STAGE extends Stage> void serializeStage(LootGame<STAGE, ?> game, CompoundTag nbt, SerializationType serializationType) {
-        Stage stage = game.getStage();
-        if (stage != null) {
-            CompoundTag stageWrapper = new CompoundTag();
-            stageWrapper.put("stage", stage.serialize(serializationType));
-            stageWrapper.putString("id", stage.getID());
-            nbt.put("stage_wrapper", stageWrapper);
-        }
-    }
-
-    @Nullable
-    public static <S extends Stage, T extends LootGame<S, T>> S deserializeStage(LootGame<S, T> game, CompoundTag nbt, SerializationType serializationType) {
-        if (nbt.contains("stage_wrapper")) {
-            CompoundTag stageWrapper = nbt.getCompound("stage_wrapper");
-            return game.createStageFromNBT(stageWrapper.getString("id"), stageWrapper.getCompound("stage"), serializationType);
-        } else {
-            return null;
-        }
-    }
-
-    private Message logMessage(String message, Object... arguments) {
+    public Message logMessage(String message, Object... arguments) {
         return Auxiliary.makeLogMessage(formatLogMessage(message), arguments);
     }
 
-    private String formatLogMessage(String message) {
-        return ChatFormatting.DARK_BLUE + getClass().getSimpleName() + ": " + message;
+    public String formatLogMessage(String message) {
+        return ChatFormatting.DARK_BLUE + id.toString() + ": " + message;
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    public GameNetwork net() {
+        return network;
     }
 }

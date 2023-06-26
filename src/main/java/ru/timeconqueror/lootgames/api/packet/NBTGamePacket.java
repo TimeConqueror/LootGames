@@ -1,27 +1,25 @@
 package ru.timeconqueror.lootgames.api.packet;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class NBTGamePacket implements IServerGamePacket {
     @Nullable
+    @Getter
+    @Setter
     private CompoundTag compound;
-
-    /**
-     * Only for using in constructor on reception side.
-     */
-    public NBTGamePacket() {
-    }
 
     public NBTGamePacket(Supplier<CompoundTag> compoundSupplier) {
         this(compoundSupplier.get());
-    }
-
-    public NBTGamePacket(@Nullable CompoundTag compound) {
-        this.compound = compound;
     }
 
     @Override
@@ -39,14 +37,5 @@ public abstract class NBTGamePacket implements IServerGamePacket {
         if (isNotNull) {
             compound = bufferFrom.readNbt();
         } else compound = null;
-    }
-
-    @Nullable
-    public CompoundTag getCompound() {
-        return compound;
-    }
-
-    public void setCompound(@Nullable CompoundTag compound) {
-        this.compound = compound;
     }
 }

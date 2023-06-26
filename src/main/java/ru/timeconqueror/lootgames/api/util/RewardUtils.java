@@ -33,7 +33,7 @@ public class RewardUtils {
      * @param rewardLevel  from 0 to 4 inclusive. Zero means no chests will be generated.
      * @param rewardConfig reward part of your game's config
      */
-    public static void spawnFourStagedReward(ServerLevel world, LootGame<?, ?> game, BlockPos centralPos, int rewardLevel, FourStagedRewardConfig rewardConfig) {
+    public static void spawnFourStagedReward(ServerLevel world, LootGame<?> game, BlockPos centralPos, int rewardLevel, FourStagedRewardConfig rewardConfig) {
         BlockState state = LGBlocks.DUNGEON_LAMP.defaultBlockState();
         world.setBlockAndUpdate(centralPos.offset(1, 0, 1), state);
         world.setBlockAndUpdate(centralPos.offset(1, 0, -1), state);
@@ -141,7 +141,7 @@ public class RewardUtils {
         private final int minItems;
         private final int maxItems;
 
-        public static SpawnChestData fromRewardConfig(LootGame<?, ?> game, RewardConfig rewardConfig) {
+        public static SpawnChestData fromRewardConfig(LootGame<?> game, RewardConfig rewardConfig) {
             return new SpawnChestData(game, rewardConfig.getLootTable(game.getLevel()), rewardConfig.minItems.get(), rewardConfig.maxItems.get());
         }
 
@@ -155,7 +155,7 @@ public class RewardUtils {
          * @param maxItems    maximum amount of item stacks to be generated in chest.
          *                    If this is set to -1, max limit will be disabled.
          */
-        public SpawnChestData(LootGame<?, ?> game, ResourceLocation lootTableRL, int minItems, int maxItems) {
+        public SpawnChestData(LootGame<?> game, ResourceLocation lootTableRL, int minItems, int maxItems) {
             this.lootTableRL = lootTableRL;
             this.minItems = minItems;
             this.maxItems = maxItems;

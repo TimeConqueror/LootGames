@@ -1,5 +1,6 @@
 package ru.timeconqueror.lootgames.room;
 
+import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,16 +12,18 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.simple.SimpleChannel;
-import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.room.IPlayerRoomData;
-import ru.timeconqueror.lootgames.api.room.IRoomStorage;
+import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
+import ru.timeconqueror.lootgames.api.room.RoomStorage;
+import ru.timeconqueror.lootgames.common.packet.LGNetwork;
+import ru.timeconqueror.lootgames.common.packet.room.SLoadRoomPacket;
 import ru.timeconqueror.lootgames.registry.LGCapabilities;
-import ru.timeconqueror.lootgames.registry.LGDimensions;
 import ru.timeconqueror.timecore.common.capability.CoffeeCapabilityInstance;
 import ru.timeconqueror.timecore.common.capability.owner.CapabilityOwner;
 import ru.timeconqueror.timecore.common.capability.owner.serializer.CapabilityOwnerCodec;
@@ -29,21 +32,22 @@ import ru.timeconqueror.timecore.common.capability.property.CoffeeProperty;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 
 import static ru.timeconqueror.lootgames.api.Markers.ROOM;
 
-public class RoomStorage extends CoffeeCapabilityInstance<Level> implements IRoomStorage {
+public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implements RoomStorage {
     private static final TicketType<ChunkPos> ROOM_CONTAINER_TICKET =
             TicketType.create(LootGames.rl("room_container").toString(), Comparator.comparingLong(ChunkPos::toLong));
     private static final Logger LOGGER = LogManager.getLogger();
     private final CoffeeProperty<Integer> freeIndex = prop("free_index", 0);
     private final ServerLevel roomLevel;
     private int tickCount;
-    private final Map<RoomCoords, Room> loadedRooms = new HashMap<>();
+    private final Map<RoomCoords, ServerRoom> loadedRooms = new HashMap<>();
+    @Getter
     private final DelayedPlayerTaskHelper playerTaskHelper = new DelayedPlayerTaskHelper();
 
-    public RoomStorage(ServerLevel roomLevel) {
+    public ServerRoomStorage(ServerLevel roomLevel) {
         this.roomLevel = roomLevel;
     }
 
@@ -55,41 +59,46 @@ public class RoomStorage extends CoffeeCapabilityInstance<Level> implements IRoo
         return i;
     }
 
-    private Room getRoomCap(RoomCoords coords) {
+    private ServerRoom getRoomCap(RoomCoords coords) {
         ChunkPos cp = coords.containerPos();
         LevelChunk chunk = roomLevel.getChunk(cp.x, cp.z);
-        LazyOptional<Room> lazy = chunk.getCapability(LGCapabilities.ROOM);
+        LazyOptional<ServerRoom> lazy = chunk.getCapability(LGCapabilities.ROOM);
         return lazy.orElseThrow(IllegalStateException::new);
     }
 
-    public Room getRoom(RoomCoords coords) {
+    public ServerRoom getRoom(RoomCoords coords) {
         if (!loadedRooms.containsKey(coords)) {
             loadRoom(coords);
         }
 
-        return Objects.requireNonNull(loadedRooms.get(coords));
+        return getLoadedRoom(coords);
     }
 
-    private Room loadRoom(RoomCoords coords) {
-        Room room = getRoomCap(coords);
+    @Nullable
+    public ServerRoom getLoadedRoom(RoomCoords coords) {
+        return loadedRooms.get(coords);
+    }
+
+    private void loadRoom(RoomCoords coords) {
+        ServerRoom room = getRoomCap(coords);
         loadedRooms.put(coords, room);
 
         ChunkPos containerPos = coords.containerPos();
         roomLevel.getChunkSource().addRegionTicket(ROOM_CONTAINER_TICKET, containerPos, 2, containerPos);
-
-        return room;
     }
 
-    private void unloadRoom(RoomCoords coords) {
-        loadedRooms.remove(coords);
-        ChunkPos containerPos = coords.containerPos();
+    private void removeChunkLoading(Room room) {
+        ChunkPos containerPos = room.getCoords().containerPos();
         roomLevel.getChunkSource().removeRegionTicket(ROOM_CONTAINER_TICKET, containerPos, 2, containerPos);
     }
 
-    public void enterRoom(ServerPlayer player, Room room) {
+    public void enterRoom(ServerPlayer player, ServerRoom room) {
         IPlayerRoomData.of(player).ifPresent(data -> data.setLastAllowedCoords(room.getCoords()));
 
-        room.sendCurrentStateToPlayer();
+        LGNetwork.sendToPlayer(player, new SLoadRoomPacket(room));
+        if (room.getGame() != null) {
+            room.syncGame();
+        }
         LOGGER.debug(ROOM, "{} is entering the room ({}).", player.getName().getString(), room.getCoords());
     }
 
@@ -98,7 +107,7 @@ public class RoomStorage extends CoffeeCapabilityInstance<Level> implements IRoo
     }
 
     public boolean teleportToRoom(ServerPlayer player, RoomCoords coords) {
-        Room room = getRoom(coords);
+        ServerRoom room = getRoom(coords);
         if (!room.isPendingToEnter(player)) {
             return false;
         }
@@ -109,7 +118,7 @@ public class RoomStorage extends CoffeeCapabilityInstance<Level> implements IRoo
         return true;
     }
 
-    public void teleportAway(ServerPlayer player, Room room) {
+    public void teleportAway(ServerPlayer player, ServerRoom room) {
         //TODO handle room spawn
         teleportAway(player);
 //        player.changeDimension(ServerLifecycleHooks.getCurrentServer().overworld());
@@ -145,20 +154,22 @@ public class RoomStorage extends CoffeeCapabilityInstance<Level> implements IRoo
 
     public void tick() {
         if (tickCount % 20 == 0) {
-            loadedRooms.values().removeIf(room -> room.getPlayers().isEmpty());
+            loadedRooms.values().removeIf(room -> {
+                boolean empty = room.getPlayers().isEmpty();
+                if (empty) {
+                    removeChunkLoading(room);
+                }
+                return empty;
+            });
         }
 
-        for (Room room : loadedRooms.values()) {
+        for (ServerRoom room : loadedRooms.values()) {
             room.tick();
         }
 
         tickCount++;
 
         playerTaskHelper.tick();
-    }
-
-    public DelayedPlayerTaskHelper getPlayerTaskHelper() {
-        return playerTaskHelper;
     }
 
     @NotNull
@@ -178,11 +189,11 @@ public class RoomStorage extends CoffeeCapabilityInstance<Level> implements IRoo
 
     }
 
-    public static RoomStorage getInstance() {
-        ServerLevel level = ServerLifecycleHooks.getCurrentServer().getLevel(LGDimensions.TEST_SITE_DIM);
-        Objects.requireNonNull(level);
+    public static Optional<ServerRoomStorage> getInstance(Level level) {
+        if (level.isClientSide) {
+            return Optional.empty();
+        }
 
-        LazyOptional<RoomStorage> lazy = level.getCapability(LGCapabilities.ROOM_STORAGE);
-        return lazy.orElseThrow(IllegalStateException::new);
+        return level.getCapability(LGCapabilities.ROOM_STORAGE).resolve();
     }
 }

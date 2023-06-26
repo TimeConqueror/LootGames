@@ -8,7 +8,8 @@ import ru.timeconqueror.lootgames.api.block.SmartSubordinateBlock;
 import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.lootgames.client.resource.BoardBorderBlockResources;
 import ru.timeconqueror.lootgames.common.LGCreativeTabs;
-import ru.timeconqueror.lootgames.common.block.*;
+import ru.timeconqueror.lootgames.common.block.DungeonBlock;
+import ru.timeconqueror.lootgames.common.block.PuzzleMasterBlock;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 import ru.timeconqueror.timecore.api.registry.BlockRegister;
 import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
@@ -36,12 +37,12 @@ public class LGBlocks {
     public static SmartSubordinateBlock SMART_SUBORDINATE;
     public static BoardBorderBlock BOARD_BORDER;
 
-    public static MSActivatorBlock MS_ACTIVATOR;
-    public static PipesActivatorBlock PIPES_ACTIVATOR;
-    public static GOLActivatorBlock GOL_ACTIVATOR;
-    public static GameMasterBlock MS_MASTER;
-    public static GameMasterBlock PIPES_MASTER;
-    public static GameMasterBlock GOL_MASTER;
+//    public static MSActivatorBlock MS_ACTIVATOR;
+//    public static PipesActivatorBlock PIPES_ACTIVATOR;
+//    public static GOLActivatorBlock GOL_ACTIVATOR;
+//    public static GameMasterBlock MS_MASTER;
+//    public static GameMasterBlock PIPES_MASTER;
+//    public static GameMasterBlock GOL_MASTER;
 
     @AutoRegistrable
     private static final BlockRegister REGISTER = new BlockRegister(LootGames.MODID);
@@ -64,13 +65,13 @@ public class LGBlocks {
         REGISTER.register("smart_subordinate", SmartSubordinateBlock::new).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Smart Subordinate");
         REGISTER.register("board_border", BoardBorderBlock::new).also(BoardBorderBlockResources::fillChain).name("Board Border");
 
-        REGISTER.register("gol_activator", GOLActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Game of Light");
-        REGISTER.register("ms_activator", MSActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Minesweeper");
-        REGISTER.register("pipes_activator", PipesActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Pipes (WIP)");
+//        REGISTER.register("gol_activator", GOLActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Game of Light");
+//        REGISTER.register("ms_activator", MSActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Minesweeper");
+//        REGISTER.register("pipes_activator", PipesActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Pipes (WIP)");
 
-        REGISTER.register("gol_master", gameMaster(() -> LGBlockEntities.GOL_MASTER)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Game of Light");
-        REGISTER.register("ms_master", gameMaster(() -> LGBlockEntities.MS_MASTER)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Minesweeper");
-        REGISTER.register("pipes_master", gameMaster(() -> LGBlockEntities.PIPES_MASTER)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Pipes");
+//        REGISTER.register("gol_master", gameMaster(() -> LGBlockEntities.GOL_MASTER)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Game of Light");
+//        REGISTER.register("ms_master", gameMaster(() -> LGBlockEntities.MS_MASTER)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Minesweeper");
+//        REGISTER.register("pipes_master", gameMaster(() -> LGBlockEntities.PIPES_MASTER)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Pipes");
     }
 
     @SuppressWarnings("CodeBlock2Expr")

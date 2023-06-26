@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.minigame.minesweeper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -10,8 +11,11 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
+import ru.timeconqueror.lootgames.api.minigame.GameNetwork;
 import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
+import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
+import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.api.util.RewardUtils;
@@ -22,16 +26,14 @@ import ru.timeconqueror.lootgames.common.packet.game.SPMSGenBoard;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSResetFlags;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSSpawnLevelBeatParticles;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
-import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGSounds;
+import ru.timeconqueror.lootgames.utils.EventBus;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 import ru.timeconqueror.timecore.api.util.holder.Holder;
 
 import java.util.List;
-
-import static ru.timeconqueror.timecore.api.util.PlayerUtils.getPlayersNearby;
 
 //TODO lang keys for advancements
 //TODO change generation random - depending on world is bad.
@@ -41,8 +43,7 @@ import static ru.timeconqueror.timecore.api.util.PlayerUtils.getPlayersNearby;
 //TODO if all non-bomb fields are revealed, finish the game
 //TODO remove interact with opened fields
 
-
-public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
+public class GameMineSweeper extends BoardLootGame {
     public static final String ADV_BEAT_LEVEL4 = "ms_level_4";
 
     public boolean cIsGenerated;
@@ -58,30 +59,28 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
     private Snapshot configSnapshot = null;
 
-    public GameMineSweeper() {
+    public GameMineSweeper(ResourceLocation id, Room room) {
+        super(id, room);
         board = new MSBoard(0, 0);
-    }
 
-    @Override
-    public void onPlace() {
-        setupInitialStage(new StageWaiting());
-
-        if (isServerSide()) {
-            configSnapshot = LGConfigs.MINESWEEPER.snapshot();
-            board.setSize(configSnapshot.getStage1().getBoardSize());
-            board.setBombCount(configSnapshot.getStage1().getBombCount());
-        }
-
-        super.onPlace();
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
+        EventBus events = getEventBus();
+        events.addEventHandler(GameEvents.START_GAME, this::onStart);
+        events.addEventHandler(GameEvents.SWITCH_STAGE, this::onStageSwitch);
 
         if (isClientSide()) {
             configSnapshot = Snapshot.stub(); // needs for first client ticks, because the config from readNBT is called a little bit later
         }
+    }
+
+    @Override
+    protected BoardStage makeInitialStage() {
+        return new StageWaiting();
+    }
+
+    private void onStart() {
+        configSnapshot = LGConfigs.MINESWEEPER.snapshot();
+        board.setSize(configSnapshot.getStage1().getBoardSize());
+        board.setBombCount(configSnapshot.getStage1().getBombCount());
     }
 
     public boolean isBoardGenerated() {
@@ -99,17 +98,16 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
     private void onLevelSuccessfullyFinished() {
         if (currentLevel < 4) {
-            sendUpdatePacketToNearby(new SPMSSpawnLevelBeatParticles());
+            net().sendUpdatePacketToNearby(new SPMSSpawnLevelBeatParticles());
 
-            sendToNearby(Component.translatable("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
+            net().sendToAllInRoom(Component.translatable("msg.lootgames.stage_complete"), NotifyColor.SUCCESS);
             getLevel().playSound(null, getGameCenter(), SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 0.75F, 1.0F);
 
             Snapshot.StageSnapshot stageSnapshot = configSnapshot.getStageByIndex(currentLevel + 1);
 
             board.resetBoard(stageSnapshot.getBoardSize(), stageSnapshot.getBombCount());
             currentLevel++;
-
-            saveAndSync();
+            net().saveAndSync();
         } else {
             currentLevel++;
             triggerGameWin();
@@ -121,9 +119,10 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
     protected void triggerGameWin() {
         super.triggerGameWin();
 
-        List<ServerPlayer> players = getPlayersNearby(getGameCenter(), getBroadcastDistance());
-
-        genLootChests(players);
+        genLootChests(room.getPlayers()
+                .stream()
+                .map(player -> (ServerPlayer) player)
+                .toList());
     }
 
     private void genLootChests(List<ServerPlayer> players) {
@@ -148,10 +147,8 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         getLevel().explode(null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 9, Level.ExplosionInteraction.TNT);
     }
 
-    @Override
-    protected void onStageUpdate(BoardStage oldStage, BoardStage newStage, boolean shouldDelayPacketSending) {
+    private void onStageSwitch() {
         ticks = 0;
-        super.onStageUpdate(oldStage, newStage, shouldDelayPacketSending);
     }
 
     public MSBoard getBoard() {
@@ -233,7 +230,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         @Override
         public void genOnPuzzleMasterClick(Level world, BlockPos puzzleMasterPos) {
             BlockPos floorCenterPos = puzzleMasterPos.offset(0, -3/*instead of GameDungeonStructure.MASTER_BLOCK_OFFSET*/ + 1, 0);
-            world.setBlockAndUpdate(floorCenterPos, LGBlocks.MS_ACTIVATOR.defaultBlockState());
+//            world.setBlockAndUpdate(floorCenterPos, LGBlocks.MS_ACTIVATOR.defaultBlockState());
         }
     }
 
@@ -271,10 +268,9 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
         public void generateBoard(ServerPlayer player, Pos2i clickedPos) {
             board.generate(clickedPos);
-            sendUpdatePacketToNearby(new SPMSGenBoard(GameMineSweeper.this));
+            net().sendUpdatePacketToNearby(new SPMSGenBoard(GameMineSweeper.this));
             revealField(player, clickedPos);
-
-            save();
+            net().save();
         }
 
         public void revealField(ServerPlayer player, Pos2i pos) {
@@ -283,7 +279,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
 
                 Type type = board.getType(pos);
 
-                sendUpdatePacketToNearby(new SPMSFieldChanged(pos, board.getField(pos)));
+                net().sendUpdatePacketToNearby(new SPMSFieldChanged(pos, board.getField(pos)));
 
                 if (type == Type.EMPTY) {
                     if (playRevealNeighboursSound) {
@@ -296,7 +292,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
                     triggerBombs(pos);
                 }
 
-                save();
+                net().save();
 
                 if (board.checkWin()) {
                     onLevelSuccessfullyFinished();
@@ -307,7 +303,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
         private void revealAllNeighbours(ServerPlayer player, Pos2i mainPos, boolean revealMarked) {
             if (!revealMarked) {
                 if (board.isHidden(mainPos)) {
-                    sendTo(player, Component.translatable("msg.lootgames.ms.reveal_on_hidden"), NotifyColor.WARN);
+                    net().sendTo(player, Component.translatable("msg.lootgames.ms.reveal_on_hidden"), NotifyColor.WARN);
                     return;
                 }
 
@@ -325,7 +321,7 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
                 }
 
                 if (marked != bombsAround) {
-                    sendTo(player, Component.translatable("msg.lootgames.ms.reveal_invalid_mark_count"), NotifyColor.WARN);
+                    net().sendTo(player, Component.translatable("msg.lootgames.ms.reveal_invalid_mark_count"), NotifyColor.WARN);
                     return;
                 }
             }
@@ -350,8 +346,8 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
             if (board.isHidden(pos)) {
                 board.swapMark(pos);
 
-                sendUpdatePacketToNearby(new SPMSFieldChanged(pos, board.getField(pos)));
-                save();
+                net().sendUpdatePacketToNearby(new SPMSFieldChanged(pos, board.getField(pos)));
+                net().save();
             }
 
             if (board.checkWin()) {
@@ -371,10 +367,8 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
                 }
             });
 
-            sendToNearby(Component.translatable("msg.lootgames.ms.bomb_touched"), NotifyColor.FAIL);
-
-            saveAndSync();
-
+            net().sendToAllInRoom(Component.translatable("msg.lootgames.ms.bomb_touched"), NotifyColor.FAIL);
+            net().saveAndSync();
             attemptCount++;
         }
 
@@ -450,16 +444,16 @@ public class GameMineSweeper extends BoardLootGame<GameMineSweeper> {
                 ticks--;
 
                 if (ticks <= 0) {
-                    sendToNearby(Component.translatable("msg.lootgames.ms.new_attempt"), NotifyColor.NOTIFY);
-                    sendToNearby(Component.translatable("msg.lootgames.attempt_left", LGConfigs.MINESWEEPER.attemptCount.get() - attemptCount), NotifyColor.GRAVE_NOTIFY);
+                    GameNetwork net = net();
+                    net.sendToAllInRoom(Component.translatable("msg.lootgames.ms.new_attempt"), NotifyColor.NOTIFY);
+                    net.sendToAllInRoom(Component.translatable("msg.lootgames.attempt_left", LGConfigs.MINESWEEPER.attemptCount.get() - attemptCount), NotifyColor.GRAVE_NOTIFY);
 
                     switchStage(new StageWaiting());
 
                     board.resetBoard();
 
-                    sendUpdatePacketToNearby(new SPMSResetFlags());
-
-                    saveAndSync();
+                    net.sendUpdatePacketToNearby(new SPMSResetFlags());
+                    net().saveAndSync();
                 }
             }
         }

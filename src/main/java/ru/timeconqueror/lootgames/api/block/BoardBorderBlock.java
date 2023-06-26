@@ -7,7 +7,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import ru.timeconqueror.lootgames.api.LootGamesAPI;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Locale;
@@ -57,7 +56,7 @@ public class BoardBorderBlock extends GameBlock implements IGameField {
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!worldIn.isClientSide()) {
-            LootGamesAPI.getBoardManager().onFieldBlockBroken(worldIn, () -> getMasterPos(worldIn, pos, state));
+//            LootGamesAPI.getBoardManager().onFieldBlockBroken(worldIn, () -> getMasterPos(worldIn, pos, state));
         }
 
         super.onRemove(state, worldIn, pos, newState, isMoving);

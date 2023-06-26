@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.common.packet.game;
 
 import net.minecraft.nbt.CompoundTag;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
+import ru.timeconqueror.lootgames.api.minigame.Stage;
 import ru.timeconqueror.lootgames.api.packet.NBTGamePacket;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
@@ -26,7 +27,7 @@ public class SPMSGenBoard extends NBTGamePacket {
     }
 
     @Override
-    public <S extends LootGame.Stage, T extends LootGame<S, T>> void runOnClient(LootGame<S, T> game) {
+    public <S extends Stage> void runOnClient(LootGame<S> game) {
         game.readNBT(getCompound(), SerializationType.SYNC);
     }
 }

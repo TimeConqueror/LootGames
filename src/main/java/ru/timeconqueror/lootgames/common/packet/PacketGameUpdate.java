@@ -1,45 +1,35 @@
 package ru.timeconqueror.lootgames.common.packet;
 
-import net.minecraft.core.BlockPos;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
-import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry.Key;
 import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry.Storage;
 import ru.timeconqueror.lootgames.api.packet.IGamePacket;
+import ru.timeconqueror.lootgames.api.room.Room;
+import ru.timeconqueror.lootgames.api.room.RoomAccess;
+import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.timecore.api.common.packet.ITimePacketHandler;
 
 import java.io.IOException;
 import java.util.function.Supplier;
 
+@NoArgsConstructor
+@Log4j2
 public abstract class PacketGameUpdate<T extends IGamePacket> {
+    @Getter
+    @Setter
     private T gamePacket;
-    private BlockPos masterPos;
+    @Getter
+    @Setter
+    private RoomCoords coords;
 
-    public <G extends LootGame<?, G>> PacketGameUpdate(LootGame<?, G> game, T gamePacket) {
-        this.masterPos = game.getMasterPos();
-        this.gamePacket = gamePacket;
-    }
-
-    protected PacketGameUpdate() {
-
-    }
-
-    public BlockPos getMasterPos() {
-        return masterPos;
-    }
-
-    public T getGamePacket() {
-        return gamePacket;
-    }
-
-    protected void setMasterPos(BlockPos masterPos) {
-        this.masterPos = masterPos;
-    }
-
-    protected void setGamePacket(T gamePacket) {
+    public PacketGameUpdate(LootGame<?> game, T gamePacket) {
+        this.coords = game.getRoom().getCoords();
         this.gamePacket = gamePacket;
     }
 
@@ -60,7 +50,7 @@ public abstract class PacketGameUpdate<T extends IGamePacket> {
         }
 
         public void encode(P packet, FriendlyByteBuf buffer) throws IOException {
-            buffer.writeBlockPos(packet.getMasterPos());
+            packet.getCoords().write(buffer);
 
             Storage<T> storage = packet.getStorage();
             Key info = storage.getKey(packet.getGamePacketClass());
@@ -72,20 +62,20 @@ public abstract class PacketGameUpdate<T extends IGamePacket> {
 
         public P decode(FriendlyByteBuf buffer) throws IOException {
             P packet = packetFactory.get();
-            BlockPos masterPos = buffer.readBlockPos();
+            RoomCoords coords = RoomCoords.read(buffer);
 
             Key key = new Key(buffer.readUtf(Short.MAX_VALUE), buffer.readInt());
             Class<? extends T> packetClass = packet.getStorage().getPacketClass(key);
 
             T gamePacket;
             try {
-                gamePacket = packetClass.newInstance();
+                gamePacket = packetClass.newInstance();//FIXME
                 gamePacket.decode(buffer);
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException("Can't decode received game packet, due to lack of public nullary constructor in " + packetClass, e);
             }
 
-            packet.setMasterPos(masterPos);
+            packet.setCoords(coords);
             packet.setGamePacket(gamePacket);
 
             return packet;
@@ -93,16 +83,22 @@ public abstract class PacketGameUpdate<T extends IGamePacket> {
 
         @Override
         public void handle(P packet, NetworkEvent.Context ctx) {
-            BlockEntity te = getWorld(ctx).getBlockEntity(packet.getMasterPos());
-            if (te instanceof GameMasterTile<?> master) {
-                gameUpdater.handle(ctx, master.getGame(), packet.getGamePacket());
-            } else {
-                throw new RuntimeException("Something went wrong. Can't find TileEntityMaster on pos " + packet.getMasterPos() + " for packet " + packet.getGamePacketClass().getName());
+            Room loadedRoom = RoomAccess.getLoadedRoom(getWorld(ctx), packet.getCoords());
+            if (loadedRoom == null) {
+                log.debug("Room is not found on {} ({})", packet.getCoords(), ctx.getDirection().getReceptionSide());
+                return;
             }
+
+            LootGame<?> game = loadedRoom.getGame();
+            if (game == null) {
+                log.debug("Game is not loaded on {} ({})", packet.getCoords(), ctx.getDirection().getReceptionSide());
+            }
+
+            gameUpdater.handle(ctx, game, packet.getGamePacket());
         }
 
         public interface GamePacketHandler<T extends IGamePacket> {
-            void handle(NetworkEvent.Context ctx, LootGame<?, ?> game, T packet);
+            void handle(NetworkEvent.Context ctx, LootGame<?> game, T packet);
         }
     }
 }

@@ -1,6 +1,6 @@
 package ru.timeconqueror.lootgames.api.room;
 
-import net.minecraft.Util;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
@@ -8,20 +8,22 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.timecore.api.util.MathUtils;
-import ru.timeconqueror.timecore.api.util.Requirements;
 import ru.timeconqueror.timecore.api.util.Vec2i;
 import ru.timeconqueror.timecore.common.capability.property.serializer.IPropertySerializer;
 import ru.timeconqueror.timecore.common.capability.property.serializer.NullPropertySerializer;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public final class RoomCoords {
-    public static final int ROOM_SIZE = 8 * 16;
-    public static final int BLOCK_SHIFT = Util.make(Mth.log2(ROOM_SIZE), offset -> Requirements.greaterOrEquals(offset, 4));
+    public static final int ROOM_SIZE = Math.min(8 * 16, 16);
+    public static final int BLOCK_SHIFT = Mth.log2(ROOM_SIZE);
     public static final int CHUNK_SHIFT = BLOCK_SHIFT - 4;
 
     private final int x;
     private final int z;
 
-    private RoomCoords(int x, int z) {
+    public RoomCoords(int x, int z) {
         this.x = x;
         this.z = z;
     }
@@ -60,7 +62,7 @@ public final class RoomCoords {
     }
 
     public BlockPos lowestCorner() {
-        return new BlockPos(x() << BLOCK_SHIFT, 0, z() << BLOCK_SHIFT);
+        return new BlockPos(x << BLOCK_SHIFT, 0, z << BLOCK_SHIFT);
     }
 
     public int x() {
@@ -73,6 +75,34 @@ public final class RoomCoords {
 
     public ChunkPos containerPos() {
         return new ChunkPos(x << CHUNK_SHIFT, z << CHUNK_SHIFT);
+    }
+
+    public boolean contains(BlockPos pos) {
+        return x == pos.getX() >> BLOCK_SHIFT && z == pos.getZ() >> BLOCK_SHIFT;
+    }
+
+    //FIXME check
+    public RoomOffset toRelative(BlockPos pos) {
+        if (!contains(pos)) {
+            throw new IllegalArgumentException();
+        }
+
+        int x = pos.getX();
+        int z = pos.getZ();
+        return new RoomOffset(x - (x << BLOCK_SHIFT), pos.getY(), z - (z << BLOCK_SHIFT));
+    }
+
+    public BlockPos centerPos(int y) {
+        return new BlockPos((x << BLOCK_SHIFT) + ROOM_SIZE / 2, y, (z << BLOCK_SHIFT) + ROOM_SIZE / 2);
+    }
+
+    public void write(ByteBuf byteBuf) {
+        byteBuf.writeInt(x);
+        byteBuf.writeInt(z);
+    }
+
+    public static RoomCoords read(ByteBuf byteBuf) {
+        return new RoomCoords(byteBuf.readInt(), byteBuf.readInt());
     }
 
     @Override

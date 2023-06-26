@@ -1,5 +1,6 @@
 package ru.timeconqueror.lootgames;
 
+import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
@@ -8,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import ru.timeconqueror.lootgames.api.Markers;
+import ru.timeconqueror.lootgames.registry.custom.GameInfoRegistry;
 import ru.timeconqueror.timecore.api.TimeCoreAPI;
 
 import java.util.ArrayList;
@@ -20,6 +22,8 @@ public class LootGames {
     public static final String MODID = "lootgames";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static LootGames INSTANCE = null;
+    @Setter
+    private static GameInfoRegistry gameInfoRegistry;
 
     private static final String MARKER_PROPERTY = "lootgames.logging.markers";
 
@@ -55,5 +59,13 @@ public class LootGames {
 
     public static ResourceLocation rl(String path) {
         return new ResourceLocation(MODID, path);
+    }
+
+    public static GameInfoRegistry getGameInfoRegistry() {
+        if (gameInfoRegistry == null) {
+            throw new IllegalStateException("Called to early");
+        }
+
+        return gameInfoRegistry;
     }
 }

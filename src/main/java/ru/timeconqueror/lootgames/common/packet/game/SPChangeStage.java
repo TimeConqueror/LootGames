@@ -1,30 +1,31 @@
 package ru.timeconqueror.lootgames.common.packet.game;
 
+import lombok.NoArgsConstructor;
 import net.minecraft.nbt.CompoundTag;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
+import ru.timeconqueror.lootgames.api.minigame.Stage;
 import ru.timeconqueror.lootgames.api.packet.NBTGamePacket;
+import ru.timeconqueror.lootgames.room.GameSerializer;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 
-public class SPChangeStage extends NBTGamePacket {
-    /**
-     * Only for using via reflection
-     */
-    public SPChangeStage() {
-    }
+import java.util.Objects;
 
-    public SPChangeStage(LootGame<?, ?> game) {
+@NoArgsConstructor
+public class SPChangeStage extends NBTGamePacket {
+    public SPChangeStage(LootGame<?> game) {
         super(() -> {
             CompoundTag compoundNBT = new CompoundTag();
-            LootGame.serializeStage(game, compoundNBT, SerializationType.SYNC);
+            GameSerializer.serializeStage(game, compoundNBT, SerializationType.SYNC);
             return compoundNBT;
         });
     }
 
     @Override
-    public <S extends LootGame.Stage, T extends LootGame<S, T>> void runOnClient(LootGame<S, T> game) {
+    public <S extends Stage> void runOnClient(LootGame<S> game) {
         CompoundTag compound = getCompound();
+        Objects.requireNonNull(compound);
 
-        S stage = LootGame.deserializeStage(game, compound, SerializationType.SYNC);
+        S stage = GameSerializer.deserializeStage(game, compound, SerializationType.SYNC);
         game.switchStage(stage);
     }
 }

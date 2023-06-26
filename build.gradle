@@ -19,6 +19,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.8.22'
     // OPTIONAL Kotlin Serialization plugin
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.22'
+    id "io.freefair.lombok" version "8.0.1"
 }
 
 apply plugin: 'org.spongepowered.mixin'
@@ -116,9 +117,11 @@ repositories {
     maven { url = 'https://thedarkcolour.github.io/KotlinForForge/' }
 }
 
+def tcVersion = tc_version_range.replace(Map.of(",", "", "[", "", ")", ""))
+
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf('ru.timeconqueror:TimeCore:1.20-3.8.0.0.build1')
+    implementation fg.deobf("ru.timeconqueror:TimeCore:${minecraft_version}-${tcVersion}")
     implementation 'thedarkcolour:kotlinforforge:4.3.0'
 }
 

@@ -18,7 +18,8 @@ public class DelayedPlayerTaskHelper {
             if (player != null) {
                 if (!player.isRemoved()) {
                     Log.LOG_ROOM_HANDLER.info("{} was teleported back to his respawn.", player.getName().getString());
-                    RoomStorage.getInstance().teleportAway(player);
+                    ServerRoomStorage.getInstance(player.level())
+                            .ifPresent(storage -> storage.teleportAway(player));
                 }
             }
         }));

@@ -12,7 +12,7 @@ import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.common.tile.SyncableTile;
 import ru.timeconqueror.timecore.api.util.ITickableBlockEntity;
 
-public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableTile implements ITickableBlockEntity {
+public abstract class GameMasterTile<T extends LootGame<?>> extends SyncableTile implements ITickableBlockEntity {
     // replacement for IForgeBlockEntity#INFINITE_EXTENT_AABB because 1.19.3's frustrum doesn't see it when look right below (https://github.com/MinecraftForge/MinecraftForge/issues/9321#issuecomment-1407420277)
     public static final AABB GIANT_AABB = new AABB(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
     protected T game;
@@ -21,7 +21,6 @@ public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableT
     public GameMasterTile(BlockEntityType<? extends GameMasterTile<T>> tileEntityTypeIn, BlockPos pos, BlockState state, T game) {
         super(tileEntityTypeIn, pos, state);
         this.game = game;
-        game.setMasterTileEntity(this);
     }
 
     public long getAge() {
@@ -32,20 +31,6 @@ public abstract class GameMasterTile<T extends LootGame<?, T>> extends SyncableT
     public void tick(Level level) {
         age++;
         game.onTick();
-    }
-
-    @Override
-    public void onLoad() {
-        game.onLoad();
-    }
-
-    /**
-     * Called when TileEntityGameMaster or BlockSubordinate should be broken.
-     * Block with TileEntity still exists at this point.
-     * This method implies destroying of all game blocks.
-     */
-    public void onDestroy() {
-        game.onDestroy();
     }
 
     @Override

@@ -3,12 +3,11 @@ package ru.timeconqueror.lootgames.api.room;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import ru.timeconqueror.lootgames.room.RoomStorage;
 import ru.timeconqueror.timecore.api.util.MathUtils;
 import ru.timeconqueror.timecore.api.util.Requirements;
 import ru.timeconqueror.timecore.api.util.Vec2i;
 
-public interface IRoomStorage {
+public interface RoomStorage {
     int ROOM_SIZE = 8 * 16;
     int BLOCK_SHIFT = Util.make(Mth.log2(ROOM_SIZE), offset -> Requirements.greaterOrEquals(offset, 4));
 
@@ -26,11 +25,7 @@ public interface IRoomStorage {
         return MathUtils.OutwardSquareSpiral.indexByOffset(corner);
     }
 
-    static IRoomStorage getInstance() {
-        return RoomStorage.getInstance();
-    }
-
     int reserveFreeIndex();
 
-    IRoom getRoom(RoomCoords coords);
+    Room getRoom(RoomCoords coords);
 }

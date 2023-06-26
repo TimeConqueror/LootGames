@@ -1,18 +1,22 @@
-package ru.timeconqueror.lootgames.client.render.tile;
+package ru.timeconqueror.lootgames.client.render.game;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
+import org.joml.Vector4i;
+import org.joml.Vector4ic;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.api.block.tile.BoardGameMasterTile;
-import ru.timeconqueror.lootgames.api.minigame.LootGame;
+import ru.timeconqueror.lootgames.api.minigame.Stage;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
-import ru.timeconqueror.lootgames.client.render.MSOverlayHandler;
-import ru.timeconqueror.lootgames.common.block.tile.MSMasterTile;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper.StageDetonating;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper.StageExploding;
@@ -20,25 +24,48 @@ import ru.timeconqueror.lootgames.minigame.minesweeper.Mark;
 import ru.timeconqueror.lootgames.minigame.minesweeper.Type;
 import ru.timeconqueror.timecore.api.util.client.DrawHelper;
 
-public class MSMasterRenderer implements BlockEntityRenderer<MSMasterTile> {
+import java.util.List;
+
+public class MinesweeperRenderer {
     private static final ResourceLocation MS_BOARD = LootGames.rl("textures/game/ms_board.png");
     private static final RenderType RT_BRIGHTENED_BOARD = LGRenderTypes.fullbright(MS_BOARD);
     private static final RenderType RT_BRIGHTENED_TRANSLUCENT_BOARD = LGRenderTypes.fullbrightTranslucent(MS_BOARD);
 
-    @Override
-    public void render(MSMasterTile te, float partialTicks, PoseStack matrix, @NotNull MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        GameMineSweeper game = te.getGame();
+    private static final CellMesh HIDDEN_CELL_MESH = new CellMesh(
+            List.of(
+                    new Vertex(0F, 0F, 0F, 0F, 0F),
+                    new Vertex(1F, 0F, 0F, 1F, 0F),
+                    new Vertex(1F, 1F, 0F, 1F, 1F),
+                    new Vertex(0F, 1F, 0F, 0F, 1F),
+                    new Vertex(2F / 16, 2F / 16, -2F / 16, 2F / 16, 2F / 16),
+                    new Vertex(14F / 16, 2F / 16, -2F / 16, 14F / 16, 2F / 16),
+                    new Vertex(14F / 16, 14F / 16, -2F / 16, 14F / 16, 14F / 16),
+                    new Vertex(2F / 16, 14F / 16, -2F / 16, 2F / 16, 14F / 16)
+            ),
+            List.of(
+                    new Vector4i(7, 4, 0, 3),
+                    new Vector4i(5, 1, 0, 4),
+                    new Vector4i(6, 2, 1, 5),
+                    new Vector4i(7, 3, 2, 6),
+                    new Vector4i(6, 5, 4, 7)
+            ));
+
+    public void render(GameMineSweeper game, float partialTicks, PoseStack matrix, @NotNull MultiBufferSource bufferIn) {
+
         int boardSize = game.getCurrentBoardSize();
-        LootGame.Stage stage = game.getStage();
+        Stage stage = game.getStage();
 
         matrix.pushPose();
-        BoardGameMasterTile.prepareMatrix(matrix, te);
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        Vec3 cameraPos = camera.getPosition();
+        matrix.translate(-cameraPos.x(), -cameraPos.y(), -cameraPos.z());
+        game.prepareMatrix(matrix);
 
         if (!game.cIsGenerated) {
             VertexConsumer brightenedBuilder = bufferIn.getBuffer(RT_BRIGHTENED_BOARD);
             for (int xL = 0; xL < boardSize; xL++) {
                 for (int zL = 0; zL < boardSize; zL++) {
-                    DrawHelper.buildTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, 0, 0, 1, 1, 4);
+                    HIDDEN_CELL_MESH.render(brightenedBuilder, matrix, xL, zL, 0, 0, 0, 1, 1, 4);
                 }
             }
         } else {
@@ -100,12 +127,35 @@ public class MSMasterRenderer implements BlockEntityRenderer<MSMasterTile> {
         }
 
         matrix.popPose();
-
-        MSOverlayHandler.addSupportedMaster(te);
     }
 
-    @Override
-    public boolean shouldRenderOffScreen(MSMasterTile te) {
-        return true;
+    @Data
+    @AllArgsConstructor
+    public static class CellMesh {
+        private List<Vertex> vertices;
+        private List<Vector4ic> quads;
+
+        public void render(VertexConsumer buffer, PoseStack poseStack, float x, float y, float z, float tX, float tY, float tW, float tH, float texturePartCount) {
+            PoseStack.Pose last = poseStack.last();
+            Matrix4f matrix = last.pose();
+            for (Vector4ic quad : quads) {
+                renderVertex(vertices.get(quad.x()), buffer, matrix, x, y, z, tX, tY, tW, tH, texturePartCount);
+                renderVertex(vertices.get(quad.y()), buffer, matrix, x, y, z, tX, tY, tW, tH, texturePartCount);
+                renderVertex(vertices.get(quad.z()), buffer, matrix, x, y, z, tX, tY, tW, tH, texturePartCount);
+                renderVertex(vertices.get(quad.w()), buffer, matrix, x, y, z, tX, tY, tW, tH, texturePartCount);
+            }
+        }
+
+        public void renderVertex(Vertex v, VertexConsumer buffer, Matrix4f matrix, float x, float y, float z, float tX, float tY, float tW, float tH, float texturePartCount) {
+            float dt = 1F / texturePartCount;
+            buffer.vertex(matrix, v.x + x, v.y + y, v.z + z).uv((tX + tW * v.u) * dt, (tY + tH * v.v) * dt).endVertex();
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class Vertex {
+        private float x, y, z;
+        private float u, v;
     }
 }

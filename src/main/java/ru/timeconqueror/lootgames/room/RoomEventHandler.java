@@ -19,7 +19,6 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.room.IPlayerRoomData;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
-import ru.timeconqueror.lootgames.registry.LGDimensions;
 import ru.timeconqueror.lootgames.utils.Log;
 import ru.timeconqueror.timecore.api.util.PlayerUtils;
 
@@ -33,12 +32,15 @@ public class RoomEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void tickRooms(TickEvent.LevelTickEvent event) {
-        if (!event.level.isClientSide && event.level.dimension() == LGDimensions.TEST_SITE_DIM) {
-            if (event.phase == TickEvent.Phase.END) {
-                RoomStorage.getInstance().tick();
-            } else {
-                RoomStorage.getInstance().getPlayerTaskHelper().tick();
-            }
+        if (!event.level.isClientSide && RoomUtils.inRoomWorld(event.level)) {
+            ServerRoomStorage.getInstance(event.level)
+                    .ifPresent(storage -> {
+                        if (event.phase == TickEvent.Phase.END) {
+                            storage.tick();
+                        } else {
+                            storage.getPlayerTaskHelper().tick();
+                        }
+                    });
         }
     }
 
@@ -51,7 +53,7 @@ public class RoomEventHandler {
         ServerPlayer sp = (ServerPlayer) event.player;
         onPlayerMove(sp);
 
-        if (sp.level().dimension() != LGDimensions.TEST_SITE_DIM) {
+        if (!RoomUtils.inRoomWorld(sp.level())) {
             IPlayerRoomData.of(sp)
                     .ifPresent(data -> data.setLastAllowedCoords(null));
         }
@@ -93,7 +95,7 @@ public class RoomEventHandler {
     public static void checkLegality(BlockEvent.FluidPlaceBlockEvent event) {
         if (event.getLevel().isClientSide()
                 || !(event.getLevel() instanceof Level level)
-                || level.dimension() != LGDimensions.TEST_SITE_DIM) {
+                || !RoomUtils.inRoomWorld(level)) {
             return;
         }
 
@@ -106,7 +108,7 @@ public class RoomEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void checkLegality(LivingDestroyBlockEvent event) {
         Level level = event.getEntity().level();
-        if (level.isClientSide || level.dimension() != LGDimensions.TEST_SITE_DIM) {
+        if (level.isClientSide || !RoomUtils.inRoomWorld(level)) {
             return;
         }
 
@@ -116,7 +118,7 @@ public class RoomEventHandler {
     }
 
     public static void onPlayerMove(ServerPlayer player) {
-        if (player.level().dimension() != LGDimensions.TEST_SITE_DIM) {
+        if (!RoomUtils.inRoomWorld(player.level())) {
             return;
         }
 
@@ -128,14 +130,14 @@ public class RoomEventHandler {
         boolean changedRoom = !Objects.equals(prevCoords, newCoords);
         boolean isAllowedToCheat = PlayerUtils.isCreativeOrOp(player);
 
-        RoomStorage roomStorage = RoomStorage.getInstance();
+        ServerRoomStorage roomStorage = ServerRoomStorage.getInstance(player.level()).orElseThrow();
         if (changedRoom) {
             LOGGER.debug(ROOM, "{} tried to illegally jump from {} to {}", player.getName().getString(), prevCoords, newCoords);
             if (isAllowedToCheat) {
                 LOGGER.debug(ROOM, "{} is allowed to jump from {} to {} because he's admin", player.getName().getString(), prevCoords, newCoords);
                 roomStorage.leaveRoom(player, prevCoords);
 
-                Room room = roomStorage.getRoom(newCoords);
+                ServerRoom room = roomStorage.getRoom(newCoords);
                 roomStorage.enterRoom(player, room);
             } else {
                 LOGGER.debug(ROOM, "{} is denied to jump from {} to {}", player.getName().getString(), prevCoords, newCoords);
@@ -148,26 +150,28 @@ public class RoomEventHandler {
 
     @SubscribeEvent
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
-        if (event.getLevel().isClientSide || event.getLevel().dimension() != LGDimensions.TEST_SITE_DIM) {
+        if (event.getLevel().isClientSide || !RoomUtils.inRoomWorld(event.getLevel())) {
             return;
         }
 
         if (event.getEntity() instanceof ServerPlayer player) {
             if (!authorizePlayer(player)) {
                 event.setCanceled(true);
-                RoomStorage.getInstance().getPlayerTaskHelper().delayTeleportAway(player);
+                ServerRoomStorage.getInstance(player.level())
+                        .map(ServerRoomStorage::getPlayerTaskHelper)
+                        .ifPresent(helper -> helper.delayTeleportAway(player));
             }
         }
     }
 
     @SubscribeEvent
     public static void onEntityRemovedFromLevel(EntityLeaveLevelEvent event) {
-        if (event.getLevel().isClientSide || event.getLevel().dimension() != LGDimensions.TEST_SITE_DIM) {
+        if (event.getLevel().isClientSide || !RoomUtils.inRoomWorld(event.getLevel())) {
             return;
         }
 
         if (event.getEntity() instanceof ServerPlayer player) {
-            RoomStorage storage = RoomStorage.getInstance();
+            ServerRoomStorage storage = ServerRoomStorage.getInstance(event.getLevel()).orElseThrow();
             RoomCoords coords = RoomCoords.of(player.blockPosition());
             LOGGER.debug(ROOM, "{} removed from room world in {}", player.getName().getString(), coords);
             storage.leaveRoom(player, coords);
@@ -175,11 +179,11 @@ public class RoomEventHandler {
     }
 
     private static boolean authorizePlayer(ServerPlayer player) {
-        if (player.level().dimension() != LGDimensions.TEST_SITE_DIM) {
+        if (!RoomUtils.inRoomWorld(player.level())) {
             return true;
         }
 
-        RoomStorage roomStorage = RoomStorage.getInstance();
+        ServerRoomStorage roomStorage = ServerRoomStorage.getInstance(player.level()).orElseThrow();
         RoomCoords coords = RoomCoords.of(player.blockPosition());
 
         IPlayerRoomData playerRoomData = IPlayerRoomData.of(player).resolve().orElse(null);
@@ -188,7 +192,7 @@ public class RoomEventHandler {
         RoomCoords lastAllowedCoords = playerRoomData.getLastAllowedCoords();
 
         LOGGER.debug(ROOM, "{} tried to enter the room world in {}", player.getName().getString(), coords);
-        Room room = roomStorage.getRoom(coords);
+        ServerRoom room = roomStorage.getRoom(coords);
         if (Objects.equals(lastAllowedCoords, coords) || room.isPendingToEnter(player) || PlayerUtils.isCreativeOrOp(player)) {
             roomStorage.enterRoom(player, room);
             return true;
@@ -205,7 +209,7 @@ public class RoomEventHandler {
     }
 
     private static boolean isActionAllowed(Player player, Level level, @Nullable BlockPos actionPos) {
-        if (level.isClientSide || player.level().dimension() != LGDimensions.TEST_SITE_DIM) {
+        if (level.isClientSide || !RoomUtils.inRoomWorld(player.level())) {
             return true;
         }
 

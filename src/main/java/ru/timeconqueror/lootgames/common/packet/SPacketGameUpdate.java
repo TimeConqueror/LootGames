@@ -5,7 +5,7 @@ import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry;
 import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
 
 public class SPacketGameUpdate extends PacketGameUpdate<IServerGamePacket> {
-    public <G extends LootGame<?, G>> SPacketGameUpdate(LootGame<?, G> game, IServerGamePacket gamePacket) {
+    public SPacketGameUpdate(LootGame<?> game, IServerGamePacket gamePacket) {
         super(game, gamePacket);
     }
 
@@ -18,6 +18,6 @@ public class SPacketGameUpdate extends PacketGameUpdate<IServerGamePacket> {
     }
 
     public static Handler<IServerGamePacket, SPacketGameUpdate> makeHandler() {
-        return new Handler<>(SPacketGameUpdate::new, (context, lootGame, packet) -> lootGame.onUpdatePacket(packet));
+        return new Handler<>(SPacketGameUpdate::new, (context, lootGame, packet) -> lootGame.net().onUpdatePacket(packet));
     }
 }
