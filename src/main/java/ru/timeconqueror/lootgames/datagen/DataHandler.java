@@ -24,5 +24,6 @@ public class DataHandler {
 
         gen.addProvider(event.includeServer(), DataGeneration.advancementProvider(event, new LGAdvancementGenerator()));
         gen.addProvider(event.includeServer(), DataGeneration.factory(output_ -> new LGBlockTagsProvider(output_, lookupProvider, LootGames.MODID, fileHelper)));
+        gen.addProvider(event.includeClient(), DataGeneration.factory(LGBlockStateAndBlockProvider::new));
     }
 }

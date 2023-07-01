@@ -78,6 +78,7 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
     public void startGame() {
         LootGame<?> game = LootGames.getGameInfoRegistry().makeRandomGame(this);
         this.game.set(game);
+        RoomGenerator.generateRoomWalls(this);
         game.start();
     }
 

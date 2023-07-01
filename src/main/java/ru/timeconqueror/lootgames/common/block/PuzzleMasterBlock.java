@@ -71,14 +71,14 @@ public class PuzzleMasterBlock extends GameBlock implements EntityBlock {
                         RoomStorage roomStorage = ServerRoomStorage.getInstance(roomWorld).orElseThrow();
 
                         Vec2i vec = MathUtils.OutwardSquareSpiral.offsetByIndex(roomStorage.reserveFreeIndex());
-                        BlockPos roomCorner = new BlockPos(vec.x() * 8 * 16, 64, vec.y() * 8 * 16);
 
                         ServerRoom room = (ServerRoom) roomStorage.getRoom(new RoomCoords(vec.x(), vec.y()));
                         room.startGame();
+                        BlockPos center = room.getCoords().centerPos(60);
 
-//                        LootGamesAPI.getGameManager().generateRandomGame(roomWorld, roomCorner);
+//                        LootGamesAPI.getGameManager().generateRandomGame(roomWorld, center);
 
-                        sp.teleportTo(roomWorld, roomCorner.getX(), roomCorner.getY() + 1, roomCorner.getZ(), player.getXRot(), player.getYRot());
+                        sp.teleportTo(roomWorld, center.getX(), center.getY() + 1, center.getZ(), player.getXRot(), player.getYRot());
                     } else {
                         sp.teleportTo(ServerLifecycleHooks.getCurrentServer().overworld(), player.getX(), player.getY() + 1, player.getZ(), player.getXRot(), player.getYRot());
                     }

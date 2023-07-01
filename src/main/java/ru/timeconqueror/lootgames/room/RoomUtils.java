@@ -28,8 +28,7 @@ public class RoomUtils {
     }
 
     public static AABB getRoomBox(Level level, RoomCoords coords) {
-        return new AABB(coords.lowestCorner().atY(level.getMinBuildHeight()),
-                coords.lowestCorner().offset(RoomCoords.ROOM_SIZE - 1, 0, RoomCoords.ROOM_SIZE - 1).atY(level.getMaxBuildHeight() - 1));
+        return new AABB(coords.minPos(level), coords.maxPos(level));
     }
 
     public static List<Player> getPlayers(Level level, AABB aabb) {

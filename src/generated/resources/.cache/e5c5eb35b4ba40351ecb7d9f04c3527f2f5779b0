@@ -1,10 +1,1 @@
-// 1.19.3	2023-02-07T09:02:15.04733	Advancements
-d40823558c2e2058fd60495fa58d79fd877db3c3 data/lootgames/advancements/find_dungeon.json
-cec1b603b8fe3843edc24ed38cbfe6f245530ab5 data/lootgames/advancements/gameoflight/beat_level_3.json
-700ea8137717ddf2cb7a9f02ef76577341080384 data/lootgames/advancements/gameoflight/beat_level_4.json
-789a8ce5278b0596ddee609fc17312cadf843f64 data/lootgames/advancements/gameoflight/start.json
-b40d0db6bda599eaa7e94cbffa8b7fe6e962d419 data/lootgames/advancements/lose_game.json
-83febb6ddb3570e402ef6140c6f6dee9643791c2 data/lootgames/advancements/minesweeper/beat_level_4.json
-5c48f137104b2007a6c269c5d00effd5faa92082 data/lootgames/advancements/minesweeper/start.json
-7d2d4d175bd7f2d4e7233b6d76659dc69dfedd49 data/lootgames/advancements/root.json
-84909adbb57910a4fc7176f1c035f1db754248ec data/lootgames/advancements/win_game.json
+// 1.20	2023-07-01T23:54:41.9487515	Advancements

@@ -37,7 +37,7 @@ public class RoomDebugRenderer {
         float yMin = (float) mc.level.getMinBuildHeight() - camY;
         float yMax = (float) mc.level.getMaxBuildHeight() - camY;
         RoomCoords coords = RoomCoords.of(entity.chunkPosition().x, entity.chunkPosition().z);
-        BlockPos lowestCorner = coords.lowestCorner();
+        BlockPos lowestCorner = coords.minPos(mc.level);
         float minX = (float) lowestCorner.getX() - camX;
         float maxZ = (float) lowestCorner.getZ() - camZ;
 

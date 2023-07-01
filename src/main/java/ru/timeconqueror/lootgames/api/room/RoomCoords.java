@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.timecore.api.util.MathUtils;
@@ -16,7 +17,7 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public final class RoomCoords {
-    public static final int ROOM_SIZE = Math.min(8 * 16, 16);
+    public static final int ROOM_SIZE = Math.max(8 * 16, 16);
     public static final int BLOCK_SHIFT = Mth.log2(ROOM_SIZE);
     public static final int CHUNK_SHIFT = BLOCK_SHIFT - 4;
 
@@ -61,8 +62,20 @@ public final class RoomCoords {
         return of(blockX >> 4, blockZ >> 4);
     }
 
-    public BlockPos lowestCorner() {
-        return new BlockPos(x << BLOCK_SHIFT, 0, z << BLOCK_SHIFT);
+    public BlockPos minPos(int minY) {
+        return new BlockPos(x << BLOCK_SHIFT, minY, z << BLOCK_SHIFT);
+    }
+
+    public BlockPos minPos(Level level) {
+        return new BlockPos(x << BLOCK_SHIFT, level.getMinBuildHeight(), z << BLOCK_SHIFT);
+    }
+
+    public BlockPos maxPos(int maxY) {
+        return new BlockPos((x << BLOCK_SHIFT) + ROOM_SIZE - 1, maxY, (z << BLOCK_SHIFT) + ROOM_SIZE - 1);
+    }
+
+    public BlockPos maxPos(Level level) {
+        return new BlockPos((x << BLOCK_SHIFT) + ROOM_SIZE - 1, level.getMaxBuildHeight() - 1, (z << BLOCK_SHIFT) + ROOM_SIZE - 1);
     }
 
     public int x() {

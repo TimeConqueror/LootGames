@@ -10,6 +10,7 @@ import ru.timeconqueror.lootgames.client.resource.BoardBorderBlockResources;
 import ru.timeconqueror.lootgames.common.LGCreativeTabs;
 import ru.timeconqueror.lootgames.common.block.DungeonBlock;
 import ru.timeconqueror.lootgames.common.block.PuzzleMasterBlock;
+import ru.timeconqueror.lootgames.common.block.RoomWallBlock;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 import ru.timeconqueror.timecore.api.registry.BlockRegister;
 import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
@@ -44,6 +45,8 @@ public class LGBlocks {
 //    public static GameMasterBlock PIPES_MASTER;
 //    public static GameMasterBlock GOL_MASTER;
 
+    public static RoomWallBlock OUTER_SPACE;
+
     @AutoRegistrable
     private static final BlockRegister REGISTER = new BlockRegister(LootGames.MODID);
 
@@ -64,6 +67,7 @@ public class LGBlocks {
 
         REGISTER.register("smart_subordinate", SmartSubordinateBlock::new).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Smart Subordinate");
         REGISTER.register("board_border", BoardBorderBlock::new).also(BoardBorderBlockResources::fillChain).name("Board Border");
+        REGISTER.register("outer_space", RoomWallBlock::new).name("Outer Space");
 
 //        REGISTER.register("gol_activator", GOLActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Game of Light");
 //        REGISTER.register("ms_activator", MSActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Minesweeper");
