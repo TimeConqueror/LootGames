@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
@@ -22,12 +23,19 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
 
     public BoardLootGame(ResourceLocation id, Room room) {
         super(id, room);
+        getEventBus().addEventHandler(GameEvents.START_GAME, () -> {
+
+        });
     }
 
     @Override
     public BlockPos getGameCenter() {
         int size = getCurrentBoardSize();
         return getBoardOrigin().offset(size / 2, 0, size / 2);
+    }
+
+    private void onStart() {
+
     }
 
     public abstract int getCurrentBoardSize();

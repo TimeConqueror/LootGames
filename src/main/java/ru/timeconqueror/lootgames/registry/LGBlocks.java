@@ -1,6 +1,8 @@
 package ru.timeconqueror.lootgames.registry;
 
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.block.BoardBorderBlock;
 import ru.timeconqueror.lootgames.api.block.GameMasterBlock;
@@ -45,7 +47,7 @@ public class LGBlocks {
 //    public static GameMasterBlock PIPES_MASTER;
 //    public static GameMasterBlock GOL_MASTER;
 
-    public static RoomWallBlock OUTER_SPACE;
+    public static RoomWallBlock SPACE_FABRIC; // hard wall
 
     @AutoRegistrable
     private static final BlockRegister REGISTER = new BlockRegister(LootGames.MODID);
@@ -67,7 +69,7 @@ public class LGBlocks {
 
         REGISTER.register("smart_subordinate", SmartSubordinateBlock::new).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Smart Subordinate");
         REGISTER.register("board_border", BoardBorderBlock::new).also(BoardBorderBlockResources::fillChain).name("Board Border");
-        REGISTER.register("outer_space", RoomWallBlock::new).name("Outer Space");
+        REGISTER.register("space_fabric", () -> new RoomWallBlock(BlockBehaviour.Properties.copy(Blocks.BARRIER))).name("Space Fabric");
 
 //        REGISTER.register("gol_activator", GOLActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Game of Light");
 //        REGISTER.register("ms_activator", MSActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Minesweeper");

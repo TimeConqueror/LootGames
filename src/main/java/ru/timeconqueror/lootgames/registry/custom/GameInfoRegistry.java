@@ -31,8 +31,12 @@ public class GameInfoRegistry {
         return LGRegistries.forgeGameInfoRegistry();
     }
 
+    public ResourceLocation getRandom() {
+        return getById(RandHelper.RAND.nextInt(getSize()));
+    }
+
     public LootGame<?> makeRandomGame(Room room) {
-        ResourceLocation key = getById(RandHelper.RAND.nextInt(getSize()));
+        ResourceLocation key = getRandom();
         IForgeRegistry<GameInfo> forgeRegistry = LGRegistries.forgeGameInfoRegistry();
         GameInfo info = forgeRegistry.getValue(key);
         Objects.requireNonNull(info);

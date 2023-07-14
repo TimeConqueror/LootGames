@@ -4,7 +4,7 @@ import net.minecraft.data.PackOutput;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.api.client.resource.BlockModels;
 
-import static ru.timeconqueror.lootgames.registry.LGBlocks.OUTER_SPACE;
+import static ru.timeconqueror.lootgames.registry.LGBlocks.SPACE_FABRIC;
 
 public class LGBlockStateAndBlockProvider extends BlockStateProvider {
     public LGBlockStateAndBlockProvider(PackOutput output) {
@@ -15,8 +15,8 @@ public class LGBlockStateAndBlockProvider extends BlockStateProvider {
     protected void registerAll() {
         ModelProvider models = blockModels();
 
-        var outerSpaceModel = models.addBlockModel(OUTER_SPACE, BlockModels.cubeAllModel(models.defaultTextureLocation(OUTER_SPACE)));
-        addBlockState(OUTER_SPACE, BlockStateResources.singleVariantWithSingleModel(outerSpaceModel));
+        var outerSpaceModel = models.addBlockModel(SPACE_FABRIC, BlockModels.cubeAllModel(models.defaultTextureLocation(SPACE_FABRIC)));
+        addBlockState(SPACE_FABRIC, BlockStateResources.singleVariantWithSingleModel(outerSpaceModel));
     }
 
     @Override

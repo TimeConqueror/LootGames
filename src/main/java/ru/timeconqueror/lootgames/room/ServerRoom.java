@@ -8,11 +8,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.network.simple.SimpleChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.api.event.GenerateGameEnvironmentEvent;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
@@ -78,7 +80,8 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
     public void startGame() {
         LootGame<?> game = LootGames.getGameInfoRegistry().makeRandomGame(this);
         this.game.set(game);
-        RoomGenerator.generateRoomWalls(this);
+        MinecraftForge.EVENT_BUS.post(new GenerateGameEnvironmentEvent(this, game));
+        RoomGenerator.generateRoomBorders(this);
         game.start();
     }
 
