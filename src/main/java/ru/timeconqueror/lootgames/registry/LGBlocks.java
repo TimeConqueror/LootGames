@@ -1,6 +1,8 @@
 package ru.timeconqueror.lootgames.registry;
 
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import ru.timeconqueror.lootgames.LootGames;
@@ -12,9 +14,11 @@ import ru.timeconqueror.lootgames.client.resource.BoardBorderBlockResources;
 import ru.timeconqueror.lootgames.common.LGCreativeTabs;
 import ru.timeconqueror.lootgames.common.block.DungeonBlock;
 import ru.timeconqueror.lootgames.common.block.PuzzleMasterBlock;
-import ru.timeconqueror.lootgames.common.block.RoomWallBlock;
+import ru.timeconqueror.lootgames.common.block.TechnicalBlock;
+import ru.timeconqueror.lootgames.common.block.TechnicalBlock.Configuration;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 import ru.timeconqueror.timecore.api.registry.BlockRegister;
+import ru.timeconqueror.timecore.api.registry.BlockRegister.RenderTypeWrapper;
 import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 import ru.timeconqueror.timecore.api.registry.util.BlockPropsFactory;
 
@@ -47,7 +51,8 @@ public class LGBlocks {
 //    public static GameMasterBlock PIPES_MASTER;
 //    public static GameMasterBlock GOL_MASTER;
 
-    public static RoomWallBlock SPACE_FABRIC; // hard wall
+    public static TechnicalBlock SPACE_FABRIC; // hard wall
+    public static TechnicalBlock GLASSY_MATTER; // just a glass block
 
     @AutoRegistrable
     private static final BlockRegister REGISTER = new BlockRegister(LootGames.MODID);
@@ -69,7 +74,11 @@ public class LGBlocks {
 
         REGISTER.register("smart_subordinate", SmartSubordinateBlock::new).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Smart Subordinate");
         REGISTER.register("board_border", BoardBorderBlock::new).also(BoardBorderBlockResources::fillChain).name("Board Border");
-        REGISTER.register("space_fabric", () -> new RoomWallBlock(BlockBehaviour.Properties.copy(Blocks.BARRIER))).name("Space Fabric");
+        REGISTER.register("space_fabric", () -> new TechnicalBlock(BlockBehaviour.Properties.copy(Blocks.BARRIER), Configuration.builder().build())).name("Space Fabric");
+        REGISTER.register("glassy_matter", () -> new TechnicalBlock(
+                        BlockBehaviour.Properties.copy(Blocks.BARRIER),
+                        Configuration.builder().renderShape(RenderShape.INVISIBLE).build()))
+                .renderLayer(() -> new RenderTypeWrapper(RenderType.translucent())).name("Glassy Matter");
 
 //        REGISTER.register("gol_activator", GOLActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Game of Light");
 //        REGISTER.register("ms_activator", MSActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Minesweeper");

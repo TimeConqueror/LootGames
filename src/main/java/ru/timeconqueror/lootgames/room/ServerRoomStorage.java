@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.lootgames.api.room.IPlayerRoomData;
+import ru.timeconqueror.lootgames.api.room.PlayerRoomData;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.api.room.RoomStorage;
@@ -93,7 +93,7 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
     }
 
     public void enterRoom(ServerPlayer player, ServerRoom room) {
-        IPlayerRoomData.of(player).ifPresent(data -> data.setLastAllowedCoords(room.getCoords()));
+        PlayerRoomData.of(player).ifPresent(data -> data.setLastAllowedCoords(room.getCoords()));
 
         LGNetwork.sendToPlayer(player, new SLoadRoomPacket(room));
         if (room.getGame() != null) {
@@ -185,7 +185,7 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
     }
 
     @Override
-    public void sendChangesToClients(@NotNull SimpleChannel simpleChannel, @NotNull Object o) {
+    public void sendChangesToClient(@NotNull SimpleChannel simpleChannel, @NotNull Object o) {
 
     }
 

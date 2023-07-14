@@ -11,8 +11,8 @@ import net.minecraftforge.network.PacketDistributor;
 import ru.timeconqueror.lootgames.api.minigame.GameNetwork;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
-import ru.timeconqueror.lootgames.api.packet.IClientGamePacket;
-import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
+import ru.timeconqueror.lootgames.api.packet.ClientGamePacket;
+import ru.timeconqueror.lootgames.api.packet.ServerGamePacket;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.common.packet.CPacketGameUpdate;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
@@ -70,7 +70,7 @@ public class GameNetworkImpl implements GameNetwork {
     }
 
     @Override
-    public void sendUpdatePacketToNearby(IServerGamePacket packet) {
+    public void sendUpdatePacketToNearby(ServerGamePacket packet) {
         if (!game.isServerSide()) {
             return;
         }
@@ -81,7 +81,7 @@ public class GameNetworkImpl implements GameNetwork {
     }
 
     @Override
-    public void sendUpdatePacketToNearbyExcept(ServerPlayer excepting, IServerGamePacket packet) {
+    public void sendUpdatePacketToNearbyExcept(ServerPlayer excepting, ServerGamePacket packet) {
         if (!game.isServerSide()) {
             return;
         }
@@ -96,12 +96,12 @@ public class GameNetworkImpl implements GameNetwork {
     }
 
     @Override
-    public void onUpdatePacket(IServerGamePacket packet) {
+    public void onUpdatePacket(ServerGamePacket packet) {
         packet.runOnClient(game);
     }
 
     @Override
-    public void sendFeedbackPacket(IClientGamePacket packet) {
+    public void sendFeedbackPacket(ClientGamePacket packet) {
         if (game.isServerSide()) {
             return;
         }
@@ -111,7 +111,7 @@ public class GameNetworkImpl implements GameNetwork {
     }
 
     @Override
-    public void onFeedbackPacket(ServerPlayer sender, IClientGamePacket packet) {
+    public void onFeedbackPacket(ServerPlayer sender, ClientGamePacket packet) {
         packet.runOnServer(sender, game);
     }
 }

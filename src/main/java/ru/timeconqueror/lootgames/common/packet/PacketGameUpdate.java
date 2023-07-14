@@ -7,9 +7,9 @@ import lombok.extern.log4j.Log4j2;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
+import ru.timeconqueror.lootgames.api.packet.GamePacket;
 import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry.Key;
 import ru.timeconqueror.lootgames.api.packet.GamePacketRegistry.Storage;
-import ru.timeconqueror.lootgames.api.packet.IGamePacket;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomAccess;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 
 @NoArgsConstructor
 @Log4j2
-public abstract class PacketGameUpdate<T extends IGamePacket> {
+public abstract class PacketGameUpdate<T extends GamePacket> {
     @Getter
     @Setter
     private T gamePacket;
@@ -40,7 +40,7 @@ public abstract class PacketGameUpdate<T extends IGamePacket> {
 
     public abstract Storage<T> getStorage();
 
-    public static class Handler<T extends IGamePacket, P extends PacketGameUpdate<T>> implements ITimePacketHandler<P> {
+    public static class Handler<T extends GamePacket, P extends PacketGameUpdate<T>> implements ITimePacketHandler<P> {
         private final Supplier<P> packetFactory;
         private final GamePacketHandler<T> gameUpdater;
 
@@ -97,7 +97,7 @@ public abstract class PacketGameUpdate<T extends IGamePacket> {
             gameUpdater.handle(ctx, game, packet.getGamePacket());
         }
 
-        public interface GamePacketHandler<T extends IGamePacket> {
+        public interface GamePacketHandler<T extends GamePacket> {
             void handle(NetworkEvent.Context ctx, LootGame<?> game, T packet);
         }
     }

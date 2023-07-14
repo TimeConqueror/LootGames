@@ -7,18 +7,18 @@ import ru.timeconqueror.timecore.api.registry.TimeRegister;
 import java.util.Objects;
 
 public abstract class GamePacketRegistry extends TimeRegister {
-    private static final Storage<IClientGamePacket> CLIENT_STORAGE = new Storage<>();
-    private static final Storage<IServerGamePacket> SERVER_STORAGE = new Storage<>();
+    private static final Storage<ClientGamePacket> CLIENT_STORAGE = new Storage<>();
+    private static final Storage<ServerGamePacket> SERVER_STORAGE = new Storage<>();
 
     public GamePacketRegistry(String modid) {
         super(modid);
     }
 
-    public static Storage<IClientGamePacket> clientStorage() {
+    public static Storage<ClientGamePacket> clientStorage() {
         return CLIENT_STORAGE;
     }
 
-    public static Storage<IServerGamePacket> serverStorage() {
+    public static Storage<ServerGamePacket> serverStorage() {
         return SERVER_STORAGE;
     }
 
@@ -76,8 +76,7 @@ public abstract class GamePacketRegistry extends TimeRegister {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof Key)) return false;
-            Key that = (Key) o;
+            if (!(o instanceof Key that)) return false;
             return packetId == that.packetId &&
                     modId.equals(that.modId);
         }

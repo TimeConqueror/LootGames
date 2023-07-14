@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
@@ -19,13 +18,10 @@ import static ru.timeconqueror.lootgames.api.minigame.BoardLootGame.BoardStage;
  * Loot game that is flat.
  */
 public abstract class BoardLootGame extends LootGame<BoardStage> {
-    private static final int DEFAULT_FLOOR_POS = 60;
+    public static final int DEFAULT_FLOOR_POS = 60;
 
     public BoardLootGame(ResourceLocation id, Room room) {
         super(id, room);
-        getEventBus().addEventHandler(GameEvents.START_GAME, () -> {
-
-        });
     }
 
     @Override

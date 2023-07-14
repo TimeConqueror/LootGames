@@ -5,8 +5,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import ru.timeconqueror.lootgames.api.packet.IClientGamePacket;
-import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
+import ru.timeconqueror.lootgames.api.packet.ClientGamePacket;
+import ru.timeconqueror.lootgames.api.packet.ServerGamePacket;
 
 public interface GameNetwork {
     void sendTo(Player player, MutableComponent component);
@@ -31,22 +31,22 @@ public interface GameNetwork {
     /**
      * Sends update packet to the client with given {@link CompoundTag} to all players, tracking the game.
      */
-    void sendUpdatePacketToNearby(IServerGamePacket packet);
+    void sendUpdatePacketToNearby(ServerGamePacket packet);
 
-    void sendUpdatePacketToNearbyExcept(ServerPlayer excepting, IServerGamePacket packet);
+    void sendUpdatePacketToNearbyExcept(ServerPlayer excepting, ServerGamePacket packet);
 
     /**
-     * Fired on client when {@link IServerGamePacket} comes from server.
+     * Fired on client when {@link ServerGamePacket} comes from server.
      */
-    void onUpdatePacket(IServerGamePacket packet);
+    void onUpdatePacket(ServerGamePacket packet);
 
     /**
      * Sends update packet to the server with given {@link CompoundTag}.
      */
-    void sendFeedbackPacket(IClientGamePacket packet);
+    void sendFeedbackPacket(ClientGamePacket packet);
 
     /**
-     * Fired on server when {@link IClientGamePacket} comes from client.
+     * Fired on server when {@link ClientGamePacket} comes from client.
      */
-    void onFeedbackPacket(ServerPlayer sender, IClientGamePacket packet);
+    void onFeedbackPacket(ServerPlayer sender, ClientGamePacket packet);
 }

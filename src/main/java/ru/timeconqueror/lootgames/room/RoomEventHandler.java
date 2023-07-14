@@ -17,7 +17,7 @@ import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import ru.timeconqueror.lootgames.api.room.IPlayerRoomData;
+import ru.timeconqueror.lootgames.api.room.PlayerRoomData;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.utils.Log;
 import ru.timeconqueror.timecore.api.util.PlayerUtils;
@@ -54,7 +54,7 @@ public class RoomEventHandler {
         onPlayerMove(sp);
 
         if (!RoomUtils.inRoomWorld(sp.level())) {
-            IPlayerRoomData.of(sp)
+            PlayerRoomData.of(sp)
                     .ifPresent(data -> data.setLastAllowedCoords(null));
         }
     }
@@ -122,7 +122,7 @@ public class RoomEventHandler {
             return;
         }
 
-        IPlayerRoomData data = IPlayerRoomData.of(player).resolve().orElse(null);
+        PlayerRoomData data = PlayerRoomData.of(player).resolve().orElse(null);
         if (data == null) return;
 
         RoomCoords prevCoords = data.getLastAllowedCoords();
@@ -186,7 +186,7 @@ public class RoomEventHandler {
         ServerRoomStorage roomStorage = ServerRoomStorage.getInstance(player.level()).orElseThrow();
         RoomCoords coords = RoomCoords.of(player.blockPosition());
 
-        IPlayerRoomData playerRoomData = IPlayerRoomData.of(player).resolve().orElse(null);
+        PlayerRoomData playerRoomData = PlayerRoomData.of(player).resolve().orElse(null);
         if (playerRoomData == null) return false;
 
         RoomCoords lastAllowedCoords = playerRoomData.getLastAllowedCoords();

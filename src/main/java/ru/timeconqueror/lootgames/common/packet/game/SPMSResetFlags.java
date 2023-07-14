@@ -3,10 +3,10 @@ package ru.timeconqueror.lootgames.common.packet.game;
 import net.minecraft.network.FriendlyByteBuf;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.minigame.Stage;
-import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
+import ru.timeconqueror.lootgames.api.packet.ServerGamePacket;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 
-public class SPMSResetFlags implements IServerGamePacket {
+public class SPMSResetFlags implements ServerGamePacket {
     @Override
     public void encode(FriendlyByteBuf bufferTo) {
 

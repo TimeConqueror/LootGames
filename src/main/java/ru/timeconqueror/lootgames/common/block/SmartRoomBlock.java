@@ -5,13 +5,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import ru.timeconqueror.lootgames.api.block.ILeftInteractible;
+import ru.timeconqueror.lootgames.api.block.LeftInteractible;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomAccess;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 
-public class SmartRoomBlock extends Block implements ILeftInteractible {
+public class SmartRoomBlock extends Block implements LeftInteractible {
     public SmartRoomBlock(Properties props) {
         super(props);
     }

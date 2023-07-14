@@ -12,12 +12,12 @@ import java.util.Optional;
  * Can be accessed via {@link LootGamesAPI#getGameManager()}.
  *///TODO bind packets to their games, so we dont need to cast in runOnServer and client
 public class GameManager {
-    private static final List<ILootGameFactory> GAME_GEN_LIST = new ArrayList<>();
+    private static final List<LootGameFactory> GAME_GEN_LIST = new ArrayList<>();
 
     /**
      * Register game and its factory.
      */
-    public void registerGameGenerator(ILootGameFactory generator) {
+    public void registerGameGenerator(LootGameFactory generator) {
         GAME_GEN_LIST.add(generator);
     }
 

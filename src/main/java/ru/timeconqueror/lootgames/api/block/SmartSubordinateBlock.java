@@ -17,7 +17,7 @@ import java.util.function.BiConsumer;
  * Subordinate block for minigames. Will find master block and notify it. The master block must be at the north-west corner of the game border
  * and its tileentity must extend {@link GameMasterTile <>}!
  */
-public class SmartSubordinateBlock extends GameBlock implements ILeftInteractible, ISubordinateProvider {
+public class SmartSubordinateBlock extends GameBlock implements LeftInteractible, SubordinateProvider {
 
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
@@ -54,13 +54,13 @@ public class SmartSubordinateBlock extends GameBlock implements ILeftInteractibl
         BlockPos.MutableBlockPos currentPos = pos.mutable();
         int limit = 128;
 
-        while (currentPos.equals(pos) || world.getBlockState(currentPos).getBlock() instanceof ISubordinateProvider) {
+        while (currentPos.equals(pos) || world.getBlockState(currentPos).getBlock() instanceof SubordinateProvider) {
             currentPos.move(-1, 0, 0);
             if (--limit == 0) break;
         }
         currentPos.move(1, 0, 0);
 
-        while (currentPos.equals(pos) || world.getBlockState(currentPos).getBlock() instanceof ISubordinateProvider) {
+        while (currentPos.equals(pos) || world.getBlockState(currentPos).getBlock() instanceof SubordinateProvider) {
             currentPos.move(0, 0, -1);
             if (--limit == 0) break;
         }

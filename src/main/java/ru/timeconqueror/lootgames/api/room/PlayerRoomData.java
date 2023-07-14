@@ -5,13 +5,13 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.room.PlayerData;
 
-public interface IPlayerRoomData {
+public interface PlayerRoomData {
     void setLastAllowedCoords(@Nullable RoomCoords coords);
 
     @Nullable
     RoomCoords getLastAllowedCoords();
 
-    static LazyOptional<IPlayerRoomData> of(ServerPlayer player) {
+    static LazyOptional<PlayerRoomData> of(ServerPlayer player) {
         return PlayerData.of(player)
                 .lazyMap(playerData -> playerData);
     }

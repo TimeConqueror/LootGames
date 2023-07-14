@@ -5,7 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-public interface ILeftInteractible {
+public interface LeftInteractible {
     /**
      * Should return true, if you need to prevent left click.
      */

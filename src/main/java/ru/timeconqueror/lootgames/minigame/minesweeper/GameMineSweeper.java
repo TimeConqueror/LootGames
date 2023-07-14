@@ -12,7 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.GameNetwork;
-import ru.timeconqueror.lootgames.api.minigame.ILootGameFactory;
+import ru.timeconqueror.lootgames.api.minigame.LootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.room.Room;
@@ -226,7 +226,7 @@ public class GameMineSweeper extends BoardLootGame {
         }
     }
 
-    public static class Factory implements ILootGameFactory {
+    public static class Factory implements LootGameFactory {
         @Override
         public void genOnPuzzleMasterClick(Level world, BlockPos puzzleMasterPos) {
             BlockPos floorCenterPos = puzzleMasterPos.offset(0, -3/*instead of GameDungeonStructure.MASTER_BLOCK_OFFSET*/ + 1, 0);

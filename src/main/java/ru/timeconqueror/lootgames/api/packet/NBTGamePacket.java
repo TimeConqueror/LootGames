@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class NBTGamePacket implements IServerGamePacket {
+public abstract class NBTGamePacket implements ServerGamePacket {
     @Nullable
     @Getter
     @Setter

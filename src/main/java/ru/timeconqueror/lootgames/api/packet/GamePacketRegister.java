@@ -10,18 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GamePacketRegister extends TimeRegister {
-    private final Temporal<List<Class<? extends IClientGamePacket>>> clientPackets = Temporal.of(new ArrayList<>());
-    private final Temporal<List<Class<? extends IServerGamePacket>>> serverPackets = Temporal.of(new ArrayList<>());
+    private final Temporal<List<Class<? extends ClientGamePacket>>> clientPackets = Temporal.of(new ArrayList<>());
+    private final Temporal<List<Class<? extends ServerGamePacket>>> serverPackets = Temporal.of(new ArrayList<>());
 
     public GamePacketRegister(String modId) {
         super(modId);
     }
 
-    public void regClientPacket(Class<? extends IClientGamePacket> packetClass) {
+    public void regClientPacket(Class<? extends ClientGamePacket> packetClass) {
         clientPackets.get().add(packetClass);
     }
 
-    public void regServerPacket(Class<? extends IServerGamePacket> packetClass) {
+    public void regServerPacket(Class<? extends ServerGamePacket> packetClass) {
         serverPackets.get().add(packetClass);
     }
 

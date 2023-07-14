@@ -5,10 +5,10 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.minigame.Stage;
-import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
+import ru.timeconqueror.lootgames.api.packet.ServerGamePacket;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 
-public class SPMSSpawnLevelBeatParticles implements IServerGamePacket {
+public class SPMSSpawnLevelBeatParticles implements ServerGamePacket {
     @Override
     public void encode(FriendlyByteBuf bufferTo) {
 

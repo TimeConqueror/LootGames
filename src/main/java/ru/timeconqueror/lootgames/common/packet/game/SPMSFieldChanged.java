@@ -3,7 +3,7 @@ package ru.timeconqueror.lootgames.common.packet.game;
 import net.minecraft.network.FriendlyByteBuf;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.minigame.Stage;
-import ru.timeconqueror.lootgames.api.packet.IServerGamePacket;
+import ru.timeconqueror.lootgames.api.packet.ServerGamePacket;
 import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.minesweeper.MSBoard;
@@ -11,7 +11,7 @@ import ru.timeconqueror.timecore.api.util.CodecUtils;
 
 import java.io.IOException;
 
-public class SPMSFieldChanged implements IServerGamePacket {
+public class SPMSFieldChanged implements ServerGamePacket {
     private Pos2i pos;
     private MSBoard.MSField field;
 

@@ -18,7 +18,7 @@ import ru.timeconqueror.timecore.api.util.LevelUtils;
 
 import java.util.function.Supplier;
 
-public class GameMasterBlock extends GameBlock implements IGameField, EntityBlock {
+public class GameMasterBlock extends GameBlock implements GameField, EntityBlock {
     private final Supplier<BlockEntityType<? extends GameMasterTile<?>>> blockEntityType;
 
     public GameMasterBlock(Supplier<BlockEntityType<? extends GameMasterTile<?>>> blockEntityType) {

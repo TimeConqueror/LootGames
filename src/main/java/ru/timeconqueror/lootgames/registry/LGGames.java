@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.registry;
 
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
+import ru.timeconqueror.lootgames.api.minigame.BoardGameEnvironmentGenerator;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.registry.custom.GameInfo;
 import ru.timeconqueror.timecore.api.registry.SimpleVanillaRegister;
@@ -13,6 +14,9 @@ public class LGGames {
 
     @AutoRegistrable.Init
     private static void register() {
-        REGISTER.register("minesweeper", () -> new GameInfo(GameMineSweeper::new));
+        REGISTER.register("minesweeper", () -> GameInfo.builder()
+                .creator(GameMineSweeper::new)
+                .generator(new BoardGameEnvironmentGenerator())
+                .build());
     }
 }

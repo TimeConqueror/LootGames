@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.registry.custom;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryInternal;
+import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.registry.LGRegistries;
@@ -23,8 +24,13 @@ public class GameInfoRegistry {
         return keysById.size();
     }
 
-    public ResourceLocation getById(int index) {
+    public ResourceLocation getByIndex(int index) {
         return keysById.get(index);
+    }
+
+    @Nullable
+    public GameInfo getById(ResourceLocation id) {
+        return getRegistry().getValue(id);
     }
 
     public IForgeRegistry<GameInfo> getRegistry() {
@@ -32,7 +38,7 @@ public class GameInfoRegistry {
     }
 
     public ResourceLocation getRandom() {
-        return getById(RandHelper.RAND.nextInt(getSize()));
+        return getByIndex(RandHelper.RAND.nextInt(getSize()));
     }
 
     public LootGame<?> makeRandomGame(Room room) {

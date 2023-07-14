@@ -12,7 +12,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Locale;
 
 @ParametersAreNonnullByDefault
-public class BoardBorderBlock extends GameBlock implements IGameField {
+public class BoardBorderBlock extends GameBlock implements GameField {
 
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 

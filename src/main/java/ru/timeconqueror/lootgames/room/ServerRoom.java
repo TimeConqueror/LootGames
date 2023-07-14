@@ -28,10 +28,7 @@ import ru.timeconqueror.timecore.common.capability.owner.serializer.CapabilityOw
 import ru.timeconqueror.timecore.common.capability.property.CoffeeProperty;
 import ru.timeconqueror.timecore.common.capability.property.serializer.IPropertySerializer;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Log4j2
 public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements Room {
@@ -78,10 +75,16 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
     }
 
     public void startGame() {
-        LootGame<?> game = LootGames.getGameInfoRegistry().makeRandomGame(this);
+        var registry = LootGames.getGameInfoRegistry();
+        var key = registry.getRandom();
+        var info = Objects.requireNonNull(registry.getById(key));
+        var game = info.createGame(key, this);
         this.game.set(game);
+
+        info.getGenerator().generate(level, this, game);
         MinecraftForge.EVENT_BUS.post(new GenerateGameEnvironmentEvent(this, game));
         RoomGenerator.generateRoomBorders(this);
+
         game.start();
     }
 
@@ -120,6 +123,7 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
     }
 
     @Override
-    public void sendChangesToClients(@NotNull SimpleChannel simpleChannel, @NotNull Object o) {
+    public void sendChangesToClient(@NotNull SimpleChannel simpleChannel, @NotNull Object o) {
+
     }
 }

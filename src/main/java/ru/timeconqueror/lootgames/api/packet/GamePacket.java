@@ -4,7 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.IOException;
 
-public interface IGamePacket {
+public interface GamePacket {
     void encode(FriendlyByteBuf bufferTo) throws IOException;
 
     void decode(FriendlyByteBuf bufferFrom) throws IOException;

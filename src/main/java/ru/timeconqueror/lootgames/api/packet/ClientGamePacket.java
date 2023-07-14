@@ -4,7 +4,7 @@ import net.minecraft.server.level.ServerPlayer;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.minigame.Stage;
 
-public interface IClientGamePacket extends IGamePacket {
+public interface ClientGamePacket extends GamePacket {
     /**
      * Do action on the main server thread upon packet receiving.
      */

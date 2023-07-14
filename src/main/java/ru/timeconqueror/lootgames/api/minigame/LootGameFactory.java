@@ -3,7 +3,7 @@ package ru.timeconqueror.lootgames.api.minigame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
-public interface ILootGameFactory {
+public interface LootGameFactory {
 
     /**
      * Executed upon structure-generation.

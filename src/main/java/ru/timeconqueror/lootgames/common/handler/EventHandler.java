@@ -5,7 +5,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import ru.timeconqueror.lootgames.api.block.ILeftInteractible;
+import ru.timeconqueror.lootgames.api.block.LeftInteractible;
 
 @Mod.EventBusSubscriber
 public class EventHandler {
@@ -14,8 +14,8 @@ public class EventHandler {
         BlockState blockState = event.getLevel().getBlockState(event.getPos());
         Block block = blockState.getBlock();
 
-        if (block instanceof ILeftInteractible) {
-            event.setCanceled(((ILeftInteractible) block).onLeftClick(event.getLevel(), event.getEntity(), event.getPos(), event.getFace()));
+        if (block instanceof LeftInteractible) {
+            event.setCanceled(((LeftInteractible) block).onLeftClick(event.getLevel(), event.getEntity(), event.getPos(), event.getFace()));
         }
     }
 }
