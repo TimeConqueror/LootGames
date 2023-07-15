@@ -52,7 +52,7 @@ public class MinesweeperRenderer {
 
     public void render(GameMineSweeper game, float partialTicks, PoseStack matrix, @NotNull MultiBufferSource bufferIn) {
 
-        int boardSize = game.getCurrentBoardSize();
+        int boardSize = game.getBoardSize();
         Stage stage = game.getStage();
 
         matrix.pushPose();

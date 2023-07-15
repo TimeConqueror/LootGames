@@ -1,12 +1,7 @@
 package ru.timeconqueror.lootgames.api.minigame.event;
 
-import net.minecraft.core.Direction;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.minigame.Stage;
-import ru.timeconqueror.lootgames.api.room.RoomOffset;
 import ru.timeconqueror.lootgames.minigame.EventType;
 import ru.timeconqueror.lootgames.minigame.EventType.EventSide;
 
@@ -38,15 +33,5 @@ public class GameEvents {
      * </ol>
      */
     public static final EventType<StartStageEvent> START_STAGE = new EventType<>(EventSide.BOTH);
-    public static final EventType<SmartRoomBlockLeftClickEvent> LEFT_CLICK_SMART_ROOM_BLOCK = new EventType<>(EventSide.BOTH);
-
-    public record SwitchStageEvent(@Nullable Stage from, Stage to) {
-    }
-
-    public record StartStageEvent(Stage stage, boolean isClientSide) {
-    }
-
-    public record SmartRoomBlockLeftClickEvent(Level level, Player player, RoomOffset relative,
-                                               Direction face) {
-    }
+    public static final EventType<BlockClickEvent> CLICK_BLOCK = new EventType<>(EventSide.BOTH);
 }

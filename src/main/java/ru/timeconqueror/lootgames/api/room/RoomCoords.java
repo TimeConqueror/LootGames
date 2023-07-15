@@ -94,7 +94,6 @@ public final class RoomCoords {
         return x == pos.getX() >> BLOCK_SHIFT && z == pos.getZ() >> BLOCK_SHIFT;
     }
 
-    //FIXME check
     public RoomOffset toRelative(BlockPos pos) {
         if (!contains(pos)) {
             throw new IllegalArgumentException();
@@ -102,7 +101,7 @@ public final class RoomCoords {
 
         int x = pos.getX();
         int z = pos.getZ();
-        return new RoomOffset(x - (x << BLOCK_SHIFT), pos.getY(), z - (z << BLOCK_SHIFT));
+        return new RoomOffset(x - (this.x << BLOCK_SHIFT), pos.getY(), z - (this.z << BLOCK_SHIFT));
     }
 
     public BlockPos centerPos(int y) {

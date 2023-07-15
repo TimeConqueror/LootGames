@@ -10,6 +10,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.joml.Vector2i;
+import org.joml.Vector2ic;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.GameNetwork;
 import ru.timeconqueror.lootgames.api.minigame.LootGameFactory;
@@ -17,7 +19,6 @@ import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
-import ru.timeconqueror.lootgames.api.util.Pos2i;
 import ru.timeconqueror.lootgames.api.util.RewardUtils;
 import ru.timeconqueror.lootgames.common.config.ConfigMS.Snapshot;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
@@ -87,13 +88,8 @@ public class GameMineSweeper extends BoardLootGame {
         return board.isGenerated();
     }
 
-    public int getCurrentBoardSize() {
+    public int getBoardSize() {
         return board.size();
-    }
-
-    @Override
-    public int getAllocatedBoardSize() {
-        return configSnapshot.getStage4().getBoardSize();
     }
 
     private void onLevelSuccessfullyFinished() {
@@ -241,10 +237,10 @@ public class GameMineSweeper extends BoardLootGame {
         }
 
         @Override
-        protected void onClick(Player player, Pos2i pos, MouseClickType type) {
+        protected void onClick(Player player, Vector2ic pos, MouseClickType type) {
             if (isServerSide()) {
                 ServerPlayer sPlayer = (ServerPlayer) player;
-                getLevel().playSound(null, convertToBlockPos(pos), SoundEvents.NOTE_BLOCK_HAT.get(), SoundSource.MASTER, 0.6F, 0.8F);
+                getLevel().playSound(null, boardToBlockPos(pos), SoundEvents.NOTE_BLOCK_HAT.get(), SoundSource.MASTER, 0.6F, 0.8F);
 
                 if (!board.isGenerated()) {
                     generateBoard(sPlayer, pos);
@@ -266,14 +262,14 @@ public class GameMineSweeper extends BoardLootGame {
             }
         }
 
-        public void generateBoard(ServerPlayer player, Pos2i clickedPos) {
+        public void generateBoard(ServerPlayer player, Vector2ic clickedPos) {
             board.generate(clickedPos);
             net().sendUpdatePacketToNearby(new SPMSGenBoard(GameMineSweeper.this));
             revealField(player, clickedPos);
             net().save();
         }
 
-        public void revealField(ServerPlayer player, Pos2i pos) {
+        public void revealField(ServerPlayer player, Vector2ic pos) {
             if (board.isHidden(pos)) {
                 board.reveal(pos);
 
@@ -283,7 +279,7 @@ public class GameMineSweeper extends BoardLootGame {
 
                 if (type == Type.EMPTY) {
                     if (playRevealNeighboursSound) {
-                        getLevel().playSound(null, convertToBlockPos(pos), LGSounds.MS_ON_EMPTY_REVEAL_NEIGHBOURS, SoundSource.MASTER, 0.6F, 1.0F);
+                        getLevel().playSound(null, boardToBlockPos(pos), LGSounds.MS_ON_EMPTY_REVEAL_NEIGHBOURS, SoundSource.MASTER, 0.6F, 1.0F);
                         playRevealNeighboursSound = false;
                     }
 
@@ -300,7 +296,7 @@ public class GameMineSweeper extends BoardLootGame {
             }
         }
 
-        private void revealAllNeighbours(ServerPlayer player, Pos2i mainPos, boolean revealMarked) {
+        private void revealAllNeighbours(ServerPlayer player, Vector2ic mainPos, boolean revealMarked) {
             if (!revealMarked) {
                 if (board.isHidden(mainPos)) {
                     net().sendTo(player, Component.translatable("msg.lootgames.ms.reveal_on_hidden"), NotifyColor.WARN);
@@ -313,7 +309,7 @@ public class GameMineSweeper extends BoardLootGame {
                 int marked = 0;
                 for (int x = -1; x <= 1; x++) {
                     for (int y = -1; y <= 1; y++) {
-                        Pos2i pos = mainPos.add(x, y);
+                        Vector2ic pos = mainPos.add(x, y, new Vector2i());
                         if (board.hasFieldOn(pos) && board.getMark(pos) == Mark.FLAG) {
                             marked++;
                         }
@@ -332,7 +328,7 @@ public class GameMineSweeper extends BoardLootGame {
                         continue;
                     }
 
-                    Pos2i pos = mainPos.add(x, y);
+                    Vector2ic pos = mainPos.add(x, y, new Vector2i());
                     if (board.hasFieldOn(pos) && board.isHidden(pos)) {
                         if (revealMarked || board.getMark(pos) != Mark.FLAG) {
                             revealField(player, pos);
@@ -342,7 +338,7 @@ public class GameMineSweeper extends BoardLootGame {
             }
         }
 
-        public void swapFieldMark(Pos2i pos) {
+        public void swapFieldMark(Vector2ic pos) {
             if (board.isHidden(pos)) {
                 board.swapMark(pos);
 
@@ -356,8 +352,8 @@ public class GameMineSweeper extends BoardLootGame {
 
         }
 
-        private void triggerBombs(Pos2i pos) {
-            getLevel().playSound(null, convertToBlockPos(pos), LGSounds.MS_BOMB_ACTIVATED, SoundSource.MASTER, 0.6F, 1.0F);
+        private void triggerBombs(Vector2ic pos) {
+            getLevel().playSound(null, boardToBlockPos(pos), LGSounds.MS_BOMB_ACTIVATED, SoundSource.MASTER, 0.6F, 1.0F);
 
             switchStage(new StageDetonating());
 
@@ -465,8 +461,8 @@ public class GameMineSweeper extends BoardLootGame {
         private int detonateBoard(int strength, Level.ExplosionInteraction explosionMode) {
             Holder<Integer> longestDetTime = new Holder<>(0);
 
-            board.forEach(pos2i -> {
-                if (board.getType(pos2i) == Type.BOMB) {
+            board.forEach(Vector2ic -> {
+                if (board.getType(Vector2ic) == Type.BOMB) {
 
                     int detTime = RandHelper.RAND.nextInt(45);
 
@@ -474,7 +470,7 @@ public class GameMineSweeper extends BoardLootGame {
                         longestDetTime.set(detTime);
                     }
 
-                    taskScheduler.addTask(new TaskCreateExplosion(convertToBlockPos(pos2i), strength, explosionMode), detTime);
+                    taskScheduler.addTask(new TaskCreateExplosion(boardToBlockPos(Vector2ic), strength, explosionMode), detTime);
                 }
             });
 

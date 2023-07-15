@@ -23,8 +23,8 @@ public class SPMSSpawnLevelBeatParticles implements ServerGamePacket {
     public <S extends Stage> void runOnClient(LootGame<S> game) {
         GameMineSweeper ms = (GameMineSweeper) game;
         BlockPos boardOrigin = ms.getBoardOrigin();
-        for (int x = 0; x < ms.getCurrentBoardSize() + 1; x++) {
-            for (int z = 0; z < ms.getCurrentBoardSize() + 1; z++) {
+        for (int x = 0; x < ms.getBoardSize() + 1; x++) {
+            for (int z = 0; z < ms.getBoardSize() + 1; z++) {
                 ms.getLevel().addParticle(ParticleTypes.HAPPY_VILLAGER, boardOrigin.getX() + x,
                         boardOrigin.getY() + 1.1F,
                         boardOrigin.getZ() + z, 0.0, 0.2, 0.0);

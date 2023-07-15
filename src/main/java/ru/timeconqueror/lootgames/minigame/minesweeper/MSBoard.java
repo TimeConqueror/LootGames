@@ -3,7 +3,9 @@ package ru.timeconqueror.lootgames.minigame.minesweeper;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundTag;
-import ru.timeconqueror.lootgames.api.util.Pos2i;
+import org.joml.Vector2i;
+import org.joml.Vector2ic;
+import ru.timeconqueror.lootgames.utils.Utils;
 import ru.timeconqueror.timecore.api.util.CodecUtils;
 import ru.timeconqueror.timecore.api.util.holder.Holder;
 
@@ -42,7 +44,7 @@ public class MSBoard {
         return board != null;
     }
 
-    void reveal(Pos2i pos) {
+    void reveal(Vector2ic pos) {
         getField(pos).reveal();
     }
 
@@ -50,7 +52,7 @@ public class MSBoard {
         getField(x, y).reveal();
     }
 
-    public boolean isHidden(Pos2i pos) {
+    public boolean isHidden(Vector2ic pos) {
         return getField(pos).isHidden;
     }
 
@@ -58,7 +60,7 @@ public class MSBoard {
         return getField(x, y).isHidden;
     }
 
-    public Type getType(Pos2i pos) {
+    public Type getType(Vector2ic pos) {
         return getField(pos).type;
     }
 
@@ -66,11 +68,11 @@ public class MSBoard {
         return getField(x, y).type;
     }
 
-    void swapMark(Pos2i pos) {
+    void swapMark(Vector2ic pos) {
         getField(pos).swapMark();
     }
 
-    public Mark getMark(Pos2i pos) {
+    public Mark getMark(Vector2ic pos) {
         return getField(pos).mark;
     }
 
@@ -93,12 +95,12 @@ public class MSBoard {
         return getType(x, y) == Type.BOMB;
     }
 
-    boolean isBomb(Pos2i pos) {
+    boolean isBomb(Vector2ic pos) {
         return getType(pos) == Type.BOMB;
     }
 
-    public boolean hasFieldOn(Pos2i pos) {
-        return pos.getX() >= 0 && pos.getY() >= 0 && pos.getX() < size && pos.getY() < size;
+    public boolean hasFieldOn(Vector2ic pos) {
+        return pos.x() >= 0 && pos.y() >= 0 && pos.x() < size && pos.y() < size;
     }
 
     boolean checkWin() {
@@ -124,15 +126,15 @@ public class MSBoard {
         return winState;
     }
 
-    public MSField getField(Pos2i pos) {
-        return board[pos.getX()][pos.getY()];
+    public MSField getField(Vector2ic pos) {
+        return board[pos.x()][pos.y()];
     }
 
     private MSField getField(int x, int y) {
         return board[x][y];
     }
 
-    private List<Integer> getAvailableBombIndices(Pos2i start, int fieldSize) {
+    private List<Integer> getAvailableBombIndices(Vector2ic start, int fieldSize) {
         int emptyPlaces = size * size - bombCount;
 
         if (emptyPlaces < 0)
@@ -154,9 +156,8 @@ public class MSBoard {
                 return true;
             }
 
-            Pos2i pos = toPos(index);
-
-            if (start.manhattanDistanceTo(pos) <= safeDistance) {
+            Vector2ic pos = toPos(index);
+            if (Utils.manhattanDistance(start, pos) <= safeDistance) {
                 count.set(count.get() + 1);
                 return false;
             } else {
@@ -165,7 +166,7 @@ public class MSBoard {
         }).boxed().collect(Collectors.toList());
     }
 
-    public void generate(Pos2i startFieldPos) {
+    public void generate(Vector2ic startFieldPos) {
         if (toIndex(startFieldPos) > (size * size) - 1) {
             throw new IllegalArgumentException(String.format("Start Pos must be strictly less than Board size. Current values: start pos = %1$s, boardSize = %2$d", startFieldPos, size));
         }
@@ -201,8 +202,8 @@ public class MSBoard {
     /**
      * Converts field index to pos.
      */
-    public Pos2i toPos(int fieldIndex) {
-        return new Pos2i(fieldIndex % size, fieldIndex / size);
+    public Vector2ic toPos(int fieldIndex) {
+        return new Vector2i(fieldIndex % size, fieldIndex / size);
     }
 
     /**
@@ -210,8 +211,8 @@ public class MSBoard {
      * <p>Example:
      * <p>Pos {x = 2; y = 4}, gridSize = 5 -> index 22 out of (gridSize * gridSize)
      */
-    public int toIndex(Pos2i pos) {
-        return pos.getY() * size + pos.getX();
+    public int toIndex(Vector2ic pos) {
+        return pos.y() * size + pos.x();
     }
 
     /**
@@ -239,10 +240,10 @@ public class MSBoard {
         return bombCount;
     }
 
-    public void forEach(Consumer<Pos2i> func) {
+    public void forEach(Consumer<Vector2ic> func) {
         for (int x = 0; x < board.length; x++) {
             for (int y = 0; y < board[x].length; y++) {
-                func.accept(new Pos2i(x, y));
+                func.accept(new Vector2i(x, y));
             }
         }
     }
@@ -255,13 +256,13 @@ public class MSBoard {
         }
     }
 
-    public void cSetField(Pos2i pos, MSField field) {
-        MSField oldField = board[pos.getX()][pos.getY()];
+    public void cSetField(Vector2ic pos, MSField field) {
+        MSField oldField = board[pos.x()][pos.y()];
         Mark oldMark = oldField.mark;
 
         if (!field.isHidden) field.mark = Mark.NO_MARK;
 
-        board[pos.getX()][pos.getY()] = field;
+        board[pos.x()][pos.y()] = field;
 
 
         if (oldMark == Mark.FLAG && field.mark != Mark.FLAG) {

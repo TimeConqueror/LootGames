@@ -8,8 +8,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Vector2i;
+import org.joml.Vector2ic;
+import ru.timeconqueror.lootgames.api.minigame.event.BlockClickEvent;
+import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.room.Room;
-import ru.timeconqueror.lootgames.api.util.Pos2i;
+import ru.timeconqueror.lootgames.api.room.RoomOffset;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 
 import static ru.timeconqueror.lootgames.api.minigame.BoardLootGame.BoardStage;
@@ -22,39 +26,50 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
 
     public BoardLootGame(ResourceLocation id, Room room) {
         super(id, room);
+        getEventBus().addEventHandler(GameEvents.CLICK_BLOCK, event -> event.setAccepted(onBlockClicked(event)));
     }
 
     @Override
     public BlockPos getGameCenter() {
-        int size = getCurrentBoardSize();
+        int size = getBoardSize();
         return getBoardOrigin().offset(size / 2, 0, size / 2);
     }
 
-    private void onStart() {
+    protected boolean onBlockClicked(BlockClickEvent event) {
+        RoomOffset clickPos = event.getRelative();
+        Vector2ic boardPos = offsetToBoardPos(clickPos);
+        int size = getBoardSize();
 
+        if (boardPos.x() >= 0 && boardPos.x() < size
+                && boardPos.y() >= 0 && boardPos.y() < size) {
+            onBoardClicked(event.getPlayer(), boardPos, event.getClickType());
+            return true;
+        }
+        return false;
     }
 
-    public abstract int getCurrentBoardSize();
-
-    public abstract int getAllocatedBoardSize();
-
-    public Pos2i convertToGamePos(BlockPos subordinatePos) {
-        BlockPos result = subordinatePos.subtract(getBoardOrigin());
-        return new Pos2i(result.getX(), result.getZ());
+    protected void onBoardClicked(Player player, Vector2ic pos, MouseClickType type) {
+        getStage().onClick(player, pos, type);
     }
 
-    public BlockPos convertToBlockPos(Pos2i pos) {
-        return getBoardOrigin().offset(pos.getX(), 0, pos.getY());
+    public abstract int getBoardSize();
+
+    public Vector2ic offsetToBoardPos(RoomOffset offset) {
+        Vec3i result = offset.subtract(getRoom().getCoords().toRelative(getBoardOrigin()));
+        return new Vector2i(result.getX(), result.getZ());
     }
 
+    public BlockPos boardToBlockPos(Vector2ic pos) {
+        return getBoardOrigin().offset(pos.x(), 0, pos.y());
+    }
+
+    /**
+     * Returns left-top (north-west) corner of the board.
+     */
     public BlockPos getBoardOrigin() {
-        int size = getCurrentBoardSize();
+        int size = getBoardSize();
         return room.getCoords().centerPos(DEFAULT_FLOOR_POS)
                 .offset(-size / 2, 0, -size / 2);
-    }
-
-    public void onClick(Player player, Pos2i pos, MouseClickType type) {
-        getStage().onClick(player, pos, type);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -69,7 +84,7 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
         /**
          * Called for both sides when player clicks on board block.
          */
-        protected void onClick(Player player, Pos2i pos, MouseClickType type) {
+        protected void onClick(Player player, Vector2ic pos, MouseClickType type) {
         }
     }
 }

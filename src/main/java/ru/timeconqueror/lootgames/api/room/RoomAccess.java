@@ -22,6 +22,7 @@ public class RoomAccess {
         }
     }
 
+    @Nullable
     public static Room getLoadedRoom(Level level, RoomCoords coords) {
         if (!RoomUtils.inRoomWorld(level)) {
             return null;

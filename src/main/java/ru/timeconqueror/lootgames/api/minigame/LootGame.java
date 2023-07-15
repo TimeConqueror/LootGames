@@ -11,14 +11,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.message.Message;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.Markers;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
-import ru.timeconqueror.lootgames.api.minigame.event.GameEvents.StartStageEvent;
-import ru.timeconqueror.lootgames.api.minigame.event.GameEvents.SwitchStageEvent;
+import ru.timeconqueror.lootgames.api.minigame.event.StartStageEvent;
+import ru.timeconqueror.lootgames.api.minigame.event.SwitchStageEvent;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.task.TETaskScheduler;
 import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
@@ -61,6 +62,7 @@ public abstract class LootGame<STAGE extends Stage> {
         }
         network = new GameNetworkImpl(room, this);
         eventBus = new GameEventBus(this);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     protected abstract STAGE makeInitialStage();
