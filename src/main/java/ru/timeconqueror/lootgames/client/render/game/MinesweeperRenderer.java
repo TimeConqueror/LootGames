@@ -31,33 +31,19 @@ public class MinesweeperRenderer {
     private static final RenderType RT_BRIGHTENED_BOARD = LGRenderTypes.fullbright(MS_BOARD);
     private static final RenderType RT_BRIGHTENED_TRANSLUCENT_BOARD = LGRenderTypes.fullbrightTranslucent(MS_BOARD);
 
-    private static final CellMesh HIDDEN_CELL_MESH = new CellMesh(
-            List.of(
-                    new Vertex(0F, 0F, 0F, 0F, 0F),
-                    new Vertex(1F, 0F, 0F, 1F, 0F),
-                    new Vertex(1F, 1F, 0F, 1F, 1F),
-                    new Vertex(0F, 1F, 0F, 0F, 1F),
-                    new Vertex(2F / 16, 2F / 16, -2F / 16, 2F / 16, 2F / 16),
-                    new Vertex(14F / 16, 2F / 16, -2F / 16, 14F / 16, 2F / 16),
-                    new Vertex(14F / 16, 14F / 16, -2F / 16, 14F / 16, 14F / 16),
-                    new Vertex(2F / 16, 14F / 16, -2F / 16, 2F / 16, 14F / 16)
-            ),
-            List.of(
-                    new Vector4i(7, 4, 0, 3),
-                    new Vector4i(5, 1, 0, 4),
-                    new Vector4i(6, 2, 1, 5),
-                    new Vector4i(7, 3, 2, 6),
-                    new Vector4i(6, 5, 4, 7)
-            ));
+    private static CellMesh CONVEX_CELL_MESH;
+    private static CellMesh CONCAVE_CELL_MESH;
 
     public void render(GameMineSweeper game, float partialTicks, PoseStack matrix, @NotNull MultiBufferSource bufferIn) {
-
+        CONVEX_CELL_MESH = new CellMesh(true);
+        CONCAVE_CELL_MESH = new CellMesh(false);
         int boardSize = game.getBoardSize();
         Stage stage = game.getStage();
 
         matrix.pushPose();
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
+//        matrix.translate(0, -0.25, 0);
         matrix.translate(-cameraPos.x(), -cameraPos.y(), -cameraPos.z());
         game.prepareMatrix(matrix);
 
@@ -65,7 +51,7 @@ public class MinesweeperRenderer {
             VertexConsumer brightenedBuilder = bufferIn.getBuffer(RT_BRIGHTENED_BOARD);
             for (int xL = 0; xL < boardSize; xL++) {
                 for (int zL = 0; zL < boardSize; zL++) {
-                    HIDDEN_CELL_MESH.render(brightenedBuilder, matrix, xL, zL, 0, 0, 0, 1, 1, 4);
+                    CONVEX_CELL_MESH.render(brightenedBuilder, matrix, xL, zL, 0, 0, 0, 1, 1, 4);
                 }
             }
         } else {
@@ -110,6 +96,8 @@ public class MinesweeperRenderer {
                                 textureX = 0;
                                 textureY = 3;
                             }
+
+                            CONVEX_CELL_MESH.render(brightenedBuilder, matrix, xL, zL, 0, textureX, textureY, 1, 1, 4);
                         } else {
                             if (type.getId() > 0) {
                                 textureX = type.getId() % 4 == 0 ? 3 : (type.getId() % 4 - 1);
@@ -118,9 +106,10 @@ public class MinesweeperRenderer {
                                 textureX = 2;
                                 textureY = 0;
                             }
-                        }
 
-                        DrawHelper.buildTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, textureX, textureY, 1, 1, 4);
+                            CONCAVE_CELL_MESH.render(brightenedBuilder, matrix, xL, zL, 0, textureX, textureY, 1, 1, 4);
+                        }
+//                        DrawHelper.buildTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, textureX, textureY, 1, 1, 4);
                     }
                 }
             }
@@ -134,6 +123,26 @@ public class MinesweeperRenderer {
     public static class CellMesh {
         private List<Vertex> vertices;
         private List<Vector4ic> quads;
+
+        public CellMesh(boolean isConvex) {
+            vertices = List.of(
+                    new Vertex(0F, 0F, 0F, 0F, 0F),
+                    new Vertex(1F, 0F, 0F, 1F, 0F),
+                    new Vertex(1F, 1F, 0F, 1F, 1F),
+                    new Vertex(0F, 1F, 0F, 0F, 1F),
+                    new Vertex(2F / 16, 2F / 16, isConvex ? -5F / 16 : 5F / 16, 2F / 16, 2F / 16),
+                    new Vertex(14F / 16, 2F / 16, isConvex ? -5F / 16 : 5F / 16, 14F / 16, 2F / 16),
+                    new Vertex(14F / 16, 14F / 16, isConvex ? -5F / 16 : 5F / 16, 14F / 16, 14F / 16),
+                    new Vertex(2F / 16, 14F / 16, isConvex ? -5F / 16 : 5F / 16, 2F / 16, 14F / 16)
+            );
+            quads = List.of(
+                    new Vector4i(7, 4, 0, 3),
+                    new Vector4i(5, 1, 0, 4),
+                    new Vector4i(6, 2, 1, 5),
+                    new Vector4i(7, 3, 2, 6),
+                    new Vector4i(6, 5, 4, 7)
+            );
+        }
 
         public void render(VertexConsumer buffer, PoseStack poseStack, float x, float y, float z, float tX, float tY, float tW, float tH, float texturePartCount) {
             PoseStack.Pose last = poseStack.last();

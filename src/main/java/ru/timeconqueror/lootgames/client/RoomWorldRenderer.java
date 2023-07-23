@@ -6,8 +6,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.client.render.game.MinesweeperRenderer;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
+import ru.timeconqueror.lootgames.registry.LGGames;
 import ru.timeconqueror.lootgames.room.client.ClientRoom;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
@@ -18,9 +20,12 @@ public class RoomWorldRenderer {
     public static void renderAfterBlockEntities(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
             ClientRoom room = ClientRoom.getInstance();
-            if (room == null || !(room.getGame() instanceof GameMineSweeper game)) return;
+            if (room == null || room.getGame() == null || !room.getGame().isStarted()) return;
+            LootGame<?> game = room.getGame();
             MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-            minesweeperRenderer.render(game, event.getPartialTick(), event.getPoseStack(), bufferSource);
+            if (game.getId().equals(LGGames.MINESWEEPER)) {
+                minesweeperRenderer.render((GameMineSweeper) game, event.getPartialTick(), event.getPoseStack(), bufferSource);
+            }
         }
     }
 }

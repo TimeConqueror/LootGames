@@ -61,7 +61,8 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
     }
 
     public List<Player> getPlayers() {
-        return level.getEntitiesOfClass(Player.class, roomBox);
+        //noinspection unchecked,rawtypes
+        return (List) RoomUtils.getPlayers(level, roomBox);
     }
 
     @Override
@@ -107,7 +108,11 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
 
     @Override
     public void syncGame() {
-        forEachInRoom(player -> LGNetwork.sendToPlayer((ServerPlayer) player, new SSyncGamePacket(getGame(), getGame() == null)));
+        forEachInRoom(player -> syncGame((ServerPlayer) player));
+    }
+
+    public void syncGame(ServerPlayer player) {
+        LGNetwork.sendToPlayer(player, new SSyncGamePacket(getGame(), getGame() == null));
     }
 
     @NotNull

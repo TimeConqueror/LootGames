@@ -12,7 +12,6 @@ import ru.timeconqueror.lootgames.room.PlayerData;
 import ru.timeconqueror.lootgames.room.RoomUtils;
 import ru.timeconqueror.lootgames.room.ServerRoom;
 import ru.timeconqueror.lootgames.room.ServerRoomStorage;
-import ru.timeconqueror.lootgames.room.client.ClientRoomHandler;
 import ru.timeconqueror.timecore.api.CapabilityManagerAPI;
 import ru.timeconqueror.timecore.api.registry.CapabilityRegister;
 import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
@@ -25,14 +24,12 @@ public class LGCapabilities {
 
     public static final Capability<ServerRoomStorage> ROOM_STORAGE = REGISTER.register(ServerRoomStorage.class);
     public static final Capability<ServerRoom> ROOM = REGISTER.register(ServerRoom.class);
-    public static final Capability<ClientRoomHandler> CLIENT_ROOM = REGISTER.register(ClientRoomHandler.class);
     public static final Capability<PlayerData> PLAYER_DATA = REGISTER.register(PlayerData.class);
 
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> CapabilityManagerAPI.registerStaticCoffeeAttacher(CapabilityOwner.LEVEL, ROOM_STORAGE, level -> !level.isClientSide && level.dimensionTypeId() == LGDimensions.TEST_SITE_DIM_TYPE, level -> new ServerRoomStorage(((ServerLevel) level))));
-        event.enqueueWork(() -> CapabilityManagerAPI.registerStaticCoffeeAttacher(CapabilityOwner.CHUNK, ROOM, chunk -> !chunk.getLevel().isClientSide && RoomUtils.isRoomHolder(chunk.getPos()), chunk -> new ServerRoom((ServerLevel) chunk.getLevel(), RoomCoords.of(chunk))));
-//        event.enqueueWork(() -> CapabilityManagerAPI.registerStaticCoffeeAttacher(CapabilityOwner.LEVEL, CLIENT_ROOM, level -> level.isClientSide && RoomUtils.inRoomWorld(level), level -> new ClientRoomHandler((ClientLevel) level)));
+        event.enqueueWork(() -> CapabilityManagerAPI.registerStaticCoffeeAttacher(CapabilityOwner.LEVEL, ROOM_STORAGE, level -> !level.isClientSide && RoomUtils.inRoomWorld(level), level -> new ServerRoomStorage(((ServerLevel) level))));
+        event.enqueueWork(() -> CapabilityManagerAPI.registerStaticCoffeeAttacher(CapabilityOwner.CHUNK, ROOM, chunk -> !chunk.getLevel().isClientSide && RoomUtils.inRoomWorld(chunk.getLevel()) && RoomUtils.isRoomHolder(chunk.getPos()), chunk -> new ServerRoom((ServerLevel) chunk.getLevel(), RoomCoords.of(chunk))));
         event.enqueueWork(() -> CapabilityManagerAPI.registerStaticCoffeeAttacher(CapabilityOwner.ENTITY, PLAYER_DATA, entity -> entity instanceof ServerPlayer, entity -> new PlayerData((ServerPlayer) entity)));
     }
 }

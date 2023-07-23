@@ -58,7 +58,7 @@ public class ClientRoom implements Room {
 
     @Override
     public List<Player> getPlayers() {
-        return RoomUtils.getPlayers(getLevel(), getRoomBox());
+        return getLevel().getEntitiesOfClass(Player.class, roomBox);
     }
 
     @Override

@@ -2,7 +2,8 @@ package ru.timeconqueror.lootgames.room;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -18,17 +19,15 @@ import java.util.function.Predicate;
 
 public class RoomUtils {
     public static boolean isRoomHolder(ChunkPos chunkPos) {
-        int chunkShift = RoomCoords.BLOCK_SHIFT - 4;
-        int cornerCX = chunkPos.x >> chunkShift << chunkShift;
-        int cornerCZ = chunkPos.z >> chunkShift << chunkShift;
+        int cornerCX = chunkPos.x >> RoomCoords.CHUNK_SHIFT << RoomCoords.CHUNK_SHIFT;
+        int cornerCZ = chunkPos.z >> RoomCoords.CHUNK_SHIFT << RoomCoords.CHUNK_SHIFT;
 
         return chunkPos.x == cornerCX && chunkPos.z == cornerCZ;
     }
 
     public static ChunkPos getRoomHolderChunkPos(BlockPos pos) {
-        int chunkShift = RoomCoords.BLOCK_SHIFT - 4;
-        int cornerCX = pos.getX() >> RoomCoords.BLOCK_SHIFT << chunkShift;
-        int cornerCZ = pos.getZ() >> RoomCoords.BLOCK_SHIFT << chunkShift;
+        int cornerCX = (pos.getX() >> RoomCoords.BLOCK_SHIFT) << RoomCoords.CHUNK_SHIFT;
+        int cornerCZ = pos.getZ() >> RoomCoords.BLOCK_SHIFT << RoomCoords.CHUNK_SHIFT;
 
         return new ChunkPos(cornerCX, cornerCZ);
     }
@@ -37,8 +36,8 @@ public class RoomUtils {
         return new AABB(coords.minPos(level), coords.maxPos(level));
     }
 
-    public static List<Player> getPlayers(Level level, AABB aabb) {
-        return level.getEntitiesOfClass(Player.class, aabb);
+    public static List<ServerPlayer> getPlayers(ServerLevel level, AABB aabb) {
+        return level.getPlayers(player -> aabb.intersects(player.getBoundingBox()));
     }
 
     public static boolean inRoomWorld(Level level) {

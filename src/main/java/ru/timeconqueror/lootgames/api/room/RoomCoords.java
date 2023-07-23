@@ -58,6 +58,22 @@ public final class RoomCoords {
         return new RoomCoords(chunkX >> CHUNK_SHIFT, chunkZ >> CHUNK_SHIFT);
     }
 
+    public static int blockPosToRoomCoord(int blockPos) {
+        return blockPos >> BLOCK_SHIFT;
+    }
+
+    public static int blockCoordToMinBlockPos(int roomCoord) {
+        return roomCoord << BLOCK_SHIFT;
+    }
+
+    public static int chunkPosToRoomCoord(int chunkPos) {
+        return chunkPos >> CHUNK_SHIFT;
+    }
+
+    public static int roomCoordToContainerChunkPos(int roomCoord) {
+        return roomCoord << CHUNK_SHIFT;
+    }
+
     public static RoomCoords ofPos(int blockX, int blockZ) {
         return of(blockX >> 4, blockZ >> 4);
     }

@@ -1,5 +1,6 @@
 package ru.timeconqueror.lootgames.room;
 
+import lombok.extern.log4j.Log4j2;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -27,6 +28,7 @@ import java.util.Objects;
 import static ru.timeconqueror.lootgames.api.Markers.ROOM;
 
 @Mod.EventBusSubscriber
+@Log4j2
 public class RoomEventHandler {
     private static final Logger LOGGER = Log.LOG_ROOM_HANDLER;
 

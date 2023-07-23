@@ -1,19 +1,19 @@
 package ru.timeconqueror.lootgames.room;
 
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.simple.SimpleChannel;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
@@ -36,10 +36,10 @@ import java.util.Optional;
 
 import static ru.timeconqueror.lootgames.api.Markers.ROOM;
 
+@Log4j2
 public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implements RoomStorage {
     private static final TicketType<ChunkPos> ROOM_CONTAINER_TICKET =
             TicketType.create(LootGames.rl("room_container").toString(), Comparator.comparingLong(ChunkPos::toLong));
-    private static final Logger LOGGER = LogManager.getLogger();
     private final CoffeeProperty<Integer> freeIndex = prop("free_index", 0);
     private final ServerLevel roomLevel;
     private int tickCount;
@@ -84,12 +84,14 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
         loadedRooms.put(coords, room);
 
         ChunkPos containerPos = coords.containerPos();
-        roomLevel.getChunkSource().addRegionTicket(ROOM_CONTAINER_TICKET, containerPos, 2, containerPos);
+        log.debug("Room {} has enabled chunkloading...", coords);
+        roomLevel.getChunkSource().addRegionTicket(ROOM_CONTAINER_TICKET, containerPos, 0, containerPos);
     }
 
     private void removeChunkLoading(Room room) {
         ChunkPos containerPos = room.getCoords().containerPos();
-        roomLevel.getChunkSource().removeRegionTicket(ROOM_CONTAINER_TICKET, containerPos, 2, containerPos);
+        log.debug("Room {} has disabled chunkloading...", room.getCoords());
+        roomLevel.getChunkSource().removeRegionTicket(ROOM_CONTAINER_TICKET, containerPos, 0, containerPos);
     }
 
     public void enterRoom(ServerPlayer player, ServerRoom room) {
@@ -97,13 +99,13 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
 
         LGNetwork.sendToPlayer(player, new SLoadRoomPacket(room));
         if (room.getGame() != null) {
-            room.syncGame();
+            room.syncGame(player);
         }
-        LOGGER.debug(ROOM, "{} is entering the room ({}).", player.getName().getString(), room.getCoords());
+        log.debug(ROOM, "{} is entering the room ({}).", player.getName().getString(), room.getCoords());
     }
 
     public void leaveRoom(ServerPlayer player, RoomCoords roomCoords) {
-        LOGGER.debug(ROOM, "{} is leaving the room ({}).", player.getName().getString(), roomCoords);
+        log.debug(ROOM, "{} is leaving the room ({}).", player.getName().getString(), roomCoords);
     }
 
     public boolean teleportToRoom(ServerPlayer player, RoomCoords coords) {
@@ -155,11 +157,14 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
     public void tick() {
         if (tickCount % 20 == 0) {
             loadedRooms.values().removeIf(room -> {
-                boolean empty = room.getPlayers().isEmpty();
-                if (empty) {
+                ChunkPos chunkPos = room.getCoords().containerPos();
+                var chunk = roomLevel.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY, false);
+                if (chunk == null || room.getPlayers().isEmpty()) {
                     removeChunkLoading(room);
+                    return true;
                 }
-                return empty;
+
+                return false;
             });
         }
 
