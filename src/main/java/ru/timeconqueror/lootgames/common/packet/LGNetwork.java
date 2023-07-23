@@ -5,6 +5,7 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.common.packet.room.SLeaveRoomPacket;
 import ru.timeconqueror.lootgames.common.packet.room.SLoadRoomPacket;
 import ru.timeconqueror.lootgames.common.packet.room.SSyncGamePacket;
 import ru.timeconqueror.timecore.api.registry.PacketRegister;
@@ -20,6 +21,7 @@ public class LGNetwork {
             .regPacket(CPacketGameUpdate.class, CPacketGameUpdate.makeHandler(), NetworkDirection.PLAY_TO_SERVER)
             .regPacket(SLoadRoomPacket.class)
             .regPacket(SSyncGamePacket.class)
+            .regPacket(SLeaveRoomPacket.class)
             .asChannel();
 
     public static void sendToPlayer(ServerPlayer player, Object packet) {

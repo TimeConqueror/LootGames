@@ -1,6 +1,7 @@
 package ru.timeconqueror.lootgames.common.block;
 
 import lombok.Builder;
+import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
 public class TechnicalBlock extends Block {
+    @Getter
     private final Configuration configuration;
 
     public TechnicalBlock(Properties properties, Configuration configuration) {

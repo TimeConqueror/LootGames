@@ -22,6 +22,7 @@ import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.api.room.RoomStorage;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
+import ru.timeconqueror.lootgames.common.packet.room.SLeaveRoomPacket;
 import ru.timeconqueror.lootgames.common.packet.room.SLoadRoomPacket;
 import ru.timeconqueror.lootgames.registry.LGCapabilities;
 import ru.timeconqueror.timecore.common.capability.CoffeeCapabilityInstance;
@@ -106,6 +107,7 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
 
     public void leaveRoom(ServerPlayer player, RoomCoords roomCoords) {
         log.debug(ROOM, "{} is leaving the room ({}).", player.getName().getString(), roomCoords);
+        LGNetwork.sendToPlayer(player, new SLeaveRoomPacket());
     }
 
     public boolean teleportToRoom(ServerPlayer player, RoomCoords coords) {

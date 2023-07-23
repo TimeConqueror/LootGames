@@ -15,7 +15,7 @@ public class LGGames {
 
     public static final ResourceLocation MINESWEEPER = REGISTER.register("minesweeper", () -> GameInfo.builder()
                     .creator(GameMineSweeper::new)
-                    .generator(new BoardGameEnvironmentGenerator())
+                    .generator(new BoardGameEnvironmentGenerator(() -> LGBlocks.MINESWEEPER_GLASSY_MATTER.defaultBlockState()))
                     .build())
             .getId();
 }

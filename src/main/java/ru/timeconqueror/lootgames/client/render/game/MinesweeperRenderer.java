@@ -17,6 +17,7 @@ import org.joml.Vector4ic;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.Stage;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
+import ru.timeconqueror.lootgames.common.block.MinesweeperTechnicalBlock;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper.StageDetonating;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper.StageExploding;
@@ -43,7 +44,7 @@ public class MinesweeperRenderer {
         matrix.pushPose();
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
-//        matrix.translate(0, -0.25, 0);
+        matrix.translate(0, MinesweeperTechnicalBlock.VERTICAL_OFFSET, 0);
         matrix.translate(-cameraPos.x(), -cameraPos.y(), -cameraPos.z());
         game.prepareMatrix(matrix);
 
@@ -130,10 +131,10 @@ public class MinesweeperRenderer {
                     new Vertex(1F, 0F, 0F, 1F, 0F),
                     new Vertex(1F, 1F, 0F, 1F, 1F),
                     new Vertex(0F, 1F, 0F, 0F, 1F),
-                    new Vertex(2F / 16, 2F / 16, isConvex ? -5F / 16 : 5F / 16, 2F / 16, 2F / 16),
-                    new Vertex(14F / 16, 2F / 16, isConvex ? -5F / 16 : 5F / 16, 14F / 16, 2F / 16),
-                    new Vertex(14F / 16, 14F / 16, isConvex ? -5F / 16 : 5F / 16, 14F / 16, 14F / 16),
-                    new Vertex(2F / 16, 14F / 16, isConvex ? -5F / 16 : 5F / 16, 2F / 16, 14F / 16)
+                    new Vertex(2F / 16, 2F / 16, isConvex ? -2F / 16 : 2F / 16, 2F / 16, 2F / 16),
+                    new Vertex(14F / 16, 2F / 16, isConvex ? -2F / 16 : 2F / 16, 14F / 16, 2F / 16),
+                    new Vertex(14F / 16, 14F / 16, isConvex ? -2F / 16 : 2F / 16, 14F / 16, 14F / 16),
+                    new Vertex(2F / 16, 14F / 16, isConvex ? -2F / 16 : 2F / 16, 2F / 16, 14F / 16)
             );
             quads = List.of(
                     new Vector4i(7, 4, 0, 3),

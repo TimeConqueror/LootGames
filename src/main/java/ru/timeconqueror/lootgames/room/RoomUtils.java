@@ -44,7 +44,6 @@ public class RoomUtils {
         return level.dimension() == LGDimensions.TEST_SITE_DIM;
     }
 
-
     @Nullable
     public static Room getRoom(Level level, RoomCoords coords) {
         return RoomAccess.getRoom(level, coords);
