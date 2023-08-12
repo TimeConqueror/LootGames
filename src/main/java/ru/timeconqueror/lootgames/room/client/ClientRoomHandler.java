@@ -10,8 +10,8 @@ import ru.timeconqueror.lootgames.room.RoomUtils;
 public class ClientRoomHandler {
 
     @SubscribeEvent
-    public void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) {
+    public static void onLevelTick(TickEvent.LevelTickEvent event) {
+        if (event.phase != TickEvent.Phase.END || !event.level.isClientSide) {
             return;
         }
 

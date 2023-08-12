@@ -99,9 +99,6 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
         PlayerRoomData.of(player).ifPresent(data -> data.setLastAllowedCoords(room.getCoords()));
 
         LGNetwork.sendToPlayer(player, new SLoadRoomPacket(room));
-        if (room.getGame() != null) {
-            room.syncGame(player);
-        }
         log.debug(ROOM, "{} is entering the room ({}).", player.getName().getString(), room.getCoords());
     }
 

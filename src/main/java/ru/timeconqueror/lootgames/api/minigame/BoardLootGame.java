@@ -38,12 +38,12 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
 
     protected boolean onBlockClicked(BlockClickEvent event) {
         RoomOffset clickPos = event.getRelative();
-        Vector2ic boardPos = offsetToBoardPos(clickPos);
-        int size = getBoardSize();
-
-        if (event.getRelative().getY() != DEFAULT_FLOOR_POS) {
+        if (clickPos.getY() != DEFAULT_FLOOR_POS) {
             return false;
         }
+
+        Vector2ic boardPos = offsetToBoardPos(clickPos);
+        int size = getBoardSize();
 
         if (boardPos.x() >= 0 && boardPos.x() < size
                 && boardPos.y() >= 0 && boardPos.y() < size) {
