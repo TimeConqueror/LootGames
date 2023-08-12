@@ -28,7 +28,7 @@ public class RoomWorldRenderer {
             LootGame<?> game = room.getGame();
             MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
             if (game.getId().equals(LGGames.MINESWEEPER)) {
-                minesweeperRenderer.render((GameMineSweeper) game, event.getPartialTick(), event.getPoseStack(), bufferSource);
+                minesweeperRenderer.render((GameMineSweeper) game, event.getPoseStack(), bufferSource, event.getPartialTick());
             }
         }
     }

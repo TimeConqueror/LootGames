@@ -9,9 +9,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.joml.Vector4i;
 import org.joml.Vector4ic;
 import ru.timeconqueror.lootgames.LootGames;
@@ -23,21 +25,23 @@ import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper.StageDeto
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper.StageExploding;
 import ru.timeconqueror.lootgames.minigame.minesweeper.Mark;
 import ru.timeconqueror.lootgames.minigame.minesweeper.Type;
-import ru.timeconqueror.timecore.api.util.client.DrawHelper;
+import ru.timeconqueror.lootgames.utils.VertexSink;
 
 import java.util.List;
 
 public class MinesweeperRenderer {
     private static final ResourceLocation MS_BOARD = LootGames.rl("textures/game/ms_board.png");
     private static final RenderType RT_BRIGHTENED_BOARD = LGRenderTypes.fullbright(MS_BOARD);
-    private static final RenderType RT_BRIGHTENED_TRANSLUCENT_BOARD = LGRenderTypes.fullbrightTranslucent(MS_BOARD);
+    private static final RenderType RT_BRIGHTENED_TRANSLUCENT_BOARD = RenderType.entityTranslucent(MS_BOARD);
 
-    private static CellMesh CONVEX_CELL_MESH;
-    private static CellMesh CONCAVE_CELL_MESH;
+    private static final CellMesh CONVEX_CELL_MESH = new CellMesh(true);
+    private static final CellMesh CONCAVE_CELL_MESH = new CellMesh(false);
 
-    public void render(GameMineSweeper game, float partialTicks, PoseStack matrix, @NotNull MultiBufferSource bufferIn) {
-        CONVEX_CELL_MESH = new CellMesh(true);
-        CONCAVE_CELL_MESH = new CellMesh(false);
+    private static final Vector3f NORMAL = new Vector3f();
+
+    public void render(GameMineSweeper game, PoseStack matrix, @NotNull MultiBufferSource bufferIn, float partialTick) {
+        NORMAL.set(0, 1, 0).mul(matrix.last().normal());
+
         int boardSize = game.getBoardSize();
         Stage stage = game.getStage();
 
@@ -65,20 +69,14 @@ public class MinesweeperRenderer {
                     VertexConsumer brightenedBuilder = bufferIn.getBuffer(RT_BRIGHTENED_BOARD);
                     if (!isHidden && type == Type.BOMB) {
                         int max = stage instanceof StageDetonating ? ((StageDetonating) stage).getDetonationTicks() : 1;
-                        int ticks = game.getTicks();
+                        float ticks = game.getTicks() + partialTick;
+                        float explosionFlashCount = 8.5F;
+                        float alphaFactor = stage instanceof StageExploding ? 1 : Mth.abs(Mth.sin((float) Math.toRadians(ticks / (max / explosionFlashCount) * 180F)));
 
-                        float period = 8;
-
-                        float times = max / period;
-
-                        float extendedPeriod = period * (times + 1) / times; // is needed because we want for it to explode at red state that comes on half period.
-                        double alphaFactor = stage instanceof StageExploding ? 1 : Math.abs(Math.sin(Math.toRadians(ticks / extendedPeriod * 180F)));
-                        int alphaColor = DrawHelper.changeAlpha(0xFFFFFFFF, (int) (alphaFactor * 255));
-
-                        DrawHelper.buildTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, 1, 0, 1, 1, 4F);
+                        quad(new VertexSink(brightenedBuilder), matrix, xL, zL, 1, 1, 0, 1, 0, 1, 1, 4F, 255, NORMAL);
 
                         VertexConsumer translucentBuilder = bufferIn.getBuffer(RT_BRIGHTENED_TRANSLUCENT_BOARD);
-                        DrawHelper.buildTexturedRectByParts(translucentBuilder, matrix, xL, zL, 1, 1, -0.005F, 1, 3, 1, 1, 4F, alphaColor);
+                        quad(new VertexSink(translucentBuilder), matrix, xL, zL, 1, 1, 0, 1, 3, 1, 1, 4F, (int) (alphaFactor * 255), NORMAL);
                     } else {
 
                         Mark mark = game.getBoard().getMark(xL, zL);
@@ -110,13 +108,22 @@ public class MinesweeperRenderer {
 
                             CONCAVE_CELL_MESH.render(brightenedBuilder, matrix, xL, zL, 0, textureX, textureY, 1, 1, 4);
                         }
-//                        DrawHelper.buildTexturedRectByParts(brightenedBuilder, matrix, xL, zL, 1, 1, -0.005F, textureX, textureY, 1, 1, 4);
                     }
                 }
             }
         }
 
         matrix.popPose();
+    }
+
+    private static void quad(VertexSink sink, PoseStack matrixStack, float x0, float y0, float width, float height, float zLevel, float textureX, float textureY, float textureWidth, float textureHeight, float texturePartCount, int alpha, Vector3f normal) {
+        Matrix4f pose = matrixStack.last().pose();
+        float portionFactor = 1 / texturePartCount;
+
+        sink.vertex(pose, x0, y0, zLevel).colorAlphaI(alpha).uv(textureX * portionFactor, textureY * portionFactor).endVertex(normal);
+        sink.vertex(pose, x0, y0 + height, zLevel).colorAlphaI(alpha).uv(textureX * portionFactor, (textureY + textureHeight) * portionFactor).endVertex(normal);
+        sink.vertex(pose, x0 + width, y0 + height, zLevel).colorAlphaI(alpha).uv((textureX + textureWidth) * portionFactor, (textureY + textureHeight) * portionFactor).endVertex(normal);
+        sink.vertex(pose, x0 + width, y0, zLevel).colorAlphaI(alpha).uv((textureX + textureWidth) * portionFactor, textureY * portionFactor).endVertex(normal);
     }
 
     @Data

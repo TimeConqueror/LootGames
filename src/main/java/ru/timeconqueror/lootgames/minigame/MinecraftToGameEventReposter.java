@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.minigame;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,24 +20,24 @@ import ru.timeconqueror.lootgames.utils.MouseClickType;
 public class MinecraftToGameEventReposter {
     @SubscribeEvent
     public static void onBlockBreak(PlayerInteractEvent.LeftClickBlock event) {
-        if (onPlayerClicked(event.getLevel(), event.getEntity(), event.getPos(), event.getFace(), MouseClickType.LEFT)) {
+        if (onPlayerClicked(event.getLevel(), event.getEntity(), event.getPos(), event.getHand(), event.getFace(), MouseClickType.LEFT)) {
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent
     public static void onBlockBreak(PlayerInteractEvent.RightClickBlock event) {
-        if (onPlayerClicked(event.getLevel(), event.getEntity(), event.getPos(), event.getFace(), MouseClickType.RIGHT)) {
+        if (onPlayerClicked(event.getLevel(), event.getEntity(), event.getPos(), event.getHand(), event.getFace(), MouseClickType.RIGHT)) {
             event.setCanceled(true);
         }
     }
 
-    private static boolean onPlayerClicked(Level level, Player player, BlockPos pos, Direction face, MouseClickType type) {
+    private static boolean onPlayerClicked(Level level, Player player, BlockPos pos, InteractionHand hand, Direction face, MouseClickType type) {
         RoomCoords coords = RoomCoords.of(pos);
         Room room = RoomUtils.getLoadedRoom(level, coords);
         if (room != null && room.getGame() != null) {
             BlockState blockState = level.getBlockState(pos);
-            var gameEvent = new BlockClickEvent(level, player, blockState, coords.toRelative(pos), face, type);
+            var gameEvent = new BlockClickEvent(level, player, blockState, coords.toRelative(pos), hand, face, type);
             room.getGame().getEventBus().post(GameEvents.CLICK_BLOCK, gameEvent);
             return gameEvent.isAccepted();
         }

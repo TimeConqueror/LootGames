@@ -8,13 +8,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.GameNetwork;
-import ru.timeconqueror.lootgames.api.minigame.LootGameFactory;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.room.Room;
@@ -210,24 +210,12 @@ public class GameMineSweeper extends BoardLootGame {
 
     @Override
     public BoardStage createStageFromNBT(String id, CompoundTag stageNBT, SerializationType serializationType) {
-        switch (id) {
-            case StageWaiting.ID:
-                return new StageWaiting();
-            case StageDetonating.ID:
-                return new StageDetonating(stageNBT.getInt("detonation_time"));
-            case StageExploding.ID:
-                return new StageExploding();
-            default:
-                throw new IllegalArgumentException("Unknown state with id: " + id + "!");
-        }
-    }
-
-    public static class Factory implements LootGameFactory {
-        @Override
-        public void genOnPuzzleMasterClick(Level world, BlockPos puzzleMasterPos) {
-            BlockPos floorCenterPos = puzzleMasterPos.offset(0, -3/*instead of GameDungeonStructure.MASTER_BLOCK_OFFSET*/ + 1, 0);
-//            world.setBlockAndUpdate(floorCenterPos, LGBlocks.MS_ACTIVATOR.defaultBlockState());
-        }
+        return switch (id) {
+            case StageWaiting.ID -> new StageWaiting();
+            case StageDetonating.ID -> new StageDetonating(stageNBT.getInt("detonation_time"));
+            case StageExploding.ID -> new StageExploding();
+            default -> throw new IllegalArgumentException("Unknown state with id: " + id + "!");
+        };
     }
 
     public class StageWaiting extends BoardStage {
@@ -237,8 +225,8 @@ public class GameMineSweeper extends BoardLootGame {
         }
 
         @Override
-        protected void onClick(Player player, Vector2ic pos, MouseClickType type) {
-            if (isServerSide()) {
+        protected void onClick(Player player, Vector2ic pos, InteractionHand hand, MouseClickType type) {
+            if (isServerSide() && hand == InteractionHand.MAIN_HAND) {
                 ServerPlayer sPlayer = (ServerPlayer) player;
                 getLevel().playSound(null, boardToBlockPos(pos), SoundEvents.NOTE_BLOCK_HAT.get(), SoundSource.MASTER, 0.6F, 0.8F);
 

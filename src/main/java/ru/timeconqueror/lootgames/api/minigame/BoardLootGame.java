@@ -5,6 +5,7 @@ import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -40,16 +41,20 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
         Vector2ic boardPos = offsetToBoardPos(clickPos);
         int size = getBoardSize();
 
+        if (event.getRelative().getY() != DEFAULT_FLOOR_POS) {
+            return false;
+        }
+
         if (boardPos.x() >= 0 && boardPos.x() < size
                 && boardPos.y() >= 0 && boardPos.y() < size) {
-            onBoardClicked(event.getPlayer(), boardPos, event.getClickType());
+            onBoardClicked(event.getPlayer(), boardPos, event.getHand(), event.getClickType());
             return true;
         }
         return false;
     }
 
-    protected void onBoardClicked(Player player, Vector2ic pos, MouseClickType type) {
-        getStage().onClick(player, pos, type);
+    protected void onBoardClicked(Player player, Vector2ic pos, InteractionHand hand, MouseClickType type) {
+        getStage().onClick(player, pos, hand, type);
     }
 
     public abstract int getBoardSize();
@@ -84,7 +89,7 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
         /**
          * Called for both sides when player clicks on board block.
          */
-        protected void onClick(Player player, Vector2ic pos, MouseClickType type) {
+        protected void onClick(Player player, Vector2ic pos, InteractionHand hand, MouseClickType type) {
         }
     }
 }
