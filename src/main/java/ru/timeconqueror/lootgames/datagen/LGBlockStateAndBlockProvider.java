@@ -17,11 +17,12 @@ public class LGBlockStateAndBlockProvider extends BlockStateProvider {
     protected void registerAll() {
         ModelProvider models = blockModels();
 
-        addBlockState(SPACE_FABRIC, BlockStateResources.singleVariantWithSingleModel(models
-                .addBlockModel(SPACE_FABRIC, BlockModels.cubeAllModel(models.defaultTextureLocation(SPACE_FABRIC)))));
+        addBlockState(SPACE_FABRIC, BlockStateResources.singleVariantWithSingleModel(
+                models.addBlockModel(SPACE_FABRIC, BlockModels.particlesOnly(new TextureLocation(LootGames.MODID, "block/empty"))))
+        );
 
-        BlockModelLocation glassMatterModel = models
-                .addBlockModel(GLASSY_MATTER, BlockModels.particlesOnly(new TextureLocation(LootGames.MODID, "block/empty")));
+        BlockModelLocation glassMatterModel =
+                models.addBlockModel(GLASSY_MATTER, BlockModels.particlesOnly(new TextureLocation(LootGames.MODID, "block/empty")));
         addBlockState(GLASSY_MATTER, BlockStateResources.singleVariantWithSingleModel(glassMatterModel));
         addBlockState(MINESWEEPER_GLASSY_MATTER, BlockStateResources.singleVariantWithSingleModel(glassMatterModel));
     }

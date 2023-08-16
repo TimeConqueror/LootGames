@@ -23,7 +23,7 @@ public class RoomWorldRenderer {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
             ClientLevel level = Minecraft.getInstance().level;
             ClientRoom room = ClientRoom.getInstance();
-            if (level == null || !RoomUtils.inRoomWorld(level) || room == null || room.getGame() == null || !room.getGame().isStarted())
+            if (!RoomUtils.inRoomWorld(level) || room == null || room.getGame() == null || !room.getGame().isStarted())
                 return;
             LootGame<?> game = room.getGame();
             MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();

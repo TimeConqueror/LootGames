@@ -1,6 +1,5 @@
 {
-  "parent": "block/cube_all",
   "textures": {
-    "all": "lootgames:block/space_fabric"
+    "particle": "lootgames:block/empty"
   }
 }

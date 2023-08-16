@@ -21,7 +21,7 @@ public class RoomDebugger {
     @SubscribeEvent
     public static void onKeyInput(InputEvent.Key keyInput) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null || !RoomUtils.inRoomWorld(mc.level)) return;
+        if (!RoomUtils.inRoomWorld(mc.level)) return;
 
         if (keyInput.getAction() == InputConstants.PRESS
                 && InputConstants.isKeyDown(mc.getWindow().getWindow(), InputConstants.KEY_F6)) {
@@ -30,6 +30,8 @@ public class RoomDebugger {
             } else if (keyInput.getKey() == InputConstants.KEY_I) {
                 RoomDebugScreenOverlay.INSTANCE.switchRenderDebugInfo();
             } else if (keyInput.getKey() == InputConstants.KEY_C) {
+
+                //FIXME REMOVE
                 System.out.println("Executed");
                 ServerLevel level = ServerLifecycleHooks.getCurrentServer().getLevel(LGDimensions.TEST_SITE_DIM);
                 ServerRoomStorage serverRoomStorage = ServerRoomStorage.getInstance(level)

@@ -8,6 +8,6 @@
   "mixins": [
   ],
   "client": [
-    "client.DebugRenderMixin"
+    "client.DebugRenderMixin", "client.FrustrumMixin"
   ]
 }

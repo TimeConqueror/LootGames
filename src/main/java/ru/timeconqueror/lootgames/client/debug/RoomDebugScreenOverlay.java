@@ -14,12 +14,12 @@ import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
+import ru.timeconqueror.lootgames.room.RoomUtils;
 import ru.timeconqueror.lootgames.room.client.ClientRoom;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.timeconqueror.lootgames.client.debug.RoomDebugRenderer.isInRoomWorld;
 import static ru.timeconqueror.lootgames.utils.Log.DEBUGGER;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -40,7 +40,7 @@ public class RoomDebugScreenOverlay implements IGuiOverlay {
     @Override
     public void render(ForgeGui gui, GuiGraphics graphics, float partialTick, int screenWidth, int screenHeight) {
         Minecraft mc = Minecraft.getInstance();
-        if (!renderDebugInfo || !isInRoomWorld(mc)) return;
+        if (!renderDebugInfo || !RoomUtils.inRoomWorld(mc.level)) return;
 
         Font font = mc.font;
 

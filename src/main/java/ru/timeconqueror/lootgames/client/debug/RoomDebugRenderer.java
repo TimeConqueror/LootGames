@@ -25,13 +25,9 @@ public class RoomDebugRenderer {
         DEBUGGER.info("Render Room Borders: {}", renderRoomBorders);
     }
 
-    public static boolean isInRoomWorld(Minecraft mc) {
-        return mc.level != null && RoomUtils.inRoomWorld(mc.level);
-    }
-
     public static void render(PoseStack poseStack, MultiBufferSource bufferSource, float camX, float camY, float camZ) {
         Minecraft mc = Minecraft.getInstance();
-        if (!renderRoomBorders || !isInRoomWorld(mc)) return;
+        if (!renderRoomBorders || !RoomUtils.inRoomWorld(mc.level)) return;
 
         Entity entity = mc.gameRenderer.getMainCamera().getEntity();
         float yMin = (float) mc.level.getMinBuildHeight() - camY;

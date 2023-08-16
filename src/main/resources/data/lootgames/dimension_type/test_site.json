@@ -11,7 +11,7 @@
   "ambient_light": 0.8,
   "fixed_time": 18000,
   "logical_height": 128,
-  "effects": "minecraft:the_end",
+  "effects": "lootgames:test_site",
   "infiniburn": "#minecraft:infiniburn_overworld",
   "min_y": 0,
   "height": 128,

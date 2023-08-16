@@ -40,8 +40,8 @@ public class RoomUtils {
         return level.getPlayers(player -> aabb.intersects(player.getBoundingBox()));
     }
 
-    public static boolean inRoomWorld(Level level) {
-        return level.dimension() == LGDimensions.TEST_SITE_DIM;
+    public static boolean inRoomWorld(@Nullable Level level) {
+        return level != null && level.dimension() == LGDimensions.TEST_SITE_DIM;
     }
 
     @Nullable
