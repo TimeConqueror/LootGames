@@ -16,7 +16,7 @@ import ru.timeconqueror.lootgames.room.client.ClientRoom;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class RoomWorldRenderer {
-    private static final MinesweeperRenderer minesweeperRenderer = new MinesweeperRenderer();
+    private static final MinesweeperRenderer MINESWEEPER_RENDERER = new MinesweeperRenderer();
 
     @SubscribeEvent
     public static void renderAfterBlockEntities(RenderLevelStageEvent event) {
@@ -28,7 +28,7 @@ public class RoomWorldRenderer {
             LootGame<?> game = room.getGame();
             MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
             if (game.getId().equals(LGGames.MINESWEEPER)) {
-                minesweeperRenderer.render((GameMineSweeper) game, event.getPoseStack(), bufferSource, event.getPartialTick());
+                MINESWEEPER_RENDERER.render((GameMineSweeper) game, event.getPoseStack(), bufferSource, event.getPartialTick());
             }
         }
     }

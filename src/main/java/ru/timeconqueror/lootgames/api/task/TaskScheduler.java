@@ -5,37 +5,33 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.INBTSerializable;
-import org.jetbrains.annotations.NotNull;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.timecore.api.exception.NotExistsException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class TETaskScheduler implements INBTSerializable<ListTag> {
-    private final ArrayList<TaskWrapper> tasks = new ArrayList<>();
+public class TaskScheduler implements INBTSerializable<ListTag> {
+    private final ArrayList<DelayedTask> tasks = new ArrayList<>();
 
     private final Level level;
 
-    public TETaskScheduler(@NotNull Level level) {
+    public TaskScheduler(Level level) {
         this.level = level;
     }
 
-    /**
-     * Thread-safely adds task to scheduler.
-     */
-    public void addTask(ITask task, int timeBeforeStart) {
-        tasks.add(new TaskWrapper(timeBeforeStart, task));
+    public void addTask(Task task, int delayTicks) {
+        tasks.add(new DelayedTask(delayTicks, task));
     }
 
     /**
      * Must be called to update scheduler.
      */
-    public void onUpdate() {
-        Iterator<TaskWrapper> iterator = tasks.iterator();
+    public void onTick() {
+        Iterator<DelayedTask> iterator = tasks.iterator();
 
         while (iterator.hasNext()) {
-            TaskWrapper task = iterator.next();
+            DelayedTask task = iterator.next();
 
             if (task.timeBeforeStart <= 0) {
                 task.run(level);
@@ -50,7 +46,7 @@ public class TETaskScheduler implements INBTSerializable<ListTag> {
     public ListTag serializeNBT() {
         ListTag out = new ListTag();
 
-        for (TaskWrapper wrapper : tasks) {
+        for (DelayedTask wrapper : tasks) {
             CompoundTag element = new CompoundTag();
 
             element.put("task", wrapper.task.serializeNBT());
@@ -73,17 +69,17 @@ public class TETaskScheduler implements INBTSerializable<ListTag> {
             Class<?> clazz = null;
             try {
                 clazz = Class.forName(c.getString("name"));
-                Class<? extends ITask> taskClass = (Class<? extends ITask>) clazz;
+                Class<? extends Task> taskClass = (Class<? extends Task>) clazz;
 
-                ITask task = TaskRegistry.createTask(taskClass);
+                Task task = TaskRegistry.createTask(taskClass);
 
                 task.deserializeNBT(c.getCompound("task"));
 
-                tasks.add(new TaskWrapper(time, task));
+                tasks.add(new DelayedTask(time, task));
             } catch (ClassNotFoundException e) {
-                LootGames.LOGGER.error("Can't found class for name: {} . Skipping...", c.getString("name"));
+                LootGames.LOGGER.error("Can't found class for name: {}. Skipping...", c.getString("name"));
             } catch (ClassCastException e) {
-                LootGames.LOGGER.error("Restored class name {} doesn't inherit {}. Skipping...", clazz, ITask.class);
+                LootGames.LOGGER.error("Restored class name {} doesn't inherit {}. Skipping...", clazz, Task.class);
                 e.printStackTrace();
             } catch (NotExistsException e) {
                 LootGames.LOGGER.error("Mod author didn't register factory for task class {} in TaskRegistry. Skipping...", clazz);
@@ -92,11 +88,11 @@ public class TETaskScheduler implements INBTSerializable<ListTag> {
         }
     }
 
-    private static class TaskWrapper {
+    private static class DelayedTask {
         private int timeBeforeStart;
-        private final ITask task;
+        private final Task task;
 
-        private TaskWrapper(int timeBeforeStart, ITask task) {
+        private DelayedTask(int timeBeforeStart, Task task) {
             this.timeBeforeStart = timeBeforeStart;
             this.task = task;
         }
@@ -105,8 +101,8 @@ public class TETaskScheduler implements INBTSerializable<ListTag> {
             timeBeforeStart--;
         }
 
-        private void run(Level world) {
-            task.run(world);
+        private void run(Level level) {
+            task.run(level);
         }
     }
 }

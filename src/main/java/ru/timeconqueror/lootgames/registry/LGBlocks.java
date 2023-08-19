@@ -3,13 +3,9 @@ package ru.timeconqueror.lootgames.registry;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.block.BoardBorderBlock;
-import ru.timeconqueror.lootgames.api.block.GameMasterBlock;
-import ru.timeconqueror.lootgames.api.block.SmartSubordinateBlock;
-import ru.timeconqueror.lootgames.api.block.tile.GameMasterTile;
 import ru.timeconqueror.lootgames.client.resource.BoardBorderBlockResources;
 import ru.timeconqueror.lootgames.common.LGCreativeTabs;
 import ru.timeconqueror.lootgames.common.block.DungeonBlock;
@@ -17,13 +13,10 @@ import ru.timeconqueror.lootgames.common.block.MinesweeperTechnicalBlock;
 import ru.timeconqueror.lootgames.common.block.PuzzleMasterBlock;
 import ru.timeconqueror.lootgames.common.block.TechnicalBlock;
 import ru.timeconqueror.lootgames.common.block.TechnicalBlock.Configuration;
-import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 import ru.timeconqueror.timecore.api.registry.BlockRegister;
 import ru.timeconqueror.timecore.api.registry.BlockRegister.RenderTypeWrapper;
 import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 import ru.timeconqueror.timecore.api.registry.util.BlockPropsFactory;
-
-import java.util.function.Supplier;
 
 import static ru.timeconqueror.lootgames.common.block.DungeonBlock.BRICKS_PROPS_CREATOR;
 import static ru.timeconqueror.lootgames.common.block.DungeonBlock.LAMP_PROPS_CREATOR;
@@ -42,7 +35,6 @@ public class LGBlocks {
     public static DungeonBlock BROKEN_DUNGEON_LAMP;
 
     public static PuzzleMasterBlock PUZZLE_MASTER;
-    public static SmartSubordinateBlock SMART_SUBORDINATE;
     public static BoardBorderBlock BOARD_BORDER;
 
 //    public static MSActivatorBlock MS_ACTIVATOR;
@@ -72,9 +64,6 @@ public class LGBlocks {
         REGISTER.register("broken_dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create().lightLevel(value -> 0))).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Broken Dungeon Lamp");
         REGISTER.register("puzzle_master", PuzzleMasterBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Puzzle Master");
 
-        TextureLocation shieldedDungeonFloorText = new TextureLocation(REGISTER.getModId(), "block/shielded_dungeon_floor");
-
-        REGISTER.register("smart_subordinate", SmartSubordinateBlock::new).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Smart Subordinate");
         REGISTER.register("board_border", BoardBorderBlock::new).also(BoardBorderBlockResources::fillChain).name("Board Border");
         REGISTER.register("space_fabric", () -> new TechnicalBlock(BlockBehaviour.Properties.copy(Blocks.BARRIER), Configuration.builder().build())).name("Space Fabric");
 
@@ -94,12 +83,5 @@ public class LGBlocks {
 //        REGISTER.register("gol_master", gameMaster(() -> LGBlockEntities.GOL_MASTER)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Game of Light");
 //        REGISTER.register("ms_master", gameMaster(() -> LGBlockEntities.MS_MASTER)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Minesweeper");
 //        REGISTER.register("pipes_master", gameMaster(() -> LGBlockEntities.PIPES_MASTER)).oneVarStateAndCubeAllModel(shieldedDungeonFloorText).name("Pipes");
-    }
-
-    @SuppressWarnings("CodeBlock2Expr")
-    private static Supplier<GameMasterBlock> gameMaster(Supplier<BlockEntityType<? extends GameMasterTile<?>>> typeSupplier) {
-        return () -> {
-            return new GameMasterBlock(typeSupplier);
-        };
     }
 }

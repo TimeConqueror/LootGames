@@ -19,7 +19,13 @@ public interface Room {
 
     Level getLevel();
 
+    /**
+     * Returns the game currently played in this room.
+     * Game is not null only if <pre>this.getProgress() == GameProgress.STARTED</pre>
+     */
     @Nullable LootGame<?> getGame();
+
+    GameProgress getProgress();
 
     default boolean contains(BlockPos pos) {
         return getCoords().contains(pos);

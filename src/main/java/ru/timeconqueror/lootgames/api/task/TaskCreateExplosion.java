@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
 
-public class TaskCreateExplosion implements ITask {
+public class TaskCreateExplosion implements Task {
     protected double x;
     private double y;
     private double z;

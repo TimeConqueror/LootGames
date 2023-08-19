@@ -67,6 +67,8 @@ public class GameMineSweeper extends BoardLootGame {
         EventBus events = getEventBus();
         events.addEventHandler(GameEvents.START_GAME, this::onStart);
         events.addEventHandler(GameEvents.SWITCH_STAGE, this::onStageSwitch);
+        events.addEventHandler(GameEvents.WIN_GAME_POST, this::onGameWon);
+        events.addEventHandler(GameEvents.LOSE_GAME_POST, this::onGameLost);
 
         if (isClientSide()) {
             configSnapshot = Snapshot.stub(); // needs for first client ticks, because the config from readNBT is called a little bit later
@@ -110,11 +112,7 @@ public class GameMineSweeper extends BoardLootGame {
         }
     }
 
-
-    @Override
-    protected void triggerGameWin() {
-        super.triggerGameWin();
-
+    private void onGameWon() {
         genLootChests(room.getPlayers()
                 .stream()
                 .map(player -> (ServerPlayer) player)
@@ -135,10 +133,7 @@ public class GameMineSweeper extends BoardLootGame {
         RewardUtils.spawnFourStagedReward(((ServerLevel) getLevel()), this, central, currentLevel - 1, LGConfigs.REWARDS.minesweeper);
     }
 
-    @Override
-    protected void triggerGameLose() {
-        super.triggerGameLose();
-
+    private void onGameLost() {
         BlockPos expPos = getGameCenter();
         getLevel().explode(null, expPos.getX(), expPos.getY() + 1.5, expPos.getZ(), 9, Level.ExplosionInteraction.TNT);
     }

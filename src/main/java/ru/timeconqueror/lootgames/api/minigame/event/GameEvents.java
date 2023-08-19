@@ -12,9 +12,11 @@ public class GameEvents {
      * After the method all serializable data will be automatically synced.
      */
     public static final EventType<Void> START_GAME = new EventType<>(EventSide.SERVER);
-    public static final EventType<Void> FINISH_GAME = new EventType<>(EventSide.SERVER);
-    public static final EventType<Void> LOSE_GAME = new EventType<>(EventSide.SERVER);
-    public static final EventType<Void> WIN_GAME = new EventType<>(EventSide.SERVER);
+    public static final EventType<Void> END_GAME = new EventType<>(EventSide.SERVER);
+    public static final EventType<EndGameEvent> LOSE_GAME_PRE = new EventType<>(EventSide.SERVER);
+    public static final EventType<Void> LOSE_GAME_POST = new EventType<>(EventSide.SERVER);
+    public static final EventType<EndGameEvent> WIN_GAME_PRE = new EventType<>(EventSide.SERVER);
+    public static final EventType<Void> WIN_GAME_POST = new EventType<>(EventSide.SERVER);
     /**
      * Called when the game was switched to this stage at the moment, when the previous stage is ended,
      * but next is not started yet.
@@ -33,5 +35,5 @@ public class GameEvents {
      * </ol>
      */
     public static final EventType<StartStageEvent> START_STAGE = new EventType<>(EventSide.BOTH);
-    public static final EventType<BlockClickEvent> CLICK_BLOCK = new EventType<>(EventSide.BOTH);
+    public static final EventType<ClickBlockEvent> CLICK_BLOCK = new EventType<>(EventSide.BOTH);
 }

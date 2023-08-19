@@ -10,7 +10,7 @@ import ru.timeconqueror.lootgames.api.room.RoomOffset;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 
 @Data
-public final class BlockClickEvent {
+public final class ClickBlockEvent {
     private final Level level;
     private final Player player;
     private final BlockState state;

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.event.GenerateGameEnvironmentEvent;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
+import ru.timeconqueror.lootgames.api.room.GameProgress;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
@@ -40,6 +41,7 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
 
     private final Set<UUID> pendingToEnter = new HashSet<>();
     private final CoffeeProperty<LootGame<?>> game;
+    private final CoffeeProperty<GameProgress> progress = prop("progress", GameProgress.NOT_STARTED, GameProgress.SERIALIZER);
 
     public ServerRoom(ServerLevel level, RoomCoords coords) {
         this.level = level;
@@ -72,7 +74,16 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
 
     @Nullable
     public LootGame<?> getGame() {
+        if (getProgress() != GameProgress.STARTED) {
+            return null;
+        }
+
         return game.get();
+    }
+
+    @Override
+    public GameProgress getProgress() {
+        return progress.get();
     }
 
     public void startGame() {
@@ -81,12 +92,20 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
         var info = Objects.requireNonNull(registry.getById(key));
         var game = info.createGame(key, this);
         this.game.set(game);
+        this.progress.set(GameProgress.STARTED);
 
         info.getGenerator().generate(level, this, game);
         MinecraftForge.EVENT_BUS.post(new GenerateGameEnvironmentEvent(this, game));
         RoomGenerator.generateRoomBorders(this);
 
         game.start();
+    }
+
+    public void finishGame() {
+        this.game.get().generateRewards();
+
+        this.progress.set(GameProgress.FINISHED);
+        this.game.set(null);
     }
 
     public void addPendingToEnter(ServerPlayer player) {
@@ -112,7 +131,7 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
     }
 
     public void syncGame(ServerPlayer player) {
-        LGNetwork.sendToPlayer(player, new SSyncGamePacket(getGame(), getGame() == null));
+        LGNetwork.sendToPlayer(player, new SSyncGamePacket(getProgress(), getGame(), getGame() == null));
     }
 
     @NotNull

@@ -11,7 +11,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
-import ru.timeconqueror.lootgames.api.minigame.event.BlockClickEvent;
+import ru.timeconqueror.lootgames.api.minigame.event.ClickBlockEvent;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomOffset;
@@ -32,11 +32,10 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
 
     @Override
     public BlockPos getGameCenter() {
-        int size = getBoardSize();
-        return getBoardOrigin().offset(size / 2, 0, size / 2);
+        return room.getCoords().centerPos(DEFAULT_FLOOR_POS);
     }
 
-    protected boolean onBlockClicked(BlockClickEvent event) {
+    protected boolean onBlockClicked(ClickBlockEvent event) {
         RoomOffset clickPos = event.getRelative();
         if (clickPos.getY() != DEFAULT_FLOOR_POS) {
             return false;
@@ -73,8 +72,7 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
      */
     public BlockPos getBoardOrigin() {
         int size = getBoardSize();
-        return room.getCoords().centerPos(DEFAULT_FLOOR_POS)
-                .offset(-size / 2, 0, -size / 2);
+        return getGameCenter().offset(-size / 2, 0, -size / 2);
     }
 
     @OnlyIn(Dist.CLIENT)

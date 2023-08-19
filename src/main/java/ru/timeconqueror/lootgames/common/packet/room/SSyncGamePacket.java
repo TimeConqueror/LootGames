@@ -6,6 +6,7 @@ import net.minecraftforge.network.NetworkEvent;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
+import ru.timeconqueror.lootgames.api.room.GameProgress;
 import ru.timeconqueror.lootgames.room.GameSerializer;
 import ru.timeconqueror.lootgames.room.client.ClientRoom;
 import ru.timeconqueror.timecore.api.common.packet.IPacket;
@@ -14,12 +15,14 @@ import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import java.util.Objects;
 
 public class SSyncGamePacket implements IPacket {
+    public GameProgress progress;
     public CompoundTag tag;
-    public boolean fromScratch;
+    public boolean fullGameSync;
 
-    public SSyncGamePacket(@Nullable LootGame<?> game, boolean fromScratch) {
-        this.fromScratch = fromScratch;
-        if (fromScratch) {
+    public SSyncGamePacket(GameProgress progress, @Nullable LootGame<?> game, boolean fullGameSync) {
+        this.progress = progress;
+        this.fullGameSync = fullGameSync;
+        if (fullGameSync) {
             this.tag = GameSerializer.serialize(game, SerializationType.SYNC);
         } else {
             Objects.requireNonNull(game);
@@ -30,11 +33,13 @@ public class SSyncGamePacket implements IPacket {
 
     @Override
     public void write(FriendlyByteBuf buf) {
+        buf.writeVarInt(progress.ordinal());
         buf.writeNbt(tag);
     }
 
     @Override
     public void read(FriendlyByteBuf buf) {
+        progress = GameProgress.VALUES[buf.readVarInt() % GameProgress.VALUES.length];
         tag = buf.readNbt();
     }
 

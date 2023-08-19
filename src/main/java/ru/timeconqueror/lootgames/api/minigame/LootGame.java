@@ -11,17 +11,18 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.message.Message;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.Markers;
+import ru.timeconqueror.lootgames.api.minigame.event.EndGameEvent;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.minigame.event.StartStageEvent;
 import ru.timeconqueror.lootgames.api.minigame.event.SwitchStageEvent;
+import ru.timeconqueror.lootgames.api.room.GameProgress;
 import ru.timeconqueror.lootgames.api.room.Room;
-import ru.timeconqueror.lootgames.api.task.TETaskScheduler;
+import ru.timeconqueror.lootgames.api.task.TaskScheduler;
 import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.packet.game.SPChangeStage;
@@ -31,7 +32,7 @@ import ru.timeconqueror.lootgames.minigame.GameNetworkImpl;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.room.GameSerializer;
-import ru.timeconqueror.lootgames.utils.EventBus;
+import ru.timeconqueror.lootgames.room.ServerRoom;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 import ru.timeconqueror.timecore.api.util.Auxiliary;
 
@@ -42,37 +43,39 @@ import java.util.Objects;
 public abstract class LootGame<STAGE extends Stage> {
     public static final Marker DEBUG_MARKER = Markers.LOOTGAME;
     @Getter
-    private boolean started = false;
-    @Getter
     private final ResourceLocation id;
     @Getter
     protected Room room;
-    protected TETaskScheduler taskScheduler;
-    private final GameNetwork network;
-    private final GameEventBus eventBus;
+    /**
+     * Exists only on server-side
+     */
+    protected TaskScheduler taskScheduler;
+    protected GameNetwork network;
+    @Getter
+    protected GameEventBus eventBus;
     @Getter
     private STAGE stage;
+    @Getter
+    private int age;
 
     public LootGame(ResourceLocation id, Room room) {
         this.id = id;
 
         this.room = room;
         if (isServerSide()) {
-            taskScheduler = new TETaskScheduler(room.getLevel());
+            taskScheduler = new TaskScheduler(room.getLevel());
         }
         network = new GameNetworkImpl(room, this);
         eventBus = new GameEventBus(this);
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     protected abstract STAGE makeInitialStage();
 
     public final void start() {
-        this.started = true;
         setupInitialStage();
         Stage startStage = getStage();
         eventBus.post(GameEvents.START_GAME);
-        room.forEachInRoom(player -> LGNetwork.sendToPlayer((ServerPlayer) player, new SSyncGamePacket(this, true)));
+        room.forEachInRoom(player -> LGNetwork.sendToPlayer((ServerPlayer) player, new SSyncGamePacket(room.getProgress(), this, true)));
         startStage.postInit();
         onStageStart(false);
     }
@@ -80,46 +83,64 @@ public abstract class LootGame<STAGE extends Stage> {
     @OverridingMethodsMustInvokeSuper
     public void onTick() {
         if (isServerSide()) {
-            taskScheduler.onUpdate();
+            taskScheduler.onTick();
         }
 
         getStage().onTick();
+        age++;
     }
 
     /**
      * You should call it, when the game is won.
-     * Overriding is fine.
+     * Server-side-only method.
      */
-    @OverridingMethodsMustInvokeSuper
     protected void triggerGameWin() {
-        eventBus.post(GameEvents.WIN_GAME);
-        eventBus.post(GameEvents.FINISH_GAME);
-        room.forEachInRoom(player -> {
-            LGAdvancementTriggers.END_GAME.trigger((ServerPlayer) player, EndGameTrigger.TYPE_WIN);
-            network.sendTo(player, Component.translatable("msg.lootgames.win"), NotifyColor.SUCCESS);
-        });
+        if (!isServerSide()) return;
 
-        getLevel().playSound(null, getGameCenter(), LGSounds.GAME_WIN, SoundSource.MASTER, 0.75F, 1.0F);
+        room.forEachInRoom(player -> LGAdvancementTriggers.END_GAME.trigger((ServerPlayer) player, EndGameTrigger.TYPE_WIN));
+
+        EndGameEvent event = new EndGameEvent();
+        eventBus.post(GameEvents.WIN_GAME_PRE, event);
+        if (!event.doNotUseDefaultBehaviour()) {
+            room.forEachInRoom(player -> network.sendTo(player, Component.translatable("msg.lootgames.win"), NotifyColor.SUCCESS));
+
+            getLevel().playSound(null, getGameCenter(), LGSounds.GAME_WIN, SoundSource.MASTER, 0.75F, 1.0F);
+        }
+
+        eventBus.post(GameEvents.WIN_GAME_POST);
+        endGame();
     }
 
     /**
      * You should call it, when the game is lost.
-     * Overriding is fine.
+     * Server-side-only method.
      */
-    @OverridingMethodsMustInvokeSuper
-    protected void triggerGameLose() {
-        eventBus.post(GameEvents.LOSE_GAME);
-        eventBus.post(GameEvents.FINISH_GAME);
-        room.forEachInRoom(player -> {
-            LGAdvancementTriggers.END_GAME.trigger((ServerPlayer) player, EndGameTrigger.TYPE_LOSE);
-            network.sendTo(player, Component.translatable("msg.lootgames.lose"), NotifyColor.FAIL);
-        });
+    public void triggerGameLose() {
+        if (!isServerSide()) return;
 
-        getLevel().playSound(null, getGameCenter(), LGSounds.GAME_LOSE, SoundSource.MASTER, 0.75F, 1.0F);
+        room.forEachInRoom(player -> LGAdvancementTriggers.END_GAME.trigger((ServerPlayer) player, EndGameTrigger.TYPE_LOSE));
+
+        EndGameEvent event = new EndGameEvent();
+        eventBus.post(GameEvents.LOSE_GAME_PRE, event);
+        if (!event.doNotUseDefaultBehaviour()) {
+            room.forEachInRoom(player -> network.sendTo(player, Component.translatable("msg.lootgames.lose"), NotifyColor.FAIL));
+            getLevel().playSound(null, getGameCenter(), LGSounds.GAME_LOSE, SoundSource.MASTER, 0.75F, 1.0F);
+        }
+        eventBus.post(GameEvents.LOSE_GAME_POST);
+        endGame();
     }
 
-    @Deprecated //todo remove
-    protected abstract BlockPos getGameCenter();
+    private void endGame() {
+        eventBus.post(GameEvents.END_GAME);
+        ServerRoom serverRoom = (ServerRoom) room;
+        serverRoom.finishGame();
+    }
+
+    public void generateRewards() {
+
+    }
+
+    public abstract BlockPos getGameCenter();
 
     public boolean isServerSide() {
         return !isClientSide();
@@ -149,20 +170,19 @@ public abstract class LootGame<STAGE extends Stage> {
         if (type == SerializationType.SAVE) {
             ListTag schedulerTag = (ListTag) nbt.get("task_scheduler");
 
-            taskScheduler = new TETaskScheduler(room.getLevel());
+            taskScheduler = new TaskScheduler(room.getLevel());
             taskScheduler.deserializeNBT(Objects.requireNonNull(schedulerTag));
         }
 
-        setStage(GameSerializer.deserializeStage(this, nbt, type));
+        this.stage = GameSerializer.deserializeStage(this, nbt, type);
         log.debug(DEBUG_MARKER, formatLogMessage("stage '{}' was deserialized {}."), getStage(), type == SerializationType.SAVE ? "from saved file" : "on client");
-        started = true;
         onStageStart(type == SerializationType.SYNC);
     }
 
     private void setupInitialStage() {
         STAGE startStage = makeInitialStage();
         log.debug(DEBUG_MARKER, formatLogMessage("initial stage is set: {}"), startStage);
-        setStage(startStage);
+        this.stage = startStage;
         eventBus.transferEventBus(stage);
         startStage.preInit();
     }
@@ -177,24 +197,17 @@ public abstract class LootGame<STAGE extends Stage> {
 
         log.debug(DEBUG_MARKER, formatLogMessage("switching from stage '{}' to '{}'."), old, stage);
 
-        setStage(stage);
-        onStageUpdate(old, stage);
-        onStageStart(isClientSide());
-    }
-
-
-    private void setStage(STAGE stage) {
         this.stage = stage;
-    }
 
-    private void onStageUpdate(STAGE oldStage, STAGE newStage) {
-        eventBus.post(GameEvents.SWITCH_STAGE, new SwitchStageEvent(oldStage, newStage));
+        eventBus.post(GameEvents.SWITCH_STAGE, new SwitchStageEvent(old, stage));
         eventBus.transferEventBus(stage);
         if (isServerSide()) {
-            newStage.preInit();
+            stage.preInit();
             network.sendUpdatePacketToNearby(new SPChangeStage(this));
-            newStage.postInit();
+            stage.postInit();
         }
+
+        onStageStart(isClientSide());
     }
 
     @Nullable
@@ -221,11 +234,11 @@ public abstract class LootGame<STAGE extends Stage> {
         return ChatFormatting.DARK_BLUE + id.toString() + ": " + message;
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     public GameNetwork net() {
         return network;
+    }
+
+    public boolean isStarted() {
+        return room.getProgress() == GameProgress.STARTED;
     }
 }

@@ -1,5 +1,6 @@
 package ru.timeconqueror.lootgames.room.client;
 
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -7,6 +8,7 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
+import ru.timeconqueror.lootgames.api.room.GameProgress;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.common.packet.room.SLoadRoomPacket;
@@ -16,21 +18,26 @@ import ru.timeconqueror.lootgames.room.RoomUtils;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
 
 import java.util.List;
-import java.util.function.Function;
 
 public class ClientRoom implements Room {
     @Nullable
     private static ClientRoom instance;
 
+    @Getter
     private final RoomCoords coords;
     @Nullable
+    @Getter
     private LootGame<?> game;
+    @Getter
+    private final GameProgress progress;
+    @Getter
     private final AABB roomBox;
 
-    public ClientRoom(RoomCoords coords, Function<ClientRoom, LootGame<?>> gameCreator) {
-        this.coords = coords;
-        this.roomBox = RoomUtils.getRoomBox(getLevel(), coords);
-        this.game = gameCreator.apply(this);
+    public ClientRoom(SLoadRoomPacket packet) {
+        this.coords = packet.roomCoords;
+        this.roomBox = RoomUtils.getRoomBox(getLevel(), packet.roomCoords);
+        this.game = GameSerializer.deserialize(this, packet.gameTag, SerializationType.SYNC);
+        this.progress = packet.progress;
     }
 
     @Override
@@ -38,22 +45,6 @@ public class ClientRoom implements Room {
         if (game != null) {
             game.onTick();
         }
-    }
-
-    @Override
-    @Nullable
-    public LootGame<?> getGame() {
-        return game;
-    }
-
-    @Override
-    public RoomCoords getCoords() {
-        return coords;
-    }
-
-    @Override
-    public AABB getRoomBox() {
-        return roomBox;
     }
 
     @Override
@@ -76,12 +67,11 @@ public class ClientRoom implements Room {
     }
 
     public static void handleLoadRoomPacket(SLoadRoomPacket packet) {
-        instance = new ClientRoom(packet.roomCoords,
-                clientRoom -> GameSerializer.deserialize(clientRoom, packet.gameTag, SerializationType.SYNC));
+        instance = new ClientRoom(packet);
     }
 
     public void handleSyncGamePacket(SSyncGamePacket packet) {
-        if (packet.fromScratch) {
+        if (packet.fullGameSync) {
             game = GameSerializer.deserialize(this, packet.tag, SerializationType.SYNC);
         } else {
             if (game == null) {

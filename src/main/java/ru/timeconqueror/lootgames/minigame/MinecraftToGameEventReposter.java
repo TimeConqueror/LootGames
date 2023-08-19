@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import ru.timeconqueror.lootgames.api.minigame.event.BlockClickEvent;
+import ru.timeconqueror.lootgames.api.minigame.event.ClickBlockEvent;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
@@ -37,7 +37,7 @@ public class MinecraftToGameEventReposter {
         Room room = RoomUtils.getLoadedRoom(level, coords);
         if (room != null && room.getGame() != null) {
             BlockState blockState = level.getBlockState(pos);
-            var gameEvent = new BlockClickEvent(level, player, blockState, coords.toRelative(pos), hand, face, type);
+            var gameEvent = new ClickBlockEvent(level, player, blockState, coords.toRelative(pos), hand, face, type);
             room.getGame().getEventBus().post(GameEvents.CLICK_BLOCK, gameEvent);
             return gameEvent.isAccepted();
         }
