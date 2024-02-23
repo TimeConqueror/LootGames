@@ -111,7 +111,7 @@ def tcVersion = tc_version_range.replace(Map.of(",", "", "[", "", ")", ""))
 dependencies {
     minecraft "net.neoforged:forge:${minecraft_version}-${forge_version}"
     implementation fg.deobf("ru.timeconqueror:TimeCore:${minecraft_version}-${tcVersion}")
-    implementation 'thedarkcolour:kotlinforforge:4.4.0'
+    implementation 'thedarkcolour:kotlinforforge:4.10.0'
 }
 
 jar {
