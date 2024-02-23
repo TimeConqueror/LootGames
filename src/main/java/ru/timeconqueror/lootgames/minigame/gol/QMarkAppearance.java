@@ -1,11 +1,13 @@
 package ru.timeconqueror.lootgames.minigame.gol;
 
+import lombok.Getter;
 import ru.timeconqueror.timecore.api.util.CollectionUtils;
 import ru.timeconqueror.timecore.api.util.client.ClientProxy;
 import ru.timeconqueror.timecore.api.util.lookups.EnumLookup;
 
 public class QMarkAppearance {
     private static final State[] HANDLED = {State.ACCEPTED, State.DENIED};
+    @Getter
     private final State state;
     private final long startTime;
 
@@ -19,11 +21,7 @@ public class QMarkAppearance {
     }
 
     public boolean isFinished() {
-        return ClientProxy.world().getGameTime() > startTime + 16L;
-    }
-
-    public State getState() {
-        return state;
+        return ClientProxy.level().getGameTime() > startTime + 16L;
     }
 
     public static boolean canBeHandled(State state) {

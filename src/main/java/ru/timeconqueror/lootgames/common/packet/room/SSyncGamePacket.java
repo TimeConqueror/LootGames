@@ -35,12 +35,14 @@ public class SSyncGamePacket implements IPacket {
     public void write(FriendlyByteBuf buf) {
         buf.writeVarInt(progress.ordinal());
         buf.writeNbt(tag);
+        buf.writeBoolean(fullGameSync);
     }
 
     @Override
     public void read(FriendlyByteBuf buf) {
         progress = GameProgress.VALUES[buf.readVarInt() % GameProgress.VALUES.length];
         tag = buf.readNbt();
+        fullGameSync = buf.readBoolean();
     }
 
     @Override

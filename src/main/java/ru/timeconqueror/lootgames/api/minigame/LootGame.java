@@ -34,7 +34,7 @@ import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.room.GameSerializer;
 import ru.timeconqueror.lootgames.room.ServerRoom;
 import ru.timeconqueror.timecore.api.common.tile.SerializationType;
-import ru.timeconqueror.timecore.api.util.Auxiliary;
+import ru.timeconqueror.timecore.api.util.EnvironmentUtils;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.Objects;
@@ -136,10 +136,6 @@ public abstract class LootGame<STAGE extends Stage> {
         serverRoom.finishGame();
     }
 
-    public void generateRewards() {
-
-    }
-
     public abstract BlockPos getGameCenter();
 
     public boolean isServerSide() {
@@ -227,7 +223,7 @@ public abstract class LootGame<STAGE extends Stage> {
     }
 
     public Message logMessage(String message, Object... arguments) {
-        return Auxiliary.makeLogMessage(formatLogMessage(message), arguments);
+        return EnvironmentUtils.makeLogMessage(formatLogMessage(message), arguments);
     }
 
     public String formatLogMessage(String message) {

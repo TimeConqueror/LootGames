@@ -1,5 +1,6 @@
 package ru.timeconqueror.lootgames.minigame.minesweeper;
 
+import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -43,7 +44,6 @@ import java.util.List;
 //TODO remove break particle before left click interact
 //TODO if all non-bomb fields are revealed, finish the game
 //TODO remove interact with opened fields
-
 public class GameMineSweeper extends BoardLootGame {
     public static final String ADV_BEAT_LEVEL4 = "ms_level_4";
 
@@ -51,8 +51,10 @@ public class GameMineSweeper extends BoardLootGame {
 
     private int currentLevel = 1;
 
+    @Getter
     private final MSBoard board;
 
+    @Getter
     private int ticks;
     private int attemptCount = 0;
 
@@ -82,8 +84,8 @@ public class GameMineSweeper extends BoardLootGame {
 
     private void onStart() {
         configSnapshot = LGConfigs.MINESWEEPER.snapshot();
-        board.setSize(configSnapshot.getStage1().getBoardSize());
-        board.setBombCount(configSnapshot.getStage1().getBombCount());
+        board.setSize(configSnapshot.getStage1().boardSize());
+        board.setBombCount(configSnapshot.getStage1().bombCount());
     }
 
     public boolean isBoardGenerated() {
@@ -103,7 +105,7 @@ public class GameMineSweeper extends BoardLootGame {
 
             Snapshot.StageSnapshot stageSnapshot = configSnapshot.getStageByIndex(currentLevel + 1);
 
-            board.resetBoard(stageSnapshot.getBoardSize(), stageSnapshot.getBombCount());
+            board.resetBoard(stageSnapshot.boardSize(), stageSnapshot.bombCount());
             currentLevel++;
             net().saveAndSync();
         } else {
@@ -124,13 +126,13 @@ public class GameMineSweeper extends BoardLootGame {
             throw new RuntimeException("GenLootChests method was called in an appropriate time!");
         }
 
-        BlockPos central = getGameCenter();
-
         if (currentLevel > 4) { // end of the game
             players.forEach(player -> LGAdvancementTriggers.END_GAME.trigger(player, ADV_BEAT_LEVEL4));
         }
 
-        RewardUtils.spawnFourStagedReward(((ServerLevel) getLevel()), this, central, currentLevel - 1, LGConfigs.REWARDS.minesweeper);
+        BlockPos rewardPos = getGameCenter().above();
+
+        RewardUtils.spawnFourStagedReward(((ServerLevel) getLevel()), this, rewardPos, currentLevel - 1, LGConfigs.REWARDS.minesweeper);
     }
 
     private void onGameLost() {
@@ -140,14 +142,6 @@ public class GameMineSweeper extends BoardLootGame {
 
     private void onStageSwitch() {
         ticks = 0;
-    }
-
-    public MSBoard getBoard() {
-        return board;
-    }
-
-    public int getTicks() {
-        return ticks;
     }
 
     @Override
@@ -207,7 +201,7 @@ public class GameMineSweeper extends BoardLootGame {
     public BoardStage createStageFromNBT(String id, CompoundTag stageNBT, SerializationType serializationType) {
         return switch (id) {
             case StageWaiting.ID -> new StageWaiting();
-            case StageDetonating.ID -> new StageDetonating(stageNBT.getInt("detonation_time"));
+            case StageDetonating.ID -> new StageDetonating(stageNBT);
             case StageExploding.ID -> new StageExploding();
             default -> throw new IllegalArgumentException("Unknown state with id: " + id + "!");
         };
@@ -357,16 +351,17 @@ public class GameMineSweeper extends BoardLootGame {
         }
     }
 
+    @Getter
     public class StageDetonating extends BoardStage {
         private static final String ID = "detonating";
         private final int detonationTicks;
 
         public StageDetonating() {
-            this(LGConfigs.MINESWEEPER.detonationTime.get());
+            this.detonationTicks = LGConfigs.MINESWEEPER.detonationTime.get();
         }
 
-        public StageDetonating(int detonationTicks) {
-            this.detonationTicks = detonationTicks;
+        public StageDetonating(CompoundTag tag) {
+            this.detonationTicks = tag.getInt("detonation_time");
         }
 
         @Override
@@ -386,10 +381,6 @@ public class GameMineSweeper extends BoardLootGame {
             }
 
             ticks++;
-        }
-
-        public int getDetonationTicks() {
-            return detonationTicks;
         }
 
         @Override

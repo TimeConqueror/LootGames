@@ -102,10 +102,9 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
     }
 
     public void finishGame() {
-        this.game.get().generateRewards();
-
         this.progress.set(GameProgress.FINISHED);
         this.game.set(null);
+        syncGame();
     }
 
     public void addPendingToEnter(ServerPlayer player) {

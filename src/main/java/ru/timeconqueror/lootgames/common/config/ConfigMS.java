@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.common.config;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Getter;
 import net.minecraft.nbt.Tag;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.config.ModConfig.Type;
@@ -74,7 +75,7 @@ public class ConfigMS extends Config {
 
         private final DefaultData defData;
 
-        public StageConfig(String key, DefaultData defData) {
+        private StageConfig(String key, DefaultData defData) {
             super(key, null);
             this.defData = defData;
         }
@@ -111,16 +112,10 @@ public class ConfigMS extends Config {
         }
     }
 
-    private static class DefaultData {
-        private final int boardRadius;
-        private final int bombCount;
-
-        private DefaultData(int boardRadius, int bombCount) {
-            this.boardRadius = boardRadius;
-            this.bombCount = bombCount;
-        }
+    private record DefaultData(int boardRadius, int bombCount) {
     }
 
+    @Getter
     public static class Snapshot {
         public static final Codec<Snapshot> CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
@@ -151,48 +146,16 @@ public class ConfigMS extends Config {
             return CodecUtils.decodeStrictly(CODEC, CodecUtils.NBT_OPS, serialized);
         }
 
-        public StageSnapshot getStage1() {
-            return stage1;
-        }
-
-        public StageSnapshot getStage2() {
-            return stage2;
-        }
-
-        public StageSnapshot getStage3() {
-            return stage3;
-        }
-
-        public StageSnapshot getStage4() {
-            return stage4;
-        }
-
         public static Snapshot stub() {
             return new Snapshot(StageSnapshot.stub(), StageSnapshot.stub(), StageSnapshot.stub(), StageSnapshot.stub());
         }
 
-        public static class StageSnapshot {
+        public record StageSnapshot(int bombCount, int boardSize) {
             public static final Codec<StageSnapshot> CODEC = RecordCodecBuilder.create(instance ->
                     instance.group(
                             Codec.INT.fieldOf("bomb_count").forGetter(stageSnapshot -> stageSnapshot.bombCount),
                             Codec.INT.fieldOf("board_size").forGetter(stageSnapshot -> stageSnapshot.boardSize)
                     ).apply(instance, StageSnapshot::new));
-
-            private final int bombCount;
-            private final int boardSize;
-
-            public StageSnapshot(int bombCount, int boardSize) {
-                this.bombCount = bombCount;
-                this.boardSize = boardSize;
-            }
-
-            public int getBoardSize() {
-                return boardSize;
-            }
-
-            public int getBombCount() {
-                return bombCount;
-            }
 
             private static StageSnapshot stub() {
                 return new StageSnapshot(0, 0);
@@ -205,18 +168,14 @@ public class ConfigMS extends Config {
          * @throws RuntimeException if stage config was not found for provided index.
          */
         public StageSnapshot getStageByIndex(int index) {
-            switch (index) {
-                case 1:
-                    return stage1;
-                case 2:
-                    return stage2;
-                case 3:
-                    return stage3;
-                case 4:
-                    return stage4;
-                default:
-                    throw new RuntimeException("Provided unknown stage snapshot index " + index + ", please contact with mod author.");
-            }
+            return switch (index) {
+                case 1 -> stage1;
+                case 2 -> stage2;
+                case 3 -> stage3;
+                case 4 -> stage4;
+                default ->
+                        throw new RuntimeException("Provided unknown stage snapshot index " + index + ", please contact with mod author.");
+            };
         }
     }
 }

@@ -1,9 +1,10 @@
 package ru.timeconqueror.lootgames.api.util;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import lombok.Getter;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.TagParser;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +17,7 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.common.config.base.RewardConfig;
 import ru.timeconqueror.lootgames.common.config.base.StagedRewardConfig.FourStagedRewardConfig;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
+import ru.timeconqueror.lootgames.utils.ItemStackExt;
 import ru.timeconqueror.timecore.api.util.HorizontalDirection;
 import ru.timeconqueror.timecore.api.util.MathUtils;
 import ru.timeconqueror.timecore.api.util.RandHelper;
@@ -85,16 +87,9 @@ public class RewardUtils {
             }
         }
 
-        if (notEmptyIndexes.size() == 0) {
-            ItemStack stack = new ItemStack(Blocks.STONE);
-            try {
-                stack.setTag(TagParser.parseTag(String.format("{display:{Name:\"{\\\"text\\\":\\\"The Sorry Stone\\\", \\\"color\\\":\\\"blue\\\", \\\"bold\\\": \\\"true\\\"}\", Lore: [\"{\\\"text\\\":\\\"Modpack creator failed to configure the LootTables properly.\\\\nPlease report that Loot Table [%s] for %s stage is broken, thank you!\\\"}\"]}}", chestData.getLootTableKey(), chestData.getGameName())));
-            } catch (CommandSyntaxException e) {
-                e.printStackTrace();
-            }
-
+        if (notEmptyIndexes.isEmpty()) {
+            ItemStack stack = makeSorryStone(chestData);
             teChest.setItem(teChest.getContainerSize() / 2, stack);
-
             return;
         }
 
@@ -135,10 +130,23 @@ public class RewardUtils {
         }
     }
 
+    private static ItemStack makeSorryStone(SpawnChestData chestData) {
+        ItemStack stack = new ItemStack(Blocks.STONE);
+
+        stack.setHoverName(Component.literal("The Sorry Stone").withStyle(ChatFormatting.BLUE, ChatFormatting.BOLD));
+        ItemStackExt.setLore(stack, List.of(
+                Component.literal("Modpack creator failed to configure the LootTables properly."),
+                Component.literal(String.format("Please report that Loot Table [%s] for %s stage is broken, thank you!", chestData.getLootTableKey(), chestData.getGameName()))));
+        return stack;
+    }
+
     public static class SpawnChestData {
         private final ResourceLocation lootTableRL;
+        @Getter
         private final String gameName;
+        @Getter
         private final int minItems;
+        @Getter
         private final int maxItems;
 
         public static SpawnChestData fromRewardConfig(LootGame<?> game, RewardConfig rewardConfig) {
@@ -160,18 +168,6 @@ public class RewardUtils {
             this.minItems = minItems;
             this.maxItems = maxItems;
             this.gameName = game.getClass().getSimpleName();
-        }
-
-        public String getGameName() {
-            return gameName;
-        }
-
-        public int getMaxItems() {
-            return maxItems;
-        }
-
-        public int getMinItems() {
-            return minItems;
         }
 
         public ResourceLocation getLootTableKey() {
