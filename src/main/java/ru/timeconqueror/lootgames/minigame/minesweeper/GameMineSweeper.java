@@ -9,7 +9,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.joml.Vector2i;
@@ -214,8 +213,8 @@ public class GameMineSweeper extends BoardLootGame {
         }
 
         @Override
-        protected void onClick(Player player, Vector2ic pos, InteractionHand hand, MouseClickType type) {
-            if (isServerSide() && hand == InteractionHand.MAIN_HAND) {
+        protected void onClick(Player player, Vector2ic pos, MouseClickType type) {
+            if (isServerSide()) {
                 ServerPlayer sPlayer = (ServerPlayer) player;
                 getLevel().playSound(null, boardToBlockPos(pos), SoundEvents.NOTE_BLOCK_HAT.get(), SoundSource.MASTER, 0.6F, 0.8F);
 
@@ -435,16 +434,13 @@ public class GameMineSweeper extends BoardLootGame {
         private int detonateBoard(int strength, Level.ExplosionInteraction explosionMode) {
             Holder<Integer> longestDetTime = new Holder<>(0);
 
-            board.forEach(Vector2ic -> {
-                if (board.getType(Vector2ic) == Type.BOMB) {
+            board.forEach(vec -> {
+                if (board.getType(vec) == Type.BOMB) {
 
                     int detTime = RandHelper.RAND.nextInt(45);
+                    longestDetTime.set(Math.max(longestDetTime.get(), detTime));
 
-                    if (longestDetTime.get() < detTime) {
-                        longestDetTime.set(detTime);
-                    }
-
-                    taskScheduler.addTask(new TaskCreateExplosion(boardToBlockPos(Vector2ic), strength, explosionMode), detTime);
+                    taskScheduler.addTask(new TaskCreateExplosion(boardToBlockPos(vec), strength, explosionMode), detTime);
                 }
             });
 

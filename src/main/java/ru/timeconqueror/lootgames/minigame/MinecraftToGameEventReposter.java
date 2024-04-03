@@ -19,14 +19,14 @@ import ru.timeconqueror.lootgames.utils.MouseClickType;
 @Mod.EventBusSubscriber
 public class MinecraftToGameEventReposter {
     @SubscribeEvent
-    public static void onBlockBreak(PlayerInteractEvent.LeftClickBlock event) {
+    public static void onLeftClick(PlayerInteractEvent.LeftClickBlock event) {
         if (onPlayerClicked(event.getLevel(), event.getEntity(), event.getPos(), event.getHand(), event.getFace(), MouseClickType.LEFT)) {
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent
-    public static void onBlockBreak(PlayerInteractEvent.RightClickBlock event) {
+    public static void onRightClick(PlayerInteractEvent.RightClickBlock event) {
         if (onPlayerClicked(event.getLevel(), event.getEntity(), event.getPos(), event.getHand(), event.getFace(), MouseClickType.RIGHT)) {
             event.setCanceled(true);
         }

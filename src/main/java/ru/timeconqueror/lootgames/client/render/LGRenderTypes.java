@@ -14,20 +14,17 @@ public class LGRenderTypes extends RenderType {
     }
 
     public static RenderType fullbright(ResourceLocation texture) {
-        return RenderHelper.rtTextured(LootGames.rl("fullbright"), VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX, texture, b -> {
-            b.setShaderState(RenderStateShard.POSITION_TEX_SHADER);
-        });
+        return RenderHelper.rtTextured(LootGames.rl("fullbright"), VertexFormat.Mode.QUADS,
+                DefaultVertexFormat.POSITION_TEX, texture, b -> b.setShaderState(RenderStateShard.POSITION_TEX_SHADER));
     }
 
-    public static RenderType fullbrightCutout(ResourceLocation texture) {
-        return RenderHelper.rtTextured(
-                LootGames.rl("fullbright_cutout"),
+    public static RenderType fullbrightTranslucent(ResourceLocation texture) {
+        return RenderHelper.rtTextured(LootGames.rl("fullbright_translucent"),
                 VertexFormat.Mode.QUADS,
                 DefaultVertexFormat.POSITION_TEX,
                 texture,
-                state -> {
-                    state.setShaderState(RenderStateShard.POSITION_TEX_SHADER);
-                } /*fixme state.setAlphaState(MIDWAY_ALPHA)*/
+                b -> b.setShaderState(RenderStateShard.POSITION_TEX_SHADER)
+                        .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
         );
     }
 }

@@ -21,10 +21,10 @@ public class LGGamePackets {
         REGISTER.regServerPacket(SPMSGenBoard.class);
         REGISTER.regServerPacket(SPMSResetFlags.class);
         REGISTER.regServerPacket(SPMSSpawnLevelBeatParticles.class);
-//
-//        REGISTER.regServerPacket(SPGOLSendDisplayedSymbol.class);
-//        REGISTER.regClientPacket(CPGOLSymbolsShown.class);
-//        REGISTER.regServerPacket(SPGOLDrawMark.class);
-//        REGISTER.regServerPacket(SPGOLSpawnStageUpParticles.class);
+
+        REGISTER.regServerPacket(SPGOLSendDisplayedSymbol.class);
+        REGISTER.regClientPacket(CPGOLSymbolsShown.class);
+        REGISTER.regServerPacket(SPGOLDrawMark.class);
+        REGISTER.regServerPacket(SPGOLSpawnStageUpParticles.class);
     }
 }

@@ -115,7 +115,7 @@ public abstract class LootGame<STAGE extends Stage> {
      * You should call it, when the game is lost.
      * Server-side-only method.
      */
-    public void triggerGameLose() {
+    protected void triggerGameLose() {
         if (!isServerSide()) return;
 
         room.forEachInRoom(player -> LGAdvancementTriggers.END_GAME.trigger((ServerPlayer) player, EndGameTrigger.TYPE_LOSE));

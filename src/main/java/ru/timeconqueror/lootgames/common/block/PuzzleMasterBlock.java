@@ -76,8 +76,6 @@ public class PuzzleMasterBlock extends GameBlock implements EntityBlock {
                         room.startGame();
                         BlockPos center = room.getCoords().centerPos(60);
 
-//                        LootGamesAPI.getGameManager().generateRandomGame(roomWorld, center);
-
                         sp.teleportTo(roomWorld, center.getX(), center.getY() + 1, center.getZ(), player.getXRot(), player.getYRot());
                     } else {
                         sp.teleportTo(ServerLifecycleHooks.getCurrentServer().overworld(), player.getX(), player.getY() + 1, player.getZ(), player.getXRot(), player.getYRot());

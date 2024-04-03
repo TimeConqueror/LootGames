@@ -46,14 +46,17 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
 
         if (boardPos.x() >= 0 && boardPos.x() < size
                 && boardPos.y() >= 0 && boardPos.y() < size) {
-            onBoardClicked(event.getPlayer(), boardPos, event.getHand(), event.getClickType());
+            // for some reason when you click RMB, event is called for every hand,
+            if (event.getHand() == InteractionHand.MAIN_HAND) {
+                onBoardClicked(event.getPlayer(), boardPos, event.getClickType());
+            }
             return true;
         }
         return false;
     }
 
-    protected void onBoardClicked(Player player, Vector2ic pos, InteractionHand hand, MouseClickType type) {
-        getStage().onClick(player, pos, hand, type);
+    protected void onBoardClicked(Player player, Vector2ic pos, MouseClickType type) {
+        getStage().onClick(player, pos, type);
     }
 
     public abstract int getBoardSize();
@@ -87,7 +90,7 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
         /**
          * Called for both sides when player clicks on board block.
          */
-        protected void onClick(Player player, Vector2ic pos, InteractionHand hand, MouseClickType type) {
+        protected void onClick(Player player, Vector2ic pos, MouseClickType type) {
         }
     }
 }

@@ -65,6 +65,7 @@ public class RewardUtils {
      *                            chest will be spawned 1 block north of the {@code centralPos} with south facing.
      * @param chestData           data which contains the rules of setting chest content
      */
+    //TODO generate at least {@minItems} count!!
     public static void spawnLootChest(ServerLevel world, BlockPos centralPos, HorizontalDirection horizontalDirection, SpawnChestData chestData) {
         Direction direction = horizontalDirection.get();
 
