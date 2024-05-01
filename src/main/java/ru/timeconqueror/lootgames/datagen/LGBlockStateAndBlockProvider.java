@@ -24,7 +24,7 @@ public class LGBlockStateAndBlockProvider extends BlockStateProvider {
         BlockModelLocation glassMatterModel =
                 models.addBlockModel(GLASSY_MATTER, BlockModels.particlesOnly(new TextureLocation(LootGames.MODID, "block/empty")));
         addBlockState(GLASSY_MATTER, BlockStateResources.singleVariantWithSingleModel(glassMatterModel));
-        addBlockState(MINESWEEPER_GLASSY_MATTER, BlockStateResources.singleVariantWithSingleModel(glassMatterModel));
+        addBlockState(BOARD_GLASSY_MATTER, BlockStateResources.singleVariantWithSingleModel(glassMatterModel));
     }
 
     @Override

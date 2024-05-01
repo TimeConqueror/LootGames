@@ -16,13 +16,13 @@ public class LGGames {
 
     public static final ResourceLocation GAME_OF_LIGHT = REGISTER.register("game_of_light", () -> GameInfo.builder()
                     .creator(GameOfLight::new)
-                    .generator(new BoardGameEnvironmentGenerator(() -> LGBlocks.MINESWEEPER_GLASSY_MATTER.defaultBlockState()))
+                    .generator(new BoardGameEnvironmentGenerator(() -> LGBlocks.BOARD_GLASSY_MATTER.defaultBlockState()))
                     .build())
             .getId();
 
     public static final ResourceLocation MINESWEEPER = REGISTER.register("minesweeper", () -> GameInfo.builder()
                     .creator(GameMineSweeper::new)
-                    .generator(new BoardGameEnvironmentGenerator(() -> LGBlocks.GLASSY_MATTER.defaultBlockState()))
+                    .generator(new BoardGameEnvironmentGenerator(() -> LGBlocks.BOARD_GLASSY_MATTER.defaultBlockState()))
                     .build())
             .getId();
 }

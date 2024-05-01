@@ -24,6 +24,7 @@ import static ru.timeconqueror.lootgames.api.minigame.BoardLootGame.BoardStage;
  */
 public abstract class BoardLootGame extends LootGame<BoardStage> {
     public static final int DEFAULT_FLOOR_POS = 60;
+    public static final double VERTICAL_RENDER_OFFSET = -0.35;
 
     public BoardLootGame(ResourceLocation id, Room room) {
         super(id, room);
@@ -80,6 +81,7 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
 
     @OnlyIn(Dist.CLIENT)
     public void prepareMatrix(PoseStack matrixStack) {
+        matrixStack.translate(0, BoardLootGame.VERTICAL_RENDER_OFFSET, 0);
         Vec3i originOffset = getBoardOrigin().offset(0, 1, 0);
 
         matrixStack.translate(originOffset.getX(), originOffset.getY(), originOffset.getZ());

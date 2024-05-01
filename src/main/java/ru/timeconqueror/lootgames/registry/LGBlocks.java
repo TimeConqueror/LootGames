@@ -9,7 +9,7 @@ import ru.timeconqueror.lootgames.api.block.BoardBorderBlock;
 import ru.timeconqueror.lootgames.client.resource.BoardBorderBlockResources;
 import ru.timeconqueror.lootgames.common.LGCreativeTabs;
 import ru.timeconqueror.lootgames.common.block.DungeonBlock;
-import ru.timeconqueror.lootgames.common.block.MinesweeperTechnicalBlock;
+import ru.timeconqueror.lootgames.common.block.BoardTechnicalBlock;
 import ru.timeconqueror.lootgames.common.block.PuzzleMasterBlock;
 import ru.timeconqueror.lootgames.common.block.TechnicalBlock;
 import ru.timeconqueror.lootgames.common.block.TechnicalBlock.Configuration;
@@ -46,7 +46,7 @@ public class LGBlocks {
 
     public static TechnicalBlock SPACE_FABRIC; // hard wall
     public static TechnicalBlock GLASSY_MATTER; // just a glass block
-    public static MinesweeperTechnicalBlock MINESWEEPER_GLASSY_MATTER;
+    public static BoardTechnicalBlock BOARD_GLASSY_MATTER;
 
     @AutoRegistrable
     private static final BlockRegister REGISTER = new BlockRegister(LootGames.MODID);
@@ -71,7 +71,7 @@ public class LGBlocks {
                         BlockBehaviour.Properties.copy(Blocks.BARRIER),
                         Configuration.builder().renderShape(RenderShape.INVISIBLE).build()))
                 .renderLayer(() -> new RenderTypeWrapper(RenderType.translucent())).name("Glassy Matter");
-        REGISTER.register("minesweeper_glassy_matter", () -> new MinesweeperTechnicalBlock(
+        REGISTER.register("board_glassy_matter", () -> new BoardTechnicalBlock(
                         BlockBehaviour.Properties.copy(Blocks.BARRIER),
                         Configuration.builder().renderShape(RenderShape.INVISIBLE).build()))
                 .renderLayer(() -> new RenderTypeWrapper(RenderType.translucent())).name("Glassy Matter");

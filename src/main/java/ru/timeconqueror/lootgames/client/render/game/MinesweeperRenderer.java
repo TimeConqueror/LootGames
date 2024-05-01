@@ -16,7 +16,6 @@ import org.joml.Vector4ic;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.Stage;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
-import ru.timeconqueror.lootgames.common.block.MinesweeperTechnicalBlock;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper.StageDetonating;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper.StageExploding;
@@ -43,7 +42,6 @@ public class MinesweeperRenderer {
         Stage stage = game.getStage();
 
         poseStack.pushPose();
-        poseStack.translate(0, MinesweeperTechnicalBlock.VERTICAL_OFFSET, 0);
         game.prepareMatrix(poseStack);
 
         if (!game.cIsGenerated) {
