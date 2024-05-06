@@ -1,6 +1,11 @@
 package ru.timeconqueror.lootgames.common.config;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import ru.timeconqueror.lootgames.api.reward.LootTablePool;
+import ru.timeconqueror.lootgames.api.reward.LootTablePoolEntry;
 import ru.timeconqueror.lootgames.common.config.base.RewardConfig.Defaults;
 
 public class StagedRewards {
@@ -12,39 +17,35 @@ public class StagedRewards {
         return new FourStagedDefaults(stage1, stage2, stage3, stage4);
     }
 
+    @Getter
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FourStagedDefaults {
-        private static final FourStagedDefaults DEFAULT = new FourStagedDefaults(new Defaults(BuiltInLootTables.SIMPLE_DUNGEON, 15, 15),
-                new Defaults(BuiltInLootTables.DESERT_PYRAMID, -1, -1),
-                new Defaults(BuiltInLootTables.NETHER_BRIDGE, -1, -1),
-                new Defaults(BuiltInLootTables.END_CITY_TREASURE, -1, -1)
+        private static final FourStagedDefaults DEFAULT = new FourStagedDefaults(
+                Defaults.builder()
+                        .lootTablePool(LootTablePool.builder()
+                                .entry(LootTablePoolEntry.builder().key(BuiltInLootTables.SIMPLE_DUNGEON).weight(1).build()
+                                ).build())
+                        .build(),
+                Defaults.builder()
+                        .lootTablePool(LootTablePool.builder()
+                                .entry(LootTablePoolEntry.builder().key(BuiltInLootTables.DESERT_PYRAMID).weight(1).build()
+                                ).build())
+                        .build(),
+                Defaults.builder()
+                        .lootTablePool(LootTablePool.builder()
+                                .entry(LootTablePoolEntry.builder().key(BuiltInLootTables.NETHER_BRIDGE).weight(1).build()
+                                ).build())
+                        .build(),
+                Defaults.builder()
+                        .lootTablePool(LootTablePool.builder()
+                                .entry(LootTablePoolEntry.builder().key(BuiltInLootTables.END_CITY_TREASURE).weight(1).build()
+                                ).build())
+                        .build()
         );
 
         private final Defaults stage1;
         private final Defaults stage2;
         private final Defaults stage3;
         private final Defaults stage4;
-
-        private FourStagedDefaults(Defaults stage1, Defaults stage2, Defaults stage3, Defaults stage4) {
-            this.stage1 = stage1;
-            this.stage2 = stage2;
-            this.stage3 = stage3;
-            this.stage4 = stage4;
-        }
-
-        public Defaults getStage1() {
-            return stage1;
-        }
-
-        public Defaults getStage2() {
-            return stage2;
-        }
-
-        public Defaults getStage3() {
-            return stage3;
-        }
-
-        public Defaults getStage4() {
-            return stage4;
-        }
     }
 }

@@ -21,7 +21,7 @@ import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.block.GameBlock;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.api.room.RoomStorage;
-import ru.timeconqueror.lootgames.common.block.tile.PuzzleMasterTile;
+import ru.timeconqueror.lootgames.common.block.entity.PuzzleMasterBlockEntity;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.registry.LGBlockEntities;
 import ru.timeconqueror.lootgames.registry.LGDimensions;
@@ -103,7 +103,7 @@ public class PuzzleMasterBlock extends GameBlock implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new PuzzleMasterTile(pos, state);
+        return new PuzzleMasterBlockEntity(pos, state);
     }
 
     @Nullable

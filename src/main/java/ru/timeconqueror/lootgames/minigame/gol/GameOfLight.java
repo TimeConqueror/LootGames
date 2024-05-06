@@ -23,8 +23,8 @@ import org.joml.Vector2ic;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
+import ru.timeconqueror.lootgames.api.reward.RewardHelper;
 import ru.timeconqueror.lootgames.api.room.Room;
-import ru.timeconqueror.lootgames.api.util.RewardUtils;
 import ru.timeconqueror.lootgames.common.config.ConfigGOL;
 import ru.timeconqueror.lootgames.common.config.ConfigGOL.Fail;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
@@ -228,7 +228,7 @@ public class GameOfLight extends BoardLootGame {
             }
         });
 
-        RewardUtils.spawnFourStagedReward(((ServerLevel) getLevel()), this, getGameCenter(), maxReachedStage, LGConfigs.REWARDS.gol);
+        RewardHelper.spawnFourStagedReward((ServerPlayer) getRoom().getRandomPlayer(), ((ServerLevel) getLevel()), this, getGameCenter(), maxReachedStage, LGConfigs.REWARDS.gol);
     }
 
     @Override

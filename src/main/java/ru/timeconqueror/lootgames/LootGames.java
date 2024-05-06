@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Marker;
 import ru.timeconqueror.lootgames.api.Markers;
 import ru.timeconqueror.lootgames.registry.custom.GameInfoRegistry;
 import ru.timeconqueror.timecore.api.TimeCoreAPI;
+import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +60,10 @@ public class LootGames {
 
     public static ResourceLocation rl(String path) {
         return new ResourceLocation(MODID, path);
+    }
+
+    public static TextureLocation tl(String path) {
+        return new TextureLocation(MODID, path);
     }
 
     public static GameInfoRegistry getGameInfoRegistry() {

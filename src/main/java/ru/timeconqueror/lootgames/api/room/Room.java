@@ -17,6 +17,13 @@ public interface Room {
 
     List<Player> getPlayers();
 
+    @Nullable
+    default Player getRandomPlayer() {
+        List<Player> players = getPlayers();
+        if (players.isEmpty()) return null;
+        return players.get(0);
+    }
+
     Level getLevel();
 
     /**

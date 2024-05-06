@@ -17,6 +17,7 @@ public abstract class TaskRegistry {
         return factory.create();
     }
 
+    //FIXME Restore
     public static <T extends Task> void registerTaskFactory(Class<T> taskClass, Task.TaskFactory<T> factory) {
         if (TASK_FACTORIES.put(taskClass, factory) != null) {
             throw new IllegalArgumentException("The factory for task class " + taskClass + " has been already registered.");

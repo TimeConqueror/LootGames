@@ -17,9 +17,9 @@ import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
 import ru.timeconqueror.lootgames.api.minigame.GameNetwork;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
+import ru.timeconqueror.lootgames.api.reward.RewardHelper;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.task.TaskCreateExplosion;
-import ru.timeconqueror.lootgames.api.util.RewardUtils;
 import ru.timeconqueror.lootgames.common.config.ConfigMS.Snapshot;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSFieldChanged;
@@ -131,7 +131,7 @@ public class GameMineSweeper extends BoardLootGame {
 
         BlockPos rewardPos = getGameCenter().above();
 
-        RewardUtils.spawnFourStagedReward(((ServerLevel) getLevel()), this, rewardPos, currentLevel - 1, LGConfigs.REWARDS.minesweeper);
+        RewardHelper.spawnFourStagedReward((ServerPlayer) getRoom().getRandomPlayer(), ((ServerLevel) getLevel()), this, rewardPos, currentLevel - 1, LGConfigs.REWARDS.minesweeper);
     }
 
     private void onGameLost() {

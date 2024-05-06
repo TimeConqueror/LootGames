@@ -1,4 +1,4 @@
-package ru.timeconqueror.lootgames.common.block.tile;
+package ru.timeconqueror.lootgames.common.block.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
@@ -10,10 +10,10 @@ import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.timecore.api.util.ITickableBlockEntity;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 
-public class PuzzleMasterTile extends BlockEntity implements ITickableBlockEntity {
+public class PuzzleMasterBlockEntity extends BlockEntity implements ITickableBlockEntity {
     private long lastSoundTick = 0L;
 
-    public PuzzleMasterTile(BlockPos pos, BlockState blockState) {
+    public PuzzleMasterBlockEntity(BlockPos pos, BlockState blockState) {
         super(LGBlockEntities.PUZZLE_MASTER, pos, blockState);
     }
 
