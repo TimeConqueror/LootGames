@@ -1,7 +1,5 @@
 package ru.timeconqueror.lootgames.api.reward;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
@@ -91,10 +89,6 @@ public class RewardHelper {
         random.setDecorationSeed(level.getSeed(), placePos.getX(), placePos.getZ());
 
         ObjectArrayList<ItemStack> loot = generateRewards(player, level, placePos, random, chestData, chestEntity.getContainerSize());
-        if (loot.isEmpty()) {
-            loot.add(makeSorryStone(chestData.getGameId()));
-        }
-
 
         for (int i = 0; i < loot.size(); i++) {
             chestEntity.setItem(i, loot.get(i));
@@ -113,84 +107,57 @@ public class RewardHelper {
     }
 
     private static ObjectArrayList<ItemStack> generateRewards(@Nullable ServerPlayer player, ServerLevel level, BlockPos pos, RandomSource randomSource, SpawnChestData data, int inventorySize) {
-        int maxItemCount = inventorySize;
-        if (data.getMaxItems() > 0) {
-            maxItemCount = Math.min(maxItemCount, data.getMaxItems());
+        ResourceLocation lootTableId = data.getLootTableId();
+
+        LootTable lootTable = Objects.requireNonNull(level.getServer())
+                .getLootData()
+                .getLootTable(lootTableId);
+
+        ObjectArrayList<ItemStack> stacks;
+        if(lootTable != LootTable.EMPTY) {
+            LootParams lootParams = makeLootParams(player, level, pos);
+            stacks = lootTable.getRandomItems(lootParams, randomSource.nextLong());
+        } else {
+            stacks = new ObjectArrayList<>();
+            stacks.add(makeSorryStone(data.getGameId(), lootTableId));
         }
 
-        int minItemCount = maxItemCount;
-        if (data.getMinItems() > 0) {
-            minItemCount = data.getMinItems();
-        }
-
-        int itemCount = minItemCount + (maxItemCount - minItemCount > 0 ? randomSource.nextInt(maxItemCount - minItemCount) : 0);
-
-        Object2IntOpenHashMap<LootTable> tableMaxItems = new Object2IntOpenHashMap<>();
-        LootTablePool lootTablePool = data.getLootTablePool();
-        for (int i = 0; i < itemCount; i++) {
-            LootTable lootTable = lootTablePool.chooseRandom(level, randomSource);
-            int prevCount = tableMaxItems.getInt(lootTable);
-            tableMaxItems.put(lootTable, prevCount + 1);
-        }
-
-        LootParams lootParams = makeLootParams(player, level, pos);
-        ObjectArrayList<ItemStack> outStacks = new ObjectArrayList<>(inventorySize);
-        for (Object2IntMap.Entry<LootTable> entry : tableMaxItems.object2IntEntrySet()) {
-            LootTable lootTable = entry.getKey();
-            ObjectArrayList<ItemStack> stacks = lootTable.getRandomItems(lootParams, randomSource.nextLong());
-
-            for (int i = 0; i < entry.getIntValue(); i++) {
-                if (i < stacks.size()) {
-                    outStacks.add(stacks.get(i));
-                }
-            }
-        }
-
-        int freeSlots = inventorySize - outStacks.size();
+        int freeSlots = inventorySize - stacks.size();
         for (int i = 0; i < freeSlots; i++) {
-            outStacks.add(ItemStack.EMPTY);
+            stacks.add(ItemStack.EMPTY);
         }
 
-        Util.shuffle(outStacks, randomSource);
-        return outStacks;
+        Util.shuffle(stacks, randomSource);
+        return stacks;
     }
 
-    private static ItemStack makeSorryStone(ResourceLocation gameId) {
+    private static ItemStack makeSorryStone(ResourceLocation gameId, ResourceLocation lootTableId) {
         ItemStack stack = new ItemStack(Blocks.STONE);
 
         stack.setHoverName(Component.literal("The Sorry Stone").withStyle(ChatFormatting.BLUE, ChatFormatting.BOLD));
-        ItemStackExt.setLore(stack, List.of(
-                Component.literal("Modpack creator failed to configure the Loot Tables properly."),
-                Component.literal(String.format("Please report that one of Loot Table Pool for %s is broken, thank you!", gameId))));
+        ItemStackExt.addLore(stack, List.of(
+                Component.literal("Modpack creator linked reward to unknown loot table: %s.".formatted(lootTableId)),
+                Component.literal("Please report that it is used in %s game, thank you!".formatted(gameId))));
         return stack;
     }
 
     @Getter
     public static class SpawnChestData {
-        private final LootTablePool lootTablePool;
+        private final ResourceLocation lootTableId;
         private final ResourceLocation gameId;
-        private final int minItems;
-        private final int maxItems;
 
         public static SpawnChestData fromRewardConfig(LootGame<?> game, RewardConfig rewardConfig) {
-            return new SpawnChestData(game, rewardConfig.getLootTablePool(), rewardConfig.minItems.get(), rewardConfig.maxItems.get());
+            return new SpawnChestData(game, rewardConfig.getLootTableId());
         }
 
         /**
-         * @param game          game, which calls this method
-         * @param lootTablePool pool of loot table, from which items will be set in spawned chest.
-         *                      If no loot table is in the pool, the game will place "sorry-stone" duct-tape item in the chest.
-         * @param minItems      minimum amount of item stacks to be generated in chest.
-         *                      Won't be applied, if count of items in bound loot table are less than it.
-         *                      If min and max are set to -1, the limits will be disabled.
-         * @param maxItems      maximum amount of item stacks to be generated in chest.
-         *                      If this is set to -1, max limit will be disabled.
+         * @param game                game, which calls this method
+         * @param lootTableId id of loot table, from which items will be set in spawned chest.
+         *                            If the resulting loot table is empty, the game will place "sorry-stone" duct-tape item in the chest.
          */
-        public SpawnChestData(LootGame<?> game, LootTablePool lootTablePool, int minItems, int maxItems) {
+        public SpawnChestData(LootGame<?> game, ResourceLocation lootTableId) {
             this.gameId = game.getId();
-            this.lootTablePool = lootTablePool;
-            this.minItems = minItems;
-            this.maxItems = maxItems;
+            this.lootTableId = lootTableId;
         }
     }
 }

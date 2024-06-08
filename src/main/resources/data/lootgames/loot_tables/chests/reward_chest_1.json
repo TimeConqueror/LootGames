@@ -1,0 +1,68 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": {
+        "min": 3,
+        "max": 6
+      },
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "name": "minecraft:chests/village/village_plains_house",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "minecraft:chests/village/village_armorer",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "minecraft:chests/village/village_butcher",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "minecraft:chests/village/village_cartographer",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "minecraft:chests/village/village_fisher",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "minecraft:chests/village/village_fletcher",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "minecraft:chests/village/village_mason",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "minecraft:chests/village/village_shepherd",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "minecraft:chests/village/village_tannery",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "minecraft:chests/village/village_armorer",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "minecraft:chests/village/shipwreck_supply",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}

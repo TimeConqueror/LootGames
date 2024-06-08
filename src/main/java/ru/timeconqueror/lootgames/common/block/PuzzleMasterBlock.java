@@ -10,10 +10,13 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -27,12 +30,10 @@ import ru.timeconqueror.lootgames.registry.LGBlockEntities;
 import ru.timeconqueror.lootgames.registry.LGDimensions;
 import ru.timeconqueror.lootgames.room.ServerRoom;
 import ru.timeconqueror.lootgames.room.ServerRoomStorage;
-import ru.timeconqueror.timecore.api.util.ITickableBlockEntity;
-import ru.timeconqueror.timecore.api.util.MathUtils;
-import ru.timeconqueror.timecore.api.util.PlayerUtils;
-import ru.timeconqueror.timecore.api.util.Vec2i;
+import ru.timeconqueror.timecore.api.util.*;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 //TODO check surface before placing game block
 //TODO add animation, which places block below
@@ -59,6 +60,13 @@ public class PuzzleMasterBlock extends GameBlock implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         if (!worldIn.isClientSide()) {
+//            BlockState chest = Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, HorizontalDirection.EAST.get());
+//
+//            worldIn.setBlockAndUpdate(pos, chest);
+//
+//            ChestBlockEntity chestEntity = (ChestBlockEntity) Objects.requireNonNull((worldIn.getBlockEntity(pos)));
+//            chestEntity.setLootTable(LootGames.rl("chests/reward_chest_2"), worldIn.random.nextLong());
+
             try {
                 if (LGConfigs.GENERAL.disableMinigames.get()) {
                     PlayerUtils.sendMessage(player, Component.translatable("msg.lootgames.puzzle_master.turned_off"));

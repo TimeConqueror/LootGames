@@ -4,9 +4,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import ru.timeconqueror.lootgames.api.reward.LootTablePool;
-import ru.timeconqueror.lootgames.api.reward.LootTablePoolEntry;
 import ru.timeconqueror.lootgames.common.config.base.RewardConfig.Defaults;
+import ru.timeconqueror.lootgames.registry.LGLootTables;
 
 public class StagedRewards {
     public static FourStagedDefaults fourStagedDefaults() {
@@ -22,24 +21,16 @@ public class StagedRewards {
     public static class FourStagedDefaults {
         private static final FourStagedDefaults DEFAULT = new FourStagedDefaults(
                 Defaults.builder()
-                        .lootTablePool(LootTablePool.builder()
-                                .entry(LootTablePoolEntry.builder().key(BuiltInLootTables.SIMPLE_DUNGEON).weight(1).build()
-                                ).build())
+                        .lootTable(LGLootTables.REWARD_CHEST_1)
                         .build(),
                 Defaults.builder()
-                        .lootTablePool(LootTablePool.builder()
-                                .entry(LootTablePoolEntry.builder().key(BuiltInLootTables.DESERT_PYRAMID).weight(1).build()
-                                ).build())
+                        .lootTable(LGLootTables.REWARD_CHEST_2)
                         .build(),
                 Defaults.builder()
-                        .lootTablePool(LootTablePool.builder()
-                                .entry(LootTablePoolEntry.builder().key(BuiltInLootTables.NETHER_BRIDGE).weight(1).build()
-                                ).build())
+                        .lootTable(LGLootTables.REWARD_CHEST_3)
                         .build(),
                 Defaults.builder()
-                        .lootTablePool(LootTablePool.builder()
-                                .entry(LootTablePoolEntry.builder().key(BuiltInLootTables.END_CITY_TREASURE).weight(1).build()
-                                ).build())
+                        .lootTable(LGLootTables.REWARD_CHEST_4)
                         .build()
         );
 
