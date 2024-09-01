@@ -1,0 +1,121 @@
+package ru.timeconqueror.lootgames.common.block;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
+import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.common.block.entity.MicroverseManipulatorBlockEntity;
+import ru.timeconqueror.lootgames.registry.LGBlockEntities;
+import ru.timeconqueror.lootgames.registry.LGItems;
+import ru.timeconqueror.lootgames.registry.custom.GameInfo;
+import ru.timeconqueror.tc.PlayerUtils;
+import ru.timeconqueror.timecore.api.util.LevelUtils;
+
+import java.util.Objects;
+
+public class MicroverseManipulatorBlock extends BaseEntityBlock {
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+
+    public MicroverseManipulatorBlock() {
+        super(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_GRAY)
+                .requiresCorrectToolForDrops()
+                .strength(10.0F, 600F)
+                .sound(SoundType.METAL));
+
+        properties.air();
+
+        registerDefaultState(this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+
+        if(!(blockEntity instanceof MicroverseManipulatorBlockEntity manipulatorEntity)) {
+            return InteractionResult.FAIL;
+        }
+
+        ItemStack held = player.getItemInHand(hand);
+        if(manipulatorEntity.isEmpty()) {
+            GameInfo gameInfo;
+            if(held.getItem() == LGItems.BOXED_UNKNOWN_MICROVERSE) {
+                gameInfo = LootGames.getGameInfoRegistry().getRandom();
+            } else {
+                gameInfo = LootGames.getGameInfoRegistry().getGameInfoByHolder(held.getItem());
+            }
+
+            if(gameInfo == null) {
+                return InteractionResult.FAIL;
+            }
+
+            if(!world.isClientSide()) {
+                manipulatorEntity.insertGame(gameInfo);
+                if(!player.isCreative()) {
+                    player.setItemInHand(hand, ItemStack.EMPTY);
+                }
+            }
+            return InteractionResult.sidedSuccess(world.isClientSide());
+        } else if(!manipulatorEntity.isEmpty()) {
+            GameInfo gameInfo = Objects.requireNonNull(manipulatorEntity.getGameInfo());
+            manipulatorEntity.clearGame();
+
+            Item holder = LootGames.getGameInfoRegistry().getHolderByGameInfo(gameInfo);
+            ItemStack stack = new ItemStack(holder, 1);
+            PlayerUtils.addToInventoryOrDrop(player, hand, stack);
+        }
+
+        return InteractionResult.PASS;
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState blockState_) {
+        return RenderShape.ENTITYBLOCK_ANIMATED;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new MicroverseManipulatorBlockEntity(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world_, BlockState state_, BlockEntityType<T> type_) {
+        return LevelUtils.makeSimpleTicker(type_, LGBlockEntities.MICROVERSE_MANIPULATOR, (world_1, pos_, state_1, blockEntity_) -> blockEntity_.tick());
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state_, BlockGetter world_, BlockPos pos_, CollisionContext context_) {
+        return Block.box(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
+    }
+
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder_) {
+        builder_.add(FACING);
+    }
+
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+        return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
+    }
+}

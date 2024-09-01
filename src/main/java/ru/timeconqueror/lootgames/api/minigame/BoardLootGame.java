@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -15,6 +14,7 @@ import ru.timeconqueror.lootgames.api.minigame.event.ClickBlockEvent;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomOffset;
+import ru.timeconqueror.lootgames.registry.custom.GameInfo;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 
 import static ru.timeconqueror.lootgames.api.minigame.BoardLootGame.BoardStage;
@@ -26,7 +26,7 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
     public static final int DEFAULT_FLOOR_POS = 60;
     public static final double VERTICAL_RENDER_OFFSET = -0.35;
 
-    public BoardLootGame(ResourceLocation id, Room room) {
+    public BoardLootGame(GameInfo id, Room room) {
         super(id, room);
         getEventBus().addEventHandler(GameEvents.CLICK_BLOCK, event -> event.setAccepted(onBlockClicked(event)));
     }

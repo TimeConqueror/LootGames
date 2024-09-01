@@ -1,14 +1,13 @@
 package ru.timeconqueror.lootgames.room;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.minigame.Stage;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.registry.custom.GameInfo;
-import ru.timeconqueror.timecore.api.common.tile.SerializationType;
+import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 
 public class GameSerializer {
     @Nullable
@@ -17,15 +16,14 @@ public class GameSerializer {
             return null;
         }
 
-        String id = tag.getString("id");
-        ResourceLocation location = new ResourceLocation(id);
-        GameInfo gameInfo = LootGames.getGameInfoRegistry().getRegistry().getValue(location);
-        if (gameInfo == null) {
+        String location = tag.getString("id");
+        GameInfo id = GameInfo.deserialize(location);
+        if (id == null) {
             LootGames.LOGGER.warn("Can't find game factory for {}", location);
             return null;
         }
 
-        LootGame<?> game = gameInfo.createGame(location, room);
+        LootGame<?> game = id.createGame(room);
         game.readNBT(tag.getCompound("game"), type);
         return game;
     }
@@ -39,9 +37,8 @@ public class GameSerializer {
         CompoundTag gameTag = new CompoundTag();
         game.writeNBT(gameTag, type);
 
-        ResourceLocation id = game.getId();
-
-        out.putString("id", id.toString());
+        GameInfo id = game.getId();
+        out.putString("id", GameInfo.serialize(id));
         out.put("game", gameTag);
         return out;
     }

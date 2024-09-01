@@ -9,7 +9,7 @@ import ru.timeconqueror.lootgames.room.GameSerializer;
 import ru.timeconqueror.lootgames.room.ServerRoom;
 import ru.timeconqueror.lootgames.room.client.ClientRoom;
 import ru.timeconqueror.timecore.api.common.packet.IPacket;
-import ru.timeconqueror.timecore.api.common.tile.SerializationType;
+import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 
 public class SLoadRoomPacket implements IPacket {
     public RoomCoords roomCoords;

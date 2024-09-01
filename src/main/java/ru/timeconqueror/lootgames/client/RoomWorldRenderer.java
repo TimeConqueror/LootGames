@@ -1,6 +1,7 @@
 package ru.timeconqueror.lootgames.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -10,6 +11,9 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.joml.Quaternionfc;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.client.render.game.GameOfLightRenderer;
 import ru.timeconqueror.lootgames.client.render.game.MinesweeperRenderer;
@@ -42,9 +46,9 @@ public class RoomWorldRenderer {
                 Vec3 cameraPos = camera.getPosition();
                 poseStack.translate(-cameraPos.x(), -cameraPos.y(), -cameraPos.z());
 
-                if (game.getId().equals(LGGames.MINESWEEPER)) {
+                if (game.getId() == LGGames.MINESWEEPER.get()) {
                     MINESWEEPER_RENDERER.render((GameMineSweeper) game, poseStack, bufferSource, event.getPartialTick());
-                } else if (game.getId().equals(LGGames.GAME_OF_LIGHT)) {
+                } else if (game.getId() == LGGames.GAME_OF_LIGHT.get()) {
                     GAME_OF_LIGHT_RENDERER.render((GameOfLight) game, poseStack, bufferSource, event.getPartialTick());
                 }
             }

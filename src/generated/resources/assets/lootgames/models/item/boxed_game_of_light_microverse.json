@@ -1,0 +1,6 @@
+{
+  "parent": "lootgames:item/boxed_microverse",
+  "textures": {
+    "texture": "lootgames:item/boxed_game_of_light_microverse"
+  }
+}

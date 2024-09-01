@@ -15,7 +15,7 @@ import ru.timeconqueror.lootgames.common.packet.room.SLoadRoomPacket;
 import ru.timeconqueror.lootgames.common.packet.room.SSyncGamePacket;
 import ru.timeconqueror.lootgames.room.GameSerializer;
 import ru.timeconqueror.lootgames.room.RoomUtils;
-import ru.timeconqueror.timecore.api.common.tile.SerializationType;
+import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 
 import java.util.List;
 

@@ -6,7 +6,7 @@ import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.minigame.Stage;
 import ru.timeconqueror.lootgames.api.packet.NBTGamePacket;
 import ru.timeconqueror.lootgames.room.GameSerializer;
-import ru.timeconqueror.timecore.api.common.tile.SerializationType;
+import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 
 import java.util.Objects;
 

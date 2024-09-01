@@ -33,10 +33,11 @@ import ru.timeconqueror.lootgames.common.packet.game.SPGOLDrawMark;
 import ru.timeconqueror.lootgames.common.packet.game.SPGOLSendDisplayedSymbol;
 import ru.timeconqueror.lootgames.common.packet.game.SPGOLSpawnStageUpParticles;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
+import ru.timeconqueror.lootgames.registry.LGGames;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.EventBus;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
-import ru.timeconqueror.timecore.api.common.tile.SerializationType;
+import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 import ru.timeconqueror.timecore.api.util.client.ClientProxy;
 
@@ -68,8 +69,8 @@ public class GameOfLight extends BoardLootGame {
     @Nullable
     private QMarkAppearance specialMarkAppearance = null;
 
-    public GameOfLight(ResourceLocation id, Room room) {
-        super(id, room);
+    public GameOfLight(Room room) {
+        super(LGGames.GAME_OF_LIGHT.get(), room);
 
         EventBus events = getEventBus();
         events.addEventHandler(GameEvents.SWITCH_STAGE, this::onStageSwitch);
@@ -228,7 +229,7 @@ public class GameOfLight extends BoardLootGame {
             }
         });
 
-        RewardHelper.spawnFourStagedReward((ServerPlayer) getRoom().getRandomPlayer(), ((ServerLevel) getLevel()), this, getGameCenter(), maxReachedStage, LGConfigs.REWARDS.gol);
+        RewardHelper.spawnFourStagedReward((ServerPlayer) getRoom().getRandomPlayer(), ((ServerLevel) getLevel()), getId(), getGameCenter(), maxReachedStage, LGConfigs.REWARDS.gol);
     }
 
     @Override

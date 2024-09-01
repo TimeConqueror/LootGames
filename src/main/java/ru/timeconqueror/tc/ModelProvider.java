@@ -1,4 +1,4 @@
-package ru.timeconqueror.lootgames.datagen;
+package ru.timeconqueror.tc;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
@@ -10,6 +10,7 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper.ResourceType;
 import org.apache.logging.log4j.LogManager;
@@ -17,8 +18,11 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 import ru.timeconqueror.timecore.api.client.resource.BlockModel;
+import ru.timeconqueror.timecore.api.client.resource.ItemModel;
 import ru.timeconqueror.timecore.api.client.resource.JSONTimeResource;
 import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation;
+import ru.timeconqueror.timecore.api.client.resource.location.ItemModelLocation;
+import ru.timeconqueror.timecore.api.client.resource.location.ModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 
 import java.nio.file.Path;
@@ -52,19 +56,33 @@ public abstract class ModelProvider implements DataProvider {
 
     protected abstract void registerAll();
 
-    protected BlockModelLocation addBlockModel(String path, BlockModel resource) {
+    public ResourceLocation addModel(String path, JSONTimeResource resource) {
         Preconditions.checkNotNull(path, "Path must not be null");
         ResourceLocation outputLoc = extendWithFolder(path.contains(":") ? new ResourceLocation(path) : new ResourceLocation(modid, path));
         if (generatedModels.containsKey(outputLoc)) {
-            log.warn("Block model with path {} already exists, skipping...", outputLoc);
+            log.warn("Model with path {} already exists, skipping...", outputLoc);
         }
 
         generatedModels.putIfAbsent(outputLoc, resource);
-        return new BlockModelLocation(outputLoc.getNamespace(), outputLoc.getPath());
+        return outputLoc;
     }
 
-    protected BlockModelLocation addBlockModel(Block block, BlockModel resource) {
+    public BlockModelLocation addBlockModel(String path, BlockModel resource) {
+        ResourceLocation location = addModel(path, resource);
+        return new BlockModelLocation(location.getNamespace(), location.getPath());
+    }
+
+    public BlockModelLocation addBlockModel(Block block, BlockModel resource) {
         return addBlockModel(getId(block).toString(), resource);
+    }
+
+    public ItemModelLocation addItemModel(String path, ItemModel resource) {
+        ResourceLocation location = addModel(path, resource);
+        return new ItemModelLocation(location.getNamespace(), location.getPath());
+    }
+
+    public ItemModelLocation addItemModel(Item item, ItemModel resource) {
+        return addItemModel(getId(item).toString(), resource);
     }
 
     public TextureLocation defaultTextureLocation(Block block) {
@@ -75,6 +93,11 @@ public abstract class ModelProvider implements DataProvider {
     public ResourceLocation getId(Block block) {
         //noinspection deprecation
         return BuiltInRegistries.BLOCK.getKey(block);
+    }
+
+    public ResourceLocation getId(Item item) {
+        //noinspection deprecation
+        return BuiltInRegistries.ITEM.getKey(item);
     }
 
     private ResourceLocation extendWithFolder(ResourceLocation rl) {

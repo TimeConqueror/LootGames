@@ -8,13 +8,13 @@ import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.block.BoardBorderBlock;
 import ru.timeconqueror.lootgames.client.resource.BoardBorderBlockResources;
 import ru.timeconqueror.lootgames.common.LGCreativeTabs;
-import ru.timeconqueror.lootgames.common.block.DungeonBlock;
-import ru.timeconqueror.lootgames.common.block.BoardTechnicalBlock;
-import ru.timeconqueror.lootgames.common.block.PuzzleMasterBlock;
-import ru.timeconqueror.lootgames.common.block.TechnicalBlock;
+import ru.timeconqueror.lootgames.common.block.*;
 import ru.timeconqueror.lootgames.common.block.TechnicalBlock.Configuration;
+import ru.timeconqueror.lootgames.common.item.MicroverseManipulatorItem;
+import ru.timeconqueror.timecore.api.client.resource.StandardItemModelParents;
 import ru.timeconqueror.timecore.api.registry.BlockRegister;
 import ru.timeconqueror.timecore.api.registry.BlockRegister.RenderTypeWrapper;
+import ru.timeconqueror.timecore.api.registry.ItemRegister;
 import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 import ru.timeconqueror.timecore.api.registry.util.BlockPropsFactory;
 
@@ -47,6 +47,7 @@ public class LGBlocks {
     public static TechnicalBlock SPACE_FABRIC; // hard wall
     public static TechnicalBlock GLASSY_MATTER; // just a glass block
     public static BoardTechnicalBlock BOARD_GLASSY_MATTER;
+    public static MicroverseManipulatorBlock MICROVERSE_MANIPULATOR;
 
     @AutoRegistrable
     private static final BlockRegister REGISTER = new BlockRegister(LootGames.MODID);
@@ -76,6 +77,13 @@ public class LGBlocks {
                         Configuration.builder().renderShape(RenderShape.INVISIBLE).build()))
                 .renderLayer(() -> new RenderTypeWrapper(RenderType.translucent())).name("Glassy Matter");
 
+        REGISTER.register("microverse_manipulator", MicroverseManipulatorBlock::new)
+                .name("Microverse Manipulator")
+                .item(() -> new MicroverseManipulatorItem(LGBlocks.MICROVERSE_MANIPULATOR),
+                        chain -> chain
+                                .onCreativeTabBuilding(ItemRegister.CreativeTabAdder
+                                        .tabBased(LGCreativeTabs.MAIN))
+                );
 //        REGISTER.register("gol_activator", GOLActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Game of Light");
 //        REGISTER.register("ms_activator", MSActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Minesweeper");
 //        REGISTER.register("pipes_activator", PipesActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Pipes (WIP)");

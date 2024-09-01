@@ -7,7 +7,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
@@ -15,6 +14,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.message.Message;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.Markers;
 import ru.timeconqueror.lootgames.api.minigame.event.EndGameEvent;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
@@ -31,9 +31,10 @@ import ru.timeconqueror.lootgames.minigame.GameEventBus;
 import ru.timeconqueror.lootgames.minigame.GameNetworkImpl;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGSounds;
+import ru.timeconqueror.lootgames.registry.custom.GameInfo;
 import ru.timeconqueror.lootgames.room.GameSerializer;
 import ru.timeconqueror.lootgames.room.ServerRoom;
-import ru.timeconqueror.timecore.api.common.tile.SerializationType;
+import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 import ru.timeconqueror.timecore.api.util.EnvironmentUtils;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -43,7 +44,7 @@ import java.util.Objects;
 public abstract class LootGame<STAGE extends Stage> {
     public static final Marker DEBUG_MARKER = Markers.LOOTGAME;
     @Getter
-    private final ResourceLocation id;
+    private final GameInfo id;
     @Getter
     protected Room room;
     /**
@@ -58,7 +59,7 @@ public abstract class LootGame<STAGE extends Stage> {
     @Getter
     private int age;
 
-    public LootGame(ResourceLocation id, Room room) {
+    public LootGame(GameInfo id, Room room) {
         this.id = id;
 
         this.room = room;
@@ -227,7 +228,7 @@ public abstract class LootGame<STAGE extends Stage> {
     }
 
     public String formatLogMessage(String message) {
-        return ChatFormatting.DARK_BLUE + id.toString() + ": " + message;
+        return ChatFormatting.DARK_BLUE + String.valueOf(LootGames.getGameInfoRegistry().unwrapped().getKey(id)) + ": " + message;
     }
 
     public GameNetwork net() {

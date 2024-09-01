@@ -13,7 +13,7 @@
 //import ru.timeconqueror.lootgames.minigame.pipes.board.PipesBoardGenerator;
 //import ru.timeconqueror.lootgames.registry.LGBlocks;
 //import ru.timeconqueror.lootgames.utils.MouseClickType;
-//import ru.timeconqueror.timecore.api.common.tile.SerializationType;
+//import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 //
 ////FIXME secure nbt sync!!!
 ////TODO custom sounds of open

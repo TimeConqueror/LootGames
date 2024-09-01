@@ -1,9 +1,10 @@
-package ru.timeconqueror.lootgames.datagen;
+package ru.timeconqueror.tc;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
@@ -28,6 +29,7 @@ public abstract class BlockStateProvider implements DataProvider {
     protected final Map<Block, BlockStateResource> registeredStates = new LinkedHashMap<>();
 
     private final PackOutput output;
+    @Getter
     private final String modid;
     private final ModelProvider blockModelProvider;
 
@@ -89,7 +91,4 @@ public abstract class BlockStateProvider implements DataProvider {
         return BuiltInRegistries.BLOCK.getKey(block);
     }
 
-    public String getModid() {
-        return modid;
-    }
 }

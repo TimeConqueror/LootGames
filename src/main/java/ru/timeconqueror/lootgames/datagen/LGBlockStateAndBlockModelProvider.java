@@ -2,14 +2,16 @@ package ru.timeconqueror.lootgames.datagen;
 
 import net.minecraft.data.PackOutput;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.tc.BlockStateProvider;
+import ru.timeconqueror.tc.ModelProvider;
 import ru.timeconqueror.timecore.api.client.resource.BlockModels;
 import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 
 import static ru.timeconqueror.lootgames.registry.LGBlocks.*;
 
-public class LGBlockStateAndBlockProvider extends BlockStateProvider {
-    public LGBlockStateAndBlockProvider(PackOutput output) {
+public class LGBlockStateAndBlockModelProvider extends BlockStateProvider {
+    public LGBlockStateAndBlockModelProvider(PackOutput output) {
         super(output, LootGames.MODID);
     }
 
@@ -25,6 +27,10 @@ public class LGBlockStateAndBlockProvider extends BlockStateProvider {
                 models.addBlockModel(GLASSY_MATTER, BlockModels.particlesOnly(new TextureLocation(LootGames.MODID, "block/empty")));
         addBlockState(GLASSY_MATTER, BlockStateResources.singleVariantWithSingleModel(glassMatterModel));
         addBlockState(BOARD_GLASSY_MATTER, BlockStateResources.singleVariantWithSingleModel(glassMatterModel));
+
+        BlockModelLocation microverseManipulator =
+                models.addBlockModel(MICROVERSE_MANIPULATOR, BlockModels.particlesOnly(LootGames.tl("blockentity/microverse_manipulator_particles")));
+        addBlockState(MICROVERSE_MANIPULATOR, BlockStateResources.singleVariantWithSingleModel(microverseManipulator));
     }
 
     @Override

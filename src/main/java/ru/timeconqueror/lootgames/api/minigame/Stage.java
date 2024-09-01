@@ -2,7 +2,7 @@ package ru.timeconqueror.lootgames.api.minigame;
 
 import net.minecraft.nbt.CompoundTag;
 import ru.timeconqueror.lootgames.utils.EventBus;
-import ru.timeconqueror.timecore.api.common.tile.SerializationType;
+import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 
 public abstract class Stage {
 

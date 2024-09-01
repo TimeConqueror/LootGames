@@ -27,10 +27,11 @@ import ru.timeconqueror.lootgames.common.packet.game.SPMSGenBoard;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSResetFlags;
 import ru.timeconqueror.lootgames.common.packet.game.SPMSSpawnLevelBeatParticles;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
+import ru.timeconqueror.lootgames.registry.LGGames;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.EventBus;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
-import ru.timeconqueror.timecore.api.common.tile.SerializationType;
+import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 import ru.timeconqueror.timecore.api.util.holder.Holder;
 
@@ -61,8 +62,8 @@ public class GameMineSweeper extends BoardLootGame {
 
     private Snapshot configSnapshot = null;
 
-    public GameMineSweeper(ResourceLocation id, Room room) {
-        super(id, room);
+    public GameMineSweeper(Room room) {
+        super(LGGames.MINESWEEPER.get(), room);
         board = new MSBoard(0, 0);
 
         EventBus events = getEventBus();
@@ -131,7 +132,7 @@ public class GameMineSweeper extends BoardLootGame {
 
         BlockPos rewardPos = getGameCenter().above();
 
-        RewardHelper.spawnFourStagedReward((ServerPlayer) getRoom().getRandomPlayer(), ((ServerLevel) getLevel()), this, rewardPos, currentLevel - 1, LGConfigs.REWARDS.minesweeper);
+        RewardHelper.spawnFourStagedReward((ServerPlayer) getRoom().getRandomPlayer(), ((ServerLevel) getLevel()), getId(), rewardPos, currentLevel - 1, LGConfigs.REWARDS.minesweeper);
     }
 
     private void onGameLost() {

@@ -22,7 +22,7 @@ import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.packet.room.SSyncGamePacket;
 import ru.timeconqueror.lootgames.registry.LGCapabilities;
-import ru.timeconqueror.timecore.api.common.tile.SerializationType;
+import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 import ru.timeconqueror.timecore.common.capability.CoffeeCapabilityInstance;
 import ru.timeconqueror.timecore.common.capability.owner.CapabilityOwner;
 import ru.timeconqueror.timecore.common.capability.owner.serializer.CapabilityOwnerCodec;
@@ -88,13 +88,12 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
 
     public void startGame() {
         var registry = LootGames.getGameInfoRegistry();
-        var key = registry.getRandom();
-        var info = Objects.requireNonNull(registry.getById(key));
-        var game = info.createGame(key, this);
+        var id = registry.getRandom();
+        var game = id.createGame(this);
         this.game.set(game);
         this.progress.set(GameProgress.STARTED);
 
-        info.getGenerator().generate(level, this, game);
+        id.getGenerator().generate(level, this, game);
         MinecraftForge.EVENT_BUS.post(new GenerateGameEnvironmentEvent(this, game));
         RoomGenerator.generateRoomBorders(this);
 
