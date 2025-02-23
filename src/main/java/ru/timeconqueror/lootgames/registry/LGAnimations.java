@@ -14,6 +14,9 @@ import java.util.Objects;
 public class LGAnimations {
     public static Animation microverseManipulatorPlace;
     public static Animation microverseManipulatorIdle;
+    public static Animation microverseManipulatorNoHole;
+    public static Animation microverseManipulatorHoleAppear;
+    public static Animation microverseManipulatorHoleIdle;
 
     @SubscribeEvent
     public static void registerAnimations(FMLCommonSetupEvent event) {
@@ -21,5 +24,8 @@ public class LGAnimations {
                 .loadAndRegisterAnimations(LootGames.rl("animations/blockentity/microverse_manipulator.json"));
         microverseManipulatorPlace = Objects.requireNonNull(microverseManipulatorAnimations.get("place_box"));
         microverseManipulatorIdle = Objects.requireNonNull(microverseManipulatorAnimations.get("idle"));
+        microverseManipulatorNoHole = Objects.requireNonNull(microverseManipulatorAnimations.get("no_hole"));
+        microverseManipulatorHoleAppear = Objects.requireNonNull(microverseManipulatorAnimations.get("hole_appear"));
+        microverseManipulatorHoleIdle = Objects.requireNonNull(microverseManipulatorAnimations.get("hole_idle"));
     }
 }

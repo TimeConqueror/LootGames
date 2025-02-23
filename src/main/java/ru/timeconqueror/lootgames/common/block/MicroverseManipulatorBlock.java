@@ -5,7 +5,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -24,14 +23,13 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.common.block.entity.MicroverseManipulatorBlockEntity;
+import ru.timeconqueror.lootgames.common.item.BoxedMicroverseItem;
 import ru.timeconqueror.lootgames.registry.LGBlockEntities;
 import ru.timeconqueror.lootgames.registry.LGItems;
 import ru.timeconqueror.lootgames.registry.custom.GameInfo;
-import ru.timeconqueror.tc.PlayerUtils;
 import ru.timeconqueror.timecore.api.util.LevelUtils;
-
-import java.util.Objects;
 
 public class MicroverseManipulatorBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
@@ -53,40 +51,63 @@ public class MicroverseManipulatorBlock extends BaseEntityBlock {
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
 
-        if(!(blockEntity instanceof MicroverseManipulatorBlockEntity manipulatorEntity)) {
+        if (!(blockEntity instanceof MicroverseManipulatorBlockEntity manipulatorEntity)) {
             return InteractionResult.FAIL;
         }
 
-        ItemStack held = player.getItemInHand(hand);
-        if(manipulatorEntity.isEmpty()) {
+        if (world.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+
+        if (manipulatorEntity.isEmpty()) {
+            ItemStack held = player.getItemInHand(hand);
             GameInfo gameInfo;
-            if(held.getItem() == LGItems.BOXED_UNKNOWN_MICROVERSE) {
+            if (held.getItem() == LGItems.BOXED_UNKNOWN_MICROVERSE) {
                 gameInfo = LootGames.getGameInfoRegistry().getRandom();
             } else {
                 gameInfo = LootGames.getGameInfoRegistry().getGameInfoByHolder(held.getItem());
             }
 
-            if(gameInfo == null) {
+            if (gameInfo == null) { // not a microverse holder
                 return InteractionResult.FAIL;
             }
 
-            if(!world.isClientSide()) {
-                manipulatorEntity.insertGame(gameInfo);
-                if(!player.isCreative()) {
-                    player.setItemInHand(hand, ItemStack.EMPTY);
+            @Nullable
+            RoomCoords boundRoom = BoxedMicroverseItem.getBoundRoomCoords(held);
+
+            if (!world.isClientSide()) {
+                if (manipulatorEntity.insertGame(gameInfo, boundRoom)) {
+                    if (!player.isCreative()) {
+                        player.setItemInHand(hand, ItemStack.EMPTY);
+                    }
                 }
             }
             return InteractionResult.sidedSuccess(world.isClientSide());
-        } else if(!manipulatorEntity.isEmpty()) {
-            GameInfo gameInfo = Objects.requireNonNull(manipulatorEntity.getGameInfo());
+        } else if (!manipulatorEntity.isEmpty()) {
             manipulatorEntity.clearGame();
-
-            Item holder = LootGames.getGameInfoRegistry().getHolderByGameInfo(gameInfo);
-            ItemStack stack = new ItemStack(holder, 1);
-            PlayerUtils.addToInventoryOrDrop(player, hand, stack);
+            return InteractionResult.sidedSuccess(world.isClientSide());
         }
 
         return InteractionResult.PASS;
+    }
+
+    public static void generate() {
+//TODO
+//
+//        if (sp.serverLevel().dimension() != LGDimensions.TEST_SITE_DIM) {
+//            ServerLevel roomWorld = ServerLifecycleHooks.getCurrentServer().getLevel(LGDimensions.TEST_SITE_DIM);
+//            RoomStorage roomStorage = ServerRoomStorage.getInstance(roomWorld).orElseThrow();
+//
+//            Vec2i vec = MathUtils.OutwardSquareSpiral.offsetByIndex(roomStorage.reserveFreeIndex());
+//
+//            ServerRoom room = (ServerRoom) roomStorage.getRoom(new RoomCoords(vec.x(), vec.y()));
+//            room.startGame();
+//            BlockPos center = room.getCoords().centerPos(60);
+//
+//            sp.teleportTo(roomWorld, center.getX(), center.getY() + 1, center.getZ(), player.getXRot(), player.getYRot());
+//        } else {
+//            sp.teleportTo(ServerLifecycleHooks.getCurrentServer().overworld(), player.getX(), player.getY() + 1, player.getZ(), player.getXRot(), player.getYRot());
+//        }
     }
 
     @Override

@@ -11,9 +11,7 @@ import ru.timeconqueror.timecore.api.util.RandHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class GameInfoRegistry {
     private final List<GameInfo> values;
@@ -36,6 +34,10 @@ public class GameInfoRegistry {
     @Nullable
     public GameInfo getGameInfoByHolder(Item holder) {
         return itemsToGameInfos.get(holder);
+    }
+
+    public boolean isGameHolder(Item holder) {
+        return getGameInfoByHolder(holder) != null;
     }
 
     public IForgeRegistry<GameInfo> unwrapped() {

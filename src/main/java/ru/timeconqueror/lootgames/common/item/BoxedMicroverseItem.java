@@ -1,12 +1,17 @@
 package ru.timeconqueror.lootgames.common.item;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.registry.LGItems;
 import ru.timeconqueror.lootgames.registry.custom.GameInfo;
 
@@ -44,5 +49,18 @@ public class BoxedMicroverseItem extends Item implements IClientItemExtensions {
         }
 
         super.appendHoverText(stack, world, tooltip, options);
+    }
+
+    @Nullable
+    public static RoomCoords getBoundRoomCoords(ItemStack stack) {
+        if (stack.hasTag()) {
+            CompoundTag tag = stack.getTag();
+            if (tag.contains("room_coords")) {
+                int[] roomCoords = tag.getIntArray("room_coords");
+                return new RoomCoords(roomCoords[0], roomCoords[1]);
+            }
+        }
+
+        return null;
     }
 }

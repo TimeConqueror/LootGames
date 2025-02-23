@@ -10,10 +10,12 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import ru.timeconqueror.lootgames.api.Markers;
 import ru.timeconqueror.lootgames.registry.custom.GameInfoRegistry;
+import ru.timeconqueror.timecore.animation.action.BakedActionImpl;
 import ru.timeconqueror.timecore.api.TimeCoreAPI;
 import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.ItemModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
+import ru.timeconqueror.timecore.api.util.EnvironmentUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,11 @@ public class LootGames {
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::handleMarkers);
         TimeCoreAPI.setup(this);
+        EnvironmentUtils.enableLogMarkers(ru.timeconqueror.timecore.api.Markers.ACTIONS);
+
+        if (EnvironmentUtils.isInDev()) {
+            BakedActionImpl.loggerEnabled = true;
+        }
     }
 
     private void handleMarkers(FMLConstructModEvent event) {
