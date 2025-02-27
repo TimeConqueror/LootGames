@@ -6,7 +6,6 @@ import lombok.NonNull;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.util.Lazy;
-import org.checkerframework.checker.index.qual.PolyUpperBound;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.GameEnvironmentGenerator;
@@ -23,7 +22,7 @@ public class GameInfo {
     @NonNull
     private final String langKey;
     @NonNull
-    private final Function<Room, ? extends LootGame<?>> creator;
+    private final Function<Room, ? extends LootGame<?>> gameInstanceCreator;
     @Getter
     @NonNull
     private final Lazy<Item> microverseHolderItem;
@@ -49,7 +48,7 @@ public class GameInfo {
     }
 
     public LootGame<?> createGame(Room room) {
-        return creator.apply(room);
+        return gameInstanceCreator.apply(room);
     }
 
     public ResourceLocation toKey() {

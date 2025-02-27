@@ -22,7 +22,6 @@ import ru.timeconqueror.timecore.api.client.resource.ItemModel;
 import ru.timeconqueror.timecore.api.client.resource.JSONTimeResource;
 import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.ItemModelLocation;
-import ru.timeconqueror.timecore.api.client.resource.location.ModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 
 import java.nio.file.Path;
@@ -85,9 +84,14 @@ public abstract class ModelProvider implements DataProvider {
         return addItemModel(getId(item).toString(), resource);
     }
 
-    public TextureLocation defaultTextureLocation(Block block) {
+    public TextureLocation getDefaultTextureLocation(Block block) {
         ResourceLocation id = getId(block);
         return new TextureLocation(id.getNamespace(), ModelProvider.BLOCK_FOLDER + "/" + id.getPath());
+    }
+
+    public BlockModelLocation getDefaultModelLocation(Block block) {
+        ResourceLocation id = getId(block);
+        return new BlockModelLocation(id.getNamespace(), id.getPath());
     }
 
     public ResourceLocation getId(Block block) {

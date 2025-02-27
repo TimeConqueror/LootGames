@@ -1,8 +1,11 @@
-// 1.20.1	2024-06-14T02:56:10.4725025	LootGames' BlockState Provider
+// 1.20.1	2025-02-27T23:19:26.3069554	LootGames' BlockState Provider
 82482a7b73453df7cd2a811e1c1e386a67038d6c assets/lootgames/blockstates/board_glassy_matter.json
+22c8a1a9634c74f7dbf27ecf71282ed4e85cf12d assets/lootgames/blockstates/board_opaque_matter.json
 82482a7b73453df7cd2a811e1c1e386a67038d6c assets/lootgames/blockstates/glassy_matter.json
 f4633059483f19094d9abf743140c0781ee6164a assets/lootgames/blockstates/microverse_manipulator.json
+d3486cb45c16ddb6e84c73d3ca119c4a21b7bde7 assets/lootgames/blockstates/opaque_matter.json
 5519ba7c6c76210a74fc042a6d38e2ab298ffd9f assets/lootgames/blockstates/space_fabric.json
 db6d3736c79eeb11a8f139c246e3602380595e82 assets/lootgames/models/block/glassy_matter.json
 16def5b94cf1eb515a948ccca22c06eb83d1312e assets/lootgames/models/block/microverse_manipulator.json
+52bd927c2bf0b18f2cb3e841877ea048ecfc4f24 assets/lootgames/models/block/opaque_matter.json
 db6d3736c79eeb11a8f139c246e3602380595e82 assets/lootgames/models/block/space_fabric.json

@@ -1,7 +1,6 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.InteractionHand;
@@ -24,7 +23,7 @@ import static ru.timeconqueror.lootgames.api.minigame.BoardLootGame.BoardStage;
  */
 public abstract class BoardLootGame extends LootGame<BoardStage> {
     public static final int DEFAULT_FLOOR_POS = 60;
-    public static final double VERTICAL_RENDER_OFFSET = -0.35;
+    public static final double VERTICAL_RENDER_OFFSET = -6 / 16F;
 
     public BoardLootGame(GameInfo id, Room room) {
         super(id, room);
@@ -85,7 +84,6 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
         Vec3i originOffset = getBoardOrigin().offset(0, 1, 0);
 
         matrixStack.translate(originOffset.getX(), originOffset.getY(), originOffset.getZ());
-        matrixStack.mulPose(Axis.XP.rotationDegrees(90));
     }
 
     public abstract static class BoardStage extends Stage {

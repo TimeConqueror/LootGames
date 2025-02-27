@@ -24,7 +24,6 @@ public class LGBlockTagsProvider extends BlockTagsProvider {
                 .add(LGBlocks.CRACKED_DUNGEON_CEILING)
                 .add(LGBlocks.DUNGEON_WALL)
                 .add(LGBlocks.CRACKED_DUNGEON_WALL)
-                .add(LGBlocks.DUNGEON_FLOOR)
                 .add(LGBlocks.CRACKED_DUNGEON_FLOOR)
                 .add(LGBlocks.DUNGEON_LAMP)
                 .add(LGBlocks.BROKEN_DUNGEON_LAMP)

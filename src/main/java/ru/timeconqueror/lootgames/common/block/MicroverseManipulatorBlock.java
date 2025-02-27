@@ -59,33 +59,39 @@ public class MicroverseManipulatorBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
 
-        if (manipulatorEntity.isEmpty()) {
-            ItemStack held = player.getItemInHand(hand);
-            GameInfo gameInfo;
-            if (held.getItem() == LGItems.BOXED_UNKNOWN_MICROVERSE) {
-                gameInfo = LootGames.getGameInfoRegistry().getRandom();
-            } else {
-                gameInfo = LootGames.getGameInfoRegistry().getGameInfoByHolder(held.getItem());
-            }
+        if (!player.isShiftKeyDown()) {
+            if (manipulatorEntity.isEmpty()) {
+                ItemStack held = player.getItemInHand(hand);
+                GameInfo gameInfo;
+                if (held.getItem() == LGItems.BOXED_UNKNOWN_MICROVERSE) {
+                    gameInfo = LootGames.getGameInfoRegistry().getRandom();
+                } else {
+                    gameInfo = LootGames.getGameInfoRegistry().getGameInfoByHolder(held.getItem());
+                }
 
-            if (gameInfo == null) { // not a microverse holder
-                return InteractionResult.FAIL;
-            }
+                if (gameInfo == null) { // not a microverse holder
+                    return InteractionResult.FAIL;
+                }
 
-            @Nullable
-            RoomCoords boundRoom = BoxedMicroverseItem.getBoundRoomCoords(held);
+                @Nullable
+                RoomCoords boundRoom = BoxedMicroverseItem.getBoundRoomCoords(held);
 
-            if (!world.isClientSide()) {
-                if (manipulatorEntity.insertGame(gameInfo, boundRoom)) {
-                    if (!player.isCreative()) {
-                        player.setItemInHand(hand, ItemStack.EMPTY);
+                if (!world.isClientSide()) {
+                    if (manipulatorEntity.insertGame(gameInfo, boundRoom)) {
+                        if (!player.isCreative()) {
+                            player.setItemInHand(hand, ItemStack.EMPTY);
+                        }
                     }
                 }
+                return InteractionResult.sidedSuccess(world.isClientSide());
+            } else if (!manipulatorEntity.isEmpty()) {
+                manipulatorEntity.clearGame();
+                return InteractionResult.sidedSuccess(world.isClientSide());
             }
-            return InteractionResult.sidedSuccess(world.isClientSide());
-        } else if (!manipulatorEntity.isEmpty()) {
-            manipulatorEntity.clearGame();
-            return InteractionResult.sidedSuccess(world.isClientSide());
+        } else {
+            if (!manipulatorEntity.isEmpty()) {
+                manipulatorEntity.teleportPlayer(world, player);
+            }
         }
 
         return InteractionResult.PASS;

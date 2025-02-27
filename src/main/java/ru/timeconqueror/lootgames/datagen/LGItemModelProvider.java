@@ -3,10 +3,13 @@ package ru.timeconqueror.lootgames.datagen;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGItems;
 import ru.timeconqueror.tc.ModelProvider;
 import ru.timeconqueror.timecore.api.client.resource.ItemModel;
+import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.ItemModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 
@@ -22,6 +25,14 @@ public class LGItemModelProvider extends ModelProvider {
         addMicroverseModel(LGItems.BOXED_UNKNOWN_MICROVERSE);
         addMicroverseModel(LGItems.BOXED_GAME_OF_LIGHT_MICROVERSE);
         addMicroverseModel(LGItems.BOXED_MINESWEEPER_MICROVERSE);
+
+        addBlockItemModel(LGBlocks.BOARD_OPAQUE_MATTER);
+    }
+
+    protected ItemModelLocation addBlockItemModel(Block block) {
+        Item item = block.asItem();
+        ResourceLocation id = getId(block);
+        return addItemModel(item, new ItemModel(new BlockModelLocation(id)));
     }
 
     protected ItemModel addMicroverseModel(Item item) {

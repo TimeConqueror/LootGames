@@ -11,7 +11,6 @@ import ru.timeconqueror.lootgames.common.LGCreativeTabs;
 import ru.timeconqueror.lootgames.common.block.*;
 import ru.timeconqueror.lootgames.common.block.TechnicalBlock.Configuration;
 import ru.timeconqueror.lootgames.common.item.MicroverseManipulatorItem;
-import ru.timeconqueror.timecore.api.client.resource.StandardItemModelParents;
 import ru.timeconqueror.timecore.api.registry.BlockRegister;
 import ru.timeconqueror.timecore.api.registry.BlockRegister.RenderTypeWrapper;
 import ru.timeconqueror.timecore.api.registry.ItemRegister;
@@ -27,7 +26,6 @@ public class LGBlocks {
     public static DungeonBlock CRACKED_DUNGEON_CEILING;
     public static DungeonBlock DUNGEON_WALL;
     public static DungeonBlock CRACKED_DUNGEON_WALL;
-    public static DungeonBlock DUNGEON_FLOOR;
     public static DungeonBlock CRACKED_DUNGEON_FLOOR;
     public static DungeonBlock SHIELDED_DUNGEON_FLOOR;
 
@@ -44,9 +42,12 @@ public class LGBlocks {
 //    public static GameMasterBlock PIPES_MASTER;
 //    public static GameMasterBlock GOL_MASTER;
 
-    public static TechnicalBlock SPACE_FABRIC; // hard wall
-    public static TechnicalBlock GLASSY_MATTER; // just a glass block
+    public static TechnicalBlock GLASSY_MATTER;
     public static BoardTechnicalBlock BOARD_GLASSY_MATTER;
+    public static TechnicalBlock OPAQUE_MATTER;
+    public static BoardTechnicalBlock BOARD_OPAQUE_MATTER;
+
+    public static TechnicalBlock SPACE_FABRIC; // hard wall
     public static MicroverseManipulatorBlock MICROVERSE_MANIPULATOR;
 
     @AutoRegistrable
@@ -58,7 +59,6 @@ public class LGBlocks {
         REGISTER.register("cracked_dungeon_ceiling", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Cracked Dungeon Ceiling");
         REGISTER.register("dungeon_wall", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Dungeon Wall");
         REGISTER.register("cracked_dungeon_wall", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Cracked Dungeon Wall");
-        REGISTER.register("dungeon_floor", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Dungeon Floor");
         REGISTER.register("cracked_dungeon_floor", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Cracked Dungeon Floor");
         REGISTER.register("shielded_dungeon_floor", () -> new DungeonBlock(BlockPropsFactory.unbreakable(BRICKS_PROPS_CREATOR.create()))).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Shielded Dungeon Floor");
         REGISTER.register("dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Dungeon Lamp");
@@ -76,6 +76,14 @@ public class LGBlocks {
                         BlockBehaviour.Properties.copy(Blocks.BARRIER),
                         Configuration.builder().renderShape(RenderShape.INVISIBLE).build()))
                 .renderLayer(() -> new RenderTypeWrapper(RenderType.translucent())).name("Glassy Matter");
+        REGISTER.register("opaque_matter", () -> new TechnicalBlock(BlockBehaviour.Properties.copy(Blocks.BARRIER),
+                        Configuration.builder().build()))
+                .defaultBlockItem(LGCreativeTabs.MAIN).name("Opaque Matter");
+        REGISTER.register("board_opaque_matter", () -> new BoardTechnicalBlock(
+                BlockBehaviour.Properties.copy(Blocks.BARRIER),
+                Configuration.builder().build())
+        ).defaultBlockItem(LGCreativeTabs.MAIN).name("Opaque Matter");
+
 
         REGISTER.register("microverse_manipulator", MicroverseManipulatorBlock::new)
                 .name("Microverse Manipulator")

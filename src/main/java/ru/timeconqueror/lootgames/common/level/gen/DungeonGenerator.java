@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 //TODO move away from DungeonGenerator
 public class DungeonGenerator {
-    private static final BlockState DUNGEON_FLOOR = LGBlocks.DUNGEON_FLOOR.defaultBlockState();
+    private static final BlockState DUNGEON_FLOOR = LGBlocks.OPAQUE_MATTER.defaultBlockState();
 
     //TODO make it called only when in structure
     public static void resetUnbreakablePlayField(Level world, BlockPos floorPos) {

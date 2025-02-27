@@ -2,9 +2,13 @@ package ru.timeconqueror.lootgames.client.render.game;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 import org.joml.Vector2ic;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
@@ -24,6 +28,7 @@ public class GameOfLightRenderer {
     private static final RenderType RT_BOARD = LGRenderTypes.fullbright(LootGames.rl("textures/game/gol_board.png"));
     private static final RenderType RT_BOARD_ACTIVE = LGRenderTypes.fullbright(LootGames.rl("textures/game/gol_board_active.png"));
     private static final RenderType RT_MARKS = LGRenderTypes.fullbrightTranslucent(LootGames.rl("textures/game/gol_marks.png"));
+    private static final RenderType RT_BORDER = LGRenderTypes.solidWithCustomTexture(LootGames.rl("textures/game/game_light_off_new.png"));
 
     public void render(GameOfLight game, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, float partialTick) {
         poseStack.pushPose();
@@ -32,6 +37,9 @@ public class GameOfLightRenderer {
         BoardLootGame.BoardStage stage = game.getStage();
         int ticks = stage instanceof GameOfLight.StageUnderExpanding ? ((GameOfLight.StageUnderExpanding) stage).getTicks() : 0;
 
+        drawDecorationBorder(game, poseStack, bufferIn);
+
+        poseStack.mulPose(Axis.XP.rotationDegrees(90));
         drawBoard(game, poseStack, bufferIn, ticks, partialTick);
 
         if (stage instanceof GameOfLight.StageShowSequence) {
@@ -95,5 +103,69 @@ public class GameOfLightRenderer {
         matrix.translate(3 / 2F, 3 / 2F, 0);
         DrawHelper.buildTexturedRectByParts(buffer, matrix, -length / 2, -length / 2, length, length, -0.005F, textureStart, textureStart, textureLength, textureLength, 48);
         matrix.translate(-3 / 2F, -3 / 2F, 0);
+    }
+
+    private void drawDecorationBorder(GameOfLight game, PoseStack matrix, MultiBufferSource bufferIn) {
+        VertexConsumer buffer = bufferIn.getBuffer(RT_BORDER);
+        PoseStack.Pose last = matrix.last();
+
+        matrix.translate(-1, 0, -1);
+        drawBorderBlock(buffer, last, 0, 0, 15, 15, 15, 15);
+        drawBorderBlock(buffer, last, 1, 0, 15, 15, 15, 15);
+        drawBorderBlock(buffer, last, 2, 0, 15, 15, 15, 15);
+        drawBorderBlock(buffer, last, 3, 0, 15, 15, 15, 15);
+        drawBorderBlock(buffer, last, 4, 0, 15, 15, 15, 15);
+
+        drawBorderBlock(buffer, last, 0, 1, 15, 15, 15, 15);
+        drawBorderBlock(buffer, last, 4, 1, 15, 15, 15, 15);
+
+        drawBorderBlock(buffer, last, 0, 2, 15, 15, 15, 15);
+        drawBorderBlock(buffer, last, 4, 2, 15, 15, 15, 15);
+
+        drawBorderBlock(buffer, last, 0, 3, 15, 15, 15, 15);
+        drawBorderBlock(buffer, last, 4, 3, 15, 15, 15, 15);
+
+        drawBorderBlock(buffer, last, 0, 4, 15, 15, 15, 15);
+        drawBorderBlock(buffer, last, 1, 4, 15, 15, 15, 15);
+        drawBorderBlock(buffer, last, 2, 4, 15, 15, 15, 15);
+        drawBorderBlock(buffer, last, 3, 4, 15, 15, 15, 15);
+        drawBorderBlock(buffer, last, 4, 4, 15, 15, 15, 15);
+        matrix.translate(1, 0, 1);
+    }
+
+    private void drawBorderBlock(VertexConsumer buffer, PoseStack.Pose matrices, int x, int z, int blockLight1, int blockLight2, int blockLight3, int blockLight4) {
+        Matrix4f pose = matrices.pose();
+        Matrix3f normal = matrices.normal();
+
+        float tileCount = 5;
+
+        float u1 = x / tileCount;
+        float v1 = z / tileCount;
+
+        buffer.vertex(pose, x, 0, z)
+                .color(1F, 1F, 1F, 1F)
+                .uv(u1, v1)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(normal, 0, 1, 0)
+                .endVertex();
+        buffer.vertex(pose, x, 0, z + 1)
+                .color(1F, 1F, 1F, 1F)
+                .uv(u1, v1 + 1 / tileCount)
+                .uv2(LightTexture.FULL_BRIGHT)
+//                .uv2(LightTexture.pack(blockLight, LightTextureExt.MAX_SKY_LIGHT))
+                .normal(normal, 0, 1, 0)
+                .endVertex();
+        buffer.vertex(pose, x + 1, 0, z + 1)
+                .color(1F, 1F, 1F, 1F)
+                .uv(u1 + 1 / tileCount, v1 + 1 / tileCount)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(normal, 0, 1, 0)
+                .endVertex();
+        buffer.vertex(pose, x + 1, 0, z)
+                .color(1F, 1F, 1F, 1F)
+                .uv(u1 + 1 / tileCount, v1)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(normal, 0, 1, 0)
+                .endVertex();
     }
 }

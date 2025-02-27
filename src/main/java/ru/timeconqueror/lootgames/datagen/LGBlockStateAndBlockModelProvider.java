@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.datagen;
 import net.minecraft.data.PackOutput;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.tc.BlockStateProvider;
+import ru.timeconqueror.tc.BlockStateResources;
 import ru.timeconqueror.tc.ModelProvider;
 import ru.timeconqueror.timecore.api.client.resource.BlockModels;
 import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation;
@@ -31,6 +32,14 @@ public class LGBlockStateAndBlockModelProvider extends BlockStateProvider {
         BlockModelLocation microverseManipulator =
                 models.addBlockModel(MICROVERSE_MANIPULATOR, BlockModels.particlesOnly(LootGames.tl("blockentity/microverse_manipulator_particles")));
         addBlockState(MICROVERSE_MANIPULATOR, BlockStateResources.singleVariantWithSingleModel(microverseManipulator));
+
+
+        addBlockState(OPAQUE_MATTER, BlockStateResources.singleVariantWithSingleModel(
+                models.addBlockModel(OPAQUE_MATTER, BlockModels.cubeAllModel(models.getDefaultTextureLocation(OPAQUE_MATTER)))
+        ));
+        addBlockState(BOARD_OPAQUE_MATTER, BlockStateResources.singleVariantWithSingleModel(
+                models.getDefaultModelLocation(BOARD_OPAQUE_MATTER)
+        ));
     }
 
     @Override

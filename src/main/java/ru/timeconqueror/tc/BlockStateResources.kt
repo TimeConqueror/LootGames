@@ -1,6 +1,5 @@
-package ru.timeconqueror.lootgames.datagen
+package ru.timeconqueror.tc
 
-import net.minecraft.world.level.block.Block
 import ru.timeconqueror.timecore.api.client.resource.BlockStateResource
 import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation
 import ru.timeconqueror.timecore.api.util.json.json

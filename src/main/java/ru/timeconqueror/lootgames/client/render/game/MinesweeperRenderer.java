@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.client.render.game;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -43,6 +44,7 @@ public class MinesweeperRenderer {
 
         poseStack.pushPose();
         game.prepareMatrix(poseStack);
+        poseStack.mulPose(Axis.XP.rotationDegrees(90));
 
         if (!game.cIsGenerated) {
             VertexConsumer brightenedBuilder = bufferIn.getBuffer(RT_BRIGHTENED_BOARD);

@@ -14,7 +14,7 @@ class LGAdvancementGenerator : AdvancementGenerator {
 //                    LGBlocks.PUZZLE_MASTER,
 //                    Component.translatable("advancement.lootgames.root"),
 //                    Component.translatable("advancement.lootgames.root.desc"),
-//                    LootGames.rl("textures/block/dungeon_floor.png"),
+//                    LootGames.rl("textures/block/opaque_matter.png"),
 //                    FrameType.GOAL,
 //                    false,  /*Whether to show the toast pop up after completing this advancement*/
 //                    false,  /*Whether to announce in the chat when this advancement has been completed*/

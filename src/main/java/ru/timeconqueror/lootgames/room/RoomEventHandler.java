@@ -47,7 +47,7 @@ public class RoomEventHandler {
     }
 
     @SubscribeEvent
-    public static void onPlayer(TickEvent.PlayerTickEvent event) {
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.START || event.side == LogicalSide.CLIENT) {
             return;
         }

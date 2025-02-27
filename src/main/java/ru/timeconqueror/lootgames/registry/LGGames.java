@@ -17,14 +17,14 @@ public class LGGames {
     public static final Promised<GameInfo> GAME_OF_LIGHT = REGISTER.register("game_of_light", () -> GameInfo.builder()
             .langKey("game.lootgames.game_of_light")
             .microverseHolderItem(() -> LGItems.BOXED_GAME_OF_LIGHT_MICROVERSE)
-            .creator(GameOfLight::new)
+            .gameInstanceCreator(GameOfLight::new)
             .generator(new BoardGameEnvironmentGenerator(() -> LGBlocks.BOARD_GLASSY_MATTER.defaultBlockState()))
             .build());
 
     public static final Promised<GameInfo> MINESWEEPER = REGISTER.register("minesweeper", () -> GameInfo.builder()
             .langKey("game.lootgames.minesweeper")
             .microverseHolderItem(() -> LGItems.BOXED_MINESWEEPER_MICROVERSE)
-            .creator(GameMineSweeper::new)
+            .gameInstanceCreator(GameMineSweeper::new)
             .generator(new BoardGameEnvironmentGenerator(() -> LGBlocks.BOARD_GLASSY_MATTER.defaultBlockState()))
             .build());
 }
