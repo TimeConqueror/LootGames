@@ -20,7 +20,7 @@ import ru.timeconqueror.lootgames.api.minigame.event.EndGameEvent;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.minigame.event.StartStageEvent;
 import ru.timeconqueror.lootgames.api.minigame.event.SwitchStageEvent;
-import ru.timeconqueror.lootgames.api.room.GameProgress;
+import ru.timeconqueror.lootgames.api.room.RoomProgress;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.task.TaskScheduler;
 import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
@@ -31,7 +31,7 @@ import ru.timeconqueror.lootgames.minigame.GameEventBus;
 import ru.timeconqueror.lootgames.minigame.GameNetworkImpl;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGSounds;
-import ru.timeconqueror.lootgames.registry.custom.GameInfo;
+import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
 import ru.timeconqueror.lootgames.room.GameSerializer;
 import ru.timeconqueror.lootgames.room.ServerRoom;
 import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
@@ -44,7 +44,7 @@ import java.util.Objects;
 public abstract class LootGame<STAGE extends Stage> {
     public static final Marker DEBUG_MARKER = Markers.LOOTGAME;
     @Getter
-    private final GameInfo id;
+    private final GameDefinition gameDefinition;
     @Getter
     protected Room room;
     /**
@@ -59,8 +59,8 @@ public abstract class LootGame<STAGE extends Stage> {
     @Getter
     private int age;
 
-    public LootGame(GameInfo id, Room room) {
-        this.id = id;
+    public LootGame(GameDefinition gameDefinition, Room room) {
+        this.gameDefinition = gameDefinition;
 
         this.room = room;
         if (isServerSide()) {
@@ -228,7 +228,7 @@ public abstract class LootGame<STAGE extends Stage> {
     }
 
     public String formatLogMessage(String message) {
-        return ChatFormatting.DARK_BLUE + String.valueOf(LootGames.getGameInfoRegistry().unwrapped().getKey(id)) + ": " + message;
+        return ChatFormatting.DARK_BLUE + String.valueOf(LootGames.getGameDefinitionRegistry().unwrapped().getKey(gameDefinition)) + ": " + message;
     }
 
     public GameNetwork net() {
@@ -236,6 +236,6 @@ public abstract class LootGame<STAGE extends Stage> {
     }
 
     public boolean isStarted() {
-        return room.getProgress() == GameProgress.STARTED;
+        return room.getProgress() == RoomProgress.STARTED;
     }
 }

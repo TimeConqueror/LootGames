@@ -137,15 +137,13 @@ public class RoomEventHandler {
             LOGGER.debug(ROOM, "{} tried to illegally jump from {} to {}", player.getName().getString(), prevCoords, newCoords);
             if (isAllowedToCheat) {
                 LOGGER.debug(ROOM, "{} is allowed to jump from {} to {} because he's admin", player.getName().getString(), prevCoords, newCoords);
-                roomStorage.leaveRoom(player, prevCoords);
+                roomStorage.onRoomLeft(player, prevCoords);
 
-                ServerRoom room = roomStorage.getRoom(newCoords);
-                roomStorage.enterRoom(player, room);
+                ServerRoom room = roomStorage.getRoom(newCoords, true);
+                roomStorage.onRoomEntered(player, room);
             } else {
                 LOGGER.debug(ROOM, "{} is denied to jump from {} to {}", player.getName().getString(), prevCoords, newCoords);
-                if (!roomStorage.teleportToRoom(player, prevCoords)) {
-                    roomStorage.teleportAway(player);
-                }
+                roomStorage.teleportAway(player);
             }
         }
     }
@@ -176,7 +174,7 @@ public class RoomEventHandler {
             ServerRoomStorage storage = ServerRoomStorage.getInstance(event.getLevel()).orElseThrow();
             RoomCoords coords = RoomCoords.of(player.blockPosition());
             LOGGER.debug(ROOM, "{} removed from room world in {}", player.getName().getString(), coords);
-            storage.leaveRoom(player, coords);
+            storage.onRoomLeft(player, coords);
         }
     }
 
@@ -194,9 +192,9 @@ public class RoomEventHandler {
         RoomCoords lastAllowedCoords = playerRoomData.getLastAllowedCoords();
 
         LOGGER.debug(ROOM, "{} tried to enter the room world in {}", player.getName().getString(), coords);
-        ServerRoom room = roomStorage.getRoom(coords);
+        ServerRoom room = roomStorage.getRoom(coords, true);
         if (Objects.equals(lastAllowedCoords, coords) || room.isPendingToEnter(player) || PlayerUtils.isCreativeOrOp(player)) {
-            roomStorage.enterRoom(player, room);
+            roomStorage.onRoomEntered(player, room);
             return true;
         } else {
             LOGGER.debug(ROOM, "{} is disallowed to enter the room {}", player.getName().getString(), coords);

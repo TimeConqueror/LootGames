@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.common.config.base.RewardConfig;
 import ru.timeconqueror.lootgames.common.config.base.StagedRewardConfig.FourStagedRewardConfig;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
-import ru.timeconqueror.lootgames.registry.custom.GameInfo;
+import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
 import ru.timeconqueror.lootgames.utils.ItemStackExt;
 import ru.timeconqueror.timecore.api.util.HorizontalDirection;
 import ru.timeconqueror.timecore.api.util.MathUtils;
@@ -45,7 +45,7 @@ public class RewardHelper {
      * @param rewardLevel  from 0 to 4 inclusive. Zero means no chests will be generated.
      * @param rewardConfig reward part of your game's config
      */
-    public static void spawnFourStagedReward(@Nullable ServerPlayer player, ServerLevel level, GameInfo gameInfo, BlockPos centralPos, int rewardLevel, FourStagedRewardConfig rewardConfig) {
+    public static void spawnFourStagedReward(@Nullable ServerPlayer player, ServerLevel level, GameDefinition gameDefinition, BlockPos centralPos, int rewardLevel, FourStagedRewardConfig rewardConfig) {
         BlockState state = LGBlocks.DUNGEON_LAMP.defaultBlockState();
         level.setBlockAndUpdate(centralPos.offset(1, 0, 1), state);
         level.setBlockAndUpdate(centralPos.offset(1, 0, -1), state);
@@ -59,7 +59,7 @@ public class RewardHelper {
             for (HorizontalDirection direction : HorizontalDirection.values()) {
                 if (counter >= rewardLevel) break;
 
-                spawnLootChest(player, level, centralPos, direction, SpawnChestData.fromRewardConfig(gameInfo, rewardConfig.getStageByIndex(counter)));
+                spawnLootChest(player, level, centralPos, direction, SpawnChestData.fromRewardConfig(gameDefinition, rewardConfig.getStageByIndex(counter)));
                 counter++;
             }
         }
@@ -120,7 +120,7 @@ public class RewardHelper {
             stacks = lootTable.getRandomItems(lootParams, randomSource.nextLong());
         } else {
             stacks = new ObjectArrayList<>();
-            stacks.add(makeSorryStone(data.getGameInfo(), lootTableId));
+            stacks.add(makeSorryStone(data.getGameDefinition(), lootTableId));
         }
 
         int freeSlots = inventorySize - stacks.size();
@@ -132,32 +132,32 @@ public class RewardHelper {
         return stacks;
     }
 
-    private static ItemStack makeSorryStone(GameInfo gameInfo, ResourceLocation lootTableId) {
+    private static ItemStack makeSorryStone(GameDefinition gameDefinition, ResourceLocation lootTableId) {
         ItemStack stack = new ItemStack(Blocks.STONE);
 
         stack.setHoverName(Component.literal("The Sorry Stone").withStyle(ChatFormatting.BLUE, ChatFormatting.BOLD));
         ItemStackExt.addLore(stack, List.of(
                 Component.literal("Modpack creator linked reward to unknown loot table: %s.".formatted(lootTableId)),
-                Component.literal("Please report that it is used in %s game, thank you!".formatted(I18n.get(gameInfo.getLangKey())))));
+                Component.literal("Please report that it is used in %s game, thank you!".formatted(I18n.get(gameDefinition.getLangKey())))));
         return stack;
     }
 
     @Getter
     public static class SpawnChestData {
         private final ResourceLocation lootTableId;
-        private final GameInfo gameInfo;
+        private final GameDefinition gameDefinition;
 
-        public static SpawnChestData fromRewardConfig(GameInfo gameInfo, RewardConfig rewardConfig) {
-            return new SpawnChestData(gameInfo, rewardConfig.getLootTableId());
+        public static SpawnChestData fromRewardConfig(GameDefinition gameDefinition, RewardConfig rewardConfig) {
+            return new SpawnChestData(gameDefinition, rewardConfig.getLootTableId());
         }
 
         /**
-         * @param gameInfo                id of game, which calls this method
+         * @param gameDefinition                id of game, which calls this method
          * @param lootTableId id of loot table, from which items will be set in spawned chest.
          *                            If the resulting loot table is empty, the game will place "sorry-stone" duct-tape item in the chest.
          */
-        public SpawnChestData(GameInfo gameInfo, ResourceLocation lootTableId) {
-            this.gameInfo = gameInfo;
+        public SpawnChestData(GameDefinition gameDefinition, ResourceLocation lootTableId) {
+            this.gameDefinition = gameDefinition;
             this.lootTableId = lootTableId;
         }
     }

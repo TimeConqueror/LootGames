@@ -15,7 +15,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.simple.SimpleChannel;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.room.PlayerRoomData;
 import ru.timeconqueror.lootgames.api.room.Room;
@@ -30,10 +29,7 @@ import ru.timeconqueror.timecore.common.capability.owner.CapabilityOwner;
 import ru.timeconqueror.timecore.common.capability.owner.serializer.CapabilityOwnerCodec;
 import ru.timeconqueror.timecore.common.capability.property.CoffeeProperty;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static ru.timeconqueror.lootgames.api.Markers.ROOM;
 
@@ -60,24 +56,24 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
         return i;
     }
 
+    @Override
+    public ServerRoom getRoom(RoomCoords coords, boolean loadIfUnloaded) {
+        if(!loadedRooms.containsKey(coords)) {
+            if(loadIfUnloaded) {
+                loadRoom(coords);
+            } else {
+                return null;
+            }
+        }
+
+        return Objects.requireNonNull(loadedRooms.get(coords));
+    }
+
     private ServerRoom getRoomCap(RoomCoords coords) {
         ChunkPos cp = coords.containerPos();
         LevelChunk chunk = roomLevel.getChunk(cp.x, cp.z);
         LazyOptional<ServerRoom> lazy = chunk.getCapability(LGCapabilities.ROOM);
         return lazy.orElseThrow(IllegalStateException::new);
-    }
-
-    public ServerRoom getRoom(RoomCoords coords) {
-        if (!loadedRooms.containsKey(coords)) {
-            loadRoom(coords);
-        }
-
-        return getLoadedRoom(coords);
-    }
-
-    @Nullable
-    public ServerRoom getLoadedRoom(RoomCoords coords) {
-        return loadedRooms.get(coords);
     }
 
     private void loadRoom(RoomCoords coords) {
@@ -95,37 +91,16 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
         roomLevel.getChunkSource().removeRegionTicket(ROOM_CONTAINER_TICKET, containerPos, 0, containerPos);
     }
 
-    public void enterRoom(ServerPlayer player, ServerRoom room) {
+    public void onRoomEntered(ServerPlayer player, ServerRoom room) {
         PlayerRoomData.of(player).ifPresent(data -> data.setLastAllowedCoords(room.getCoords()));
 
         LGNetwork.sendToPlayer(player, new SLoadRoomPacket(room));
         log.debug(ROOM, "{} is entering the room ({}).", player.getName().getString(), room.getCoords());
     }
 
-    public void leaveRoom(ServerPlayer player, RoomCoords roomCoords) {
+    public void onRoomLeft(ServerPlayer player, RoomCoords roomCoords) {
         log.debug(ROOM, "{} is leaving the room ({}).", player.getName().getString(), roomCoords);
         LGNetwork.sendToPlayer(player, new SLeaveRoomPacket());
-    }
-
-    public boolean teleportToRoom(ServerPlayer player, RoomCoords coords) {
-        ServerRoom room = getRoom(coords);
-        if (!room.isPendingToEnter(player)) {
-            return false;
-        }
-
-        Vec3 center = room.getRoomBox().getCenter();
-
-        player.teleportTo(roomLevel, center.x, 1, center.z, 0, 0);
-        return true;
-    }
-
-    public void teleportAway(ServerPlayer player, ServerRoom room) {
-        //TODO handle room spawn
-        teleportAway(player);
-//        player.changeDimension(ServerLifecycleHooks.getCurrentServer().overworld());
-        //LOGGER.debug(ROOM, "{} has been teleported to room entrance '()'.", player.getName(), );
-        //LOGGER.debug(ROOM, "{} has been teleported to his spawnpoint.", player.getName());
-        //FIXME teleport to last visited room ENTER or outside
     }
 
     public void teleportAway(ServerPlayer player) {
@@ -133,7 +108,6 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
         if (respLevel == null) {
             respLevel = player.server.overworld();
         }
-
         BlockPos respawnPos = player.getRespawnPosition();
         float respawnAngle = player.getRespawnAngle();
         if (respawnPos == null) {
@@ -141,17 +115,9 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
             respawnAngle = respLevel.getSharedSpawnAngle();
         }
 
+        log.debug(ROOM, "{} has been teleported to his spawnpoint.", player.getName());
         player.teleportTo(respLevel, respawnPos.getX(), respawnPos.getY(), respawnPos.getZ(), respawnAngle, 0);
     }
-
-//    @Override
-//    public void teleportPlayer(RoomCoords coords) {
-//        if(!loadedRooms.containsKey(coords)) {
-//
-//        }
-//
-//        Room room = loadedRooms.get(coords);
-//    }
 
     public void tick() {
         if (tickCount % 20 == 0) {

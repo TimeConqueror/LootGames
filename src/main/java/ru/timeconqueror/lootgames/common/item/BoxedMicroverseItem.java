@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.registry.LGItems;
-import ru.timeconqueror.lootgames.registry.custom.GameInfo;
+import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
 
 import java.util.List;
 
@@ -36,9 +36,9 @@ public class BoxedMicroverseItem extends Item implements IClientItemExtensions {
         if(item == LGItems.BOXED_UNKNOWN_MICROVERSE) {
             gameName = Component.literal("???");
         } else {
-           GameInfo info = LootGames.getGameInfoRegistry().getGameInfoByHolder(item);
-           if(info != null) {
-               gameName = Component.translatable(info.getLangKey());
+           GameDefinition def = LootGames.getGameDefinitionRegistry().getDefinitionByHolder(item);
+           if(def != null) {
+               gameName = Component.translatable(def.getLangKey());
            }
         }
 

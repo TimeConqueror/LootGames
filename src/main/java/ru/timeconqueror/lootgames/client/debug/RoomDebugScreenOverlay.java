@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
+import ru.timeconqueror.lootgames.api.room.RoomLocalPos;
 import ru.timeconqueror.lootgames.room.RoomUtils;
 import ru.timeconqueror.lootgames.room.client.ClientRoom;
 
@@ -63,12 +64,16 @@ public class RoomDebugScreenOverlay implements IGuiOverlay {
     }
 
     private void fillDebugInfo(List<String> debugInfo, Minecraft mc) {
-        RoomCoords coords = getRoomCoords(mc);
+        LocalPlayer player = mc.player;
+
+        RoomCoords coords = getRoomCoords(player);
         debugInfo.add("Room Coords: " + (coords != null ? coords.x() + ", " + coords.z() : "<unable>"));
+        RoomLocalPos localPos = getRoomLocalPos(player);
+        debugInfo.add("Room Local Pos: " + (localPos != null ? localPos.getX() + ", " + localPos.getY()  + ", " + localPos.getZ() : "<unable>"));
         ClientRoom room = ClientRoom.getInstance();
         if (room != null) {
             LootGame<?> game = room.getGame();
-            debugInfo.add("Game: " + (game != null ? game.getId() : "None"));
+            debugInfo.add("Game: " + (game != null ? game.getGameDefinition() : "None"));
             if (game != null) {
                 debugInfo.add("Stage: " + game.getStage().getID());
             }
@@ -76,8 +81,17 @@ public class RoomDebugScreenOverlay implements IGuiOverlay {
     }
 
     @Nullable
-    private RoomCoords getRoomCoords(Minecraft mc) {
-        LocalPlayer player = mc.player;
+    private RoomCoords getRoomCoords(@Nullable LocalPlayer player) {
         return player != null ? RoomCoords.of(player.blockPosition()) : null;
+    }
+
+    @Nullable
+    private RoomLocalPos getRoomLocalPos(@Nullable LocalPlayer player) {
+        RoomCoords coords = getRoomCoords(player);
+        if(player == null || coords == null) {
+            return null;
+        }
+
+        return RoomLocalPos.of(coords, player.blockPosition());
     }
 }

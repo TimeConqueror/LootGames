@@ -1,11 +1,12 @@
 package ru.timeconqueror.lootgames.common.block.entity;
 
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -16,11 +17,15 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.api.room.RoomAccess;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.common.block.MicroverseManipulatorBlock;
 import ru.timeconqueror.lootgames.registry.LGAnimations;
 import ru.timeconqueror.lootgames.registry.LGBlockEntities;
-import ru.timeconqueror.lootgames.registry.custom.GameInfo;
+import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
+import ru.timeconqueror.lootgames.room.EntryPoint;
+import ru.timeconqueror.lootgames.room.ServerRoom;
+import ru.timeconqueror.lootgames.room.ServerRoomStorage;
 import ru.timeconqueror.lootgames.utils.Utils;
 import ru.timeconqueror.timecore.animation.AnimationSystem;
 import ru.timeconqueror.timecore.animation.action.BakedActionFactory;
@@ -29,11 +34,14 @@ import ru.timeconqueror.timecore.api.animation.*;
 import ru.timeconqueror.timecore.api.animation.action.BakedAction;
 import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 import ru.timeconqueror.timecore.api.common.blockentity.SyncableBlockEntity;
+import ru.timeconqueror.timecore.api.util.MathUtils;
+import ru.timeconqueror.timecore.api.util.Vec2i;
 
 import java.util.Objects;
 
 import static ru.timeconqueror.timecore.api.animation.action.ActionDefinitions.*;
 
+@Log4j2
 public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implements AnimatedObject<MicroverseManipulatorBlockEntity> {
     private static final String ACTION_ACTIVATE = "activate";
     private static final String ACTION_DEACTIVATE = "deactivate";
@@ -42,7 +50,7 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
     private AnimationSystem<MicroverseManipulatorBlockEntity> animationSystem;
     @Getter
     @Nullable
-    private GameInfo gameInfo;
+    private GameDefinition gameDefinition;
     @Nullable
     private RoomCoords roomCoords;
     @Getter
@@ -60,9 +68,8 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
     private static BakedActionFactory<MicroverseManipulatorBlockEntity> actionActivate(int animationTime) {
         return BakedActionFactory.builder(MicroverseManipulatorBlockEntity.class)
                 .runOnSide(RunOnSide.BOTH)
-                .actionSingleton(BakedAction.sequencedBuilder(MicroverseManipulatorBlockEntity.class)
+                .action(BakedAction.sequencedBuilder(MicroverseManipulatorBlockEntity.class)
                         .id("activate")
-                        .run(onBoundaryStart((ctx, props) -> ctx.getOwner().setCanSwitchState(false)))
                         .run(everyCycleAt(animationTime, (ctx, props) -> ctx.getOwner().baseEnlighten = true))
                         .run(onBoundaryEnd((ctx, props) -> {
                             ctx.getOwner().animationSystem()
@@ -78,9 +85,8 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
     private static BakedActionFactory<MicroverseManipulatorBlockEntity> actionDeactivate(int animationTime) {
         return BakedActionFactory.builder(MicroverseManipulatorBlockEntity.class)
                 .runOnSide(RunOnSide.BOTH)
-                .actionSingleton(BakedAction.sequencedBuilder(MicroverseManipulatorBlockEntity.class)
+                .action(BakedAction.sequencedBuilder(MicroverseManipulatorBlockEntity.class)
                         .id("activate")
-                        .run(onBoundaryEnd((ctx, props) -> ctx.getOwner().setCanSwitchState(false)))
                         .run(onBoundaryEnd((ctx, props) -> {
                             ctx.animationSystem().startAnimationScript(LGAnimations.microverseManipulatorHoleAppear
                                             .starter()
@@ -98,9 +104,9 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
     }
 
     private void clearGameAndThrowStack() {
-        GameInfo game = Objects.requireNonNull(gameInfo);
+        GameDefinition game = Objects.requireNonNull(gameDefinition);
 
-        Item holder = LootGames.getGameInfoRegistry().getHolderByGameInfo(game);
+        Item holder = LootGames.getGameDefinitionRegistry().getHolderByDefinition(game);
         ItemStack stack = new ItemStack(holder, 1);
 
         Direction direction = getBlockState().getValue(MicroverseManipulatorBlock.FACING);
@@ -113,7 +119,7 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
         ItemEntity e = Utils.makeItemThrowing(level, pos, stack, dirVec, -20, 0.1F, 20);
         level.addFreshEntity(e);
 
-        gameInfo = null;
+        gameDefinition = null;
         saveAndSync();
     }
 
@@ -133,7 +139,7 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
         animationSystem.registerPredefinedAction(ACTION_DEACTIVATE, actionDeactivate(610));
 
         if (!isClientSide()) {
-            if (gameInfo != null) {
+            if (gameDefinition != null) {
                 animationSystem.startAnimation(LGAnimations.microverseManipulatorIdle.starter().withNoTransitionTime(), AnimationConstants.MAIN_LAYER_NAME);
                 animationSystem.startAnimation(LGAnimations.microverseManipulatorHoleIdle.starter().withNoTransitionTime(), LAYER_HOLE);
                 this.baseEnlighten = true;
@@ -151,17 +157,18 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
     }
 
     public boolean isEmpty() {
-        return gameInfo == null;
+        return gameDefinition == null;
     }
 
-    public boolean insertGame(GameInfo gameInfo, @Nullable RoomCoords boundRoomCoords) {
+    public boolean insertGame(GameDefinition gameDefinition, @Nullable RoomCoords boundRoomCoords) {
         if (!isEmpty() || !canSwitchState) {
             return false;
         }
 
-        this.gameInfo = gameInfo;
+        this.gameDefinition = gameDefinition;
         this.roomCoords = boundRoomCoords;
         saveAndSync();
+        this.canSwitchState = false;
         animationSystem.startAnimationScript(AnimationScript.builder(LGAnimations.microverseManipulatorPlace.starter().withTransitionTime(0).withSpeed(2))
                         .withPredefinedAction(ACTION_ACTIVATE)
                         .withNext(AnimationScript.builder(LGAnimations.microverseManipulatorIdle.starter().withTransitionTime(0))),
@@ -174,6 +181,7 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
             return;
         }
 
+        this.canSwitchState = false;
         animationSystem.startAnimationScript(AnimationScript.builder(LGAnimations.microverseManipulatorPlace.starter().reversed().withNoTransitionToNone().withSpeed(2))
                         .withPredefinedAction(ACTION_DEACTIVATE),
                 AnimationConstants.MAIN_LAYER_NAME);
@@ -186,10 +194,10 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
 
     @Override
     protected void readNBT(CompoundTag nbt, SerializationType type) {
-        this.gameInfo = null;
+        this.gameDefinition = null;
 
         if (nbt.contains("game")) {
-            this.gameInfo = GameInfo.deserialize(nbt.getString("game"));
+            this.gameDefinition = GameDefinition.deserialize(nbt.getString("game"));
         }
 
         this.baseEnlighten = nbt.getBoolean("enlighten");
@@ -199,8 +207,8 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
 
     @Override
     protected void writeNBT(CompoundTag nbt, SerializationType type) {
-        if (gameInfo != null) {
-            nbt.putString("game", GameInfo.serialize(gameInfo));
+        if (gameDefinition != null) {
+            nbt.putString("game", GameDefinition.serialize(gameDefinition));
         }
 
         nbt.putBoolean("enlighten", baseEnlighten);
@@ -219,11 +227,52 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
         return INFINITE_EXTENT_AABB;
     }
 
-    public void teleportPlayer(Level currentLevel, Player player) {
+    public void initiateTeleport(ServerPlayer player) {
         this.canSwitchState = false;
 
-        //TODO
+        BakedAction<MicroverseManipulatorBlockEntity> delayedTeleport = BakedAction.sequencedBuilder(MicroverseManipulatorBlockEntity.class)
+                .run(onBoundaryStart((ctx, nothing) -> prepareRoom(gameDefinition)))
+                .run(everyCycleAt(620, (ctx, nothing) -> {
+                    MicroverseManipulatorBlockEntity owner = ctx.getOwner();
+                    BlockPos pos = owner.getBlockPos();
 
-        this.canSwitchState = true;
+                    if (!player.hasDisconnected()
+                            && player.level() == owner.getLevel()
+                            && !(player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) > 10 * 10)
+                    ) {
+                        ServerRoom room = RoomAccess.getServerStorage().getRoom(roomCoords, true);
+                        room.teleportInside(player);
+                    }
+                }))
+                .run(onBoundaryEnd((ctx, nothing) -> ctx.getOwner().setCanSwitchState(true)))
+                .build();
+
+        animationSystem.startAnimationScript(AnimationScript.builder(LGAnimations.microverseManipulatorHoleCollapse.starter().withSpeed(1/3F))
+                        .withInplaceAction(delayedTeleport)
+                , LAYER_HOLE);
+    }
+
+    private void prepareRoom(GameDefinition gameDefinition) {
+        ServerRoom room;
+        if (roomCoords == null) {
+            ServerRoomStorage serverStorage = RoomAccess.getServerStorage();
+
+            int freeIndex = serverStorage.reserveFreeIndex();
+            Vec2i vec = MathUtils.OutwardSquareSpiral.offsetByIndex(freeIndex);
+            this.roomCoords = new RoomCoords(vec.x(), vec.y());
+            log.debug("Reserved spiral index: {}, Resulted coords: {}", freeIndex, roomCoords);
+            save();
+            room = serverStorage.getRoom(roomCoords, true);
+        } else {
+            room = RoomAccess.getServerStorage().getRoom(roomCoords, true);
+        }
+
+        if (!room.isGenerated()) {
+            log.debug("Generating game in room: {}", gameDefinition.toKey());
+            room.generate(gameDefinition);
+        }
+
+        Level level = Objects.requireNonNull(getLevel());
+        room.updateEntryPoint(new EntryPoint(level.dimension(), getBlockPos()));
     }
 }

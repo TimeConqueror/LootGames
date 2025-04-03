@@ -53,7 +53,7 @@ public class MSOverlayHandler {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        Room room = RoomAccess.getLoadedRoom(player.clientLevel, RoomCoords.of(player.blockPosition()));
+        Room room = RoomAccess.getClientRoom();
         if (room == null || !(room.getGame() instanceof GameMineSweeper game)) {
             return;
         }

@@ -17,10 +17,11 @@ import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.client.BlockModels;
 import ru.timeconqueror.lootgames.common.block.entity.MicroverseManipulatorBlockEntity;
 import ru.timeconqueror.lootgames.registry.LGGames;
-import ru.timeconqueror.lootgames.registry.custom.GameInfo;
+import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
 import ru.timeconqueror.timecore.animation.renderer.AnimatedBlockEntityRenderer;
 import ru.timeconqueror.timecore.animation.renderer.ModelConfiguration;
 import ru.timeconqueror.timecore.api.util.VecUtils;
+import ru.timeconqueror.timecore.client.render.model.PartLink;
 import ru.timeconqueror.timecore.client.render.model.TimeModel;
 import ru.timeconqueror.timecore.client.render.model.TimeModelPart;
 import ru.timeconqueror.timecore.client.render.processor.PropertyBasedRotationProcessor;
@@ -40,9 +41,11 @@ public class MicroverseManipulatorRenderer extends AnimatedBlockEntityRenderer<M
     public MicroverseManipulatorRenderer(BlockEntityRendererProvider.Context context) {
         super(new TimeModel(ModelConfiguration.builder(BlockModels.MICROVERSE_MANIPULATOR).build()));
 
-        getPuppeteer().addModelProcessor(RotationProcessor.byDegrees(Direction.Axis.Y, 180));
-        getPuppeteer().addModelProcessor(PropertyBasedRotationProcessor.horizontalDirectionalBased());
+        getPuppeteer().addModelProcessor(RotationProcessor.byDegrees(PartLink.of("Block"), Direction.Axis.Y, 180));
+        getPuppeteer().addModelProcessor(PropertyBasedRotationProcessor.horizontalDirectionalBased(PartLink.of("Block")));
         getPuppeteer().addModelProcessor((entity, model, partialTick) -> {
+
+
             LocalPlayer player = Minecraft.getInstance().player;
             if (player == null) return;
 
@@ -65,6 +68,7 @@ public class MicroverseManipulatorRenderer extends AnimatedBlockEntityRenderer<M
 
         double dx = eyePos.x() - holePos.x();
         double dz = eyePos.z() - holePos.z();
+
         return (float) Mth.atan2(dx, dz);
     }
 
@@ -73,8 +77,8 @@ public class MicroverseManipulatorRenderer extends AnimatedBlockEntityRenderer<M
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        GameInfo gameInfo = object.getGameInfo();
-        if (gameInfo == null) {
+        GameDefinition gameDefinition = object.getGameDefinition();
+        if (gameDefinition == null) {
             return;
         }
 
@@ -82,7 +86,7 @@ public class MicroverseManipulatorRenderer extends AnimatedBlockEntityRenderer<M
             return;
         }
 
-        ResourceLocation location = GAME_TEXTURES.get(gameInfo.toKey());
+        ResourceLocation location = GAME_TEXTURES.get(gameDefinition.toKey());
         RenderType gameLayer = RenderType.entityTranslucent(location);
         this.model.renderToBuffer(poseStack, buffer.getBuffer(gameLayer), packetLight, packedOverlay, rgbaColor);
         this.model.renderToBuffer(poseStack, buffer.getBuffer(HOLE_LAYER), packetLight, packedOverlay, rgbaColor);

@@ -2,12 +2,12 @@ package ru.timeconqueror.lootgames.datagen;
 
 import net.minecraft.data.PackOutput;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.tc.BlockStateProvider;
-import ru.timeconqueror.tc.BlockStateResources;
-import ru.timeconqueror.tc.ModelProvider;
 import ru.timeconqueror.timecore.api.client.resource.BlockModels;
+import ru.timeconqueror.timecore.api.client.resource.BlockStateResources;
 import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
+import ru.timeconqueror.timecore.api.devtools.gen.BlockStateProvider;
+import ru.timeconqueror.timecore.api.devtools.gen.ModelProvider;
 
 import static ru.timeconqueror.lootgames.registry.LGBlocks.*;
 

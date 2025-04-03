@@ -1,10 +1,13 @@
 package ru.timeconqueror.lootgames.room;
 
+import com.google.common.base.Stopwatch;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
@@ -13,15 +16,15 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.network.simple.SimpleChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.event.GenerateGameEnvironmentEvent;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
-import ru.timeconqueror.lootgames.api.room.GameProgress;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
+import ru.timeconqueror.lootgames.api.room.RoomProgress;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.packet.room.SSyncGamePacket;
 import ru.timeconqueror.lootgames.registry.LGCapabilities;
+import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
 import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 import ru.timeconqueror.timecore.common.capability.CoffeeCapabilityInstance;
 import ru.timeconqueror.timecore.common.capability.owner.CapabilityOwner;
@@ -29,7 +32,11 @@ import ru.timeconqueror.timecore.common.capability.owner.serializer.CapabilityOw
 import ru.timeconqueror.timecore.common.capability.property.CoffeeProperty;
 import ru.timeconqueror.timecore.common.capability.property.serializer.IPropertySerializer;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements Room {
@@ -41,7 +48,8 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
 
     private final Set<UUID> pendingToEnter = new HashSet<>();
     private final CoffeeProperty<LootGame<?>> game;
-    private final CoffeeProperty<GameProgress> progress = prop("progress", GameProgress.NOT_STARTED, GameProgress.SERIALIZER);
+    private final CoffeeProperty<RoomProgress> progress = prop("progress", RoomProgress.NOT_GENERATED, RoomProgress.SERIALIZER);
+    private final CoffeeProperty<EntryPoint> entryPoint = prop("entry", (EntryPoint) null, EntryPoint.SERIALIZER.nullable());
 
     public ServerRoom(ServerLevel level, RoomCoords coords) {
         this.level = level;
@@ -74,34 +82,97 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
 
     @Nullable
     public LootGame<?> getGame() {
-        if (getProgress() != GameProgress.STARTED) {
-            return null;
+        RoomProgress progress = getProgress();
+        if(progress == RoomProgress.GENERATED || progress == RoomProgress.STARTED) {
+            return game.get();
         }
 
-        return game.get();
+        return null;
+    }
+
+    @Nullable
+    public EntryPoint getEntryPoint() {
+        return entryPoint.get();
     }
 
     @Override
-    public GameProgress getProgress() {
+    public RoomProgress getProgress() {
         return progress.get();
     }
 
-    public void startGame() {
-        var registry = LootGames.getGameInfoRegistry();
-        var id = registry.getRandom();
-        var game = id.createGame(this);
+    public void generate(GameDefinition gameDefinition) {
+        var game = gameDefinition.createGame(this);
         this.game.set(game);
-        this.progress.set(GameProgress.STARTED);
 
-        id.getGenerator().generate(level, this, game);
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        log.debug("[Generation] Room generating started.");
+
+        gameDefinition.getGenerator().generate(level, this, game);
+        log.debug("[Generation] GameDefinition's generator took {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        stopwatch.reset();
+
         MinecraftForge.EVENT_BUS.post(new GenerateGameEnvironmentEvent(this, game));
+        log.debug("[Generation] GenerateGameEnvironmentEvent took {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        stopwatch.reset();
+
         RoomGenerator.generateRoomBorders(this);
+        log.debug("[Generation] Room borders generation took {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
         game.start();
+
+        this.progress.set(RoomProgress.GENERATED);
+    }
+
+    public void updateEntryPoint(EntryPoint newEntryPoint) {
+        this.entryPoint.set(newEntryPoint);
+    }
+
+    public void teleportInside(Entity entity) {
+        if (!isGenerated()) {
+            log.error("Cannot teleport inside, room {} is not generated", coords);
+            return;
+        }
+
+        if (entity instanceof ServerPlayer player) {
+            addPendingToEnter(player);
+        }
+
+        GameDefinition gameDefinition = game.get().getGameDefinition();
+        BlockPos teleportPos = gameDefinition.getTeleportPos().toAbsolutePos(coords);
+        ServerLevel level = getLevel();
+
+        // ensure destination chunk is loaded before we put the player in it
+        level.getChunk(teleportPos);
+        entity.teleportTo(level, teleportPos.getX(), teleportPos.getY(), teleportPos.getZ(), Set.of(), 0, 0);
+    }
+
+    public void teleportAway(ServerPlayer player) {
+        EntryPoint entryPoint = getEntryPoint();
+        if (entryPoint != null) {
+            ServerLevel level = player.server.getLevel(entryPoint.entryDimension());
+            BlockPos pos = entryPoint.entryPos();
+            if(level != null) {
+                player.teleportTo(level, pos.getX(), pos.getY(), pos.getZ(), 0, 0);
+                return;
+            }
+        }
+
+        ServerLevel respLevel = player.server.getLevel(player.getRespawnDimension());
+        if (respLevel == null) {
+            respLevel = player.server.overworld();
+        }
+        BlockPos respawnPos = player.getRespawnPosition();
+        float respawnAngle = player.getRespawnAngle();
+        if (respawnPos == null) {
+            respawnPos = respLevel.getSharedSpawnPos();
+            respawnAngle = respLevel.getSharedSpawnAngle();
+        }
+
+        player.teleportTo(respLevel, respawnPos.getX(), respawnPos.getY(), respawnPos.getZ(), respawnAngle, 0);
     }
 
     public void finishGame() {
-        this.progress.set(GameProgress.FINISHED);
+        this.progress.set(RoomProgress.FINISHED);
         this.game.set(null);
         syncGame();
     }

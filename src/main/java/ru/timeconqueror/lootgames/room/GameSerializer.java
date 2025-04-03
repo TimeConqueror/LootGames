@@ -6,7 +6,7 @@ import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.minigame.Stage;
 import ru.timeconqueror.lootgames.api.room.Room;
-import ru.timeconqueror.lootgames.registry.custom.GameInfo;
+import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
 import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 
 public class GameSerializer {
@@ -17,7 +17,7 @@ public class GameSerializer {
         }
 
         String location = tag.getString("id");
-        GameInfo id = GameInfo.deserialize(location);
+        GameDefinition id = GameDefinition.deserialize(location);
         if (id == null) {
             LootGames.LOGGER.warn("Can't find game factory for {}", location);
             return null;
@@ -37,8 +37,8 @@ public class GameSerializer {
         CompoundTag gameTag = new CompoundTag();
         game.writeNBT(gameTag, type);
 
-        GameInfo id = game.getId();
-        out.putString("id", GameInfo.serialize(id));
+        GameDefinition id = game.getGameDefinition();
+        out.putString("id", GameDefinition.serialize(id));
         out.put("game", gameTag);
         return out;
     }

@@ -34,10 +34,10 @@ public class MinecraftToGameEventReposter {
 
     private static boolean onPlayerClicked(Level level, Player player, BlockPos pos, InteractionHand hand, Direction face, MouseClickType type) {
         RoomCoords coords = RoomCoords.of(pos);
-        Room room = RoomUtils.getLoadedRoom(level, coords);
+        Room room = RoomUtils.getRoom(level, coords, false);
         if (room != null && room.getGame() != null) {
             BlockState blockState = level.getBlockState(pos);
-            var gameEvent = new ClickBlockEvent(level, player, blockState, coords.toRelative(pos), hand, face, type);
+            var gameEvent = new ClickBlockEvent(level, player, blockState, coords.toLocalPos(pos), hand, face, type);
             room.getGame().getEventBus().post(GameEvents.CLICK_BLOCK, gameEvent);
             return gameEvent.isAccepted();
         }

@@ -32,7 +32,11 @@ public interface Room {
      */
     @Nullable LootGame<?> getGame();
 
-    GameProgress getProgress();
+    RoomProgress getProgress();
+
+    default boolean isGenerated() {
+        return getProgress() != RoomProgress.NOT_GENERATED;
+    }
 
     default boolean contains(BlockPos pos) {
         return getCoords().contains(pos);

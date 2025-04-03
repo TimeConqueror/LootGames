@@ -29,12 +29,25 @@ public final class RoomCoords {
         this.z = z;
     }
 
-    public static boolean isSameRoom(BlockPos pos, BlockPos pos2) {
-        return pos.getX() >> BLOCK_SHIFT == pos2.getX() >> BLOCK_SHIFT && pos.getZ() >> BLOCK_SHIFT == pos2.getZ() >> BLOCK_SHIFT;
+    public static int blockPosToRoomCoord(int blockPos) {
+        return blockPos >> BLOCK_SHIFT;
     }
 
-    public static boolean isSameRoom(BlockPos pos, RoomCoords pos2) {
-        return pos.getX() >> BLOCK_SHIFT == pos2.x && pos.getZ() >> BLOCK_SHIFT == pos2.z;
+    public static int roomCoordsToMinBlockPos(int roomCoord) {
+        return roomCoord << BLOCK_SHIFT;
+    }
+
+    public static int chunkPosToRoomCoord(int chunkPos) {
+        return chunkPos >> CHUNK_SHIFT;
+    }
+
+    public static int roomCoordToContainerChunkPos(int roomCoord) {
+        return roomCoord << CHUNK_SHIFT;
+    }
+
+    public static boolean isSameRoom(BlockPos pos, BlockPos pos2) {
+        return blockPosToRoomCoord(pos.getX()) == blockPosToRoomCoord(pos2.getX())
+        && blockPosToRoomCoord(pos.getZ()) == blockPosToRoomCoord(pos2.getZ());
     }
 
     public static RoomCoords of(BlockPos pos) {
@@ -55,23 +68,7 @@ public final class RoomCoords {
     }
 
     public static RoomCoords of(int chunkX, int chunkZ) {
-        return new RoomCoords(chunkX >> CHUNK_SHIFT, chunkZ >> CHUNK_SHIFT);
-    }
-
-    public static int blockPosToRoomCoord(int blockPos) {
-        return blockPos >> BLOCK_SHIFT;
-    }
-
-    public static int blockCoordToMinBlockPos(int roomCoord) {
-        return roomCoord << BLOCK_SHIFT;
-    }
-
-    public static int chunkPosToRoomCoord(int chunkPos) {
-        return chunkPos >> CHUNK_SHIFT;
-    }
-
-    public static int roomCoordToContainerChunkPos(int roomCoord) {
-        return roomCoord << CHUNK_SHIFT;
+        return new RoomCoords(chunkPosToRoomCoord(chunkX), chunkPosToRoomCoord(chunkZ));
     }
 
     public static RoomCoords ofPos(int blockX, int blockZ) {
@@ -79,19 +76,23 @@ public final class RoomCoords {
     }
 
     public BlockPos minPos(int minY) {
-        return new BlockPos(x << BLOCK_SHIFT, minY, z << BLOCK_SHIFT);
+        return new BlockPos(roomCoordsToMinBlockPos(x), minY, roomCoordsToMinBlockPos(z));
     }
 
     public BlockPos minPos(Level level) {
-        return new BlockPos(x << BLOCK_SHIFT, level.getMinBuildHeight(), z << BLOCK_SHIFT);
+        return new BlockPos(roomCoordsToMinBlockPos(x), level.getMinBuildHeight(), roomCoordsToMinBlockPos(z));
     }
 
     public BlockPos maxPos(int maxY) {
-        return new BlockPos((x << BLOCK_SHIFT) + ROOM_SIZE - 1, maxY, (z << BLOCK_SHIFT) + ROOM_SIZE - 1);
+        return new BlockPos(roomCoordsToMinBlockPos(x) + ROOM_SIZE - 1,
+                maxY,
+                roomCoordsToMinBlockPos(z) + ROOM_SIZE - 1);
     }
 
     public BlockPos maxPos(Level level) {
-        return new BlockPos((x << BLOCK_SHIFT) + ROOM_SIZE - 1, level.getMaxBuildHeight() - 1, (z << BLOCK_SHIFT) + ROOM_SIZE - 1);
+        return new BlockPos(roomCoordsToMinBlockPos(x) + ROOM_SIZE - 1,
+                level.getMaxBuildHeight() - 1,
+                roomCoordsToMinBlockPos(z) + ROOM_SIZE - 1);
     }
 
     public int x() {
@@ -103,25 +104,35 @@ public final class RoomCoords {
     }
 
     public ChunkPos containerPos() {
-        return new ChunkPos(x << CHUNK_SHIFT, z << CHUNK_SHIFT);
+        return new ChunkPos(roomCoordToContainerChunkPos(x), roomCoordToContainerChunkPos(z));
     }
 
     public boolean contains(BlockPos pos) {
-        return x == pos.getX() >> BLOCK_SHIFT && z == pos.getZ() >> BLOCK_SHIFT;
+        return x == blockPosToRoomCoord(pos.getX()) && z == blockPosToRoomCoord(pos.getZ());
     }
 
-    public RoomOffset toRelative(BlockPos pos) {
+    public RoomLocalPos toLocalPos(BlockPos pos) {
         if (!contains(pos)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Position %s is not within the room [%d, %d]".formatted(pos, x, z));
         }
 
         int x = pos.getX();
         int z = pos.getZ();
-        return new RoomOffset(x - (this.x << BLOCK_SHIFT), pos.getY(), z - (this.z << BLOCK_SHIFT));
+        return new RoomLocalPos(x - roomCoordsToMinBlockPos(this.x), pos.getY(), z - roomCoordsToMinBlockPos(this.z));
+    }
+
+    public BlockPos toAbsolutePos(RoomLocalPos localPos) {
+        return new BlockPos(
+                roomCoordsToMinBlockPos(x) + localPos.getX(),
+                localPos.getY(),
+                roomCoordsToMinBlockPos(z) + localPos.getZ()
+        );
     }
 
     public BlockPos centerPos(int y) {
-        return new BlockPos((x << BLOCK_SHIFT) + ROOM_SIZE / 2, y, (z << BLOCK_SHIFT) + ROOM_SIZE / 2);
+        return new BlockPos(roomCoordsToMinBlockPos(x) + ROOM_SIZE / 2,
+                y,
+                roomCoordsToMinBlockPos(z) + ROOM_SIZE / 2);
     }
 
     public void write(ByteBuf byteBuf) {

@@ -1,31 +1,22 @@
 package ru.timeconqueror.lootgames.api.room;
 
-import net.minecraft.Util;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
-import ru.timeconqueror.timecore.api.util.MathUtils;
-import ru.timeconqueror.timecore.api.util.Requirements;
-import ru.timeconqueror.timecore.api.util.Vec2i;
+import org.jetbrains.annotations.Contract;
 
 public interface RoomStorage {
-    int ROOM_SIZE = 8 * 16;
-    int BLOCK_SHIFT = Util.make(Mth.log2(ROOM_SIZE), offset -> Requirements.greaterOrEquals(offset, 4));
-
-    static BlockPos getRoomStart(int roomIndex) {
-        Vec2i offset = MathUtils.OutwardSquareSpiral.offsetByIndex(roomIndex);
-        return new BlockPos(offset.x() << BLOCK_SHIFT, 0, offset.y() << BLOCK_SHIFT);
-    }
-
-    static int getRoomIndex(BlockPos pos) {
-        return getRoomIndex(pos.getX(), pos.getZ());
-    }
-
-    static int getRoomIndex(int blockX, int blockZ) {
-        Vec2i corner = new Vec2i(blockX >> BLOCK_SHIFT, blockZ >> BLOCK_SHIFT);
-        return MathUtils.OutwardSquareSpiral.indexByOffset(corner);
-    }
-
     int reserveFreeIndex();
 
-    Room getRoom(RoomCoords coords);
+    /**
+     * Retrieves the room at the specified coordinates.
+     * <p>
+     * If {@code loadIfUnloaded} is {@code true}, the method guarantees a non-null result,
+     * loading the room if necessary. Otherwise, the method may return {@code null}
+     * if the room is not already loaded.
+     *
+     * @param coords         the coordinates of the room
+     * @param loadIfUnloaded whether to load the room if it is not already loaded
+     * @return the room at the given coordinates, or {@code null} if it is not loaded and
+     * {@code loadIfUnloaded} is {@code false}
+     */
+    @Contract("_, true -> !null; _, false -> _")
+    Room getRoom(RoomCoords coords, boolean loadIfUnloaded);
 }

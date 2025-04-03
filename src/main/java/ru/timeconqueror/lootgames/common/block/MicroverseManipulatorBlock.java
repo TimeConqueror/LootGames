@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.common.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -28,7 +29,7 @@ import ru.timeconqueror.lootgames.common.block.entity.MicroverseManipulatorBlock
 import ru.timeconqueror.lootgames.common.item.BoxedMicroverseItem;
 import ru.timeconqueror.lootgames.registry.LGBlockEntities;
 import ru.timeconqueror.lootgames.registry.LGItems;
-import ru.timeconqueror.lootgames.registry.custom.GameInfo;
+import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
 import ru.timeconqueror.timecore.api.util.LevelUtils;
 
 public class MicroverseManipulatorBlock extends BaseEntityBlock {
@@ -59,17 +60,21 @@ public class MicroverseManipulatorBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
 
-        if (!player.isShiftKeyDown()) {
+        if (player.isShiftKeyDown()) {
+            if (!manipulatorEntity.isEmpty()) {
+                manipulatorEntity.initiateTeleport((ServerPlayer) player);
+            }
+        } else {
             if (manipulatorEntity.isEmpty()) {
                 ItemStack held = player.getItemInHand(hand);
-                GameInfo gameInfo;
+                GameDefinition gameDefinition;
                 if (held.getItem() == LGItems.BOXED_UNKNOWN_MICROVERSE) {
-                    gameInfo = LootGames.getGameInfoRegistry().getRandom();
+                    gameDefinition = LootGames.getGameDefinitionRegistry().getRandom();
                 } else {
-                    gameInfo = LootGames.getGameInfoRegistry().getGameInfoByHolder(held.getItem());
+                    gameDefinition = LootGames.getGameDefinitionRegistry().getDefinitionByHolder(held.getItem());
                 }
 
-                if (gameInfo == null) { // not a microverse holder
+                if (gameDefinition == null) { // not a microverse holder
                     return InteractionResult.FAIL;
                 }
 
@@ -77,7 +82,7 @@ public class MicroverseManipulatorBlock extends BaseEntityBlock {
                 RoomCoords boundRoom = BoxedMicroverseItem.getBoundRoomCoords(held);
 
                 if (!world.isClientSide()) {
-                    if (manipulatorEntity.insertGame(gameInfo, boundRoom)) {
+                    if (manipulatorEntity.insertGame(gameDefinition, boundRoom)) {
                         if (!player.isCreative()) {
                             player.setItemInHand(hand, ItemStack.EMPTY);
                         }
@@ -87,10 +92,6 @@ public class MicroverseManipulatorBlock extends BaseEntityBlock {
             } else if (!manipulatorEntity.isEmpty()) {
                 manipulatorEntity.clearGame();
                 return InteractionResult.sidedSuccess(world.isClientSide());
-            }
-        } else {
-            if (!manipulatorEntity.isEmpty()) {
-                manipulatorEntity.teleportPlayer(world, player);
             }
         }
 

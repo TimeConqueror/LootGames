@@ -8,7 +8,7 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
-import ru.timeconqueror.lootgames.api.room.GameProgress;
+import ru.timeconqueror.lootgames.api.room.RoomProgress;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.common.packet.room.SLoadRoomPacket;
@@ -29,7 +29,7 @@ public class ClientRoom implements Room {
     @Getter
     private LootGame<?> game;
     @Getter
-    private final GameProgress progress;
+    private final RoomProgress progress;
     @Getter
     private final AABB roomBox;
 

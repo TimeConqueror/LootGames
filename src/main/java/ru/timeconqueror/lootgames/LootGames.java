@@ -9,8 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import ru.timeconqueror.lootgames.api.Markers;
-import ru.timeconqueror.lootgames.registry.custom.GameInfoRegistry;
-import ru.timeconqueror.timecore.animation.action.BakedActionImpl;
+import ru.timeconqueror.lootgames.registry.custom.GameDefinitionRegistry;
 import ru.timeconqueror.timecore.api.TimeCoreAPI;
 import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.ItemModelLocation;
@@ -28,7 +27,7 @@ public class LootGames {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static LootGames INSTANCE = null;
     @Setter
-    private static GameInfoRegistry gameInfoRegistry;
+    private static GameDefinitionRegistry gameDefinitionRegistry;
 
     private static final String MARKER_PROPERTY = "lootgames.logging.markers";
 
@@ -38,10 +37,6 @@ public class LootGames {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::handleMarkers);
         TimeCoreAPI.setup(this);
         EnvironmentUtils.enableLogMarkers(ru.timeconqueror.timecore.api.Markers.ACTIONS);
-
-        if (EnvironmentUtils.isInDev()) {
-            BakedActionImpl.loggerEnabled = true;
-        }
     }
 
     private void handleMarkers(FMLConstructModEvent event) {
@@ -83,11 +78,11 @@ public class LootGames {
         return new ItemModelLocation(MODID, path);
     }
 
-    public static GameInfoRegistry getGameInfoRegistry() {
-        if (gameInfoRegistry == null) {
+    public static GameDefinitionRegistry getGameDefinitionRegistry() {
+        if (gameDefinitionRegistry == null) {
             throw new IllegalStateException("Called to early");
         }
 
-        return gameInfoRegistry;
+        return gameDefinitionRegistry;
     }
 }

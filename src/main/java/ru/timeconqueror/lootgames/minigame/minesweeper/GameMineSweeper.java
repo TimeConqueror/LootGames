@@ -4,7 +4,6 @@ import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -132,7 +131,7 @@ public class GameMineSweeper extends BoardLootGame {
 
         BlockPos rewardPos = getGameCenter().above();
 
-        RewardHelper.spawnFourStagedReward((ServerPlayer) getRoom().getRandomPlayer(), ((ServerLevel) getLevel()), getId(), rewardPos, currentLevel - 1, LGConfigs.REWARDS.minesweeper);
+        RewardHelper.spawnFourStagedReward((ServerPlayer) getRoom().getRandomPlayer(), ((ServerLevel) getLevel()), getGameDefinition(), rewardPos, currentLevel - 1, LGConfigs.REWARDS.minesweeper);
     }
 
     private void onGameLost() {

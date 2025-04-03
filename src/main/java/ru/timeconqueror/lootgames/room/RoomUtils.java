@@ -1,21 +1,18 @@
 package ru.timeconqueror.lootgames.room;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
-import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.room.Room;
-import ru.timeconqueror.lootgames.api.room.RoomAccess;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.registry.LGDimensions;
+import ru.timeconqueror.lootgames.room.client.ClientRoom;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 public class RoomUtils {
     public static boolean isRoomHolder(ChunkPos chunkPos) {
@@ -45,28 +42,17 @@ public class RoomUtils {
     }
 
     @Nullable
-    public static Room getRoom(Level level, RoomCoords coords) {
-        return RoomAccess.getRoom(level, coords);
-    }
+    public static Room getRoom(Level level, RoomCoords coords, boolean loadIfUnloaded) {
+        if (!RoomUtils.inRoomWorld(level)) {
+            return null;
+        }
 
-    @Nullable
-    public static Room getLoadedRoom(Level level, RoomCoords coords) {
-        return RoomAccess.getLoadedRoom(level, coords);
-    }
-
-    public static boolean hasSpecificStartedGame(Level level, RoomCoords coords, ResourceLocation gameId) {
-        return hasSpecificGame(level, coords, game -> game != null && game.isStarted() && game.getId().equals(gameId));
-    }
-
-    public static boolean hasSpecificStartedGame(Level level, RoomCoords coords, Class<? extends LootGame<?>> gameClass) {
-        return hasSpecificGame(level, coords, game -> game != null && game.isStarted() && gameClass.isInstance(game));
-    }
-
-    public static boolean hasSpecificGame(Level level, RoomCoords coords, Predicate<@Nullable LootGame<?>> gamePredicate) {
-        Room room = getRoom(level, coords);
-        if (room == null) return false;
-
-        LootGame<?> game = room.getGame();
-        return gamePredicate.test(game);
+        if (level.isClientSide) {
+            return ClientRoom.getInstance();
+        } else {
+            return ServerRoomStorage.getInstance(level)
+                    .map(storage -> storage.getRoom(coords, loadIfUnloaded))
+                    .orElse(null);
+        }
     }
 }

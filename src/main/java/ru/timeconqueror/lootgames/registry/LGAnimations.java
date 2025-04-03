@@ -17,6 +17,7 @@ public class LGAnimations {
     public static Animation microverseManipulatorNoHole;
     public static Animation microverseManipulatorHoleAppear;
     public static Animation microverseManipulatorHoleIdle;
+    public static Animation microverseManipulatorHoleCollapse;
 
     @SubscribeEvent
     public static void registerAnimations(FMLCommonSetupEvent event) {
@@ -27,5 +28,6 @@ public class LGAnimations {
         microverseManipulatorNoHole = Objects.requireNonNull(microverseManipulatorAnimations.get("no_hole"));
         microverseManipulatorHoleAppear = Objects.requireNonNull(microverseManipulatorAnimations.get("hole_appear"));
         microverseManipulatorHoleIdle = Objects.requireNonNull(microverseManipulatorAnimations.get("hole_idle"));
+        microverseManipulatorHoleCollapse = Objects.requireNonNull(microverseManipulatorAnimations.get("hole_collapse"));
     }
 }

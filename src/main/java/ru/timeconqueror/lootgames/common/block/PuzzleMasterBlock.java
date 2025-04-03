@@ -10,13 +10,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -33,7 +30,6 @@ import ru.timeconqueror.lootgames.room.ServerRoomStorage;
 import ru.timeconqueror.timecore.api.util.*;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 //TODO check surface before placing game block
 //TODO add animation, which places block below
@@ -80,11 +76,11 @@ public class PuzzleMasterBlock extends GameBlock implements EntityBlock {
 
                         Vec2i vec = MathUtils.OutwardSquareSpiral.offsetByIndex(roomStorage.reserveFreeIndex());
 
-                        ServerRoom room = (ServerRoom) roomStorage.getRoom(new RoomCoords(vec.x(), vec.y()));
-                        room.startGame();
-                        BlockPos center = room.getCoords().centerPos(60);
+//                        ServerRoom room = (ServerRoom) roomStorage.getRoom(new RoomCoords(vec.x(), vec.y()));
+//                        room.generate();
+//                        BlockPos center = room.getCoords().centerPos(60);
 
-                        sp.teleportTo(roomWorld, center.getX(), center.getY() + 1, center.getZ(), player.getXRot(), player.getYRot());
+//                        sp.teleportTo(roomWorld, center.getX(), center.getY() + 1, center.getZ(), player.getXRot(), player.getYRot());
                     } else {
                         sp.teleportTo(ServerLifecycleHooks.getCurrentServer().overworld(), player.getX(), player.getY() + 1, player.getZ(), player.getXRot(), player.getYRot());
                     }

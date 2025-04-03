@@ -3,7 +3,7 @@ package ru.timeconqueror.lootgames.common.packet.room;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
-import ru.timeconqueror.lootgames.api.room.GameProgress;
+import ru.timeconqueror.lootgames.api.room.RoomProgress;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.room.GameSerializer;
 import ru.timeconqueror.lootgames.room.ServerRoom;
@@ -14,7 +14,7 @@ import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 public class SLoadRoomPacket implements IPacket {
     public RoomCoords roomCoords;
     public CompoundTag gameTag;
-    public GameProgress progress;
+    public RoomProgress progress;
 
     public SLoadRoomPacket(ServerRoom room) {
         this.roomCoords = room.getCoords();
@@ -32,7 +32,7 @@ public class SLoadRoomPacket implements IPacket {
     @Override
     public void read(FriendlyByteBuf buf) {
         roomCoords = RoomCoords.read(buf);
-        progress = GameProgress.VALUES[buf.readVarInt() % GameProgress.VALUES.length];
+        progress = RoomProgress.VALUES[buf.readVarInt() % RoomProgress.VALUES.length];
         gameTag = buf.readNbt();
     }
 

@@ -1,5 +1,7 @@
 package ru.timeconqueror.lootgames.room;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import ru.timeconqueror.lootgames.utils.Log;
@@ -38,20 +40,14 @@ public class DelayedPlayerTaskHelper {
     }
 
     private static class Task {
+        @Getter
+        @Setter
         private int ticks;
         private final Runnable runnable;
 
         private Task(int ticks, java.lang.Runnable runnable) {
             this.ticks = ticks;
             this.runnable = runnable;
-        }
-
-        public int getTicks() {
-            return ticks;
-        }
-
-        public void setTicks(int ticks) {
-            this.ticks = ticks;
         }
 
         public void run() {

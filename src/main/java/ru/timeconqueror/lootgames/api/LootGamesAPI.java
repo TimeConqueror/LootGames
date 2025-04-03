@@ -7,11 +7,11 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.minigame.GameManager;
-import ru.timeconqueror.lootgames.registry.custom.GameInfo;
+import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class LootGamesAPI {
-    public static final ResourceKey<Registry<GameInfo>> GAME_REGISTRY = ResourceKey.createRegistryKey(LootGames.rl("games"));
+    public static final ResourceKey<Registry<GameDefinition>> GAME_REGISTRY = ResourceKey.createRegistryKey(LootGames.rl("games"));
     private static GameManager gameManager;
 //    private static BoardManager boardManager;
 

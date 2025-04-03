@@ -25,10 +25,10 @@ import static ru.timeconqueror.lootgames.minigame.gol.GameOfLight.StageUnderExpa
 
 //TODO draw board by symbol, not by fully not activated board with activated overlay
 public class GameOfLightRenderer {
-    private static final RenderType RT_BOARD = LGRenderTypes.fullbright(LootGames.rl("textures/game/gol_board.png"));
-    private static final RenderType RT_BOARD_ACTIVE = LGRenderTypes.fullbright(LootGames.rl("textures/game/gol_board_active.png"));
-    private static final RenderType RT_MARKS = LGRenderTypes.fullbrightTranslucent(LootGames.rl("textures/game/gol_marks.png"));
-    private static final RenderType RT_BORDER = LGRenderTypes.solidWithCustomTexture(LootGames.rl("textures/game/game_light_off_new.png"));
+    private static final RenderType RT_BOARD = LGRenderTypes.fullbright(LootGames.rl("textures/game/game_of_light_board.png"));
+    private static final RenderType RT_BOARD_ACTIVE = LGRenderTypes.fullbright(LootGames.rl("textures/game/game_of_light_board_active.png"));
+    private static final RenderType RT_MARKS = LGRenderTypes.fullbrightTranslucent(LootGames.rl("textures/game/game_of_light_adds.png"));
+    private static final RenderType RT_BORDER = LGRenderTypes.solidWithCustomTexture(LootGames.rl("textures/game/game_of_light_adds.png"));
 
     public void render(GameOfLight game, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, float partialTick) {
         poseStack.pushPose();
@@ -72,17 +72,14 @@ public class GameOfLightRenderer {
     private void drawMark(PoseStack matrix, MultiBufferSource bufferIn, QMarkAppearance.State state) {
         VertexConsumer buffer = bufferIn.getBuffer(RT_MARKS);
 
-        int textureX = 0;
-        int textureY = 0;
+        int textureX = 1;
+        int textureY = 1;
         switch (state) {
-            case ACCEPTED -> textureX = 1;
-            case DENIED -> {
-                textureX = 0;
-                textureY = 1;
-            }
+            case ACCEPTED -> textureX = 2;
+            case DENIED -> textureY = 2;
         }
 
-        DrawHelper.buildTexturedRectByParts(buffer, matrix, 1, 1, 1, 1, -0.006F, textureX, textureY, 1, 1, 2);
+        DrawHelper.buildTexturedRectByParts(buffer, matrix, 1, 1, 1, 1, -0.006F, textureX, textureY, 1, 1, 5);
     }
 
     private void drawBoard(GameOfLight game, PoseStack matrix, MultiBufferSource bufferIn, int ticks, float partialTicks) {

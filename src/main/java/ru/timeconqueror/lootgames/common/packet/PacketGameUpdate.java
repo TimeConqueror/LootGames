@@ -83,7 +83,7 @@ public abstract class PacketGameUpdate<T extends GamePacket> {
 
         @Override
         public void handle(P packet, NetworkEvent.Context ctx) {
-            Room loadedRoom = RoomAccess.getLoadedRoom(getWorld(ctx), packet.getCoords());
+            Room loadedRoom = RoomAccess.getRoom(packet.getCoords(), getWorld(ctx).isClientSide);
             if (loadedRoom == null) {
                 log.debug("Room is not found on {} ({})", packet.getCoords(), ctx.getDirection().getReceptionSide());
                 return;

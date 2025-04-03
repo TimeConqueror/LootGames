@@ -17,8 +17,6 @@ public class GameEventBus extends EventBus {
 
     @Override
     public <T> void post(EventType<T> event, T data) {
-        if (!game.isStarted()) return;
-
         super.post(event, data);
         if (stageBus != null) {
             stageBus.post(event, data);

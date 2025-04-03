@@ -1,39 +1,30 @@
 package ru.timeconqueror.lootgames.api.room;
 
-import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
-import ru.timeconqueror.lootgames.room.RoomUtils;
+import ru.timeconqueror.lootgames.registry.LGDimensions;
 import ru.timeconqueror.lootgames.room.ServerRoomStorage;
 import ru.timeconqueror.lootgames.room.client.ClientRoom;
 
-public class RoomAccess {
-    @Nullable
-    public static Room getRoom(Level level, RoomCoords coords) {
-        if (!RoomUtils.inRoomWorld(level)) {
-            return null;
-        }
+import java.util.Objects;
 
-        if (level.isClientSide) {
+public class RoomAccess {
+    public static Room getRoom(RoomCoords coords, boolean isClientSide) {
+        if (isClientSide) {
             return ClientRoom.getInstance();
         } else {
-            return ServerRoomStorage.getInstance(level)
-                    .map(storage -> storage.getRoom(coords))
-                    .orElse(null);
+            return getServerStorage().getRoom(coords, false);
         }
     }
 
-    @Nullable
-    public static Room getLoadedRoom(Level level, RoomCoords coords) {
-        if (!RoomUtils.inRoomWorld(level)) {
-            return null;
-        }
+    public static ServerRoomStorage getServerStorage() {
+        ServerLevel roomWorld = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer().getLevel(LGDimensions.TEST_SITE_DIM));
+        return ServerRoomStorage.getInstance(roomWorld).orElseThrow();
+    }
 
-        if (level.isClientSide) {
-            return ClientRoom.getInstance();
-        } else {
-            return ServerRoomStorage.getInstance(level)
-                    .map(storage -> storage.getLoadedRoom(coords))
-                    .orElse(null);
-        }
+    @Nullable
+    public static Room getClientRoom() {
+        return ClientRoom.getInstance();
     }
 }

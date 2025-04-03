@@ -7,11 +7,11 @@ import net.minecraft.world.level.block.Block;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGItems;
-import ru.timeconqueror.tc.ModelProvider;
 import ru.timeconqueror.timecore.api.client.resource.ItemModel;
 import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.ItemModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
+import ru.timeconqueror.timecore.api.devtools.gen.ModelProvider;
 
 public class LGItemModelProvider extends ModelProvider {
     private final static ItemModelLocation BASE_MICROVERSE_MODEL = LootGames.iml("boxed_microverse");
@@ -26,18 +26,12 @@ public class LGItemModelProvider extends ModelProvider {
         addMicroverseModel(LGItems.BOXED_GAME_OF_LIGHT_MICROVERSE);
         addMicroverseModel(LGItems.BOXED_MINESWEEPER_MICROVERSE);
 
-        addBlockItemModel(LGBlocks.BOARD_OPAQUE_MATTER);
-    }
-
-    protected ItemModelLocation addBlockItemModel(Block block) {
-        Item item = block.asItem();
-        ResourceLocation id = getId(block);
-        return addItemModel(item, new ItemModel(new BlockModelLocation(id)));
+        addItemModelParentedByBlock(LGBlocks.BOARD_OPAQUE_MATTER);
     }
 
     protected ItemModel addMicroverseModel(Item item) {
         ResourceLocation id = getId(item);
-        ItemModel model = new ItemModel(BASE_MICROVERSE_MODEL).addTexture("texture", new TextureLocation(id.getNamespace(), "item/" + id.getPath()));
+        ItemModel model = ItemModel.parentedBy(BASE_MICROVERSE_MODEL).addTexture("texture", new TextureLocation(id.getNamespace(), "item/" + id.getPath()));
         addItemModel(item, model);
         return model;
     }

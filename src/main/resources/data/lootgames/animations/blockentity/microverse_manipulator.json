@@ -436,8 +436,7 @@
 				}
 			}
         },
-      "hole_consume": {
-        "loop": "hold_on_last_frame",
+      "hole_collapse": {
         "animation_length": 0.83333,
         "bones": {
           "BlackHole": {

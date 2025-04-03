@@ -1,7 +1,6 @@
 package ru.timeconqueror.lootgames.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -11,9 +10,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.joml.Quaternionfc;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.client.render.game.GameOfLightRenderer;
 import ru.timeconqueror.lootgames.client.render.game.MinesweeperRenderer;
@@ -33,7 +29,7 @@ public class RoomWorldRenderer {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
             ClientLevel level = Minecraft.getInstance().level;
             ClientRoom room = ClientRoom.getInstance();
-            if (!RoomUtils.inRoomWorld(level) || room == null || room.getGame() == null || !room.getGame().isStarted())
+            if (!RoomUtils.inRoomWorld(level) || room == null || room.getGame() == null)
                 return;
             LootGame<?> game = room.getGame();
             MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
@@ -46,9 +42,9 @@ public class RoomWorldRenderer {
                 Vec3 cameraPos = camera.getPosition();
                 poseStack.translate(-cameraPos.x(), -cameraPos.y(), -cameraPos.z());
 
-                if (game.getId() == LGGames.MINESWEEPER.get()) {
+                if (game.getGameDefinition() == LGGames.MINESWEEPER.get()) {
                     MINESWEEPER_RENDERER.render((GameMineSweeper) game, poseStack, bufferSource, event.getPartialTick());
-                } else if (game.getId() == LGGames.GAME_OF_LIGHT.get()) {
+                } else if (game.getGameDefinition() == LGGames.GAME_OF_LIGHT.get()) {
                     GAME_OF_LIGHT_RENDERER.render((GameOfLight) game, poseStack, bufferSource, event.getPartialTick());
                 }
             }

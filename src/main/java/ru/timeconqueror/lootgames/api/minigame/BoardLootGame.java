@@ -12,8 +12,8 @@ import org.joml.Vector2ic;
 import ru.timeconqueror.lootgames.api.minigame.event.ClickBlockEvent;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.room.Room;
-import ru.timeconqueror.lootgames.api.room.RoomOffset;
-import ru.timeconqueror.lootgames.registry.custom.GameInfo;
+import ru.timeconqueror.lootgames.api.room.RoomLocalPos;
+import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 
 import static ru.timeconqueror.lootgames.api.minigame.BoardLootGame.BoardStage;
@@ -25,8 +25,8 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
     public static final int DEFAULT_FLOOR_POS = 60;
     public static final double VERTICAL_RENDER_OFFSET = -6 / 16F;
 
-    public BoardLootGame(GameInfo id, Room room) {
-        super(id, room);
+    public BoardLootGame(GameDefinition definition, Room room) {
+        super(definition, room);
         getEventBus().addEventHandler(GameEvents.CLICK_BLOCK, event -> event.setAccepted(onBlockClicked(event)));
     }
 
@@ -36,7 +36,7 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
     }
 
     protected boolean onBlockClicked(ClickBlockEvent event) {
-        RoomOffset clickPos = event.getRelative();
+        RoomLocalPos clickPos = event.getLocalPos();
         if (clickPos.getY() != DEFAULT_FLOOR_POS) {
             return false;
         }
@@ -61,8 +61,8 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
 
     public abstract int getBoardSize();
 
-    public Vector2ic offsetToBoardPos(RoomOffset offset) {
-        Vec3i result = offset.subtract(getRoom().getCoords().toRelative(getBoardOrigin()));
+    public Vector2ic offsetToBoardPos(RoomLocalPos offset) {
+        Vec3i result = offset.subtract(getRoom().getCoords().toLocalPos(getBoardOrigin()));
         return new Vector2i(result.getX(), result.getZ());
     }
 

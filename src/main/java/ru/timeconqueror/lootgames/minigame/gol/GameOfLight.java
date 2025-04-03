@@ -6,7 +6,6 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -229,7 +228,7 @@ public class GameOfLight extends BoardLootGame {
             }
         });
 
-        RewardHelper.spawnFourStagedReward((ServerPlayer) getRoom().getRandomPlayer(), ((ServerLevel) getLevel()), getId(), getGameCenter(), maxReachedStage, LGConfigs.REWARDS.gol);
+        RewardHelper.spawnFourStagedReward((ServerPlayer) getRoom().getRandomPlayer(), ((ServerLevel) getLevel()), getGameDefinition(), getGameCenter(), maxReachedStage, LGConfigs.REWARDS.gol);
     }
 
     @Override
