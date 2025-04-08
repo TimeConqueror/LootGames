@@ -30,7 +30,7 @@ public class LGBlockEntityWithoutLevelRenderer extends net.minecraft.client.rend
     public LGBlockEntityWithoutLevelRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher_, EntityModelSet entityModelLoader_) {
         super(blockEntityRenderDispatcher_, entityModelLoader_);
         this.blockEntityRenderDispatcher = blockEntityRenderDispatcher_;
-        this.microverseManipulator.onLoad();
+        this.microverseManipulator.loadAnimationSystem();
     }
 
     @Override

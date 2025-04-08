@@ -70,6 +70,7 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
                 .runOnSide(RunOnSide.BOTH)
                 .action(BakedAction.sequencedBuilder(MicroverseManipulatorBlockEntity.class)
                         .id("activate")
+                        .run(onBoundaryStart((ctx, props) -> ctx.getOwner().setCanSwitchState(false)))
                         .run(everyCycleAt(animationTime, (ctx, props) -> ctx.getOwner().baseEnlighten = true))
                         .run(onBoundaryEnd((ctx, props) -> {
                             ctx.getOwner().animationSystem()
@@ -87,6 +88,7 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
                 .runOnSide(RunOnSide.BOTH)
                 .action(BakedAction.sequencedBuilder(MicroverseManipulatorBlockEntity.class)
                         .id("activate")
+                        .run(onBoundaryEnd((ctx, props) -> ctx.getOwner().setCanSwitchState(false)))
                         .run(onBoundaryEnd((ctx, props) -> {
                             ctx.animationSystem().startAnimationScript(LGAnimations.microverseManipulatorHoleAppear
                                             .starter()
@@ -124,7 +126,12 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
     }
 
     @Override
-    public void onLoad() {
+    public void setLevel(Level world_) {
+        super.setLevel(world_);
+        loadAnimationSystem();
+    }
+
+    public void loadAnimationSystem() {
         animationSystem = AnimationSystems.forBlockEntity(this, builder -> {
             builder.addMainLayer();
             builder.addLayer(LAYER_HOLE, BlendType.ADD, 1.0F);
@@ -168,7 +175,6 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
         this.gameDefinition = gameDefinition;
         this.roomCoords = boundRoomCoords;
         saveAndSync();
-        this.canSwitchState = false;
         animationSystem.startAnimationScript(AnimationScript.builder(LGAnimations.microverseManipulatorPlace.starter().withTransitionTime(0).withSpeed(2))
                         .withPredefinedAction(ACTION_ACTIVATE)
                         .withNext(AnimationScript.builder(LGAnimations.microverseManipulatorIdle.starter().withTransitionTime(0))),
@@ -228,9 +234,8 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
     }
 
     public void initiateTeleport(ServerPlayer player) {
-        this.canSwitchState = false;
-
         BakedAction<MicroverseManipulatorBlockEntity> delayedTeleport = BakedAction.sequencedBuilder(MicroverseManipulatorBlockEntity.class)
+                .run(onBoundaryStart((ctx, nothing) -> ctx.getOwner().setCanSwitchState(false)))
                 .run(onBoundaryStart((ctx, nothing) -> prepareRoom(gameDefinition)))
                 .run(everyCycleAt(620, (ctx, nothing) -> {
                     MicroverseManipulatorBlockEntity owner = ctx.getOwner();

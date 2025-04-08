@@ -15,10 +15,6 @@ import java.util.function.Supplier;
 public class BoardGameEnvironmentGenerator implements GameEnvironmentGenerator {
     private final Supplier<BlockState> boardStateSupplier;
 
-    public BoardGameEnvironmentGenerator() {
-        this(() -> LGBlocks.GLASSY_MATTER.defaultBlockState());
-    }
-
     @Override
     public void generate(ServerLevel level, Room room, LootGame<?> game) {
         int floorY = BoardLootGame.DEFAULT_FLOOR_POS;
