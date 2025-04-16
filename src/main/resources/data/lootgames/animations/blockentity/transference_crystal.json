@@ -1,0 +1,20 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "shaking": {
+      "loop": true,
+      "animation_length": 1,
+      "bones": {
+        "bone": {
+          "rotation": [0, 0, 0],
+          "position": [
+            "math.sin(query.anim_time * 1000 * math.random_integer(1, 3) * 2) * 1",
+            "math.sin(query.anim_time * 1000 * math.random_integer(1, 3) * 2 + 670) * 1",
+            "math.sin(query.anim_time * 1000 * math.random_integer(1, 3) * 2 + 240) * 1"
+          ],
+          "scale": 0.7
+        }
+      }
+    }
+  }
+}

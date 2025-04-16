@@ -19,6 +19,8 @@ public class LGAnimations {
     public static Animation microverseManipulatorHoleIdle;
     public static Animation microverseManipulatorHoleCollapse;
 
+    public static Animation transferenceCrystalShake;
+
     @SubscribeEvent
     public static void registerAnimations(FMLCommonSetupEvent event) {
         Map<String, Animation> microverseManipulatorAnimations = AnimationAPI
@@ -29,5 +31,7 @@ public class LGAnimations {
         microverseManipulatorHoleAppear = Objects.requireNonNull(microverseManipulatorAnimations.get("hole_appear"));
         microverseManipulatorHoleIdle = Objects.requireNonNull(microverseManipulatorAnimations.get("hole_idle"));
         microverseManipulatorHoleCollapse = Objects.requireNonNull(microverseManipulatorAnimations.get("hole_collapse"));
+
+        transferenceCrystalShake = AnimationAPI.loadAndRegisterAnimation(LootGames.rl("animations/blockentity/transference_crystal.json"));
     }
 }

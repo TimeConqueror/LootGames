@@ -1,6 +1,7 @@
 package ru.timeconqueror.lootgames.registry;
 
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -11,6 +12,7 @@ import ru.timeconqueror.lootgames.common.LGCreativeTabs;
 import ru.timeconqueror.lootgames.common.block.*;
 import ru.timeconqueror.lootgames.common.block.TechnicalBlock.Configuration;
 import ru.timeconqueror.lootgames.common.item.MicroverseManipulatorItem;
+import ru.timeconqueror.lootgames.common.item.TransferenceCrystalItem;
 import ru.timeconqueror.timecore.api.registry.BlockRegister;
 import ru.timeconqueror.timecore.api.registry.BlockRegister.RenderTypeWrapper;
 import ru.timeconqueror.timecore.api.registry.ItemRegister;
@@ -49,6 +51,7 @@ public class LGBlocks {
 
     public static TechnicalBlock SPACE_FABRIC; // hard wall
     public static MicroverseManipulatorBlock MICROVERSE_MANIPULATOR;
+    public static TransferenceCrystalBlock TRANSFERENCE_CRYSTAL;
 
     @AutoRegistrable
     private static final BlockRegister REGISTER = new BlockRegister(LootGames.MODID);
@@ -92,6 +95,13 @@ public class LGBlocks {
                                 .onCreativeTabBuilding(ItemRegister.CreativeTabAdder
                                         .tabBased(LGCreativeTabs.MAIN))
                 );
+        REGISTER.register("transference_crystal", TransferenceCrystalBlock::new)
+                .name("Transference Crystal")
+                .item(() -> new TransferenceCrystalItem(LGBlocks.TRANSFERENCE_CRYSTAL),
+                        chain -> chain
+                                .onCreativeTabBuilding(ItemRegister.CreativeTabAdder
+                                        .tabBased(LGCreativeTabs.MAIN))
+                        );
 //        REGISTER.register("gol_activator", GOLActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Game of Light");
 //        REGISTER.register("ms_activator", MSActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Minesweeper");
 //        REGISTER.register("pipes_activator", PipesActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Pipes (WIP)");

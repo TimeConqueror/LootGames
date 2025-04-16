@@ -1,8 +1,5 @@
 {
   "parent": "builtin/entity",
-  "textures": {
-    "particle": "lootgames:block/microverse_manipulator_particles"
-  },
   "display": {
     "gui": {
       "rotation": [ 30, 45, 0 ],

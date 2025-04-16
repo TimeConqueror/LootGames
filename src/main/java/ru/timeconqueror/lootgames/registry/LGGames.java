@@ -22,7 +22,7 @@ public class LGGames {
             .microverseHolderItem(() -> LGItems.BOXED_GAME_OF_LIGHT_MICROVERSE)
             .gameInstanceCreator(GameOfLight::new)
             .generator(new GameOfLightEnvironmentGenerator())
-            .teleportPos(RoomLocalPos.center(BoardLootGame.DEFAULT_FLOOR_POS + 1))
+            .teleportPos(new RoomLocalPos(64, 62, 76))
             .build());
 
     public static final Promised<GameDefinition> MINESWEEPER = REGISTER.register("minesweeper", () -> GameDefinition.builder()

@@ -33,6 +33,9 @@ public class LGBlockStateAndBlockModelProvider extends BlockStateProvider {
                 models.addBlockModel(MICROVERSE_MANIPULATOR, BlockModels.particlesOnly(LootGames.tl("blockentity/microverse_manipulator_particles")));
         addBlockState(MICROVERSE_MANIPULATOR, BlockStateResources.singleVariantWithSingleModel(microverseManipulator));
 
+        BlockModelLocation transferenceCrystal =
+                models.addBlockModel(TRANSFERENCE_CRYSTAL, BlockModels.particlesOnly(LootGames.tl("blockentity/transference_crystal")));
+        addBlockState(TRANSFERENCE_CRYSTAL, BlockStateResources.singleVariantWithSingleModel(transferenceCrystal));
 
         addBlockState(OPAQUE_MATTER, BlockStateResources.singleVariantWithSingleModel(
                 models.addBlockModel(OPAQUE_MATTER, BlockModels.cubeAllModel(models.getDefaultTextureLocation(OPAQUE_MATTER)))

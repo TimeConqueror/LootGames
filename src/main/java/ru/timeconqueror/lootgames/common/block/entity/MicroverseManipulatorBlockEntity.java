@@ -132,10 +132,10 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
     }
 
     public void loadAnimationSystem() {
-        animationSystem = AnimationSystems.forBlockEntity(this, builder -> {
-            builder.addMainLayer();
-            builder.addLayer(LAYER_HOLE, BlendType.ADD, 1.0F);
-        });
+        animationSystem = AnimationSystemBuilder.forBlockEntity(this)
+                .withMainAnimationLayer()
+                .withAnimationLayer(new LayerDefinition(LAYER_HOLE, BlendType.ADD, 1.0F))
+                .build();
 
         if (getLevel() == null) {
             // skip for ItemStack rendering

@@ -117,11 +117,6 @@ public class MicroverseManipulatorBlock extends BaseEntityBlock {
 //        }
     }
 
-    @Override
-    public RenderShape getRenderShape(BlockState blockState_) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
-    }
-
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

@@ -10,4 +10,5 @@ public class BlockModels {
     @AutoRegistrable
     private static final TimeModelRegister REGISTER = new TimeModelRegister(LootGames.MODID);
     public static final InFileLocation MICROVERSE_MANIPULATOR = REGISTER.register("models/blockentity/microverse_manipulator.json");
+    public static final InFileLocation TRANSFERENCE_CRYSTAL = REGISTER.register("models/blockentity/transference_crystal.json");
 }

@@ -15,7 +15,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import ru.timeconqueror.lootgames.common.block.MicroverseManipulatorBlock;
+import ru.timeconqueror.lootgames.common.block.TransferenceCrystalBlock;
 import ru.timeconqueror.lootgames.common.block.entity.MicroverseManipulatorBlockEntity;
+import ru.timeconqueror.lootgames.common.block.entity.TransferenceCrystalBlockEntity;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 
 @OnlyIn(Dist.CLIENT)
@@ -23,6 +25,9 @@ public class LGBlockEntityWithoutLevelRenderer extends net.minecraft.client.rend
     private final MicroverseManipulatorBlockEntity microverseManipulator = new MicroverseManipulatorBlockEntity(BlockPos.ZERO,
             LGBlocks.MICROVERSE_MANIPULATOR.defaultBlockState()
                     .setValue(MicroverseManipulatorBlock.FACING, Direction.SOUTH)
+    );
+    private final TransferenceCrystalBlockEntity transferenceCrystal = new TransferenceCrystalBlockEntity(BlockPos.ZERO,
+            LGBlocks.TRANSFERENCE_CRYSTAL.defaultBlockState()
     );
 
     private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
@@ -35,6 +40,8 @@ public class LGBlockEntityWithoutLevelRenderer extends net.minecraft.client.rend
 
     @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext mode, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
+        onTimeInit();
+
         Item item = stack.getItem();
         if (item instanceof BlockItem) {
             Block block = ((BlockItem) item).getBlock();
@@ -42,11 +49,17 @@ public class LGBlockEntityWithoutLevelRenderer extends net.minecraft.client.rend
             BlockEntity blockentity;
             if (block instanceof MicroverseManipulatorBlock) {
                 blockentity = microverseManipulator;
+            } else if(block instanceof TransferenceCrystalBlock) {
+                blockentity = transferenceCrystal;
             } else {
                 return;
             }
 
             this.blockEntityRenderDispatcher.renderItem(blockentity, matrices, vertexConsumers, light, overlay);
         }
+    }
+
+    public void onTimeInit() {
+        transferenceCrystal.loadAnimationSystemIfNotLoaded();
     }
 }
