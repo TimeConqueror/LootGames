@@ -38,6 +38,7 @@ import ru.timeconqueror.timecore.api.util.MathUtils;
 import ru.timeconqueror.timecore.api.util.Vec2i;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import static ru.timeconqueror.timecore.api.animation.action.ActionDefinitions.*;
 
@@ -106,10 +107,7 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
     }
 
     private void clearGameAndThrowStack() {
-        GameDefinition game = Objects.requireNonNull(gameDefinition);
-
-        Item holder = LootGames.getGameDefinitionRegistry().getHolderByDefinition(game);
-        ItemStack stack = new ItemStack(holder, 1);
+        ItemStack stack = makeGameDefinitionStack().orElseThrow();
 
         Direction direction = getBlockState().getValue(MicroverseManipulatorBlock.FACING);
         Vector3f dirVec = Utils.vec3iToVec3f(direction.getNormal());
@@ -123,6 +121,15 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
 
         gameDefinition = null;
         saveAndSync();
+    }
+
+    public Optional<ItemStack> makeGameDefinitionStack() {
+        if (gameDefinition == null) {
+            return Optional.empty();
+        }
+
+        Item holder = LootGames.getGameDefinitionRegistry().getHolderByDefinition(gameDefinition);
+        return Optional.of(new ItemStack(holder, 1));
     }
 
     @Override

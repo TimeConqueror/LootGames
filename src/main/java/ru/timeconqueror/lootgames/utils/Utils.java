@@ -2,10 +2,13 @@ package ru.timeconqueror.lootgames.utils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2ic;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
@@ -46,5 +49,35 @@ public class Utils {
 
     public static Vector3f vec3iToVec3f(Vec3i vec) {
         return new Vector3f(vec.getX(), vec.getY(), vec.getZ());
+    }
+
+    public static Vector3f vec3ToVec3f(Vec3 vec) {
+        return new Vector3f((float) vec.x(), (float) vec.y(), (float) vec.z());
+    }
+
+    /**
+     * Calculates and returns yaw
+     */
+    public static float getLookAngle(Vector3f source, Vector3f target) {
+        double dx = target.x() - source.x();
+        double dz = target.z() - source.z();
+
+        return (float) Mth.atan2(dx, dz);
+    }
+
+    //TODO randomize target pos?
+    public static void teleportToSpawn(ServerPlayer player) {
+        ServerLevel respLevel = player.server.getLevel(player.getRespawnDimension());
+        if (respLevel == null) {
+            respLevel = player.server.overworld();
+        }
+        BlockPos respawnPos = player.getRespawnPosition();
+        float respawnAngle = player.getRespawnAngle();
+        if (respawnPos == null) {
+            respawnPos = respLevel.getSharedSpawnPos();
+            respawnAngle = respLevel.getSharedSpawnAngle();
+        }
+
+        player.teleportTo(respLevel, respawnPos.getX(), respawnPos.getY(), respawnPos.getZ(), respawnAngle, 0);
     }
 }

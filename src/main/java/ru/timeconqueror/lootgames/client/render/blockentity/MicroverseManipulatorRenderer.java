@@ -10,14 +10,15 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import org.joml.Vector3f;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.client.BlockModels;
+import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
 import ru.timeconqueror.lootgames.common.block.entity.MicroverseManipulatorBlockEntity;
 import ru.timeconqueror.lootgames.registry.LGGames;
 import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
+import ru.timeconqueror.lootgames.utils.Utils;
 import ru.timeconqueror.timecore.animation.renderer.AnimatedBlockEntityRenderer;
 import ru.timeconqueror.timecore.animation.renderer.ModelConfiguration;
 import ru.timeconqueror.timecore.api.util.VecUtils;
@@ -36,7 +37,7 @@ public class MicroverseManipulatorRenderer extends AnimatedBlockEntityRenderer<M
             LGGames.MINESWEEPER.getId(), LootGames.tl("blockentity/microverse_manipulator_activated_blue.png").fullLocation(),
             LGGames.GAME_OF_LIGHT.getId(), LootGames.tl("blockentity/microverse_manipulator_activated_blue.png").fullLocation() // TODO fix texture
     );
-    public static final RenderType HOLE_LAYER = RenderType.entityTranslucent(LootGames.tl("blockentity/microverse_manipulator_hole.png").fullLocation());
+    public static final RenderType HOLE_LAYER = LGRenderTypes.blackHole(LootGames.tl("blockentity/microverse_manipulator_hole.png").fullLocation(), true);
 
     public MicroverseManipulatorRenderer(BlockEntityRendererProvider.Context context) {
         super(new TimeModel(ModelConfiguration.builder(BlockModels.MICROVERSE_MANIPULATOR).build()));
@@ -54,6 +55,11 @@ public class MicroverseManipulatorRenderer extends AnimatedBlockEntityRenderer<M
             TimeModelPart blackHole = model.getPart("BlackHole");
             blackHole.getRotation().y = yaw;
         });
+
+        getPuppeteer().addModelProcessor((object, model, partialTick) -> {
+            TimeModelPart blackHolePart = model.getPart("BlackHole");
+            blackHolePart.visible = false;
+        });
     }
 
     private static float getLookAngle(MicroverseManipulatorBlockEntity entity, Entity lookTarget) {
@@ -66,10 +72,7 @@ public class MicroverseManipulatorRenderer extends AnimatedBlockEntityRenderer<M
                 entityPos.getZ() + 0.5
         );
 
-        double dx = eyePos.x() - holePos.x();
-        double dz = eyePos.z() - holePos.z();
-
-        return (float) Mth.atan2(dx, dz);
+        return Utils.getLookAngle(holePos, eyePos);
     }
 
     @Override
@@ -88,7 +91,11 @@ public class MicroverseManipulatorRenderer extends AnimatedBlockEntityRenderer<M
 
         ResourceLocation location = GAME_TEXTURES.get(gameDefinition.toKey());
         RenderType gameLayer = RenderType.entityTranslucent(location);
+
         this.model.renderToBuffer(poseStack, buffer.getBuffer(gameLayer), packetLight, packedOverlay, rgbaColor);
+
+        TimeModelPart blackHolePart = model.getPart("BlackHole");
+        blackHolePart.visible = true;
         this.model.renderToBuffer(poseStack, buffer.getBuffer(HOLE_LAYER), packetLight, packedOverlay, rgbaColor);
     }
 

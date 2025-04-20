@@ -12,8 +12,8 @@ import net.minecraftforge.fml.common.Mod;
 import ru.timeconqueror.lootgames.api.minigame.event.ClickBlockEvent;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.room.Room;
+import ru.timeconqueror.lootgames.api.room.RoomAccess;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
-import ru.timeconqueror.lootgames.room.RoomUtils;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 
 @Mod.EventBusSubscriber
@@ -34,7 +34,8 @@ public class MinecraftToGameEventReposter {
 
     private static boolean onPlayerClicked(Level level, Player player, BlockPos pos, InteractionHand hand, Direction face, MouseClickType type) {
         RoomCoords coords = RoomCoords.of(pos);
-        Room room = RoomUtils.getRoom(level, coords, false);
+
+        Room room = RoomAccess.getRoom(coords, level.isClientSide());
         if (room != null && room.getGame() != null) {
             BlockState blockState = level.getBlockState(pos);
             var gameEvent = new ClickBlockEvent(level, player, blockState, coords.toLocalPos(pos), hand, face, type);

@@ -10,6 +10,7 @@ import ru.timeconqueror.lootgames.room.client.ClientRoom;
 import java.util.Objects;
 
 public class RoomAccess {
+    @Nullable
     public static Room getRoom(RoomCoords coords, boolean isClientSide) {
         if (isClientSide) {
             return ClientRoom.getInstance();

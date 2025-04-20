@@ -8,7 +8,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.MinecraftForge;
@@ -23,8 +25,10 @@ import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.api.room.RoomProgress;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.packet.room.SSyncGamePacket;
+import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGCapabilities;
 import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
+import ru.timeconqueror.lootgames.utils.Utils;
 import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 import ru.timeconqueror.timecore.common.capability.CoffeeCapabilityInstance;
 import ru.timeconqueror.timecore.common.capability.owner.CapabilityOwner;
@@ -83,7 +87,7 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
     @Nullable
     public LootGame<?> getGame() {
         RoomProgress progress = getProgress();
-        if(progress == RoomProgress.GENERATED || progress == RoomProgress.STARTED) {
+        if (progress == RoomProgress.GENERATED || progress == RoomProgress.STARTED) {
             return game.get();
         }
 
@@ -123,7 +127,7 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
         this.progress.set(RoomProgress.GENERATED);
     }
 
-    public void updateEntryPoint(EntryPoint newEntryPoint) {
+    public void updateEntryPoint(@Nullable EntryPoint newEntryPoint) {
         this.entryPoint.set(newEntryPoint);
     }
 
@@ -147,28 +151,35 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
     }
 
     public void teleportAway(ServerPlayer player) {
+        if (!teleportToEntryPoint(player)) {
+            Utils.teleportToSpawn(player);
+        }
+    }
+
+    private boolean teleportToEntryPoint(ServerPlayer player) {
         EntryPoint entryPoint = getEntryPoint();
-        if (entryPoint != null) {
-            ServerLevel level = player.server.getLevel(entryPoint.entryDimension());
-            BlockPos pos = entryPoint.entryPos();
-            if(level != null) {
-                player.teleportTo(level, pos.getX(), pos.getY(), pos.getZ(), 0, 0);
-                return;
-            }
+        if (entryPoint == null) {
+            return false;
+        }
+        ServerLevel level = player.server.getLevel(entryPoint.entryDimension());
+        BlockPos pos = entryPoint.entryPos();
+        if (level == null) {
+            return false;
         }
 
-        ServerLevel respLevel = player.server.getLevel(player.getRespawnDimension());
-        if (respLevel == null) {
-            respLevel = player.server.overworld();
-        }
-        BlockPos respawnPos = player.getRespawnPosition();
-        float respawnAngle = player.getRespawnAngle();
-        if (respawnPos == null) {
-            respawnPos = respLevel.getSharedSpawnPos();
-            respawnAngle = respLevel.getSharedSpawnAngle();
+        if (level.getBlockState(pos).getBlock() != LGBlocks.MICROVERSE_MANIPULATOR) {
+            // means entry-point was changed (f.e. block is broken by another player)
+            updateEntryPoint(null);
+            return false;
         }
 
-        player.teleportTo(respLevel, respawnPos.getX(), respawnPos.getY(), respawnPos.getZ(), respawnAngle, 0);
+        return RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, level, pos)
+                .map(teleportPos -> {
+                    float yaw = Utils.getLookAngle(Utils.vec3ToVec3f(teleportPos), Utils.vec3iToVec3f(pos));
+                    player.teleportTo(level, teleportPos.x(), teleportPos.y(), teleportPos.z(), yaw, 0);
+                    return true;
+                })
+                .orElse(false);
     }
 
     public void finishGame() {

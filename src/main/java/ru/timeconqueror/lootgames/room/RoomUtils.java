@@ -7,10 +7,8 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
-import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.registry.LGDimensions;
-import ru.timeconqueror.lootgames.room.client.ClientRoom;
 
 import java.util.List;
 
@@ -39,20 +37,5 @@ public class RoomUtils {
 
     public static boolean inRoomWorld(@Nullable Level level) {
         return level != null && level.dimension() == LGDimensions.TEST_SITE_DIM;
-    }
-
-    @Nullable
-    public static Room getRoom(Level level, RoomCoords coords, boolean loadIfUnloaded) {
-        if (!RoomUtils.inRoomWorld(level)) {
-            return null;
-        }
-
-        if (level.isClientSide) {
-            return ClientRoom.getInstance();
-        } else {
-            return ServerRoomStorage.getInstance(level)
-                    .map(storage -> storage.getRoom(coords, loadIfUnloaded))
-                    .orElse(null);
-        }
     }
 }

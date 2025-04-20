@@ -31,6 +31,12 @@ public class LGRenderTypes extends RenderType {
         );
     }
 
+    public static RenderType blackHole(ResourceLocation texture, boolean affectsOutline) {
+        //copypaste from entity_translucent, but with changed hasCrumbling to false
+        RenderType.CompositeState rendertype$compositestate = RenderType.CompositeState.builder().setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).setTextureState(new RenderStateShard.TextureStateShard(texture, false, false)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setCullState(NO_CULL).setLightmapState(LIGHTMAP).setOverlayState(OVERLAY).createCompositeState(affectsOutline);
+        return RenderType.create("black_hole", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, rendertype$compositestate);
+    }
+
     private static final Function<ResourceLocation, RenderType> SOLID_WITH_CUSTOM_TEXTURE = Util.memoize((tex) -> {
         RenderStateShard.TextureStateShard texShard = new RenderStateShard.TextureStateShard(tex, false, true);
         return create(LootGames.rl("solid_custom_tex").toString(),

@@ -27,6 +27,8 @@ public class LGBlockTagsProvider extends BlockTagsProvider {
                 .add(LGBlocks.CRACKED_DUNGEON_FLOOR)
                 .add(LGBlocks.DUNGEON_LAMP)
                 .add(LGBlocks.BROKEN_DUNGEON_LAMP)
+
+                .add(LGBlocks.MICROVERSE_MANIPULATOR)
                 .replace(false);
     }
 }
