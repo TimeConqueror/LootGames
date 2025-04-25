@@ -244,6 +244,10 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
         BakedAction<MicroverseManipulatorBlockEntity> delayedTeleport = BakedAction.sequencedBuilder(MicroverseManipulatorBlockEntity.class)
                 .run(onBoundaryStart((ctx, nothing) -> ctx.getOwner().setCanSwitchState(false)))
                 .run(onBoundaryStart((ctx, nothing) -> prepareRoom(gameDefinition)))
+                .run(onBoundaryStart((ctx, nothing) -> {
+                    RoomAccess.getServerStorage().getRoom(roomCoords, true)
+                            .sendTeleportTicket(player);
+                }))
                 .run(everyCycleAt(620, (ctx, nothing) -> {
                     MicroverseManipulatorBlockEntity owner = ctx.getOwner();
                     BlockPos pos = owner.getBlockPos();
@@ -280,7 +284,7 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
         }
 
         if (!room.isGenerated()) {
-            log.debug("Generating game in room: {}", gameDefinition.toKey());
+            log.debug("Generating game {} in room: {}", gameDefinition.toKey(), roomCoords);
             room.generate(gameDefinition);
         }
 

@@ -23,6 +23,7 @@ public class LGGames {
             .gameInstanceCreator(GameOfLight::new)
             .generator(new GameOfLightEnvironmentGenerator())
             .teleportPos(new RoomLocalPos(64, 62, 76))
+            .teleportYaw(180F)
             .build());
 
     public static final Promised<GameDefinition> MINESWEEPER = REGISTER.register("minesweeper", () -> GameDefinition.builder()

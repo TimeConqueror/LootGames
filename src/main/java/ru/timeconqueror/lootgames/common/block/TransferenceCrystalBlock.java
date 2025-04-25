@@ -1,7 +1,9 @@
 package ru.timeconqueror.lootgames.common.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -62,5 +64,19 @@ public class TransferenceCrystalBlock extends BaseEntityBlock {
         }
 
         return InteractionResult.sidedSuccess(world_.isClientSide());
+    }
+
+    @Override
+    public void animateTick(BlockState stateIn, Level level, BlockPos pos, RandomSource rand) {
+        int particleCount = rand.nextInt(25);
+        for (int i = 0; i <= particleCount; i++) {
+            level.addParticle(ParticleTypes.ENCHANT,
+                    pos.getX() + 0.5D + rand.nextGaussian() * 0.8D,
+                    pos.getY() + rand.nextFloat(),
+                    pos.getZ() + 0.5D + rand.nextGaussian() * 0.8D,
+                    rand.nextGaussian() * 0.02D,
+                    0.5D + rand.nextGaussian() * 0.02D,
+                    rand.nextGaussian() * 0.02D);
+        }
     }
 }

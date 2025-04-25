@@ -7,9 +7,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
@@ -18,6 +20,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.network.simple.SimpleChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.event.GenerateGameEnvironmentEvent;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.room.Room;
@@ -54,6 +57,8 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
     private final CoffeeProperty<LootGame<?>> game;
     private final CoffeeProperty<RoomProgress> progress = prop("progress", RoomProgress.NOT_GENERATED, RoomProgress.SERIALIZER);
     private final CoffeeProperty<EntryPoint> entryPoint = prop("entry", (EntryPoint) null, EntryPoint.SERIALIZER.nullable());
+
+    private static TicketType<Integer> LOAD_BEFORE_TELEPORT = TicketType.create(LootGames.MODID + ":" + "load_before_teleport", Integer::compareTo, 5 * 20);
 
     public ServerRoom(ServerLevel level, RoomCoords coords) {
         this.level = level;
@@ -131,6 +136,13 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
         this.entryPoint.set(newEntryPoint);
     }
 
+    public void sendTeleportTicket(Entity entity) {
+        GameDefinition gameDefinition = game.get().getGameDefinition();
+        BlockPos teleportPos = gameDefinition.getTeleportPos().toAbsolutePos(coords);
+
+        getLevel().getChunkSource().addRegionTicket(LOAD_BEFORE_TELEPORT, new ChunkPos(teleportPos), 1, entity.getId());
+    }
+
     public void teleportInside(Entity entity) {
         if (!isGenerated()) {
             log.error("Cannot teleport inside, room {} is not generated", coords);
@@ -145,9 +157,7 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
         BlockPos teleportPos = gameDefinition.getTeleportPos().toAbsolutePos(coords);
         ServerLevel level = getLevel();
 
-        // ensure destination chunk is loaded before we put the player in it
-        level.getChunk(teleportPos);
-        entity.teleportTo(level, teleportPos.getX(), teleportPos.getY(), teleportPos.getZ(), Set.of(), 0, 0);
+        entity.teleportTo(level, teleportPos.getX() + 0.5, teleportPos.getY(), teleportPos.getZ() + 0.5, Set.of(), gameDefinition.getTeleportYaw(), 0);
     }
 
     public void teleportAway(ServerPlayer player) {

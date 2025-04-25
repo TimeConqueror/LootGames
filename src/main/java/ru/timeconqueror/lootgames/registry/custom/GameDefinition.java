@@ -34,6 +34,8 @@ public class GameDefinition {
     @Getter
     @NonNull
     private final RoomLocalPos teleportPos;
+    @Getter
+    private final float teleportYaw;
 
     public static String serialize(GameDefinition id) {
         ResourceLocation location = id.toKey();
