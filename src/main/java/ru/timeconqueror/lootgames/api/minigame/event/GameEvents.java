@@ -35,5 +35,7 @@ public class GameEvents {
      * </ol>
      */
     public static final EventType<StartStageEvent> START_STAGE = new EventType<>(EventSide.BOTH);
-    public static final EventType<ClickBlockEvent> CLICK_BLOCK = new EventType<>(EventSide.BOTH);
+
+    public static final EventType<LeftClickBlockEvent> LEFT_CLICK_BLOCK = new EventType<>(EventSide.BOTH);
+    public static final EventType<RightClickBlockEvent> RIGHT_CLICK_BLOCK = new EventType<>(EventSide.BOTH);
 }

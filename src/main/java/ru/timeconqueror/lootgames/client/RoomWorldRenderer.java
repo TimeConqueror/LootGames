@@ -11,6 +11,7 @@ import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
+import ru.timeconqueror.lootgames.api.room.RoomProgress;
 import ru.timeconqueror.lootgames.client.render.game.GameOfLightRenderer;
 import ru.timeconqueror.lootgames.client.render.game.MinesweeperRenderer;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
@@ -18,6 +19,8 @@ import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.registry.LGGames;
 import ru.timeconqueror.lootgames.room.RoomUtils;
 import ru.timeconqueror.lootgames.room.client.ClientRoom;
+
+import java.util.Objects;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class RoomWorldRenderer {
@@ -29,9 +32,9 @@ public class RoomWorldRenderer {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
             ClientLevel level = Minecraft.getInstance().level;
             ClientRoom room = ClientRoom.getInstance();
-            if (!RoomUtils.inRoomWorld(level) || room == null || room.getGame() == null)
+            if (!RoomUtils.inRoomWorld(level) || room == null || room.getProgress().isLess(RoomProgress.GENERATED))
                 return;
-            LootGame<?> game = room.getGame();
+            LootGame<?> game = Objects.requireNonNull(room.getGame());
             MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
 
             PoseStack poseStack = event.getPoseStack();

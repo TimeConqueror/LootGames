@@ -17,6 +17,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,14 +29,14 @@ import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.api.room.RoomProgress;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.packet.room.SSyncGamePacket;
+import ru.timeconqueror.lootgames.common.packet.room.SUpdateRoomPacket;
 import ru.timeconqueror.lootgames.registry.LGBlocks;
 import ru.timeconqueror.lootgames.registry.LGCapabilities;
 import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
 import ru.timeconqueror.lootgames.utils.Utils;
 import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 import ru.timeconqueror.timecore.common.capability.CoffeeCapabilityInstance;
-import ru.timeconqueror.timecore.common.capability.owner.CapabilityOwner;
-import ru.timeconqueror.timecore.common.capability.owner.serializer.CapabilityOwnerCodec;
+import ru.timeconqueror.timecore.common.capability.owner.CapabilityOwnerType;
 import ru.timeconqueror.timecore.common.capability.property.CoffeeProperty;
 import ru.timeconqueror.timecore.common.capability.property.serializer.IPropertySerializer;
 
@@ -58,9 +59,10 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
     private final CoffeeProperty<RoomProgress> progress = prop("progress", RoomProgress.NOT_GENERATED, RoomProgress.SERIALIZER);
     private final CoffeeProperty<EntryPoint> entryPoint = prop("entry", (EntryPoint) null, EntryPoint.SERIALIZER.nullable());
 
-    private static TicketType<Integer> LOAD_BEFORE_TELEPORT = TicketType.create(LootGames.MODID + ":" + "load_before_teleport", Integer::compareTo, 5 * 20);
+    private static final TicketType<Integer> LOAD_BEFORE_TELEPORT = TicketType.create(LootGames.MODID + ":" + "load_before_teleport", Integer::compareTo, 5 * 20);
 
-    public ServerRoom(ServerLevel level, RoomCoords coords) {
+    public ServerRoom(CapabilityOwnerType<LevelChunk> ownerType, ServerLevel level, RoomCoords coords) {
+        super(ownerType);
         this.level = level;
         this.coords = coords;
         this.roomBox = RoomUtils.getRoomBox(level, coords);
@@ -91,12 +93,7 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
 
     @Nullable
     public LootGame<?> getGame() {
-        RoomProgress progress = getProgress();
-        if (progress == RoomProgress.GENERATED || progress == RoomProgress.STARTED) {
-            return game.get();
-        }
-
-        return null;
+        return game.get();
     }
 
     @Nullable
@@ -130,10 +127,12 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
         game.start();
 
         this.progress.set(RoomProgress.GENERATED);
+        save();
     }
 
     public void updateEntryPoint(@Nullable EntryPoint newEntryPoint) {
         this.entryPoint.set(newEntryPoint);
+        save();
     }
 
     public void sendTeleportTicket(Entity entity) {
@@ -194,7 +193,8 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
 
     public void finishGame() {
         this.progress.set(RoomProgress.FINISHED);
-        this.game.set(null);
+        save();
+        syncNonGameProperties();
         syncGame();
     }
 
@@ -216,6 +216,13 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
     }
 
     @Override
+    public void save() {
+        ChunkPos chunkPos = getCoords().containerPos();
+        LevelChunk chunk = getLevel().getChunk(chunkPos.x, chunkPos.z);
+        save(chunk);
+    }
+
+    @Override
     public void syncGame() {
         forEachInRoom(player -> syncGame((ServerPlayer) player));
     }
@@ -224,20 +231,17 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
         LGNetwork.sendToPlayer(player, new SSyncGamePacket(getProgress(), getGame(), getGame() == null));
     }
 
+    public void syncNonGameProperties() {
+        forEachInRoom(player -> LGNetwork.sendToPlayer((ServerPlayer) player, new SUpdateRoomPacket(getProgress())));
+    }
+
     @NotNull
     @Override
     public Capability<? extends CoffeeCapabilityInstance<LevelChunk>> getCapability() {
         return LGCapabilities.ROOM;
     }
 
-    @NotNull
     @Override
-    public CapabilityOwnerCodec<LevelChunk> getOwnerSerializer() {
-        return CapabilityOwner.CHUNK.getSerializer();
-    }
-
-    @Override
-    public void sendChangesToClient(@NotNull SimpleChannel simpleChannel, @NotNull Object o) {
-
+    public void sendChangesToClient(@NotNull SimpleChannel simpleChannel, @NotNull Object message) {
     }
 }

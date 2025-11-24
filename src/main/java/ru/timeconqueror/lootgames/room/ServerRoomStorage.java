@@ -10,7 +10,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -25,8 +24,7 @@ import ru.timeconqueror.lootgames.common.packet.room.SLeaveRoomPacket;
 import ru.timeconqueror.lootgames.common.packet.room.SLoadRoomPacket;
 import ru.timeconqueror.lootgames.registry.LGCapabilities;
 import ru.timeconqueror.timecore.common.capability.CoffeeCapabilityInstance;
-import ru.timeconqueror.timecore.common.capability.owner.CapabilityOwner;
-import ru.timeconqueror.timecore.common.capability.owner.serializer.CapabilityOwnerCodec;
+import ru.timeconqueror.timecore.common.capability.owner.CapabilityOwnerType;
 import ru.timeconqueror.timecore.common.capability.property.CoffeeProperty;
 
 import java.util.*;
@@ -44,7 +42,8 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
     @Getter
     private final DelayedPlayerTaskHelper playerTaskHelper = new DelayedPlayerTaskHelper();
 
-    public ServerRoomStorage(ServerLevel roomLevel) {
+    public ServerRoomStorage(CapabilityOwnerType<Level> ownerType, ServerLevel roomLevel) {
+        super(ownerType);
         this.roomLevel = roomLevel;
     }
 
@@ -58,8 +57,8 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
 
     @Override
     public ServerRoom getRoom(RoomCoords coords, boolean loadIfUnloaded) {
-        if(!loadedRooms.containsKey(coords)) {
-            if(loadIfUnloaded) {
+        if (!loadedRooms.containsKey(coords)) {
+            if (loadIfUnloaded) {
                 loadRoom(coords);
             } else {
                 return null;
@@ -146,12 +145,6 @@ public class ServerRoomStorage extends CoffeeCapabilityInstance<Level> implement
     @Override
     public Capability<? extends CoffeeCapabilityInstance<Level>> getCapability() {
         return LGCapabilities.ROOM_STORAGE;
-    }
-
-    @NotNull
-    @Override
-    public CapabilityOwnerCodec<Level> getOwnerSerializer() {
-        return CapabilityOwner.LEVEL.getSerializer();
     }
 
     @Override

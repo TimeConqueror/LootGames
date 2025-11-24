@@ -9,37 +9,51 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import ru.timeconqueror.lootgames.api.minigame.event.ClickBlockEvent;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
+import ru.timeconqueror.lootgames.api.minigame.event.LeftClickBlockEvent;
+import ru.timeconqueror.lootgames.api.minigame.event.RightClickBlockEvent;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomAccess;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
-import ru.timeconqueror.lootgames.utils.MouseClickType;
 
 @Mod.EventBusSubscriber
 public class MinecraftToGameEventReposter {
     @SubscribeEvent
     public static void onLeftClick(PlayerInteractEvent.LeftClickBlock event) {
-        if (onPlayerClicked(event.getLevel(), event.getEntity(), event.getPos(), event.getHand(), event.getFace(), MouseClickType.LEFT)) {
+        if (onPlayerLeftClicked(event.getLevel(), event.getEntity(), event.getPos(), event.getHand(), event.getFace(), event.getAction())) {
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent
     public static void onRightClick(PlayerInteractEvent.RightClickBlock event) {
-        if (onPlayerClicked(event.getLevel(), event.getEntity(), event.getPos(), event.getHand(), event.getFace(), MouseClickType.RIGHT)) {
+        if (onPlayerRightClicked(event.getLevel(), event.getEntity(), event.getPos(), event.getHand(), event.getFace())) {
             event.setCanceled(true);
         }
     }
 
-    private static boolean onPlayerClicked(Level level, Player player, BlockPos pos, InteractionHand hand, Direction face, MouseClickType type) {
+    private static boolean onPlayerRightClicked(Level level, Player player, BlockPos pos, InteractionHand hand, Direction face) {
         RoomCoords coords = RoomCoords.of(pos);
 
         Room room = RoomAccess.getRoom(coords, level.isClientSide());
         if (room != null && room.getGame() != null) {
             BlockState blockState = level.getBlockState(pos);
-            var gameEvent = new ClickBlockEvent(level, player, blockState, coords.toLocalPos(pos), hand, face, type);
-            room.getGame().getEventBus().post(GameEvents.CLICK_BLOCK, gameEvent);
+            var gameEvent = new RightClickBlockEvent(level, player, blockState, coords.toLocalPos(pos), hand, face);
+            room.getGame().getEventBus().post(GameEvents.RIGHT_CLICK_BLOCK, gameEvent);
+            return gameEvent.isAccepted();
+        }
+
+        return false;
+    }
+
+    private static boolean onPlayerLeftClicked(Level level, Player player, BlockPos pos, InteractionHand hand, Direction face, PlayerInteractEvent.LeftClickBlock.Action action) {
+        RoomCoords coords = RoomCoords.of(pos);
+
+        Room room = RoomAccess.getRoom(coords, level.isClientSide());
+        if (room != null && room.getGame() != null) {
+            BlockState blockState = level.getBlockState(pos);
+            var gameEvent = new LeftClickBlockEvent(level, player, blockState, coords.toLocalPos(pos), hand, face, action);
+            room.getGame().getEventBus().post(GameEvents.LEFT_CLICK_BLOCK, gameEvent);
             return gameEvent.isAccepted();
         }
 

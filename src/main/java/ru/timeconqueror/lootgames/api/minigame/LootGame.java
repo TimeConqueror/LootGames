@@ -58,6 +58,8 @@ public abstract class LootGame<STAGE extends Stage> {
     private STAGE stage;
     @Getter
     private int age;
+    @Getter
+    private GameProgress progress = GameProgress.NOT_STARTED;
 
     public LootGame(GameDefinition gameDefinition, Room room) {
         this.gameDefinition = gameDefinition;
@@ -79,6 +81,7 @@ public abstract class LootGame<STAGE extends Stage> {
         room.forEachInRoom(player -> LGNetwork.sendToPlayer((ServerPlayer) player, new SSyncGamePacket(room.getProgress(), this, true)));
         startStage.postInit();
         onStageStart(false);
+        progress = GameProgress.PLAYING;
     }
 
     @OverridingMethodsMustInvokeSuper
@@ -133,6 +136,7 @@ public abstract class LootGame<STAGE extends Stage> {
 
     private void endGame() {
         eventBus.post(GameEvents.END_GAME);
+        progress = GameProgress.FINISHED;
         ServerRoom serverRoom = (ServerRoom) room;
         serverRoom.finishGame();
     }
@@ -158,6 +162,8 @@ public abstract class LootGame<STAGE extends Stage> {
             nbt.put("task_scheduler", taskScheduler.serializeNBT());
         }
 
+        nbt.putInt("progress", progress.ordinal());
+
         GameSerializer.serializeStage(this, nbt, type);
         log.debug(DEBUG_MARKER, formatLogMessage("stage '{}' was serialized for {}."), getStage(), type == SerializationType.SAVE ? "saving" : "syncing");
     }
@@ -170,6 +176,8 @@ public abstract class LootGame<STAGE extends Stage> {
             taskScheduler = new TaskScheduler(room.getLevel());
             taskScheduler.deserializeNBT(Objects.requireNonNull(schedulerTag));
         }
+
+        this.progress = GameProgress.values()[nbt.getInt("progress")];
 
         this.stage = GameSerializer.deserializeStage(this, nbt, type);
         log.debug(DEBUG_MARKER, formatLogMessage("stage '{}' was deserialized {}."), getStage(), type == SerializationType.SAVE ? "from saved file" : "on client");
@@ -233,9 +241,5 @@ public abstract class LootGame<STAGE extends Stage> {
 
     public GameNetwork net() {
         return network;
-    }
-
-    public boolean isStarted() {
-        return room.getProgress() == RoomProgress.STARTED;
     }
 }

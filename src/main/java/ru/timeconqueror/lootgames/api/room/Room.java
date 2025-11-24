@@ -52,5 +52,9 @@ public interface Room {
 
     }
 
+    default void save() {
+
+    }
+
     void tick();
 }

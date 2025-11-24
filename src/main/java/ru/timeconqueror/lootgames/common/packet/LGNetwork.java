@@ -8,6 +8,7 @@ import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.common.packet.room.SLeaveRoomPacket;
 import ru.timeconqueror.lootgames.common.packet.room.SLoadRoomPacket;
 import ru.timeconqueror.lootgames.common.packet.room.SSyncGamePacket;
+import ru.timeconqueror.lootgames.common.packet.room.SUpdateRoomPacket;
 import ru.timeconqueror.timecore.api.registry.PacketRegister;
 import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 
@@ -22,6 +23,7 @@ public class LGNetwork {
             .regPacket(SLoadRoomPacket.class)
             .regPacket(SSyncGamePacket.class)
             .regPacket(SLeaveRoomPacket.class)
+            .regPacket(SUpdateRoomPacket.class)
             .asChannel();
 
     public static void sendToPlayer(ServerPlayer player, Object packet) {

@@ -13,6 +13,7 @@ import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.common.packet.room.SLoadRoomPacket;
 import ru.timeconqueror.lootgames.common.packet.room.SSyncGamePacket;
+import ru.timeconqueror.lootgames.common.packet.room.SUpdateRoomPacket;
 import ru.timeconqueror.lootgames.room.GameSerializer;
 import ru.timeconqueror.lootgames.room.RoomUtils;
 import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
@@ -29,7 +30,7 @@ public class ClientRoom implements Room {
     @Getter
     private LootGame<?> game;
     @Getter
-    private final RoomProgress progress;
+    private RoomProgress progress;
     @Getter
     private final AABB roomBox;
 
@@ -68,6 +69,10 @@ public class ClientRoom implements Room {
 
     public static void handleLoadRoomPacket(SLoadRoomPacket packet) {
         instance = new ClientRoom(packet);
+    }
+
+    public void handleUpdateRoomPacket(SUpdateRoomPacket packet) {
+        progress = packet.getProgress();
     }
 
     public void handleSyncGamePacket(SSyncGamePacket packet) {

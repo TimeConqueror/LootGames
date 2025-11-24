@@ -16,11 +16,15 @@ public enum RoomProgress {
     public static final Serializer SERIALIZER = new Serializer();
     public static final RoomProgress[] VALUES = RoomProgress.values();
 
+    public boolean isLess(RoomProgress other) {
+        return this.index < other.index;
+    }
+
     public static class Serializer implements IPropertySerializer<RoomProgress> {
 
         @Override
         public RoomProgress deserialize(@NotNull String name, @NotNull CompoundTag compoundTag) {
-            return RoomProgress.valueOf(compoundTag.getString(name));
+             return RoomProgress.valueOf(compoundTag.getString(name));
         }
 
         @Override

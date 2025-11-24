@@ -15,7 +15,7 @@ import ru.timeconqueror.lootgames.room.ServerRoomStorage;
 import ru.timeconqueror.timecore.api.CapabilityManagerAPI;
 import ru.timeconqueror.timecore.api.registry.CapabilityRegister;
 import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
-import ru.timeconqueror.timecore.common.capability.owner.CapabilityOwner;
+import ru.timeconqueror.timecore.common.capability.owner.CapabilityOwnerType;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class LGCapabilities {
@@ -28,8 +28,8 @@ public class LGCapabilities {
 
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> CapabilityManagerAPI.registerStaticCoffeeAttacher(CapabilityOwner.LEVEL, ROOM_STORAGE, level -> !level.isClientSide && RoomUtils.inRoomWorld(level), level -> new ServerRoomStorage(((ServerLevel) level))));
-        event.enqueueWork(() -> CapabilityManagerAPI.registerStaticCoffeeAttacher(CapabilityOwner.CHUNK, ROOM, chunk -> !chunk.getLevel().isClientSide && RoomUtils.inRoomWorld(chunk.getLevel()) && RoomUtils.isRoomHolder(chunk.getPos()), chunk -> new ServerRoom((ServerLevel) chunk.getLevel(), RoomCoords.of(chunk))));
-        event.enqueueWork(() -> CapabilityManagerAPI.registerStaticCoffeeAttacher(CapabilityOwner.ENTITY, PLAYER_DATA, entity -> entity instanceof ServerPlayer, entity -> new PlayerData((ServerPlayer) entity)));
+        event.enqueueWork(() -> CapabilityManagerAPI.registerDirectionIndependentCoffeeAttacher(CapabilityOwnerType.LEVEL, ROOM_STORAGE, level -> !level.isClientSide && RoomUtils.inRoomWorld(level), (owner, level) -> new ServerRoomStorage(owner, ((ServerLevel) level))));
+        event.enqueueWork(() -> CapabilityManagerAPI.registerDirectionIndependentCoffeeAttacher(CapabilityOwnerType.CHUNK, ROOM, chunk -> !chunk.getLevel().isClientSide && RoomUtils.inRoomWorld(chunk.getLevel()) && RoomUtils.isRoomHolder(chunk.getPos()), (owner, chunk) -> new ServerRoom(owner, (ServerLevel) chunk.getLevel(), RoomCoords.of(chunk))));
+        event.enqueueWork(() -> CapabilityManagerAPI.registerDirectionIndependentCoffeeAttacher(CapabilityOwnerType.ENTITY, PLAYER_DATA, entity -> entity instanceof ServerPlayer, (owner, entity) -> new PlayerData(owner, (ServerPlayer) entity)));
     }
 }

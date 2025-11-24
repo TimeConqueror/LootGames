@@ -20,6 +20,7 @@ import net.minecraftforge.event.level.NoteBlockEvent;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2ic;
 import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
+import ru.timeconqueror.lootgames.api.minigame.GameProgress;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.reward.RewardHelper;
@@ -91,7 +92,7 @@ public class GameOfLight extends BoardLootGame {
     public void onTick() {
         super.onTick();
 
-        if (isServerSide()) {
+        if (isServerSide() && getProgress() == GameProgress.PLAYING) {
             if (tickTimer && resetTimer.ended()) {
                 failGame(true);
                 return;
@@ -351,9 +352,7 @@ public class GameOfLight extends BoardLootGame {
         }
 
         @Override
-        protected void onClick(Player player, Vector2ic pos, MouseClickType type) {
-            super.onClick(player, pos, type);
-
+        protected void onRightClick(Player player, Vector2ic pos) {
             if (isServerSide()) {
                 if (isCenter(pos)) {
                     net().sendTo(player, Component.translatable("msg.lootgames.gol.rules"), NotifyColor.NOTIFY);
@@ -472,9 +471,7 @@ public class GameOfLight extends BoardLootGame {
         }
 
         @Override
-        protected void onClick(Player player, Vector2ic pos, MouseClickType type) {
-            super.onClick(player, pos, type);
-
+        protected void onRightClick(Player player, Vector2ic pos) {
             if (isServerSide()) {
                 net().sendTo(player, Component.translatable("msg.lootgames.gol.not_ready"), NotifyColor.WARN);
             }
@@ -548,7 +545,7 @@ public class GameOfLight extends BoardLootGame {
         }
 
         @Override
-        protected void onClick(Player player, Vector2ic pos, MouseClickType type) {
+        protected void onRightClick(Player player, Vector2ic pos) {
             if (isClientSide() && isCenter(pos)) {
                 net().sendTo(player, Component.translatable("msg.lootgames.gol.rules"), NotifyColor.WARN);
                 return;

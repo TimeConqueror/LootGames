@@ -27,6 +27,7 @@ public class LGItemModelProvider extends ModelProvider {
         addMicroverseModel(LGItems.BOXED_MINESWEEPER_MICROVERSE);
 
         addItemModelParentedByBlock(LGBlocks.BOARD_OPAQUE_MATTER);
+        addItemModelParentedByBlock(LGBlocks.DUNGEON_LAMP);
     }
 
     protected ItemModel addMicroverseModel(Item item) {

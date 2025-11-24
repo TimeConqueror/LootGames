@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 public class MicroverseManipulatorItem extends BlockItem {
     public MicroverseManipulatorItem(Block block) {
         super(block, new Item.Properties()
-                .stacksTo(1)
                 .fireResistant());
     }
 

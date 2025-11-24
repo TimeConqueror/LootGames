@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.api.room.RoomLocalPos;
+import ru.timeconqueror.lootgames.api.room.RoomProgress;
 import ru.timeconqueror.lootgames.room.RoomUtils;
 import ru.timeconqueror.lootgames.room.client.ClientRoom;
 
@@ -72,9 +73,11 @@ public class RoomDebugScreenOverlay implements IGuiOverlay {
         debugInfo.add("Room Local Pos: " + (localPos != null ? localPos.getX() + ", " + localPos.getY()  + ", " + localPos.getZ() : "<unable>"));
         ClientRoom room = ClientRoom.getInstance();
         if (room != null) {
+            debugInfo.add("Room Status: " + room.getProgress());
             LootGame<?> game = room.getGame();
             debugInfo.add("Game: " + (game != null ? game.getGameDefinition() : "None"));
             if (game != null) {
+                debugInfo.add("Progress: " + game.getProgress());
                 debugInfo.add("Stage: " + game.getStage().getID());
             }
         }

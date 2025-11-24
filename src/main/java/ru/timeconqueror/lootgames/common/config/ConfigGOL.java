@@ -21,9 +21,9 @@ public class ConfigGOL extends Config {
     public IQuickConfigValue<Integer> timeout;
 
     public StageConfig stage1 = new StageConfig("stage_1", new DefaultData(5, false, 24));
-    public StageConfig stage2 = new StageConfig("stage_2", new DefaultData(5, false, 16));
-    public StageConfig stage3 = new StageConfig("stage_3", new DefaultData(5, false, 12));
-    public StageConfig stage4 = new StageConfig("stage_4", new DefaultData(5, true, 12));
+    public StageConfig stage2 = new StageConfig("stage_2", new DefaultData(4, false, 16));
+    public StageConfig stage3 = new StageConfig("stage_3", new DefaultData(4, false, 12));
+    public StageConfig stage4 = new StageConfig("stage_4", new DefaultData(4, false, 12));
 
     /**
      * @param type    <i>please, see description in ModConfig.Type</i>

@@ -37,11 +37,14 @@ public class LGBlockStateAndBlockModelProvider extends BlockStateProvider {
                 models.addBlockModel(TRANSFERENCE_CRYSTAL, BlockModels.particlesOnly(LootGames.tl("blockentity/transference_crystal")));
         addBlockState(TRANSFERENCE_CRYSTAL, BlockStateResources.singleVariantWithSingleModel(transferenceCrystal));
 
-        addBlockState(OPAQUE_MATTER, BlockStateResources.singleVariantWithSingleModel(
-                models.addBlockModel(OPAQUE_MATTER, BlockModels.cubeAllModel(models.getDefaultTextureLocation(OPAQUE_MATTER)))
+        addBlockState(DUNGEON_BLOCK, BlockStateResources.singleVariantWithSingleModel(
+                models.addBlockModel(DUNGEON_BLOCK, BlockModels.cubeAllModel(models.getDefaultTextureLocation(DUNGEON_BLOCK)))
         ));
         addBlockState(BOARD_OPAQUE_MATTER, BlockStateResources.singleVariantWithSingleModel(
                 models.getDefaultModelLocation(BOARD_OPAQUE_MATTER)
+        ));
+        addBlockState(DUNGEON_LAMP, BlockStateResources.singleVariantWithSingleModel(
+                models.addBlockModel(DUNGEON_LAMP, BlockModels.cubeAllModel(models.getDefaultTextureLocation(DUNGEON_LAMP)))
         ));
     }
 

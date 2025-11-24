@@ -1,7 +1,6 @@
 package ru.timeconqueror.lootgames.registry;
 
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -19,7 +18,7 @@ import ru.timeconqueror.timecore.api.registry.ItemRegister;
 import ru.timeconqueror.timecore.api.registry.util.AutoRegistrable;
 import ru.timeconqueror.timecore.api.registry.util.BlockPropsFactory;
 
-import static ru.timeconqueror.lootgames.common.block.DungeonBlock.BRICKS_PROPS_CREATOR;
+import static ru.timeconqueror.lootgames.common.block.DungeonBlock.BLOCK_PROPS_FACTORY;
 import static ru.timeconqueror.lootgames.common.block.DungeonBlock.LAMP_PROPS_CREATOR;
 
 @AutoRegistrable.Entries("block")
@@ -31,7 +30,6 @@ public class LGBlocks {
     public static DungeonBlock CRACKED_DUNGEON_FLOOR;
     public static DungeonBlock SHIELDED_DUNGEON_FLOOR;
 
-    public static DungeonBlock DUNGEON_LAMP;
     public static DungeonBlock BROKEN_DUNGEON_LAMP;
 
     public static PuzzleMasterBlock PUZZLE_MASTER;
@@ -46,8 +44,9 @@ public class LGBlocks {
 
     public static TechnicalBlock GLASSY_MATTER;
     public static BoardTechnicalBlock BOARD_GLASSY_MATTER;
-    public static TechnicalBlock OPAQUE_MATTER;
+    public static DungeonBlock DUNGEON_BLOCK;
     public static BoardTechnicalBlock BOARD_OPAQUE_MATTER;
+    public static DungeonBlock DUNGEON_LAMP;
 
     public static TechnicalBlock SPACE_FABRIC; // hard wall
     public static MicroverseManipulatorBlock MICROVERSE_MANIPULATOR;
@@ -58,13 +57,12 @@ public class LGBlocks {
 
     @AutoRegistrable.Init
     private static void register() {
-        REGISTER.register("dungeon_ceiling", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Dungeon Ceiling");
-        REGISTER.register("cracked_dungeon_ceiling", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Cracked Dungeon Ceiling");
-        REGISTER.register("dungeon_wall", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Dungeon Wall");
-        REGISTER.register("cracked_dungeon_wall", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Cracked Dungeon Wall");
-        REGISTER.register("cracked_dungeon_floor", () -> new DungeonBlock(BRICKS_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Cracked Dungeon Floor");
-        REGISTER.register("shielded_dungeon_floor", () -> new DungeonBlock(BlockPropsFactory.unbreakable(BRICKS_PROPS_CREATOR.create()))).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Shielded Dungeon Floor");
-        REGISTER.register("dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Dungeon Lamp");
+        REGISTER.register("dungeon_ceiling", () -> new DungeonBlock(BLOCK_PROPS_FACTORY.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Dungeon Ceiling");
+        REGISTER.register("cracked_dungeon_ceiling", () -> new DungeonBlock(BLOCK_PROPS_FACTORY.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Cracked Dungeon Ceiling");
+        REGISTER.register("dungeon_wall", () -> new DungeonBlock(BLOCK_PROPS_FACTORY.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Dungeon Wall");
+        REGISTER.register("cracked_dungeon_wall", () -> new DungeonBlock(BLOCK_PROPS_FACTORY.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Cracked Dungeon Wall");
+        REGISTER.register("cracked_dungeon_floor", () -> new DungeonBlock(BLOCK_PROPS_FACTORY.create())).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Cracked Dungeon Floor");
+        REGISTER.register("shielded_dungeon_floor", () -> new DungeonBlock(BlockPropsFactory.unbreakable(BLOCK_PROPS_FACTORY.create()))).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Shielded Dungeon Floor");
         REGISTER.register("broken_dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create().lightLevel(value -> 0))).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Broken Dungeon Lamp");
         REGISTER.register("puzzle_master", PuzzleMasterBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Puzzle Master");
 
@@ -79,13 +77,14 @@ public class LGBlocks {
                         BlockBehaviour.Properties.copy(Blocks.BARRIER),
                         Configuration.builder().renderShape(RenderShape.INVISIBLE).build()))
                 .renderLayer(() -> new RenderTypeWrapper(RenderType.translucent())).name("Glassy Matter");
-        REGISTER.register("opaque_matter", () -> new TechnicalBlock(BlockBehaviour.Properties.copy(Blocks.BARRIER),
-                        Configuration.builder().build()))
+        REGISTER.register("dungeon_block", () -> new DungeonBlock(BLOCK_PROPS_FACTORY.create()))
                 .defaultBlockItem(LGCreativeTabs.MAIN).name("Opaque Matter");
         REGISTER.register("board_opaque_matter", () -> new BoardTechnicalBlock(
                 BlockBehaviour.Properties.copy(Blocks.BARRIER),
                 Configuration.builder().build())
         ).defaultBlockItem(LGCreativeTabs.MAIN).name("Opaque Matter");
+        REGISTER.register("dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create()))
+                .defaultBlockItem(LGCreativeTabs.MAIN).name("Glowing Matter");
 
 
         REGISTER.register("microverse_manipulator", MicroverseManipulatorBlock::new)
@@ -102,6 +101,8 @@ public class LGBlocks {
                                 .onCreativeTabBuilding(ItemRegister.CreativeTabAdder
                                         .tabBased(LGCreativeTabs.MAIN))
                         );
+
+
 //        REGISTER.register("gol_activator", GOLActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Game of Light");
 //        REGISTER.register("ms_activator", MSActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Minesweeper");
 //        REGISTER.register("pipes_activator", PipesActivatorBlock::new).oneVarStateAndCubeAllModel().defaultBlockItem(LGCreativeTabs.MAIN).name("Pipes (WIP)");

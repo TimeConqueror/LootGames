@@ -99,7 +99,11 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
                                     , LAYER_HOLE);
                         }))
                         .run(everyCycleAt(animationTime, (ctx, props) -> ctx.getOwner().baseEnlighten = false))
-                        .run(onBoundaryStart((ctx, props) -> ctx.getOwner().clearGameAndThrowStack()))
+                        .run(onBoundaryStart((ctx, props) -> {
+                            if (ctx.isServerSide()) {
+                                ctx.getOwner().clearGameAndThrowStack();
+                            }
+                        }))
                         .run(onBoundaryStart((ctx, props) -> ctx.getOwner().setCanSwitchState(true)))
                         .build()
                 )
@@ -263,7 +267,7 @@ public class MicroverseManipulatorBlockEntity extends SyncableBlockEntity implem
                 .run(onBoundaryEnd((ctx, nothing) -> ctx.getOwner().setCanSwitchState(true)))
                 .build();
 
-        animationSystem.startAnimationScript(AnimationScript.builder(LGAnimations.microverseManipulatorHoleCollapse.starter().withSpeed(1/3F))
+        animationSystem.startAnimationScript(AnimationScript.builder(LGAnimations.microverseManipulatorHoleCollapse.starter().withSpeed(1 / 3F))
                         .withInplaceAction(delayedTeleport)
                 , LAYER_HOLE);
     }

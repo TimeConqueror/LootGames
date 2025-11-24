@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "lootgames:block/dungeon_block"
+    }
+  }
+}

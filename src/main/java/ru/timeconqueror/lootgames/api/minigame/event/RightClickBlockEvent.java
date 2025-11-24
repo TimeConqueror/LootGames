@@ -10,13 +10,12 @@ import ru.timeconqueror.lootgames.api.room.RoomLocalPos;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 
 @Data
-public final class ClickBlockEvent {
+public class RightClickBlockEvent {
     private final Level level;
     private final Player player;
     private final BlockState state;
     private final RoomLocalPos localPos;
     private final InteractionHand hand;
     private final Direction face;
-    private final MouseClickType clickType;
     private boolean isAccepted;
 }

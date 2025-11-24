@@ -11,8 +11,7 @@ import ru.timeconqueror.lootgames.api.room.PlayerRoomData;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.registry.LGCapabilities;
 import ru.timeconqueror.timecore.common.capability.CoffeeCapabilityInstance;
-import ru.timeconqueror.timecore.common.capability.owner.CapabilityOwner;
-import ru.timeconqueror.timecore.common.capability.owner.serializer.CapabilityOwnerCodec;
+import ru.timeconqueror.timecore.common.capability.owner.CapabilityOwnerType;
 import ru.timeconqueror.timecore.common.capability.property.CoffeeProperty;
 
 public class PlayerData extends CoffeeCapabilityInstance<Entity> implements PlayerRoomData {
@@ -20,7 +19,8 @@ public class PlayerData extends CoffeeCapabilityInstance<Entity> implements Play
 
     private final CoffeeProperty<RoomCoords> lastAllowedCoords = prop("last_allowed", (RoomCoords) null, RoomCoords.Serializer.NULLABLE_INSTANCE);
 
-    public PlayerData(ServerPlayer player) {
+    public PlayerData(CapabilityOwnerType<Entity> ownerType, ServerPlayer player) {
+        super(ownerType);
         this.player = player;
     }
 
@@ -28,12 +28,6 @@ public class PlayerData extends CoffeeCapabilityInstance<Entity> implements Play
     @Override
     public Capability<? extends CoffeeCapabilityInstance<Entity>> getCapability() {
         return LGCapabilities.PLAYER_DATA;
-    }
-
-    @NotNull
-    @Override
-    public CapabilityOwnerCodec<Entity> getOwnerSerializer() {
-        return CapabilityOwner.ENTITY.getSerializer();
     }
 
     @Override

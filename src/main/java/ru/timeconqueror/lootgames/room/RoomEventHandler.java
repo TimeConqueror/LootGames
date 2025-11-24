@@ -64,7 +64,7 @@ public class RoomEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void checkLegality(PlayerInteractEvent event) {
         if (event.isCancelable()) {
-            if (!isActionAllowed(event.getEntity(), event.getLevel(), event.getPos())) {
+            if (!isActionAllowed(EventType.INTERACT, event.getEntity(), event.getLevel(), event.getPos())) {
                 event.setCanceled(true);
             }
         }
@@ -72,14 +72,14 @@ public class RoomEventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void checkLegality(EntityItemPickupEvent event) {
-        if (!isActionAllowed(event.getEntity(), event.getEntity().level(), event.getItem().blockPosition())) {
+        if (!isActionAllowed(EventType.PICKUP, event.getEntity(), event.getEntity().level(), event.getItem().blockPosition())) {
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void checkLegality(BlockEvent.BreakEvent event) {
-        if (!isActionAllowed(event.getPlayer(), event.getPlayer().level(), event.getPos())) {
+        if (!isActionAllowed(EventType.BREAK, event.getPlayer(), event.getPlayer().level(), event.getPos())) {
             event.setCanceled(true);
         }
     }
@@ -87,7 +87,7 @@ public class RoomEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void checkLegality(BlockEvent.EntityPlaceEvent event) {
         if (event.getEntity() instanceof Player player) {
-            if (!isActionAllowed(player, event.getEntity().level(), event.getPos())) {
+            if (!isActionAllowed(EventType.PLACE, player, event.getEntity().level(), event.getPos())) {
                 event.setCanceled(true);
             }
         }
@@ -202,17 +202,30 @@ public class RoomEventHandler {
         }
     }
 
-//   FIXME public static void transferPlayerDrops(LivingDropsEvent event) {}
-
-    private static boolean isActionAllowed(Player player, Level level) {
-        return isActionAllowed(player, level, null);
-    }
-
-    private static boolean isActionAllowed(Player player, Level level, @Nullable BlockPos actionPos) {
-        if (level.isClientSide || !RoomUtils.inRoomWorld(player.level())) {
+    private static boolean isActionAllowed(EventType type, Player player, Level level, @Nullable BlockPos actionPos) {
+        if(!RoomUtils.inRoomWorld(level)) {
             return true;
         }
 
-        return actionPos == null || RoomCoords.isSameRoom(actionPos, player.blockPosition());
+        if(player.isCreative()) {
+            return true;
+        }
+
+        if(actionPos != null && !RoomCoords.isSameRoom(actionPos, player.blockPosition())) {
+            return false;
+        }
+
+        if(type == EventType.PLACE || type == EventType.BREAK) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private enum EventType {
+        BREAK,
+        PICKUP,
+        PLACE,
+        INTERACT
     }
 }

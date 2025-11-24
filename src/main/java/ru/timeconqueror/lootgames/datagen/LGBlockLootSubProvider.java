@@ -38,7 +38,7 @@ public class LGBlockLootSubProvider extends TimeBlockLootSubProvider {
         this.add(LGBlocks.BOARD_BORDER, noDrop());
         this.add(LGBlocks.GLASSY_MATTER, noDrop());
         this.add(LGBlocks.BOARD_GLASSY_MATTER, noDrop());
-        this.add(LGBlocks.OPAQUE_MATTER, noDrop());
+        this.add(LGBlocks.DUNGEON_BLOCK, noDrop());
         this.add(LGBlocks.BOARD_OPAQUE_MATTER, noDrop());
         this.add(LGBlocks.SPACE_FABRIC, noDrop());
         this.add(LGBlocks.MICROVERSE_MANIPULATOR, this::createNameableBlockEntityTable);

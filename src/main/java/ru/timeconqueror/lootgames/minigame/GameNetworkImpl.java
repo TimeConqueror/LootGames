@@ -17,6 +17,7 @@ import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.common.packet.CPacketGameUpdate;
 import ru.timeconqueror.lootgames.common.packet.LGNetwork;
 import ru.timeconqueror.lootgames.common.packet.SPacketGameUpdate;
+import ru.timeconqueror.lootgames.room.ServerRoom;
 import ru.timeconqueror.timecore.api.util.PlayerUtils;
 
 import static ru.timeconqueror.lootgames.api.minigame.LootGame.DEBUG_MARKER;
@@ -65,8 +66,7 @@ public class GameNetworkImpl implements GameNetwork {
 
     @Override
     public void save() {
-        ChunkPos chunkPos = room.getCoords().containerPos();
-        room.getLevel().getChunk(chunkPos.x, chunkPos.z).setUnsaved(true);
+        room.save();
     }
 
     @Override

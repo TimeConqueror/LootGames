@@ -2,9 +2,9 @@
   "parent": "block/block",
   "textures": {
     "particle": "#side",
-    "side": "lootgames:block/opaque_matter",
-    "bottom": "lootgames:block/opaque_matter",
-    "top": "lootgames:block/opaque_matter"
+    "side": "lootgames:block/dungeon_block",
+    "bottom": "lootgames:block/dungeon_block",
+    "top": "lootgames:block/dungeon_block"
   },
   "elements": [
     {
