@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.minigame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,6 +22,7 @@ public class MinecraftToGameEventReposter {
     @SubscribeEvent
     public static void onLeftClick(PlayerInteractEvent.LeftClickBlock event) {
         if (onPlayerLeftClicked(event.getLevel(), event.getEntity(), event.getPos(), event.getHand(), event.getFace(), event.getAction())) {
+            event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide));
             event.setCanceled(true);
         }
     }
@@ -28,6 +30,7 @@ public class MinecraftToGameEventReposter {
     @SubscribeEvent
     public static void onRightClick(PlayerInteractEvent.RightClickBlock event) {
         if (onPlayerRightClicked(event.getLevel(), event.getEntity(), event.getPos(), event.getHand(), event.getFace())) {
+            event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide));
             event.setCanceled(true);
         }
     }

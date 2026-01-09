@@ -56,6 +56,11 @@ public class LGBlockStateAndBlockModelProvider extends BlockStateProvider {
                 models.addBlockModel("matter_block_stairs_inner", BlockModels.stairsInnerModel(matterBlockTl)),
                 models.addBlockModel("matter_block_stairs_outer", BlockModels.stairsOuterModel(matterBlockTl))
         ));
+        addBlockState(MATTER_BLOCK_SLAB, BlockStateResources.slab(
+                models.addBlockModel("matter_block_slab", BlockModels.slabBottomModel(matterBlockTl)),
+                models.getDefaultModelLocation(MATTER_BLOCK),
+                models.addBlockModel("matter_block_slab_top", BlockModels.slabTopModel(matterBlockTl))
+        ));
         addBlockState(MATTER_WALL, BlockStateResources.singleVariantWithSingleModel(
                 models.addBlockModel(MATTER_WALL, BlockModels.cubeAllModel(models.getDefaultTextureLocation(MATTER_WALL)))
         ));

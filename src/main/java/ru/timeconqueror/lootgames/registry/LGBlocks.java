@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.registry;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import ru.timeconqueror.lootgames.LootGames;
@@ -54,7 +55,8 @@ public class LGBlocks {
     public static TransferenceCrystalBlock TRANSFERENCE_CRYSTAL;
 
     public static DungeonBlock MATTER_BLOCK;
-    public static DungeonBlock MATTER_BLOCK_STAIRS;
+    public static StairBlock MATTER_BLOCK_STAIRS;
+    public static SlabBlock MATTER_BLOCK_SLAB;
     public static DungeonBlock MATTER_WALL;
     public static DungeonBlock MATTER_GLOWING_BLOCK;
 
@@ -94,6 +96,8 @@ public class LGBlocks {
 
         REGISTER.register("matter_block", () -> new DungeonBlock(BLOCK_PROPS_FACTORY.create()))
                 .defaultBlockItem(LGCreativeTabs.MAIN).name("Matter Block");
+        REGISTER.register("matter_block_slab", () -> new SlabBlock(BLOCK_PROPS_FACTORY.create()))
+                .defaultBlockItem(LGCreativeTabs.MAIN).name("Matter Block Slab");
         REGISTER.register("matter_block_stairs", () -> new StairBlock(() -> MATTER_BLOCK.defaultBlockState(), BLOCK_PROPS_FACTORY.create()))
                 .defaultBlockItem(LGCreativeTabs.MAIN).name("Matter Block Stairs");
         REGISTER.register("matter_wall", () -> new DungeonBlock(BLOCK_PROPS_FACTORY.create()))
