@@ -3,9 +3,10 @@ package ru.timeconqueror.lootgames.registry;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.LootGamesAPI;
 import ru.timeconqueror.lootgames.api.minigame.BoardGameEnvironmentGenerator;
-import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
+import ru.timeconqueror.lootgames.api.minigame.FlatBoardGame;
 import ru.timeconqueror.lootgames.api.room.RoomLocalPos;
 import ru.timeconqueror.lootgames.common.level.gen.room.GameOfLightEnvironmentGenerator;
+import ru.timeconqueror.lootgames.minigame.EmptyGameEnvironmentGenerator;
 import ru.timeconqueror.lootgames.minigame.gol.GameOfLight;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
 import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
@@ -30,7 +31,8 @@ public class LGGames {
             .langKey("game.lootgames.minesweeper")
             .microverseHolderItem(() -> LGItems.BOXED_MINESWEEPER_MICROVERSE)
             .gameInstanceCreator(GameMineSweeper::new)
-            .generator(new BoardGameEnvironmentGenerator(() -> LGBlocks.BOARD_GLASSY_MATTER.defaultBlockState()))
-            .teleportPos(RoomLocalPos.center(BoardLootGame.DEFAULT_FLOOR_POS + 1))
+//            .generator(new BoardGameEnvironmentGenerator(() -> LGBlocks.BOARD_GLASSY_MATTER.defaultBlockState()))\
+            .generator(EmptyGameEnvironmentGenerator.INSTANCE)
+            .teleportPos(RoomLocalPos.center(FlatBoardGame.DEFAULT_FLOOR_POS + 1))
             .build());
 }

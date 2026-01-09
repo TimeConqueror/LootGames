@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.minigame.minesweeper;
 
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -12,8 +13,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
-import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
+import ru.timeconqueror.lootgames.api.minigame.FlatBoardGame;
 import ru.timeconqueror.lootgames.api.minigame.GameNetwork;
+import ru.timeconqueror.lootgames.api.minigame.Leadings2D;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.reward.RewardHelper;
@@ -43,7 +45,7 @@ import java.util.List;
 //TODO remove break particle before left click interact
 //TODO if all non-bomb fields are revealed, finish the game
 //TODO remove interact with opened fields
-public class GameMineSweeper extends BoardLootGame {
+public class GameMineSweeper extends FlatBoardGame {
     public static final String ADV_BEAT_LEVEL4 = "ms_level_4";
 
     public boolean cIsGenerated;
@@ -93,6 +95,16 @@ public class GameMineSweeper extends BoardLootGame {
 
     public int getBoardSize() {
         return board.size();
+    }
+
+    @Override
+    public Leadings2D getLeadings() {
+        return Leadings2D.HORIZONTAL_DEFAULT;
+    }
+
+    @Override
+    public Direction getFace() {
+        return Direction.UP;
     }
 
     private void onLevelSuccessfullyFinished() {

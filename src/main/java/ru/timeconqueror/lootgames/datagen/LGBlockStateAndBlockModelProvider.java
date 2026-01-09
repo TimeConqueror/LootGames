@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.datagen;
 
 import net.minecraft.data.PackOutput;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.timecore.api.client.resource.BlockModel;
 import ru.timeconqueror.timecore.api.client.resource.BlockModels;
 import ru.timeconqueror.timecore.api.client.resource.BlockStateResources;
 import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation;
@@ -45,6 +46,21 @@ public class LGBlockStateAndBlockModelProvider extends BlockStateProvider {
         ));
         addBlockState(DUNGEON_LAMP, BlockStateResources.singleVariantWithSingleModel(
                 models.addBlockModel(DUNGEON_LAMP, BlockModels.cubeAllModel(models.getDefaultTextureLocation(DUNGEON_LAMP)))
+        ));
+        TextureLocation matterBlockTl = models.getDefaultTextureLocation(MATTER_BLOCK);
+        addBlockState(MATTER_BLOCK, BlockStateResources.singleVariantWithSingleModel(
+                models.addBlockModel(MATTER_BLOCK, BlockModels.cubeAllModel(matterBlockTl))
+        ));
+        addBlockState(MATTER_BLOCK_STAIRS, BlockStateResources.stairs(
+                models.addBlockModel("matter_block_stairs", BlockModels.stairsModel(matterBlockTl)),
+                models.addBlockModel("matter_block_stairs_inner", BlockModels.stairsInnerModel(matterBlockTl)),
+                models.addBlockModel("matter_block_stairs_outer", BlockModels.stairsOuterModel(matterBlockTl))
+        ));
+        addBlockState(MATTER_WALL, BlockStateResources.singleVariantWithSingleModel(
+                models.addBlockModel(MATTER_WALL, BlockModels.cubeAllModel(models.getDefaultTextureLocation(MATTER_WALL)))
+        ));
+        addBlockState(MATTER_GLOWING_BLOCK, BlockStateResources.singleVariantWithSingleModel(
+                models.addBlockModel(MATTER_GLOWING_BLOCK, BlockModels.cubeColumnModel(LootGames.tl("block/matter_glowing_block_top_bottom"), LootGames.tl("block/matter_glowing_block_side")))
         ));
     }
 

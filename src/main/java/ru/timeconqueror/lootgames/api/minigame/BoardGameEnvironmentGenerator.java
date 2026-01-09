@@ -7,7 +7,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
-import ru.timeconqueror.lootgames.registry.LGBlocks;
 
 import java.util.function.Supplier;
 
@@ -17,7 +16,7 @@ public class BoardGameEnvironmentGenerator implements GameEnvironmentGenerator {
 
     @Override
     public void generate(ServerLevel level, Room room, LootGame<?> game) {
-        int floorY = BoardLootGame.DEFAULT_FLOOR_POS;
+        int floorY = FlatBoardGame.DEFAULT_FLOOR_POS;
         RoomCoords coords = room.getCoords();
 
         BlockPos min = coords.minPos(floorY).offset(1, 0, 1);

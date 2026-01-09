@@ -15,6 +15,10 @@ public class RoomLocalPos extends Vec3i {
         validate();
     }
 
+    public static RoomLocalPos of(BlockPos pos) {
+        return RoomCoords.of(pos).toLocalPos(pos);
+    }
+
     public static RoomLocalPos of(RoomCoords roomCoords, BlockPos pos) {
         return roomCoords.toLocalPos(pos);
     }

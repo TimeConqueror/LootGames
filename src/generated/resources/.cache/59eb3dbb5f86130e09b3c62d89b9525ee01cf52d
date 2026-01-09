@@ -1,4 +1,4 @@
-// 1.20.1	2025-05-04T01:20:40.7971329	Loot Tables
+// 1.20.1	2025-11-30T00:24:29.8742731	Loot Tables
 bdc51f5e0729f02154d964cb9e0ffb7dfb527736 data/lootgames/loot_tables/blocks/board_border.json
 992689d8fe85c5b30c4119e430336de6129fa20e data/lootgames/loot_tables/blocks/board_glassy_matter.json
 3e97c7cb379125fd731525029edb4e3f2fe3cab7 data/lootgames/loot_tables/blocks/board_opaque_matter.json
@@ -11,6 +11,8 @@ b3b70c7654b104d5cfca697a216b692ada58ed52 data/lootgames/loot_tables/blocks/dunge
 ab660a50c7485af0a7d7553cd671b89163189f76 data/lootgames/loot_tables/blocks/dungeon_lamp.json
 fc1732732f3fe5aade1ca524eff190164b882cfb data/lootgames/loot_tables/blocks/dungeon_wall.json
 af3cc8db564641ff9cb1510a83b970bcbc447cdc data/lootgames/loot_tables/blocks/glassy_matter.json
+8ea078c853ee040fe53b36236590a0f26e78dbee data/lootgames/loot_tables/blocks/matter_block.json
+78a1908fbf6a85fcd803160f4973851cb1c87c57 data/lootgames/loot_tables/blocks/matter_glowing_block.json
 78768d4e0b5820c922f51fc2eee84966ae1b9142 data/lootgames/loot_tables/blocks/microverse_manipulator.json
 4934e9a28c4d05aa1cde46ef1d6c01997b21c96f data/lootgames/loot_tables/blocks/puzzle_master.json
 9e57498f6094cc86083b1092964be9cf8c1f1e36 data/lootgames/loot_tables/blocks/shielded_dungeon_floor.json

@@ -6,10 +6,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
+import ru.timeconqueror.lootgames.api.minigame.FlatBoardGame;
 
 public class BoardTechnicalBlock extends TechnicalBlock {
-    private static final VoxelShape OUTLINE_SHAPE = Shapes.box(0, 0, 0, 1, 1 + BoardLootGame.VERTICAL_RENDER_OFFSET, 1);
+    private static final VoxelShape OUTLINE_SHAPE = Shapes.box(0, 0, 0, 1, 1 + FlatBoardGame.VERTICAL_RENDER_OFFSET, 1);
 
     public BoardTechnicalBlock(Properties properties, Configuration configuration) {
         super(properties, configuration);

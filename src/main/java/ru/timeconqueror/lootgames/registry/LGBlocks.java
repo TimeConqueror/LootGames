@@ -3,6 +3,7 @@ package ru.timeconqueror.lootgames.registry;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import ru.timeconqueror.lootgames.LootGames;
 import ru.timeconqueror.lootgames.api.block.BoardBorderBlock;
@@ -52,6 +53,11 @@ public class LGBlocks {
     public static MicroverseManipulatorBlock MICROVERSE_MANIPULATOR;
     public static TransferenceCrystalBlock TRANSFERENCE_CRYSTAL;
 
+    public static DungeonBlock MATTER_BLOCK;
+    public static DungeonBlock MATTER_BLOCK_STAIRS;
+    public static DungeonBlock MATTER_WALL;
+    public static DungeonBlock MATTER_GLOWING_BLOCK;
+
     @AutoRegistrable
     private static final BlockRegister REGISTER = new BlockRegister(LootGames.MODID);
 
@@ -85,6 +91,15 @@ public class LGBlocks {
         ).defaultBlockItem(LGCreativeTabs.MAIN).name("Opaque Matter");
         REGISTER.register("dungeon_lamp", () -> new DungeonBlock(LAMP_PROPS_CREATOR.create()))
                 .defaultBlockItem(LGCreativeTabs.MAIN).name("Glowing Matter");
+
+        REGISTER.register("matter_block", () -> new DungeonBlock(BLOCK_PROPS_FACTORY.create()))
+                .defaultBlockItem(LGCreativeTabs.MAIN).name("Matter Block");
+        REGISTER.register("matter_block_stairs", () -> new StairBlock(() -> MATTER_BLOCK.defaultBlockState(), BLOCK_PROPS_FACTORY.create()))
+                .defaultBlockItem(LGCreativeTabs.MAIN).name("Matter Block Stairs");
+        REGISTER.register("matter_wall", () -> new DungeonBlock(BLOCK_PROPS_FACTORY.create()))
+                .defaultBlockItem(LGCreativeTabs.MAIN).name("Matter Wall");
+        REGISTER.register("matter_glowing_block", () -> new DungeonBlock(BLOCK_PROPS_FACTORY.create()))
+                .defaultBlockItem(LGCreativeTabs.MAIN).name("Matter Glowing Block");
 
 
         REGISTER.register("microverse_manipulator", MicroverseManipulatorBlock::new)

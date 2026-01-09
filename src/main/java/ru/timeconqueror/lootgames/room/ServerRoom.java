@@ -219,7 +219,7 @@ public class ServerRoom extends CoffeeCapabilityInstance<LevelChunk> implements 
     public void save() {
         ChunkPos chunkPos = getCoords().containerPos();
         LevelChunk chunk = getLevel().getChunk(chunkPos.x, chunkPos.z);
-        save(chunk);
+        markForSave(chunk);
     }
 
     @Override

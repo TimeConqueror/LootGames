@@ -1,10 +1,15 @@
 package ru.timeconqueror.lootgames.client.debug;
 
 import com.google.common.base.Strings;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
@@ -12,6 +17,7 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
+import ru.timeconqueror.lootgames.api.minigame.FlatBoardGame;
 import ru.timeconqueror.lootgames.api.minigame.LootGame;
 import ru.timeconqueror.lootgames.api.room.RoomCoords;
 import ru.timeconqueror.lootgames.api.room.RoomLocalPos;
@@ -49,6 +55,7 @@ public class RoomDebugScreenOverlay implements IGuiOverlay {
         List<String> lines = new ArrayList<>();
         lines.add("LootGames Debugger");
         fillDebugInfo(lines, mc);
+        lines.add("");
         lines.add("To close: F6 + I");
 
         for (int yIndex = 0; yIndex < lines.size(); ++yIndex) {
@@ -67,20 +74,41 @@ public class RoomDebugScreenOverlay implements IGuiOverlay {
     private void fillDebugInfo(List<String> debugInfo, Minecraft mc) {
         LocalPlayer player = mc.player;
 
+        HitResult hitResult = player.pick(20.0D, 0.0F, false);
+
         RoomCoords coords = getRoomCoords(player);
         debugInfo.add("Room Coords: " + (coords != null ? coords.x() + ", " + coords.z() : "<unable>"));
         RoomLocalPos localPos = getRoomLocalPos(player);
-        debugInfo.add("Room Local Pos: " + (localPos != null ? localPos.getX() + ", " + localPos.getY()  + ", " + localPos.getZ() : "<unable>"));
+        debugInfo.add("Room Local Pos: " + toString(localPos));
+
+        if(hitResult.getType() == HitResult.Type.BLOCK) {
+            BlockHitResult blockHitResult = (BlockHitResult) hitResult;
+            RoomLocalPos pos = RoomLocalPos.of(blockHitResult.getBlockPos());
+            debugInfo.add("Room Local Pos (Target): " + toString(pos));
+        } else {
+            debugInfo.add("");
+        }
+
+        debugInfo.add("");
         ClientRoom room = ClientRoom.getInstance();
         if (room != null) {
             debugInfo.add("Room Status: " + room.getProgress());
+
             LootGame<?> game = room.getGame();
             debugInfo.add("Game: " + (game != null ? game.getGameDefinition() : "None"));
             if (game != null) {
                 debugInfo.add("Progress: " + game.getProgress());
                 debugInfo.add("Stage: " + game.getStage().getID());
+                if(game instanceof FlatBoardGame flatBoardGame) {
+                    debugInfo.add("Local Board Origin: " + toString(RoomLocalPos.of(flatBoardGame.getBoardOrigin())));
+                    debugInfo.add("Size: " + flatBoardGame.getBoardSize());
+                }
             }
         }
+    }
+
+    private String toString(RoomLocalPos localPos) {
+        return (localPos != null ? localPos.getX() + ", " + localPos.getY()  + ", " + localPos.getZ() : "<unable>");
     }
 
     @Nullable

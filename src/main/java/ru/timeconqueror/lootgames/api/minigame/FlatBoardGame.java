@@ -1,43 +1,36 @@
 package ru.timeconqueror.lootgames.api.minigame;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import org.joml.Vector2i;
 import org.joml.Vector2ic;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
-import ru.timeconqueror.lootgames.api.minigame.event.LeftClickBlockEvent;
-import ru.timeconqueror.lootgames.api.minigame.event.RightClickBlockEvent;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.room.RoomLocalPos;
 import ru.timeconqueror.lootgames.registry.custom.GameDefinition;
 import ru.timeconqueror.lootgames.utils.MouseClickType;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static ru.timeconqueror.lootgames.api.minigame.BoardLootGame.BoardStage;
+import static ru.timeconqueror.lootgames.api.minigame.FlatBoardGame.BoardStage;
 
 /**
  * Loot game that is flat.
  */
-public abstract class BoardLootGame extends LootGame<BoardStage> {
+public abstract class FlatBoardGame extends LootGame<BoardStage> {
     public static final int DEFAULT_FLOOR_POS = 60;
     public static final double VERTICAL_RENDER_OFFSET = -6 / 16F;
 
-    public BoardLootGame(GameDefinition definition, Room room) {
+    public FlatBoardGame(GameDefinition definition, Room room) {
         super(definition, room);
         getEventBus().addEventHandler(GameEvents.RIGHT_CLICK_BLOCK, event -> event.setAccepted(
-                onBlockClicked(event.getLocalPos(), event.getHand(), (pos) -> onBoardRightClicked(event.getPlayer(), pos)))
+                onBlockClicked(event.getLocalPos(), event.getHand(), event.getFace(), (pos) -> onBoardRightClicked(event.getPlayer(), pos)))
         );
         getEventBus().addEventHandler(GameEvents.LEFT_CLICK_BLOCK, event -> event.setAccepted(
-                onBlockClicked(event.getLocalPos(), event.getHand(), (pos) -> {
-                    if(event.getAction() == PlayerInteractEvent.LeftClickBlock.Action.ABORT) {
+                onBlockClicked(event.getLocalPos(), event.getHand(), event.getFace(), (pos) -> {
+                    if (event.getAction() == PlayerInteractEvent.LeftClickBlock.Action.ABORT) {
                         onBoardLeftClicked(event.getPlayer(), pos);
                     }
                 }))
@@ -49,16 +42,17 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
         return room.getCoords().centerPos(DEFAULT_FLOOR_POS);
     }
 
-    protected boolean onBlockClicked(RoomLocalPos clickPos, InteractionHand hand, Consumer<Vector2ic> redirectTo) {
-        if (clickPos.getY() != DEFAULT_FLOOR_POS) {
+    protected boolean onBlockClicked(RoomLocalPos clickPos, InteractionHand hand, Direction face, Consumer<Vector2ic> redirectTo) {
+        if(getFace() != face) {
             return false;
         }
 
         Vector2ic boardPos = offsetToBoardPos(clickPos);
+
         int size = getBoardSize();
 
-        if (boardPos.x() >= 0 && boardPos.x() < size
-                && boardPos.y() >= 0 && boardPos.y() < size) {
+        RoomLocalPos origin = room.getCoords().toLocalPos(getBoardOrigin());
+        if (getLeadings().isPosOnRange(origin, size, clickPos)) {
             if (hand == InteractionHand.MAIN_HAND) {
                 redirectTo.accept(boardPos);
             }
@@ -68,44 +62,36 @@ public abstract class BoardLootGame extends LootGame<BoardStage> {
     }
 
     protected void onBoardRightClicked(Player player, Vector2ic pos) {
-        if(getProgress() == GameProgress.PLAYING) {
+        if (getProgress() == GameProgress.PLAYING) {
             getStage().onClick(player, pos, MouseClickType.RIGHT);
             getStage().onRightClick(player, pos);
         }
     }
 
     protected void onBoardLeftClicked(Player player, Vector2ic pos) {
-        if(getProgress() == GameProgress.PLAYING) {
+        if (getProgress() == GameProgress.PLAYING) {
             getStage().onClick(player, pos, MouseClickType.LEFT);
             getStage().onLeftClick(player, pos);
         }
     }
 
+    public abstract Direction getFace();
+
     public abstract int getBoardSize();
 
+    public abstract Leadings2D getLeadings();
+
     public Vector2ic offsetToBoardPos(RoomLocalPos offset) {
-        Vec3i result = offset.subtract(getRoom().getCoords().toLocalPos(getBoardOrigin()));
-        return new Vector2i(result.getX(), result.getZ());
+        RoomLocalPos origin = getRoom().getCoords().toLocalPos(getBoardOrigin());
+        return getLeadings().toFlatPos(origin, offset);
     }
 
     public BlockPos boardToBlockPos(Vector2ic pos) {
-        return getBoardOrigin().offset(pos.x(), 0, pos.y());
+        return getLeadings().fromFlatPos(getBoardOrigin(), pos);
     }
 
-    /**
-     * Returns left-top (north-west) corner of the board.
-     */
     public BlockPos getBoardOrigin() {
-        int size = getBoardSize();
-        return getGameCenter().offset(-size / 2, 0, -size / 2);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public void prepareMatrix(PoseStack matrixStack) {
-        matrixStack.translate(0, BoardLootGame.VERTICAL_RENDER_OFFSET, 0);
-        Vec3i originOffset = getBoardOrigin().offset(0, 1, 0);
-
-        matrixStack.translate(originOffset.getX(), originOffset.getY(), originOffset.getZ());
+        return getLeadings().origin(getGameCenter(), getBoardSize());
     }
 
     public abstract static class BoardStage extends Stage {

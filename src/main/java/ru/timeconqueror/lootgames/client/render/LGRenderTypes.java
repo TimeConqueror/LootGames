@@ -37,6 +37,21 @@ public class LGRenderTypes extends RenderType {
         return RenderType.create("black_hole", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, rendertype$compositestate);
     }
 
+    private static final Function<ResourceLocation, RenderType> SOLID_WITH_CUSTOM_TEXTURE_TRANSLUCENT = Util.memoize((tex) -> {
+        RenderStateShard.TextureStateShard texShard = new RenderStateShard.TextureStateShard(tex, false, true);
+        return create(LootGames.rl("solid_custom_tex").toString(),
+                DefaultVertexFormat.BLOCK,
+                VertexFormat.Mode.QUADS,
+                256,
+                true,
+                true,
+                CompositeState.builder().setLightmapState(LIGHTMAP)
+                        .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                        .setShaderState(RenderStateShard.RENDERTYPE_TRANSLUCENT_SHADER)
+                        .setTextureState(texShard)
+                        .createCompositeState(true));
+    });
+
     private static final Function<ResourceLocation, RenderType> SOLID_WITH_CUSTOM_TEXTURE = Util.memoize((tex) -> {
         RenderStateShard.TextureStateShard texShard = new RenderStateShard.TextureStateShard(tex, false, true);
         return create(LootGames.rl("solid_custom_tex").toString(),
@@ -53,5 +68,21 @@ public class LGRenderTypes extends RenderType {
 
     public static RenderType solidWithCustomTexture(ResourceLocation texture) {
         return SOLID_WITH_CUSTOM_TEXTURE.apply(texture);
+    }
+
+    public static RenderType solidWithCustomTextureTranslucent(ResourceLocation texture) {
+        RenderStateShard.TextureStateShard texShard = new RenderStateShard.TextureStateShard(texture, false, true);
+        return create(LootGames.rl("solid_custom_tex_translucent").toString(),
+                DefaultVertexFormat.BLOCK,
+                VertexFormat.Mode.QUADS,
+                256,
+                true,
+                false,
+                CompositeState.builder().setLightmapState(LIGHTMAP)
+                        .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                        .setShaderState(RenderStateShard.RENDERTYPE_TRANSLUCENT_SHADER)
+                        .setTextureState(texShard)
+                        .setOutputState(RenderStateShard.TRANSLUCENT_TARGET)
+                        .createCompositeState(true));
     }
 }

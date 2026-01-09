@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_column",
+  "textures": {
+    "end": "lootgames:block/matter_glowing_block_top_bottom",
+    "side": "lootgames:block/matter_glowing_block_side"
+  }
+}

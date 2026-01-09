@@ -2,6 +2,7 @@ package ru.timeconqueror.lootgames.minigame.gol;
 
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -19,8 +20,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.level.NoteBlockEvent;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2ic;
-import ru.timeconqueror.lootgames.api.minigame.BoardLootGame;
+import ru.timeconqueror.lootgames.api.minigame.FlatBoardGame;
 import ru.timeconqueror.lootgames.api.minigame.GameProgress;
+import ru.timeconqueror.lootgames.api.minigame.Leadings2D;
 import ru.timeconqueror.lootgames.api.minigame.NotifyColor;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.reward.RewardHelper;
@@ -36,7 +38,6 @@ import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
 import ru.timeconqueror.lootgames.registry.LGGames;
 import ru.timeconqueror.lootgames.registry.LGSounds;
 import ru.timeconqueror.lootgames.utils.EventBus;
-import ru.timeconqueror.lootgames.utils.MouseClickType;
 import ru.timeconqueror.timecore.api.common.blockentity.SerializationType;
 import ru.timeconqueror.timecore.api.util.RandHelper;
 import ru.timeconqueror.timecore.api.util.client.ClientProxy;
@@ -47,8 +48,9 @@ import java.util.stream.Collectors;
 //TODO add question mark flicker on WaitingStartStage
 //TODO add reward giving upon some combination
 //FIXME adapt fail event
+public class GameOfLight extends FlatBoardGame {
+    public static final int CENTER_HEIGHT = 66;
 
-public class GameOfLight extends BoardLootGame {
     public static final String ADV_BEAT_LEVEL3 = "gol_level_3";
     public static final String ADV_BEAT_LEVEL4 = "gol_level_4";
 
@@ -81,7 +83,7 @@ public class GameOfLight extends BoardLootGame {
 
     @Override
     protected BoardStage makeInitialStage() {
-        return new StageUnderExpanding();
+        return new StageWaitingStart();
     }
 
     private void resetTimer() {
@@ -233,14 +235,28 @@ public class GameOfLight extends BoardLootGame {
     }
 
     @Override
+    public BlockPos getGameCenter() {
+        return room.getCoords().centerPos(CENTER_HEIGHT);
+    }
+
+    @Override
     public int getBoardSize() {
         return BOARD_SIZE;
     }
 
     @Override
+    public Leadings2D getLeadings() {
+        return Leadings2D.VERTICAL_UP_TO_DOWN;
+    }
+
+    @Override
+    public Direction getFace() {
+        return Direction.SOUTH;
+    }
+
+    @Override
     public @Nullable BoardStage createStageFromNBT(String id, CompoundTag stageNBT, SerializationType serializationType) {
         return switch (id) {
-            case StageUnderExpanding.ID -> new StageUnderExpanding(stageNBT.getInt("ticks"));
             case StageWaitingStart.ID -> new StageWaitingStart();
             case StageShowSequence.ID -> serializationType != SerializationType.SAVE
                     ? new StageShowSequence(stageNBT)
@@ -293,46 +309,8 @@ public class GameOfLight extends BoardLootGame {
     public void spawnFeedbackParticles(ParticleOptions particle, BlockPos pos) {
         if (isClientSide()) {
             for (int i = 0; i < 20; i++) {
-                getLevel().addParticle(particle, pos.getX() + RandHelper.RAND.nextFloat(), pos.getY() + 1F + RandHelper.RAND.nextFloat() / 2, pos.getZ() + RandHelper.RAND.nextFloat(), RandHelper.RAND.nextGaussian() * 0.02D, (0.02D + RandHelper.RAND.nextGaussian()) * 0.02D, RandHelper.RAND.nextGaussian() * 0.02D);
+                getLevel().addParticle(particle, pos.getX() + RandHelper.RAND.nextFloat(), pos.getY() + RandHelper.RAND.nextFloat(), pos.getZ() + 1F + RandHelper.RAND.nextFloat() / 2, RandHelper.RAND.nextGaussian() * 0.02D, RandHelper.RAND.nextGaussian() * 0.02D, (0.02D + RandHelper.RAND.nextGaussian()) * 0.02D);
             }
-        }
-    }
-
-    @Getter
-    public class StageUnderExpanding extends BoardStage {
-        private static final String ID = "under_expanding";
-        public static final int MAX_TICKS_EXPANDING = 20;
-        private int ticks;
-
-        public StageUnderExpanding() {
-            this(0);
-        }
-
-        public StageUnderExpanding(int ticks) {
-            this.ticks = ticks;
-        }
-
-        @Override
-        public String getID() {
-            return ID;
-        }
-
-        @Override
-        protected void onTick() {
-            if (ticks > MAX_TICKS_EXPANDING) {
-                if (isServerSide()) {
-                    switchStage(new StageWaitingStart());
-                }
-            } else {
-                ticks++;
-            }
-        }
-
-        @Override
-        public CompoundTag serialize(SerializationType serializationType) {
-            CompoundTag nbt = super.serialize(serializationType);
-            nbt.putInt("ticks", ticks);
-            return nbt;
         }
     }
 

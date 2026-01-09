@@ -18,6 +18,7 @@ public enum Symbol {
 
     private static final EnumLookup<Symbol, Integer> LOOKUP = EnumLookup.make(Symbol.class, Symbol::getIndex);
     public static final Symbol[] NWES_SYMBOLS = new Symbol[]{NORTH, WEST, EAST, SOUTH};
+    public static final Symbol[] VALUES = Symbol.values();
 
     private final int index;
     private final Vector2ic pos;

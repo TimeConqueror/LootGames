@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +16,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4i;
 import org.joml.Vector4ic;
 import ru.timeconqueror.lootgames.LootGames;
+import ru.timeconqueror.lootgames.api.minigame.FlatBoardGame;
 import ru.timeconqueror.lootgames.api.minigame.Stage;
 import ru.timeconqueror.lootgames.client.render.LGRenderTypes;
 import ru.timeconqueror.lootgames.minigame.minesweeper.GameMineSweeper;
@@ -36,6 +38,12 @@ public class MinesweeperRenderer {
 
     private static final Vector3f NORMAL = new Vector3f();
 
+    private static void prepareMatrix(GameMineSweeper game, PoseStack matrixStack) {
+        matrixStack.translate(0, FlatBoardGame.VERTICAL_RENDER_OFFSET, 0);
+        Vec3i originOffset = game.getBoardOrigin().offset(0, 1, 0);
+        matrixStack.translate(originOffset.getX(), originOffset.getY(), originOffset.getZ());
+    }
+
     public void render(GameMineSweeper game, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, float partialTick) {
         NORMAL.set(0, 1, 0).mul(poseStack.last().normal());
 
@@ -43,7 +51,7 @@ public class MinesweeperRenderer {
         Stage stage = game.getStage();
 
         poseStack.pushPose();
-        game.prepareMatrix(poseStack);
+        prepareMatrix(game, poseStack);
         poseStack.mulPose(Axis.XP.rotationDegrees(90));
 
         if (!game.cIsGenerated) {

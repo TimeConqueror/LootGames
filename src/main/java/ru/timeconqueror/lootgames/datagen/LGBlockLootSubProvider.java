@@ -43,6 +43,10 @@ public class LGBlockLootSubProvider extends TimeBlockLootSubProvider {
         this.add(LGBlocks.SPACE_FABRIC, noDrop());
         this.add(LGBlocks.MICROVERSE_MANIPULATOR, this::createNameableBlockEntityTable);
         this.add(LGBlocks.TRANSFERENCE_CRYSTAL, noDrop());
+        this.add(LGBlocks.MATTER_BLOCK, noDrop());
+        this.add(LGBlocks.MATTER_BLOCK_STAIRS, noDrop());
+        this.add(LGBlocks.MATTER_WALL, noDrop());
+        this.add(LGBlocks.MATTER_GLOWING_BLOCK, noDrop());
 
     }
 }
