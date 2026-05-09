@@ -1,19 +1,21 @@
 package ru.timeconqueror.lootgames.minigame.gol;
 
 public class DisplayedSymbol {
-    private final long clickedTime;
+    private final long startTick;
     private final Symbol symbol;
+    private final int ticksToLive;
 
-    public DisplayedSymbol(long clickedTime, Symbol symbol) {
-        this.clickedTime = clickedTime;
+    public DisplayedSymbol(int startTick, Symbol symbol, int ticksToLive) {
+        this.startTick = startTick;
         this.symbol = symbol;
+        this.ticksToLive = ticksToLive;
     }
 
     public Symbol getSymbol() {
         return symbol;
     }
 
-    public long getClickedTime() {
-        return clickedTime;
+    public boolean isEnded(int tickExisted) {
+        return startTick + ticksToLive < tickExisted;
     }
 }

@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.level.NoteBlockEvent;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2ic;
+import ru.timeconqueror.lootgames.Timed;
 import ru.timeconqueror.lootgames.api.minigame.FlatBoardGame;
 import ru.timeconqueror.lootgames.api.minigame.GameProgress;
 import ru.timeconqueror.lootgames.api.minigame.Leadings2D;
@@ -31,7 +32,7 @@ import ru.timeconqueror.lootgames.common.config.ConfigGOL;
 import ru.timeconqueror.lootgames.common.config.ConfigGOL.Fail;
 import ru.timeconqueror.lootgames.common.config.LGConfigs;
 import ru.timeconqueror.lootgames.common.packet.game.CPGOLSymbolsShown;
-import ru.timeconqueror.lootgames.common.packet.game.SPGOLDrawMark;
+import ru.timeconqueror.lootgames.common.packet.game.SPGOLSetTimedEyeState;
 import ru.timeconqueror.lootgames.common.packet.game.SPGOLSendDisplayedSymbol;
 import ru.timeconqueror.lootgames.common.packet.game.SPGOLSpawnStageUpParticles;
 import ru.timeconqueror.lootgames.registry.LGAdvancementTriggers;
@@ -68,8 +69,7 @@ public class GameOfLight extends FlatBoardGame {
     @Getter
     private final List<DisplayedSymbol> displayedSymbols = new ArrayList<>();
 
-    @Nullable
-    private QMarkAppearance specialMarkAppearance = null;
+    private Timed<EyeState> clientEyeState = Timed.infinite(EyeState.THINKING);
 
     public GameOfLight(Room room) {
         super(LGGames.GAME_OF_LIGHT.get(), room);
@@ -107,10 +107,12 @@ public class GameOfLight extends FlatBoardGame {
                 resetTimer.update();
             }
         } else {
-            displayedSymbols.removeIf((symbol) -> System.currentTimeMillis() - symbol.getClickedTime() > 600);
+            displayedSymbols.removeIf(displayedSymbol -> displayedSymbol.isEnded(getTickExisted()));
+        }
 
-            if (specialMarkAppearance != null && specialMarkAppearance.isFinished()) {
-                specialMarkAppearance = null;
+        if(isClientSide()) {
+            if(clientEyeState.isEnded(getTickExisted())) {
+                clientEyeState = Timed.infinite(EyeState.THINKING);
             }
         }
     }
@@ -118,7 +120,7 @@ public class GameOfLight extends FlatBoardGame {
     private void failGame(boolean dueTimeout) {
         getLevel().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_WRONG, SoundSource.MASTER, dueTimeout ? 0.2F : 0.75F, 1.0F);
         net().sendToAllInRoom(Component.translatable("msg.lootgames.gol.wrong_block"), NotifyColor.FAIL);
-        net().sendUpdatePacketToNearby(SPGOLDrawMark.denied());
+        net().sendUpdatePacketToNearby(SPGOLSetTimedEyeState.failed());
 
         if (attempt >= LGConfigs.GOL.attemptCount.get()) {
             if (maxReachedStage == 0) {
@@ -322,6 +324,8 @@ public class GameOfLight extends FlatBoardGame {
             super.preInit();
             stage = 0;
             round = 0;
+
+            clientEyeState = Timed.infinite(EyeState.THINKING);
         }
 
         @Override
@@ -400,20 +404,23 @@ public class GameOfLight extends FlatBoardGame {
                 }
             } else {
                 // makes sound and spawn particles before the first symbol. Others will be handled in the next if-statement
-                boolean showParticles = symbolIndex == 0 && ticks == 0;
+                boolean newSymbol = symbolIndex == 0 && ticks == 0;
 
                 // if it's a last symbol we don't need to wait for pause.
                 if ((symbolIndex == sequence.size() - 1 && ticks > displayTime) || (ticks > displayTime + TICKS_PAUSE_BETWEEN_SYMBOLS)) {
                     ticks = 0;
                     symbolIndex++;
-                    showParticles = true;
+                    newSymbol = true;
                 } else {
                     ticks++;
                 }
 
                 if (isClientSide()) {
-                    if (isShowingSymbols() && showParticles) {
+                    if (isShowingSymbols() && newSymbol) {
                         Symbol symbol = sequence.get(symbolIndex);
+                        displayedSymbols.add(new DisplayedSymbol(getTickExisted(), symbol, displayTime));
+                        clientEyeState = Timed.infinite(EyeState.ofSymbol(symbol));
+
                         playFeedbackSound(ClientProxy.player(), symbol);
 
                         BlockPos pos = boardToBlockPos(symbol.getPos());
@@ -457,15 +464,6 @@ public class GameOfLight extends FlatBoardGame {
 
         private boolean isShowingSymbols() {
             return !pauseBeforeShowing && symbolIndex < sequence.size();
-        }
-
-        public boolean shouldRenderSymbol() {
-            return ticks < displayTime && isShowingSymbols();
-        }
-
-        @Nullable
-        public Symbol getSymbolForRender() {
-            return shouldRenderSymbol() ? sequence.get(symbolIndex) : null;
         }
 
         private List<Symbol> generateSequence(int stage, int size) {
@@ -520,6 +518,7 @@ public class GameOfLight extends FlatBoardGame {
         @Override
         protected void onStart(boolean clientSide) {
             tickTimer = true;
+            clientEyeState = Timed.infinite(EyeState.STARING);
         }
 
         @Override
@@ -555,7 +554,7 @@ public class GameOfLight extends FlatBoardGame {
 
         private void onSuccessSequence(ServerPlayer player) {
             getLevel().playSound(null, getGameCenter(), LGSounds.GOL_SEQUENCE_COMPLETE, SoundSource.MASTER, 0.75F, 1.0F);
-            net().sendUpdatePacketToNearby(SPGOLDrawMark.accepted());
+            net().sendUpdatePacketToNearby(SPGOLSetTimedEyeState.accepted());
 
             ConfigGOL.StageConfig stageCfg = LGConfigs.GOL.getStageByIndex(stage);
             Integer maxRounds = stageCfg.rounds.get();
@@ -601,18 +600,18 @@ public class GameOfLight extends FlatBoardGame {
 
     public void addDisplayedSymbol(Symbol symbol) {
         if (isClientSide()) {
-            displayedSymbols.add(new DisplayedSymbol(System.currentTimeMillis(), symbol));
+            displayedSymbols.add(new DisplayedSymbol(getTickExisted(), symbol, 12));
         }
     }
 
-    public void addMarkAppearance(QMarkAppearance.State state) {
-        if (isClientSide() && QMarkAppearance.canBeHandled(state)) {
-            specialMarkAppearance = new QMarkAppearance(state, getLevel().getGameTime());
+    public void setClientTimedEyeState(EyeState eyeState) {
+        if (isClientSide()) {
+            this.clientEyeState = Timed.of(eyeState, getTickExisted(), 16);
         }
     }
 
-    public QMarkAppearance.State getMarkState() {
-        return specialMarkAppearance != null ? specialMarkAppearance.getState() : getStage() instanceof StageShowSequence ? QMarkAppearance.State.SHOWING : QMarkAppearance.State.NONE;
+    public EyeState getClientEyeState() {
+        return clientEyeState.get();
     }
 
     private static List<Symbol> deserializeSequence(int[] data) {

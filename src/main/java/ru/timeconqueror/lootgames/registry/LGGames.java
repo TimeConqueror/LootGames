@@ -31,8 +31,8 @@ public class LGGames {
             .langKey("game.lootgames.minesweeper")
             .microverseHolderItem(() -> LGItems.BOXED_MINESWEEPER_MICROVERSE)
             .gameInstanceCreator(GameMineSweeper::new)
-//            .generator(new BoardGameEnvironmentGenerator(() -> LGBlocks.BOARD_GLASSY_MATTER.defaultBlockState()))\
-            .generator(EmptyGameEnvironmentGenerator.INSTANCE)
+            .generator(new BoardGameEnvironmentGenerator(() -> LGBlocks.BOARD_GLASSY_MATTER.defaultBlockState()))
+//            .generator(EmptyGameEnvironmentGenerator.INSTANCE)
             .teleportPos(RoomLocalPos.center(FlatBoardGame.DEFAULT_FLOOR_POS + 1))
             .build());
 }

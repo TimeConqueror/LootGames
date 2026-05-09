@@ -1,0 +1,8 @@
+{
+  "parent": "block/slab",
+  "textures": {
+    "bottom": "lootgames:block/matter_block",
+    "side": "lootgames:block/matter_block",
+    "top": "lootgames:block/matter_block"
+  }
+}

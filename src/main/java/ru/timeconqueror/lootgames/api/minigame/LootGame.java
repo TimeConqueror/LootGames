@@ -20,7 +20,6 @@ import ru.timeconqueror.lootgames.api.minigame.event.EndGameEvent;
 import ru.timeconqueror.lootgames.api.minigame.event.GameEvents;
 import ru.timeconqueror.lootgames.api.minigame.event.StartStageEvent;
 import ru.timeconqueror.lootgames.api.minigame.event.SwitchStageEvent;
-import ru.timeconqueror.lootgames.api.room.RoomProgress;
 import ru.timeconqueror.lootgames.api.room.Room;
 import ru.timeconqueror.lootgames.api.task.TaskScheduler;
 import ru.timeconqueror.lootgames.common.advancement.EndGameTrigger;
@@ -57,7 +56,7 @@ public abstract class LootGame<STAGE extends Stage> {
     @Getter
     private STAGE stage;
     @Getter
-    private int age;
+    private int tickExisted;
     @Getter
     private GameProgress progress = GameProgress.NOT_STARTED;
 
@@ -91,7 +90,7 @@ public abstract class LootGame<STAGE extends Stage> {
         }
 
         getStage().onTick();
-        age++;
+        tickExisted++;
     }
 
     /**
