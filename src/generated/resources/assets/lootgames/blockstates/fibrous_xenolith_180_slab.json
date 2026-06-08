@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "lootgames:block/fibrous_xenolith_180_slab"
+    },
+    "type=double": {
+      "model": "lootgames:block/fibrous_xenolith_180"
+    },
+    "type=top": {
+      "model": "lootgames:block/fibrous_xenolith_180_slab_top"
+    }
+  }
+}

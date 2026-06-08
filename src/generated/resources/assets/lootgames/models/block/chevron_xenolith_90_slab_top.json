@@ -1,0 +1,8 @@
+{
+  "parent": "block/slab_top",
+  "textures": {
+    "bottom": "lootgames:block/chevron_xenolith_90",
+    "side": "lootgames:block/chevron_xenolith_90",
+    "top": "lootgames:block/chevron_xenolith_90"
+  }
+}

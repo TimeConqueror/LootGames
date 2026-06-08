@@ -46,7 +46,7 @@ public class RewardHelper {
      * @param rewardConfig reward part of your game's config
      */
     public static void spawnFourStagedReward(@Nullable ServerPlayer player, ServerLevel level, GameDefinition gameDefinition, BlockPos centralPos, int rewardLevel, FourStagedRewardConfig rewardConfig) {
-        BlockState state = LGBlocks.DUNGEON_LAMP.defaultBlockState();
+        BlockState state = LGBlocks.Variations.CHISELED_XENOLITH.block().defaultBlockState();
         level.setBlockAndUpdate(centralPos.offset(1, 0, 1), state);
         level.setBlockAndUpdate(centralPos.offset(1, 0, -1), state);
         level.setBlockAndUpdate(centralPos.offset(-1, 0, 1), state);

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "lootgames:block/framed_xenolith_slab"
+    },
+    "type=double": {
+      "model": "lootgames:block/framed_xenolith"
+    },
+    "type=top": {
+      "model": "lootgames:block/framed_xenolith_slab_top"
+    }
+  }
+}

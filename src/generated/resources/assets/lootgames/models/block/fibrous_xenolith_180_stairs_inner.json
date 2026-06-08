@@ -1,0 +1,8 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "lootgames:block/fibrous_xenolith_180",
+    "side": "lootgames:block/fibrous_xenolith_180",
+    "top": "lootgames:block/fibrous_xenolith_180"
+  }
+}

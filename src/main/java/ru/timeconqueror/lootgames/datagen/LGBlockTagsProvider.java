@@ -20,14 +20,6 @@ public class LGBlockTagsProvider extends BlockTagsProvider {
     @Override
     protected void addTags(@NotNull HolderLookup.Provider provider_) {
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
-                .add(LGBlocks.DUNGEON_CEILING)
-                .add(LGBlocks.CRACKED_DUNGEON_CEILING)
-                .add(LGBlocks.DUNGEON_WALL)
-                .add(LGBlocks.CRACKED_DUNGEON_WALL)
-                .add(LGBlocks.CRACKED_DUNGEON_FLOOR)
-                .add(LGBlocks.DUNGEON_LAMP)
-                .add(LGBlocks.BROKEN_DUNGEON_LAMP)
-
                 .add(LGBlocks.MICROVERSE_MANIPULATOR)
                 .replace(false);
     }

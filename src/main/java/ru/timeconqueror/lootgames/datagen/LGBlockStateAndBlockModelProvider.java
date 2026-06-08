@@ -1,14 +1,19 @@
 package ru.timeconqueror.lootgames.datagen;
 
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
 import ru.timeconqueror.lootgames.LootGames;
-import ru.timeconqueror.timecore.api.client.resource.BlockModel;
+import ru.timeconqueror.lootgames.registry.custom.BlockVariations;
 import ru.timeconqueror.timecore.api.client.resource.BlockModels;
 import ru.timeconqueror.timecore.api.client.resource.BlockStateResources;
 import ru.timeconqueror.timecore.api.client.resource.location.BlockModelLocation;
 import ru.timeconqueror.timecore.api.client.resource.location.TextureLocation;
 import ru.timeconqueror.timecore.api.devtools.gen.BlockStateProvider;
 import ru.timeconqueror.timecore.api.devtools.gen.ModelProvider;
+
+import java.util.List;
 
 import static ru.timeconqueror.lootgames.registry.LGBlocks.*;
 
@@ -19,54 +24,72 @@ public class LGBlockStateAndBlockModelProvider extends BlockStateProvider {
 
     @Override
     protected void registerAll() {
-        ModelProvider models = blockModels();
+        ModelProvider models = modelProvider();
 
-        addBlockState(SPACE_FABRIC, BlockStateResources.singleVariantWithSingleModel(
-                models.addBlockModel(SPACE_FABRIC, BlockModels.particlesOnly(new TextureLocation(LootGames.MODID, "block/empty"))))
+        regBlockState(SPACE_FABRIC, BlockStateResources.singleVariantWithSingleModel(
+                models.regBlockModel(SPACE_FABRIC, BlockModels.particlesOnly(new TextureLocation(LootGames.MODID, "block/empty"))))
         );
 
         BlockModelLocation glassMatterModel =
-                models.addBlockModel(GLASSY_MATTER, BlockModels.particlesOnly(new TextureLocation(LootGames.MODID, "block/empty")));
-        addBlockState(GLASSY_MATTER, BlockStateResources.singleVariantWithSingleModel(glassMatterModel));
-        addBlockState(BOARD_GLASSY_MATTER, BlockStateResources.singleVariantWithSingleModel(glassMatterModel));
+                models.regBlockModel(GLASSY_MATTER, BlockModels.particlesOnly(new TextureLocation(LootGames.MODID, "block/empty")));
+        regBlockState(GLASSY_MATTER, BlockStateResources.singleVariantWithSingleModel(glassMatterModel));
+        regBlockState(BOARD_GLASSY_MATTER, BlockStateResources.singleVariantWithSingleModel(glassMatterModel));
 
         BlockModelLocation microverseManipulator =
-                models.addBlockModel(MICROVERSE_MANIPULATOR, BlockModels.particlesOnly(LootGames.tl("blockentity/microverse_manipulator_particles")));
-        addBlockState(MICROVERSE_MANIPULATOR, BlockStateResources.singleVariantWithSingleModel(microverseManipulator));
+                models.regBlockModel(MICROVERSE_MANIPULATOR, BlockModels.particlesOnly(LootGames.tl("blockentity/microverse_manipulator_particles")));
+        regBlockState(MICROVERSE_MANIPULATOR, BlockStateResources.singleVariantWithSingleModel(microverseManipulator));
 
         BlockModelLocation transferenceCrystal =
-                models.addBlockModel(TRANSFERENCE_CRYSTAL, BlockModels.particlesOnly(LootGames.tl("blockentity/transference_crystal")));
-        addBlockState(TRANSFERENCE_CRYSTAL, BlockStateResources.singleVariantWithSingleModel(transferenceCrystal));
+                models.regBlockModel(TRANSFERENCE_CRYSTAL, BlockModels.particlesOnly(LootGames.tl("blockentity/transference_crystal")));
+        regBlockState(TRANSFERENCE_CRYSTAL, BlockStateResources.singleVariantWithSingleModel(transferenceCrystal));
 
-        addBlockState(DUNGEON_BLOCK, BlockStateResources.singleVariantWithSingleModel(
-                models.addBlockModel(DUNGEON_BLOCK, BlockModels.cubeAllModel(models.getDefaultTextureLocation(DUNGEON_BLOCK)))
-        ));
-        addBlockState(BOARD_OPAQUE_MATTER, BlockStateResources.singleVariantWithSingleModel(
+        regBlockState(BOARD_OPAQUE_MATTER, BlockStateResources.singleVariantWithSingleModel(
                 models.getDefaultModelLocation(BOARD_OPAQUE_MATTER)
         ));
-        addBlockState(DUNGEON_LAMP, BlockStateResources.singleVariantWithSingleModel(
-                models.addBlockModel(DUNGEON_LAMP, BlockModels.cubeAllModel(models.getDefaultTextureLocation(DUNGEON_LAMP)))
+
+        COMMON_XENOLITHS.forEach(this::addBlockVariationsStatesAndModels);
+
+        List.of(GLOWING_CHISELED_XENOLITH,
+                        GLOWING_FRAMED_XENOLITH,
+                        GLOWING_WAVED_XENOLITH,
+                        GLOWING_CHEVRON_XENOLITH,
+                        GLOWING_FIBROUS_XENOLITH)
+                .forEach(block -> {
+                    regBlockState(block, BlockStateResources.singleVariantWithSingleModel(
+                            models.regBlockModel(block, BlockModels.cubeAllModel(models.getDefaultTextureLocation(block)))
+                    ));
+                    models.regItemModelParentedByBlock(block);
+                });
+    }
+
+    private void addBlockVariationsStatesAndModels(BlockVariations<?> variations) {
+        ModelProvider modelProvider = modelProvider();
+        Block block = variations.block();
+        SlabBlock slab = variations.slab();
+        StairBlock stairs = variations.stairs();
+
+        BlockModelLocation blockModelLoc = modelProvider.regBlockModel(block, BlockModels.cubeAllModel(modelProvider.getDefaultTextureLocation(block)));
+        regBlockState(block, BlockStateResources.singleVariantWithSingleModel(
+                blockModelLoc
         ));
-        TextureLocation matterBlockTl = models.getDefaultTextureLocation(MATTER_BLOCK);
-        addBlockState(MATTER_BLOCK, BlockStateResources.singleVariantWithSingleModel(
-                models.addBlockModel(MATTER_BLOCK, BlockModels.cubeAllModel(matterBlockTl))
+
+        BlockModelLocation slabModelBottomLoc = modelProvider.regBlockModel(getId(slab).getPath(), BlockModels.slabBottomModel(modelProvider.getDefaultTextureLocation(block)));
+        regBlockState(slab, BlockStateResources.slab(
+                slabModelBottomLoc,
+                blockModelLoc,
+                modelProvider.regBlockModel(getId(slab).getPath() + "_top", BlockModels.slabTopModel(modelProvider.getDefaultTextureLocation(block)))
         ));
-        addBlockState(MATTER_BLOCK_STAIRS, BlockStateResources.stairs(
-                models.addBlockModel("matter_block_stairs", BlockModels.stairsModel(matterBlockTl)),
-                models.addBlockModel("matter_block_stairs_inner", BlockModels.stairsInnerModel(matterBlockTl)),
-                models.addBlockModel("matter_block_stairs_outer", BlockModels.stairsOuterModel(matterBlockTl))
+
+        BlockModelLocation stairsModelLoc = modelProvider.regBlockModel(getId(stairs).getPath(), BlockModels.stairsModel(modelProvider.getDefaultTextureLocation(block)));
+        regBlockState(stairs, BlockStateResources.stairs(
+                stairsModelLoc,
+                modelProvider.regBlockModel(getId(stairs).getPath() + "_inner", BlockModels.stairsInnerModel((modelProvider.getDefaultTextureLocation(block)))),
+                modelProvider.regBlockModel(getId(stairs).getPath() + "_outer", BlockModels.stairsOuterModel(modelProvider.getDefaultTextureLocation(block)))
         ));
-        addBlockState(MATTER_BLOCK_SLAB, BlockStateResources.slab(
-                models.addBlockModel("matter_block_slab", BlockModels.slabBottomModel(matterBlockTl)),
-                models.getDefaultModelLocation(MATTER_BLOCK),
-                models.addBlockModel("matter_block_slab_top", BlockModels.slabTopModel(matterBlockTl))
-        ));
-        addBlockState(MATTER_WALL, BlockStateResources.singleVariantWithSingleModel(
-                models.addBlockModel(MATTER_WALL, BlockModels.cubeAllModel(models.getDefaultTextureLocation(MATTER_WALL)))
-        ));
-        addBlockState(MATTER_GLOWING_BLOCK, BlockStateResources.singleVariantWithSingleModel(
-                models.addBlockModel(MATTER_GLOWING_BLOCK, BlockModels.cubeColumnModel(LootGames.tl("block/matter_glowing_block_top_bottom"), LootGames.tl("block/matter_glowing_block_side")))
-        ));
+
+        modelProvider.regItemModelParentedByBlock(block);
+        modelProvider.regItemModelParentedByBlock(slab, slabModelBottomLoc);
+        modelProvider.regItemModelParentedByBlock(stairs, stairsModelLoc);
     }
 
     @Override

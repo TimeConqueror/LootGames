@@ -1,0 +1,8 @@
+{
+  "parent": "block/slab",
+  "textures": {
+    "bottom": "lootgames:block/chiseled_xenolith",
+    "side": "lootgames:block/chiseled_xenolith",
+    "top": "lootgames:block/chiseled_xenolith"
+  }
+}

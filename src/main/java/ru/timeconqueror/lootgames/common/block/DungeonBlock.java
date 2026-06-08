@@ -21,7 +21,7 @@ public class DungeonBlock extends Block {
     public static final BlockPropsFactory BLOCK_PROPS_FACTORY = new BlockPropsFactory(() -> Properties.copy(Blocks.STONE)
             .strength(10.0F, 6.0F)
             .sound(SoundType.STONE));
-    public static final BlockPropsFactory LAMP_PROPS_CREATOR = new BlockPropsFactory(() -> Properties.copy(Blocks.GLASS)
+    public static final BlockPropsFactory GLOWING_BLOCK_PROPS_CREATOR = new BlockPropsFactory(() -> Properties.copy(Blocks.GLASS)
             .strength(2.0F, 6.0F)
             .sound(SoundType.GLASS)
             .lightLevel(value -> 15));

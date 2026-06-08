@@ -112,7 +112,7 @@ repositories {
 dependencies {
     minecraft "net.neoforged:forge:${minecraft_version}-${forge_version}"
 //    implementation fg.deobf("ru.timeconqueror:TimeCore:${minecraft_version}-${tcVersion}")
-    implementation fg.deobf("ru.timeconqueror:TimeCore:${minecraft_version}-3.11.0.0.build72")
+    implementation fg.deobf("ru.timeconqueror:TimeCore:${minecraft_version}-3.11.0.0.build74")
     implementation 'thedarkcolour:kotlinforforge:4.10.0'
 
     if (file("runtimeMods").exists()) {

@@ -24,6 +24,7 @@ public class LGNetwork {
             .regPacket(SSyncGamePacket.class)
             .regPacket(SLeaveRoomPacket.class)
             .regPacket(SUpdateRoomPacket.class)
+            .regPacket(CPacketCycleBlock.class)
             .asChannel();
 
     public static void sendToPlayer(ServerPlayer player, Object packet) {

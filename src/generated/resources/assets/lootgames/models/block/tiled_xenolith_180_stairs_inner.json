@@ -1,0 +1,8 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "lootgames:block/tiled_xenolith_180",
+    "side": "lootgames:block/tiled_xenolith_180",
+    "top": "lootgames:block/tiled_xenolith_180"
+  }
+}

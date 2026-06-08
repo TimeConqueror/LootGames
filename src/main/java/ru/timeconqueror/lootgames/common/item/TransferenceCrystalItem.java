@@ -5,7 +5,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import ru.timeconqueror.lootgames.client.LGClient;
+import ru.timeconqueror.lootgames.client.LGClientLoadEventHandler;
 
 import java.util.function.Consumer;
 
@@ -19,7 +19,7 @@ public class TransferenceCrystalItem extends BlockItem {
         consumer.accept(new IClientItemExtensions() {
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return LGClient.BLOCK_ENTITY_WITHOUT_LEVEL_RENDERER.get();
+                return LGClientLoadEventHandler.BLOCK_ENTITY_WITHOUT_LEVEL_RENDERER.get();
             }
         });
     }

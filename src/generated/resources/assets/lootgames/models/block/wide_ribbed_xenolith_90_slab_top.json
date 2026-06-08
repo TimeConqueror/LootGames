@@ -1,0 +1,8 @@
+{
+  "parent": "block/slab_top",
+  "textures": {
+    "bottom": "lootgames:block/wide_ribbed_xenolith_90",
+    "side": "lootgames:block/wide_ribbed_xenolith_90",
+    "top": "lootgames:block/wide_ribbed_xenolith_90"
+  }
+}

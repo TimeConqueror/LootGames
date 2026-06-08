@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "lootgames:block/waved_xenolith_90_slab"
+    },
+    "type=double": {
+      "model": "lootgames:block/waved_xenolith_90"
+    },
+    "type=top": {
+      "model": "lootgames:block/waved_xenolith_90_slab_top"
+    }
+  }
+}

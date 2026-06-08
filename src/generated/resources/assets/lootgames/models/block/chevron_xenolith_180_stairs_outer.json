@@ -1,0 +1,8 @@
+{
+  "parent": "block/outer_stairs",
+  "textures": {
+    "bottom": "lootgames:block/chevron_xenolith_180",
+    "side": "lootgames:block/chevron_xenolith_180",
+    "top": "lootgames:block/chevron_xenolith_180"
+  }
+}

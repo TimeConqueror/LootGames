@@ -26,28 +26,24 @@ public class LGBlockLootSubProvider extends TimeBlockLootSubProvider {
 
     @Override
     protected void generate() {
-        this.add(LGBlocks.DUNGEON_CEILING, noDrop());
-        this.add(LGBlocks.CRACKED_DUNGEON_CEILING, noDrop());
-        this.add(LGBlocks.DUNGEON_WALL, noDrop());
-        this.add(LGBlocks.CRACKED_DUNGEON_WALL, noDrop());
-        this.add(LGBlocks.CRACKED_DUNGEON_FLOOR, noDrop());
-        this.add(LGBlocks.SHIELDED_DUNGEON_FLOOR, noDrop());
-        this.add(LGBlocks.DUNGEON_LAMP, noDrop());
-        this.add(LGBlocks.BROKEN_DUNGEON_LAMP, noDrop());
         this.add(LGBlocks.PUZZLE_MASTER, noDrop());
-        this.add(LGBlocks.BOARD_BORDER, noDrop());
         this.add(LGBlocks.GLASSY_MATTER, noDrop());
         this.add(LGBlocks.BOARD_GLASSY_MATTER, noDrop());
-        this.add(LGBlocks.DUNGEON_BLOCK, noDrop());
         this.add(LGBlocks.BOARD_OPAQUE_MATTER, noDrop());
         this.add(LGBlocks.SPACE_FABRIC, noDrop());
         this.add(LGBlocks.MICROVERSE_MANIPULATOR, this::createNameableBlockEntityTable);
         this.add(LGBlocks.TRANSFERENCE_CRYSTAL, noDrop());
-        this.add(LGBlocks.MATTER_BLOCK, noDrop());
-        this.add(LGBlocks.MATTER_BLOCK_SLAB, noDrop());
-        this.add(LGBlocks.MATTER_BLOCK_STAIRS, noDrop());
-        this.add(LGBlocks.MATTER_WALL, noDrop());
-        this.add(LGBlocks.MATTER_GLOWING_BLOCK, noDrop());
 
+        LGBlocks.COMMON_XENOLITHS.forEach(variations -> {
+            add(variations.block(), noDrop());
+            add(variations.slab(), noDrop());
+            add(variations.stairs(), noDrop());
+        });
+
+        this.add(LGBlocks.GLOWING_CHISELED_XENOLITH, noDrop());
+        this.add(LGBlocks.GLOWING_FRAMED_XENOLITH, noDrop());
+        this.add(LGBlocks.GLOWING_WAVED_XENOLITH, noDrop());
+        this.add(LGBlocks.GLOWING_CHEVRON_XENOLITH, noDrop());
+        this.add(LGBlocks.GLOWING_FIBROUS_XENOLITH, noDrop());
     }
 }

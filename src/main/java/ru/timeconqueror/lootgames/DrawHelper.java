@@ -1,7 +1,6 @@
 package ru.timeconqueror.lootgames;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import lombok.Getter;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 

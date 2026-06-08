@@ -1,12 +1,5 @@
 {
   "values": [
-    "lootgames:dungeon_ceiling",
-    "lootgames:cracked_dungeon_ceiling",
-    "lootgames:dungeon_wall",
-    "lootgames:cracked_dungeon_wall",
-    "lootgames:cracked_dungeon_floor",
-    "lootgames:dungeon_lamp",
-    "lootgames:broken_dungeon_lamp",
     "lootgames:microverse_manipulator"
   ]
 }
