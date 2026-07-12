@@ -6,9 +6,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2ic;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
@@ -79,5 +83,17 @@ public class Utils {
         }
 
         player.teleportTo(respLevel, respawnPos.getX(), respawnPos.getY(), respawnPos.getZ(), respawnAngle, 0);
+    }
+
+    @Nullable
+    public static Block getBlockFromStack(ItemStack stack) {
+        if(stack.isEmpty()) return null;
+
+        Item item = stack.getItem();
+        if (!(item instanceof BlockItem blockItem)) {
+            return null;
+        }
+
+        return blockItem.getBlock();
     }
 }

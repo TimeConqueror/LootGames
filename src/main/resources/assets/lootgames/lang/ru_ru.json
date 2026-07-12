@@ -1,6 +1,6 @@
 {
   "itemGroup.lootgames": "Loot Games",
-  "item.lootgames.dungeon_block.tooltip": "Существа не могут спауниться на этом блоке.",
+  "tooltip.lootgames.dungeon_block": "Существа не могут спауниться на этом блоке",
   "msg.lootgames.stage_complete": "Кажется, структура признаёт ваши старания...",
   "msg.lootgames.puzzle_master.turned_off": "Кажется, структура была деактивирована высшими силами...",
   "msg.lootgames.win": "Структура довольна, и поэтому она вознаграждает вас!",

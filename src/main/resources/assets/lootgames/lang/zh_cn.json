@@ -1,6 +1,6 @@
 {
   "itemGroup.lootgames": "战利品游戏",
-  "item.lootgames.dungeon_block.tooltip": "怪物无法在此方块上生成。",
+  "tooltip.lootgames.dungeon_block": "怪物无法在此方块上生成。",
   "msg.lootgames.stage_complete": "这座结构似乎承认你的努力……",
   "msg.lootgames.puzzle_master.turned_off": "这座结构似乎被更高的力量给禁用了……",
   "msg.lootgames.win": "这座结构很高兴，并奖励了你！",

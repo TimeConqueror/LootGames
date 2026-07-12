@@ -60,7 +60,7 @@ public class GameOfLightRenderer {
 
         int size = game.getBoardSize();
         for (Symbol symbol : Symbol.VALUES) {
-            RenderType renderType = activeSymbols.contains(symbol) ? RT_BOARD_ACTIVE : RT_BOARD_ACTIVE;
+            RenderType renderType = activeSymbols.contains(symbol) ? RT_BOARD_ACTIVE : RT_BOARD;
             VertexConsumer buffer = bufferIn.getBuffer(renderType);
 
             Vector2ic pos = symbol.getPos();

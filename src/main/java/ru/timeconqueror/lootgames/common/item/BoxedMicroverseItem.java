@@ -28,7 +28,7 @@ public class BoxedMicroverseItem extends Item implements IClientItemExtensions {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(Component
-                .translatable("item.lootgames.boxed_microverse.tooltip.1")
+                .translatable("tooltip.lootgames.boxed_microverse.1")
                 .withStyle(ChatFormatting.BLUE));
 
         Item item = stack.getItem();
@@ -44,7 +44,7 @@ public class BoxedMicroverseItem extends Item implements IClientItemExtensions {
 
         if(gameName != null) {
             tooltip.add(Component
-                    .translatable("item.lootgames.boxed_microverse.tooltip.2", gameName)
+                    .translatable("tooltip.lootgames.boxed_microverse.2", gameName)
                     .withStyle(ChatFormatting.GRAY));
         }
 

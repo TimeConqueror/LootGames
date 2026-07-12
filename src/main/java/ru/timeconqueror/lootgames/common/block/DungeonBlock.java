@@ -37,7 +37,7 @@ public class DungeonBlock extends Block {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        tooltip.add(Component.translatable("item.lootgames.dungeon_block.tooltip").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("tooltip.lootgames.dungeon_block").withStyle(ChatFormatting.DARK_GRAY));
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 }
